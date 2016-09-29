@@ -167,6 +167,9 @@ public class ConceptImporter {
 			terminology.getStorage().getInfoMap().put("status","done");
 		}
 		
+		// dispose of terminology and reload
+		terminology.reload();
+		
 		// compact terminology
 		if(compact){
 			compact(terminology);
@@ -405,6 +408,9 @@ public class ConceptImporter {
 			storage.getInfoMap().put("status","done");
 			term.save();
 		}
+		
+		// dispose of terminology and reload
+		term.reload();
 		
 		// compact terminology
 		if(compact){
@@ -1218,6 +1224,9 @@ public class ConceptImporter {
 			}
 			tempDir.delete();
 		}
+		
+		// dispose of terminology and reload
+		terminology.reload();
 		
 		
 		// compact terminology

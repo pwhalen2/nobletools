@@ -101,35 +101,20 @@ public class SynopticReportDetector {
 	/**
 	 * get a list of synoptic line detectors
 	 * @return
-	 
-	private List<Detector> getFalseDetectors(){
+	 */
+	private static List<Detector> getFalseDetectors(){
 		if(falseDetectors == null){
 			falseDetectors = new ArrayList<SynopticReportDetector.Detector>();
 			falseDetectors.add(new Detector(){
+				// skip line dividers 
 				public boolean detect(String line){
-					//if synoptic line quit
-					if(line.toLowerCase().matches("^\\s*synoptic\\b.*"))
-						return false;
-					if(line.matches("^[A-Z0-9]\\.\\s*.*\\s\\d$"))
-						return false;
-					if(line.matches("^[A-Z ]+:\\s{4,}.*$"))
-						return false;
-					
-					int count = line.replaceAll("[^A-Za-z]","").length();
-
-					// if alphabetical characters are greater then 60% of the total, then false positive
-					if(((double)count)/line.length() > .6){
-						// if true, but contains other metrics, then ignore
-						Matcher mt = Pattern.compile("\\(\\s*\\)").matcher(line);
-						return !mt.find();
-					}
-					return false;
+					return line.trim().matches("[_\\-=]+");
 				}
 			});
 		}
 		return falseDetectors;
 	}
-	*/
+	
 	
 	/**
 	 * does line belong to synoptic report?
@@ -140,8 +125,8 @@ public class SynopticReportDetector {
 		// if synoptic detector fired
 		if(detect(line,getSynopticDetectors())){
 			// check known false positives
-			//return (detect(line,getFalseDetectors()))?false:true;
-			return true;
+			return (detect(line,getFalseDetectors()))?false:true;
+			//return true;
 		}
 		return false;
 	}

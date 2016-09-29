@@ -81,7 +81,7 @@ public class TerminologyImporter implements ItemListener, ActionListener, Proper
 	private JTextField inputLocation,outputLocation,semanticTypeList,sourceList,languageList,memSize;
 	private JTextArea console;
 	private JCheckBox useStemmer,stripDigits,compact,suppressObsoleteTerms,useMetaInfo; //inMemory, truncateURI
-	private JPanel buttonPanel,commonOptions;
+	private JPanel buttonPanel,commonOptions, rrfOptions, owlOptions, txtOptions;
 	private JDialog bioportalDialog;
 	private OntologyImporter importer;
 	private JButton run,options;
@@ -460,15 +460,17 @@ public class TerminologyImporter implements ItemListener, ActionListener, Proper
 	}
 	
 	private JPanel getOWLDialog(){
-		//if(owlOptions == null){
-		JPanel panel = new JPanel();
-		panel.setLayout(new BoxLayout(panel,BoxLayout.Y_AXIS));
-		/*truncateURI = new JCheckBox("Abbreviate class URIs as a concept code");
-		truncateURI.setToolTipText("<html>If <b>code</b> property is not defined class URI is typically used as concept code.<br>"
-				+ "Ex: http://www.ontologies.com/ontologies/MyTestOntology.owl#Class_Name -> MTO:Class_Name, if abbreviation is used.");
-		panel.add(truncateURI);*/
-		panel.add(getCommonOptions());
-		return panel;
+		if(owlOptions == null){
+			JPanel panel = new JPanel();
+			panel.setLayout(new BoxLayout(panel,BoxLayout.Y_AXIS));
+			/*truncateURI = new JCheckBox("Abbreviate class URIs as a concept code");
+			truncateURI.setToolTipText("<html>If <b>code</b> property is not defined class URI is typically used as concept code.<br>"
+					+ "Ex: http://www.ontologies.com/ontologies/MyTestOntology.owl#Class_Name -> MTO:Class_Name, if abbreviation is used.");
+			panel.add(truncateURI);*/
+			panel.add(getCommonOptions());
+			owlOptions = panel;
+		}
+		return owlOptions;
 	}
 	
 	private JPanel getBioportalDialog(){
@@ -490,100 +492,103 @@ public class TerminologyImporter implements ItemListener, ActionListener, Proper
 	}
 	
 	private JPanel getTxtDialog(){
-		//if(owlOptions == null){
-		JPanel panel = new JPanel();
-		panel.setLayout(new BoxLayout(panel,BoxLayout.Y_AXIS));
-		
-		JTextArea description = new JTextArea(6,20);
-		description.setBorder(new EmptyBorder(10, 10, 10, 10));
-		description.setText(
-				"Import a text file where each line is a semi-column delimited list of terms for each concept. "+
-				"Each line can be indented with tabs to indicate a hierarchy of concepts. "+
-				"If a term looks like a UMLS CUI or a semantic type TUI, then this information is added appropriately. "+
-				"Optionally additional concept meta information can be pulled from another terminlogy s.a. UMLS if it is a direct match.");
-		description.setEditable(false);
-		description.setWrapStyleWord(true);
-		description.setLineWrap(true);
-		description.setBackground(new Color(255,255,200));
-		description.setAlignmentX(JComponent.LEFT_ALIGNMENT);
-		
-		useMetaInfo  = new JCheckBox("Pull additional concept information from another terminology",false);
-		useMetaInfo.setAlignmentX(JComponent.LEFT_ALIGNMENT);
-		
-		DefaultRepository repo = new DefaultRepository();
-		Terminology [] terms = repo.getTerminologies();
-		metathesaurusList = new JComboBox<Terminology>(terms);
-		metathesaurusList.setEnabled(false);
-		metathesaurusList.setMaximumSize(useMetaInfo.getPreferredSize());
-		metathesaurusList.setAlignmentX(JComponent.LEFT_ALIGNMENT);
-		for(Terminology t: terms){
-			if(t.getName().contains("UMLS") || t.getName().contains("Metathesaurus")){
-				metathesaurusList.setSelectedItem(t);
-				break;
+		if(txtOptions == null){
+			JPanel panel = new JPanel();
+			panel.setLayout(new BoxLayout(panel,BoxLayout.Y_AXIS));
+			
+			JTextArea description = new JTextArea(6,20);
+			description.setBorder(new EmptyBorder(10, 10, 10, 10));
+			description.setText(
+					"Import a text file where each line is a semi-column delimited list of terms for each concept. "+
+					"Each line can be indented with tabs to indicate a hierarchy of concepts. "+
+					"If a term looks like a UMLS CUI or a semantic type TUI, then this information is added appropriately. "+
+					"Optionally additional concept meta information can be pulled from another terminlogy s.a. UMLS if it is a direct match.");
+			description.setEditable(false);
+			description.setWrapStyleWord(true);
+			description.setLineWrap(true);
+			description.setBackground(new Color(255,255,200));
+			description.setAlignmentX(JComponent.LEFT_ALIGNMENT);
+			
+			useMetaInfo  = new JCheckBox("Pull additional concept information from another terminology",false);
+			useMetaInfo.setAlignmentX(JComponent.LEFT_ALIGNMENT);
+			
+			DefaultRepository repo = new DefaultRepository();
+			Terminology [] terms = repo.getTerminologies();
+			metathesaurusList = new JComboBox<Terminology>(terms);
+			metathesaurusList.setEnabled(false);
+			metathesaurusList.setMaximumSize(useMetaInfo.getPreferredSize());
+			metathesaurusList.setAlignmentX(JComponent.LEFT_ALIGNMENT);
+			for(Terminology t: terms){
+				if(t.getName().contains("UMLS") || t.getName().contains("Metathesaurus")){
+					metathesaurusList.setSelectedItem(t);
+					break;
+				}
 			}
+			
+			useMetaInfo.setOpaque(false);
+			useMetaInfo.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					metathesaurusList.setEnabled(useMetaInfo.isSelected());
+				}
+			});
+			panel.add(description);
+			panel.add(useMetaInfo);
+			panel.add(metathesaurusList);
+			panel.add(Box.createRigidArea(new Dimension(20,20)));
+			panel.add(getCommonOptions());
+			txtOptions = panel;
 		}
-		
-		useMetaInfo.setOpaque(false);
-		useMetaInfo.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				metathesaurusList.setEnabled(useMetaInfo.isSelected());
-			}
-		});
-		panel.add(description);
-		panel.add(useMetaInfo);
-		panel.add(metathesaurusList);
-		panel.add(Box.createRigidArea(new Dimension(20,20)));
-		panel.add(getCommonOptions());
-		
-		return panel;
+		return txtOptions;
 	}
 	
 	
 	
 	private JPanel getRRFDialog(){
-		//if(rrfOptions == null){
-		JPanel panel = new JPanel();
-		panel.setLayout(new BoxLayout(panel,BoxLayout.Y_AXIS));
-		GridBagConstraints c = new GridBagConstraints(0,0,1,1,1,1,GridBagConstraints.CENTER,GridBagConstraints.HORIZONTAL,new Insets(5,5,5,5),0,0);
-		GridBagLayout l = new GridBagLayout();
-		l.setConstraints(panel,c);
-		panel.setLayout(l);
-		
-		sourceList = new JTextField(30);
-		JButton browse = new JButton("Browse");
-		browse.addActionListener(this);
-		browse.setActionCommand("src_browser");
+		if(rrfOptions == null){
+			JPanel panel = new JPanel();
+			panel.setLayout(new BoxLayout(panel,BoxLayout.Y_AXIS));
+			GridBagConstraints c = new GridBagConstraints(0,0,1,1,1,1,GridBagConstraints.CENTER,GridBagConstraints.HORIZONTAL,new Insets(5,5,5,5),0,0);
+			GridBagLayout l = new GridBagLayout();
+			l.setConstraints(panel,c);
+			panel.setLayout(l);
 			
-		panel.add(new JLabel("Filter by Source"),c);c.gridx++;
-		panel.add(sourceList,c);c.gridx++;
-		panel.add(browse,c);c.gridx=0;c.gridy++;
+			sourceList = new JTextField(30);
+			JButton browse = new JButton("Browse");
+			browse.addActionListener(this);
+			browse.setActionCommand("src_browser");
+				
+			panel.add(new JLabel("Filter by Source"),c);c.gridx++;
+			panel.add(sourceList,c);c.gridx++;
+			panel.add(browse,c);c.gridx=0;c.gridy++;
+			
+			hierarchySourceList = new JTextField(30);
+			browse = new JButton("Browse");
+			browse.addActionListener(this);
+			browse.setActionCommand("src_browser2");
+			
+			panel.add(new JLabel("Filter Hierarchy by Source"),c);c.gridx++;
+			panel.add(hierarchySourceList,c);c.gridx++;
+			panel.add(browse,c);c.gridx=0;c.gridy++;
+			
+			
+			semanticTypeList = new JTextField(30);
+			browse = new JButton("Browse");
+			browse.addActionListener(this);
+			browse.setActionCommand("st_browser");
 		
-		hierarchySourceList = new JTextField(30);
-		browse = new JButton("Browse");
-		browse.addActionListener(this);
-		browse.setActionCommand("src_browser2");
-		
-		panel.add(new JLabel("Filter Hierarchy by Source"),c);c.gridx++;
-		panel.add(hierarchySourceList,c);c.gridx++;
-		panel.add(browse,c);c.gridx=0;c.gridy++;
-		
-		
-		semanticTypeList = new JTextField(30);
-		browse = new JButton("Browse");
-		browse.addActionListener(this);
-		browse.setActionCommand("st_browser");
-	
-		panel.add(new JLabel("Filter by Semantic Type"),c);c.gridx++;
-		panel.add(semanticTypeList,c);c.gridx++;
-		panel.add(browse,c);c.gridx=0;c.gridy++;
-		
-		languageList = new JTextField("ENG",30);
-		panel.add(new JLabel("Filter by Language"),c);c.gridx++;
-		panel.add(languageList,c);c.gridy++;c.gridx=0;
-		c.gridwidth=3;
-		c.gridheight=1;
-		panel.add(getCommonOptions(),c);
-		return panel;
+			panel.add(new JLabel("Filter by Semantic Type"),c);c.gridx++;
+			panel.add(semanticTypeList,c);c.gridx++;
+			panel.add(browse,c);c.gridx=0;c.gridy++;
+			
+			languageList = new JTextField("ENG",30);
+			panel.add(new JLabel("Filter by Language"),c);c.gridx++;
+			panel.add(languageList,c);c.gridy++;c.gridx=0;
+			c.gridwidth=3;
+			c.gridheight=1;
+			panel.add(getCommonOptions(),c);
+			rrfOptions = panel;
+		}
+		return rrfOptions;
 	}
 	
 	

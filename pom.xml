@@ -29,7 +29,7 @@
 		<plugin>
 		  <artifactId>maven-assembly-plugin</artifactId>
 		  <configuration>
-		  <finalName>NobleCoderTool-${project.version}</finalName>  
+		  <finalName>NobleCoder-${project.version}</finalName>  
 		  <appendAssemblyId>false</appendAssemblyId>    
 		    <descriptorRefs>
 		      <descriptorRef>jar-with-dependencies</descriptorRef>

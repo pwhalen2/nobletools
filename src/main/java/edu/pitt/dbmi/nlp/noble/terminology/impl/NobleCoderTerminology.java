@@ -586,6 +586,12 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 		
 	}
 	
+	public void reload() throws IOException{
+		dispose();
+		load(name);
+	}
+	
+	
 	/**
 	 * save meta information
 	 * @param f
