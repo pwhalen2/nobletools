@@ -133,4 +133,16 @@ public class BProperty extends BResource implements IProperty {
 
 	}
 
+
+	public boolean hasSuperProperty(IProperty o) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+	public boolean hasSubProperty(IProperty o) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

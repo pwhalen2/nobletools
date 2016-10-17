@@ -1,5 +1,7 @@
 package edu.pitt.dbmi.nlp.noble.ontology;
 
+import java.util.Arrays;
+
 /**
  * This class describes propery construct
  * @author tseytlin
@@ -162,6 +164,11 @@ public interface IProperty extends IResource {
 	 * @return
 	 */
 	public IProperty [] getDirectSuperProperties();
+	
+	
+	public boolean hasSuperProperty(IProperty o);
+	
+	public boolean hasSubProperty(IProperty o);
 	
 	/**
 	 * get inverse property

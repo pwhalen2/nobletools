@@ -168,4 +168,12 @@ public class OAnnotation extends OResource implements IProperty {
 		throw new IOntologyError("Not implemented");
 	}
 
+	public boolean hasSuperProperty(IProperty o) {
+		return false;
+	}
+
+	public boolean hasSubProperty(IProperty o) {
+		return false;
+	}
+
 }
