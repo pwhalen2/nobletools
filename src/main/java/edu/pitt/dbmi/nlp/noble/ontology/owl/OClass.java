@@ -67,10 +67,11 @@ public class OClass extends OResource implements IClass{
 	}
 
 	public IInstance createInstance() {
-		OWLDataFactory dataFactory = getOWLDataFactory();
+		/*OWLDataFactory dataFactory = getOWLDataFactory();
 		OWLIndividual ind = dataFactory.getOWLAnonymousIndividual();
 		addAxiom(dataFactory.getOWLClassAssertionAxiom(cls,ind));
-		return (IInstance)convertOWLObject(ind);
+		return (IInstance)convertOWLObject(ind);*/
+		return createInstance("Instance-"+System.currentTimeMillis()+"-"+((int)(Math.random()*1000)));
 	}
 
 	public IClass createSubClass(String name) {
@@ -133,7 +134,8 @@ public class OClass extends OResource implements IClass{
 				}
 			}
 		}
-		return (exp.size() == 1 && exp.get(0) instanceof ILogicExpression)?(ILogicExpression)exp.get(0):exp;
+		//return (exp.size() == 1 && exp.get(0) instanceof ILogicExpression)?(ILogicExpression)exp.get(0):exp;
+		return exp;
 	}
 
 	public ILogicExpression getDirectNecessaryRestrictions() {
@@ -148,7 +150,8 @@ public class OClass extends OResource implements IClass{
 				
 			}
 	    }
-		return (exp.size() == 1 && exp.get(0) instanceof ILogicExpression)?(ILogicExpression)exp.get(0):exp;
+		//return (exp.size() == 1 && exp.get(0) instanceof ILogicExpression)?(ILogicExpression)exp.get(0):exp;
+		return exp;
 	}
 
 	public IRestriction[] getRestrictions(IProperty p) {

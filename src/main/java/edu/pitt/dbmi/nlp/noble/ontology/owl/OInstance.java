@@ -55,15 +55,19 @@ public class OInstance extends OResource implements IInstance {
 			return super.getPropertyValues(prop);
 		else if(prop.isDatatypeProperty()){
 			LogicExpression list = new LogicExpression(LogicExpression.AND);
-			for(OWLLiteral l: getOWLReasoner().getDataPropertyValues((OWLNamedIndividual)getOWLIndividual(),(OWLDataProperty)convertOntologyObject(prop))){
-				list.add(convertOWLObject(l));
+			if(getOWLIndividual().isNamed()){
+				for(OWLLiteral l: getOWLReasoner().getDataPropertyValues((OWLNamedIndividual)getOWLIndividual(),(OWLDataProperty)convertOntologyObject(prop))){
+					list.add(convertOWLObject(l));
+				}
 			}
 			return list.toArray();
 		}else if(prop.isObjectProperty()){
 			LogicExpression list = new LogicExpression(LogicExpression.AND);
-			for(OWLIndividual l: getOWLReasoner().getObjectPropertyValues((OWLNamedIndividual)getOWLIndividual(),
-					(OWLObjectPropertyExpression)convertOntologyObject(prop)).getFlattened()){
-				list.add(convertOWLObject(l));
+			if(getOWLIndividual().isNamed()){
+				for(OWLIndividual l: getOWLReasoner().getObjectPropertyValues((OWLNamedIndividual)getOWLIndividual(),
+						(OWLObjectPropertyExpression)convertOntologyObject(prop)).getFlattened()){
+					list.add(convertOWLObject(l));
+				}
 			}
 			return list.toArray();
 		}
