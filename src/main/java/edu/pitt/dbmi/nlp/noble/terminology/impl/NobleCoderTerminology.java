@@ -1,15 +1,17 @@
 package edu.pitt.dbmi.nlp.noble.terminology.impl;
 
+/**
+ * improve concept scoring code
+ */
+import static edu.pitt.dbmi.nlp.noble.terminology.impl.NobleCoderUtils.*;
+
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -22,7 +24,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.ListIterator;
@@ -42,7 +43,6 @@ import edu.pitt.dbmi.nlp.noble.coder.model.Mention;
 import edu.pitt.dbmi.nlp.noble.coder.model.Processor;
 import edu.pitt.dbmi.nlp.noble.coder.model.Sentence;
 import edu.pitt.dbmi.nlp.noble.ontology.DefaultRepository;
-import edu.pitt.dbmi.nlp.noble.ontology.IClass;
 import edu.pitt.dbmi.nlp.noble.ontology.IOntology;
 import edu.pitt.dbmi.nlp.noble.ontology.IOntologyException;
 import edu.pitt.dbmi.nlp.noble.terminology.AbstractTerminology;
@@ -54,17 +54,12 @@ import edu.pitt.dbmi.nlp.noble.terminology.Source;
 import edu.pitt.dbmi.nlp.noble.terminology.Term;
 import edu.pitt.dbmi.nlp.noble.terminology.Terminology;
 import edu.pitt.dbmi.nlp.noble.terminology.TerminologyException;
+import edu.pitt.dbmi.nlp.noble.terminology.impl.NobleCoderUtils.NormalizedWordsContainer;
 import edu.pitt.dbmi.nlp.noble.tools.TextTools;
 import edu.pitt.dbmi.nlp.noble.tools.TextTools.StringStats;
-import edu.pitt.dbmi.nlp.noble.util.CacheMap;
 import edu.pitt.dbmi.nlp.noble.util.ConceptImporter;
 import edu.pitt.dbmi.nlp.noble.util.JDBMMap;
-import edu.pitt.dbmi.nlp.noble.util.StringUtils;
 import edu.pitt.dbmi.nlp.noble.util.XMLUtils;
-
-/**
- * improve concept scoring code
- */
 
 
 /**
@@ -243,6 +238,10 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 			return location;
 		}
 		
+		public File getTempLocation(){
+			return new File(location,TEMP_WORD_DIR);
+		}
+		
 		public void clear(){
 			wordMap.clear();
 			blacklist.clear();
@@ -398,6 +397,9 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 	public static class WordStat implements Serializable {
 		public int termCount;
 		public boolean isTerm;
+		public String toString(){
+			return "termCount: "+termCount+(isTerm?", is a term":"");
+		}
 	}
 	
 	
@@ -575,7 +577,7 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 			r.close();
 			
 			// lookup default search method
-			setSearchProperties(p);
+			setSearchProperties(this,p);
 		}
 		
 		// load info file for better meta-info
@@ -591,21 +593,6 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 		load(name);
 	}
 	
-	
-	/**
-	 * save meta information
-	 * @param f
-	 */
-	private void saveSearchProperteis(){
-		try{
-			FileWriter w = new FileWriter(new File(location,SEARCH_PROPERTIES));
-			getSearchProperties().store(w,"Optional Search Options");
-			w.close();
-		}catch(Exception ex){
-			ex.printStackTrace();
-		}
-	}
-	
 	public Map<String,String> getTerminologyProperties(){
 		return storage.getInfoMap();
 	}
@@ -616,147 +603,9 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 	 * @return
 	 */
 	public Properties getSearchProperties(){
-		Properties p = new Properties();
-		p.setProperty("default.search.method",defaultSearchMethod);
-		p.setProperty("ignore.small.words",""+ignoreSmallWords);
-		p.setProperty("source.filter",toString(getSourceFilter()));
-		p.setProperty("language.filter",toString(getLanguageFilter()));
-		p.setProperty("semantic.type.filter",toString(getSemanticTypeFilter()));
-		p.setProperty("ignore.common.words",""+isIgnoreCommonWords());
-		p.setProperty("ignore.acronyms",""+isIgnoreAcronyms());
-		p.setProperty("select.best.candidate",""+isSelectBestCandidate());
-		p.setProperty("score.concepts",""+scoreConcepts);
-		p.setProperty("window.size",""+getWindowSize());
-		p.setProperty("maximum.word.gap",""+getMaximumWordGap());
-		//p.setProperty("enable.search.cache",""+cachingEnabled);
-		p.setProperty("ignore.used.words",""+ignoreUsedWords);
-		p.setProperty("subsumption.mode",""+subsumptionMode);
-		p.setProperty("overlap.mode",""+overlapMode);
-		p.setProperty("contiguous.mode",""+contiguousMode);
-		p.setProperty("ordered.mode",""+orderedMode);
-		p.setProperty("partial.mode",""+partialMode);
-		p.setProperty("partial.mode",""+partialMode);
-		p.setProperty("stem.words",""+stemWords);
-		p.setProperty("ignore.digits",""+stripDigits);
-		p.setProperty("handle.possible.acronyms",""+handlePossibleAcronyms);
-		p.setProperty("partial.match.theshold",""+partialMatchThreshold);
-		p.setProperty("max.words.in.term",""+maxWordsInTerm);
-		return p;
+		return NobleCoderUtils.getSearchProperties(this);
 	}
 	
-	
-	/**
-	 * set search properties
-	 * @param p
-	 */
-	public void setSearchProperties(Properties p){
-		// load default values
-		
-		/*
-		//those values should not be reset by user
-		if(p.containsKey("stem.words"))
-			stemWords = Boolean.parseBoolean(p.getProperty("stem.words"));
-		if(p.containsKey("ignore.digits"))
-			stripDigits = Boolean.parseBoolean(p.getProperty("ignore.digits"));
-		if(p.containsKey("ignore.small.words"))
-			ignoreSmallWords = Boolean.parseBoolean(p.getProperty("ignore.small.words"));
-		if(p.containsKey("handle.possible.acronyms"))
-			handleProblemTerms = Boolean.parseBoolean(p.getProperty("handle.possible.acronyms"));
-		*/
-		// lookup default search method
-		if(p.containsKey("default.search.method")){
-			defaultSearchMethod = BEST_MATCH;
-			String s = p.getProperty("default.search.method",BEST_MATCH);
-			for(String m: getSearchMethods()){
-				if(s.equals(m)){
-					defaultSearchMethod = s;
-					break;
-				}	
-			}
-		}
-		
-		if(p.containsKey("ignore.common.words"))
-			ignoreCommonWords = Boolean.parseBoolean(p.getProperty("ignore.common.words"));
-		if(p.containsKey("ignore.acronyms"))
-			ignoreAcronyms = Boolean.parseBoolean(p.getProperty("ignore.acronyms"));
-		if(p.containsKey("select.best.candidate"))
-			selectBestCandidate = Boolean.parseBoolean(p.getProperty("select.best.candidate"));
-		if(p.containsKey("window.size")){
-			try{
-				windowSize = Integer.parseInt(p.getProperty("window.size"));
-			}catch(Exception ex){}
-		}
-		if(p.containsKey("word.window.size")){
-			try{
-				maxWordGap = Integer.parseInt(p.getProperty("word.window.size"))-1;
-			}catch(Exception ex){}
-		}
-		if(p.containsKey("maximum.word.gap")){
-			try{
-				maxWordGap = Integer.parseInt(p.getProperty("maximum.word.gap"));
-			}catch(Exception ex){}
-		}
-		
-		if(p.containsKey("ignore.used.words"))
-			ignoreUsedWords = Boolean.parseBoolean(p.getProperty("ignore.used.words"));
-		if(p.containsKey("subsumption.mode"))
-			subsumptionMode = Boolean.parseBoolean(p.getProperty("subsumption.mode"));
-		if(p.containsKey("overlap.mode"))
-			overlapMode = Boolean.parseBoolean(p.getProperty("overlap.mode"));
-		if(p.containsKey("contiguous.mode"))
-			contiguousMode = Boolean.parseBoolean(p.getProperty("contiguous.mode"));
-		if(p.containsKey("ordered.mode"))
-			orderedMode = Boolean.parseBoolean(p.getProperty("ordered.mode"));
-		if(p.containsKey("partial.mode"))
-			partialMode = Boolean.parseBoolean(p.getProperty("partial.mode"));
-		//if(p.containsKey("enable.search.cache"))
-		//	cachingEnabled = Boolean.parseBoolean(p.getProperty("enable.search.cache"));
-		if(p.containsKey("partial.match.theshold"))
-			partialMatchThreshold = Double.parseDouble(p.getProperty("partial.match.theshold"));
-		if(p.containsKey("max.words.in.term"))
-			maxWordsInTerm = Integer.parseInt(p.getProperty("max.words.in.term"));
-		
-		// language filter
-		String v = p.getProperty("language.filter");
-		if(v != null && v.length() > 0){
-			ArrayList<String> val = new ArrayList<String>();
-			String sep = (v.indexOf(';') > -1)?";":",";
-			for(String s: v.split(sep))
-				val.add(s.trim());
-			setLanguageFilter(val.toArray(new String [0]));
-		}
-		
-		// source filter
-		v = p.getProperty("source.filter");
-		if(v != null && v.length() > 0){
-			ArrayList<Source> val = new ArrayList<Source>();
-			String sep = (v.indexOf(';') > -1)?";":",";
-			for(String s: v.split(sep))
-				val.add(Source.getSource(s.trim()));
-			setSourceFilter(val.toArray(new Source [0]));
-		}
-		
-		// semantic type filter
-		v = p.getProperty("semantic.type.filter");
-		if(v != null && v.length() > 0){
-			ArrayList<SemanticType> val = new ArrayList<SemanticType>();
-			String sep = (v.indexOf(';') > -1)?";":",";
-			for(String s: v.split(sep))
-				val.add(SemanticType.getSemanticType(s.trim()));
-			setSemanticTypeFilter(val.toArray(new SemanticType [0]));
-		}
-	
-		
-	}
-	
-	
-	private String toString(Object [] list){
-		StringBuffer b = new StringBuffer();
-		for(Object o: list){
-			b.append(o+";"); 
-		}
-		return (b.length()>1)?b.substring(0,b.length()-1):"";
-	}
 	
 	/**
 	 * save meta information
@@ -778,57 +627,6 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 		
 	}
 	
-	/**
-	 * save meta information
-	 * @param f
-	 */
-	private void saveMetaInfo(File f){
-		try{
-			BufferedWriter writer = new BufferedWriter(new FileWriter(f));
-			writer.write("name:\t\t"+getName()+"\n");
-			writer.write("uri:\t\t"+getURI()+"\n");
-			writer.write("version:\t"+getVersion()+"\n");
-			writer.write("location:\t"+getLocation()+"\n");
-			if(storage.getInfoMap().containsKey("languages"))
-				writer.write("languages:\t"+storage.getInfoMap().get("languages")+"\n");
-			writer.write("description:\t"+getDescription()+"\n");
-			if(storage.getInfoMap().containsKey("semantic.types"))
-				writer.write("semantic types:\t"+storage.getInfoMap().get("semantic.types")+"\n");
-			if(storage.getInfoMap().containsKey("word.count"))
-				writer.write("word count:\t"+storage.getInfoMap().get("word.count")+"\n");
-			if(storage.getInfoMap().containsKey("term.count"))
-				writer.write("term count:\t"+storage.getInfoMap().get("term.count")+"\n");
-			if(storage.getInfoMap().containsKey("concept.count"))
-				writer.write("concept count:\t"+storage.getInfoMap().get("concept.count")+"\n");
-			writer.write("configuration:\t");
-			writer.write("stem.words="+stemWords+", ");
-			writer.write("strip.digits="+stripDigits+", ");
-			writer.write("strip.stop.words="+stripStopWords+", ");
-			//writer.write("handle.possible.acronyms="+handlePossibleAcronyms+", ");
-			writer.write("max.words.in.term="+maxWordsInTerm+", ");
-			writer.write("ignore.small.words="+ignoreSmallWords+"\n");
-			writer.write("\nsources:\n\n");
-			for(String name: new TreeSet<String>(storage.getSourceMap().keySet())){
-				writer.write(name+": "+storage.getSourceMap().get(name).getDescription()+"\n");
-			}
-			
-			
-			writer.close();
-		}catch(Exception ex){
-			ex.printStackTrace();
-		}
-		
-		// save info in map
-		storage.getInfoMap().put("strip.digits",""+stripDigits);
-		storage.getInfoMap().put("strip.stop.words",""+stripStopWords);
-		storage.getInfoMap().put("stem.words",""+stemWords);
-		storage.getInfoMap().put("ignore.small.words",""+ignoreSmallWords);
-		storage.getInfoMap().put("max.words.in.term",""+maxWordsInTerm);
-		//storage.getInfoMap().put("handle.possible.acronyms",""+handlePossibleAcronyms);
-	}
-	
-	
-
 	
 	
 	/**
@@ -993,8 +791,8 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 	 */
 	public void save(){
 		pcs.firePropertyChange(LOADING_PROGRESS,null,"Saving Index Finder Tables ...");
-		saveMetaInfo(new File(location,INFO_FILE));
-		saveSearchProperteis();
+		saveMetaInfo(this,new File(location,INFO_FILE));
+		saveSearchProperteis(this);
 		storage.save();
 	}
 	
@@ -1010,7 +808,6 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 	public void setIgnoreDigits(boolean b){
 		stripDigits = b;
 	}
-	
 	
 	
 	public boolean isStripStopWords() {
@@ -1030,6 +827,9 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 		this.stemWords = stemWords;
 	}
 
+	public boolean isStemWords(){
+		return stemWords;
+	}
 	
 	/**
 	 * ignore one letter words to avoid parsing common junk
@@ -1048,58 +848,60 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 	 */
 	public boolean addConcept(Concept c) throws TerminologyException {
 		// don't go into classes that we already visited
-		if(storage.getConceptMap().containsKey(c.getCode()))
+		if (storage.getConceptMap().containsKey(c.getCode()))
 			return true;
-		
+
 		// check if read only
-		if(storage.isReadOnly(storage.getConceptMap())){
+		if (storage.isReadOnly(storage.getConceptMap())) {
 			dispose();
 			try {
-				load(name,false);
+				load(name, false);
 			} catch (IOException e) {
-				throw new TerminologyException("Unable to gain write access to data tables",e);
+				throw new TerminologyException("Unable to gain write access to data tables", e);
 			}
 		}
-		
-		
+
 		// get list of terms
-		Set<String> terms = getTerms(c);
-		for(String term: terms){
+		Set<String> terms = getTerms(this, c);
+		for (String term : terms) {
 			// check if term is a regular expression
-			if(isRegExp(term)){
-				String regex = term.substring(1,term.length()-1);
-				try{
+			if (isRegExp(term)) {
+				String regex = term.substring(1, term.length() - 1);
+				try {
 					Pattern.compile(regex);
-					storage.getRegexMap().put("\\b("+regex+")\\b",c.getCode());
-				}catch(PatternSyntaxException ex){
-					pcs.firePropertyChange(LOADING_MESSAGE,null,"Warning: failed to add regex /"+regex+"/ as synonym, because of pattern error : "+ex.getMessage());
+					storage.getRegexMap().put("\\b(" + regex + ")\\b", c.getCode());
+				} catch (PatternSyntaxException ex) {
+					pcs.firePropertyChange(LOADING_MESSAGE, null, "Warning: failed to add regex /" + regex
+							+ "/ as synonym, because of pattern error : " + ex.getMessage());
 				}
-			}else{
+			} else {
 				// insert concept concept into a set
 				Set<String> codeList = new HashSet<String>();
 				codeList.add(c.getCode());
 				// add concept codes thate were already in a set
-				if(storage.getTermMap().containsKey(term)){
+				if (storage.getTermMap().containsKey(term)) {
 					codeList.addAll(storage.getTermMap().get(term));
 				}
 				// insert the set
-				storage.getTermMap().put(term,codeList);
-				
+				storage.getTermMap().put(term, codeList);
+
 				// insert words
-				for(String word: TextTools.getWords(term)){
-					ConceptImporter.getInstance().saveWordTerms(getStorage(),word,terms);	
+				for (String word : TextTools.getWords(term)) {
+					Set<String> termList = Collections.singleton(term); //filterTerms(word,terms);
+					saveWordTermsInStorage(getStorage(), word, termList);
+					saveWordStats(storage, termList, word);
 				}
 			}
-			
+
 		}
-		storage.getConceptMap().put(c.getCode(),c.getContent());
-		
-		// now, why can't we insert on other valid codes :) ???? I think we can 
-		for(Object code: c.getCodes().values()){
-			if(!storage.getCodeMap().containsKey(code))
-				storage.getCodeMap().put(code.toString(),c.getCode());
+		storage.getConceptMap().put(c.getCode(), c.getContent());
+
+		// now, why can't we insert on other valid codes :) ???? I think we can
+		for (Object code : c.getCodes().values()) {
+			if (!storage.getCodeMap().containsKey(code))
+				storage.getCodeMap().put(code.toString(), c.getCode());
 		}
-		
+
 		return true;
 	}
 	
@@ -1121,7 +923,7 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 		// find concept terms
 		if(storage.getConceptMap().containsKey(c.getCode()))
 			c = convertConcept(storage.getConceptMap().get(c.getCode()));
-		Set<String> terms = getTerms(c);
+		Set<String> terms = getTerms(this,c);
 		// remove all terms and words
 		for(String term: terms){
 			storage.getTermMap().remove(term);
@@ -1211,8 +1013,11 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 		}
 		
 		// if compacted, you want to disable ignore used words
-		if(compacted)
+		if(compacted){
 			ignoreUsedWords = false;
+			//ignoreSmallWords = false;
+			ignoreCommonWords = false;
+		}
 		
 	}
 	
@@ -1240,62 +1045,6 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 	}
 
 
-	/**
-	 * represents a tuple of hashtable and list
-	 */
-	private static class NormalizedWordsContainer {
-		public Map<String,String> normalizedWordsMap;
-		public List<String> normalizedWordsList;
-		public List<String> originalWordsList;
-		
-	}
-	
-	/**
-	 * perform normalization of a string @see normalize, but return unsorted list of words 
-	 * @param text
-	 * @param stem -stem words
-	 * @param strip - strip digits
-	 * @return Map<String,String> normalized word for its original form
-	 */
-	private NormalizedWordsContainer getNormalizedWordMap(String text){
-		NormalizedWordsContainer c = new NormalizedWordsContainer();
-		c.normalizedWordsMap = new LinkedHashMap<String, String>();
-		c.normalizedWordsList = new ArrayList<String>();
-		c.originalWordsList = TextTools.getWords(text);
-		//boolean skipAbbr = false;
-		
-		for(String w: c.originalWordsList){
-			List<String> ws = TextTools.normalizeWords(w, stemWords, stripDigits, stripStopWords);
-			if(!ws.isEmpty() && !c.normalizedWordsMap.containsKey(ws.get(0)))
-				c.normalizedWordsMap.put(ws.get(0),w);
-			c.normalizedWordsList.addAll(ws);
-		}
-		return c;
-	}
-	
-	/**
-	 * Get a list of contiguous concept annotations from a given concept
-	 * Essentially converts a single concepts that annotates multiple related words to text
-	 * to potentially multiple instances of a concept in text
-	 * @param c
-	 * @return
-	 */
-	private List<Annotation> getAnnotations(Concept c,List<String> searchWords){
-		List<Annotation> list = new ArrayList<Annotation>();
-		List<String> matchedWords = TextTools.getWords(c.getMatchedTerm()); //Arrays.asList(c.getMatchedTerm().split(" "));
-		int n = 0;
-		for(String w: searchWords){
-			if(matchedWords.contains(w)){
-				Annotation a = new Annotation();
-				a.setText(w);
-				a.setOffset(c.getSearchString().indexOf(w,n));
-				a.setSearchString(c.getSearchString());
-				list.add(a);
-			}
-			n += w.length()+1;
-		}
-		return list;
-	}
 	
 	/**
 	 * try to find the best possible match for given query
@@ -1348,24 +1097,6 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 		return false;
 	}
 
-	/**
-	 * optionally limit to a sublist of words
-	 * @param words
-	 * @return
-	 */
-	private List<String> getTextWords(List<String> words,int count) {
-		// currently there is a bug, so can't use window size with used words
-		if(ignoreUsedWords)
-			return words;
-		// decrement to compensate
-		count --;
-		if(windowSize > 0 && words.size() > windowSize && count < words.size()){
-			int end = (count+windowSize)<words.size()?count+windowSize:words.size();
-			return words.subList(count,end);
-		}
-		return words;
-	}
-	
 	
 	
 	/**
@@ -1377,38 +1108,6 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 		windowSize = n;
 	}
 	
-	/**
-	 * get original string
-	 * @param text
-	 * @param term
-	 * @param map
-	 * @return
-	 */
-	private String getOriginalTerm(String text, String term, Map<String,String> map){
-		StringBuffer ot = new StringBuffer();
-		final String txt = text.toLowerCase();
-		Set<String> words = new TreeSet<String>(new Comparator<String>() {
-			public int compare(String o1, String o2) {
-				if(o1.length() > 3)
-					o1 = o1.substring(0,o1.length()-1);
-				if(o2.length() > 3)
-					o2 = o2.substring(0,o2.length()-1);
-				int x = txt.indexOf(o1) - txt.indexOf(o2);
-				if(x == 0)
-					return o1.compareTo(o2);
-				return x;
-			}
-		});
-		Collections.addAll(words, term.split(" "));
-		for(String s: words){
-			String w = map.get(s);
-			if(w == null)
-				w = s;
-			ot.append(w+" ");
-		}
-		String oterm = ot.toString().trim();
-		return oterm;
-	}
 	
 	
 	/**
@@ -1454,42 +1153,6 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 	 */
 	private Set<String> getWordTerms(String word){
 		return storage.getWordMap().get(word);
-	}
-	
-	
-	/**
-	 * get all used words from this term
-	 * @param term
-	 * @return
-	 */
-	private List<String> getUsedWords(List<String> words, String term){
-		// if not ignore used words and in overlap mode, return
-		if(!ignoreUsedWords && overlapMode)
-			return Collections.EMPTY_LIST;
-				
-		List<String> termWords = TextTools.getWords(term);
-		List<String> usedWords = new ArrayList<String>();
-		// remove words that are involved in term
-		if(overlapMode){
-			for(String w: termWords){
-				usedWords.add(w);
-			}
-		}else{
-			boolean span = false;
-			for(String w: words){
-				// if text word is inside terms, then
-				if(termWords.contains(w)){
-					usedWords.add(w);
-					termWords.remove(w);
-					span = true;
-				}
-				if(termWords.isEmpty())
-					break;
-				if(span)
-					usedWords.add(w);
-			}
-		}
-		return usedWords;
 	}
 	
 	
@@ -1609,7 +1272,7 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 			// optionally inforce term contiguity in text
 			if(all && contiguousMode && twords.size() > 1){
 				// go over every word in a sentence
-				all = checkContiguity(words, twords);
+				all = checkContiguity(words, twords,maxWordGap);
 			}
 			
 			
@@ -1640,66 +1303,6 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 			}	
 		}
 		return best;
-	}
-	
-	/**
-	 * check that the term is contigous within the limits allowed
-	 * @param words
-	 * @param twords
-	 * @return
-	 */
-	private boolean checkContiguity(List<String> words,List<String> twords){
-		// go over every word in a sentence
-		boolean continguous = false;
-		for(int i=0;i<words.size();i++){
-			// if term words contain that word, then
-			// look at the sublist that includes it and + allowed gap
-			// if this sublist contains ALL term words, then we have contigous match
-			// FROM MELISSA: the word window span is actually good, just need to do gap analysis after to 
-			// make sure that no gap exceeds the word gap 
-			
-			if(twords.contains(words.get(i))){
-				int n = i+((maxWordGap+1)*(twords.size()-1))+1;
-				if(n > words.size())
-					n = words.size();
-				if(words.subList(i,n).containsAll(twords)){
-					continguous = true;
-					break;
-				}
-			}
-		}
-		return continguous; 
-	}
-	
-	
-	private int indexOf(List<String> list,String w, int n){
-		for(int i=n;i<list.size();i++){
-			if(list.get(i).equals(w))
-				return i;
-		}
-		return -1;
-	}
-	
-	/**
-	 * check word order
-	 * @param term
-	 * @return
-	 */
-	private boolean checkWordOrder(List<String> words,List<String> twords,String term){
-		boolean ordered = true;
-		
-		// assume that term word order is the same, since we stopped sorting terms when storing them
-		int lastI = 0;
-		for(String tw: twords){
-			int i = indexOf(words,tw,lastI);
-			if(i < lastI){
-				ordered = false;
-				break;
-			}
-			lastI = i;	
-		}
-		return ordered;
-	
 	}
 	
 	
@@ -1787,57 +1390,6 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 			
 	}
 
-
-
-	/**
-	 * get list of normalized terms from from the class
-	 * @param name
-	 * @return
-	 */
-	protected Set<String> getTerms(Concept cls){
-		return getTerms(cls,stemWords);
-	}
-	
-	/**
-	 * get list of normalized terms from from the class
-	 * @param name
-	 * @return
-	 */
-	protected Set<String> getTerms(Concept cls, boolean stem){
-		if(cls == null)
-			return Collections.EMPTY_SET;
-		
-		String name = cls.getName();
-		//Pattern pt = Pattern.compile("(.*)[\\(\\[].*[\\)\\]]");
-		Set<String> terms = new HashSet<String>();
-		Set<String> synonyms = new LinkedHashSet<String>();
-		synonyms.add(name);
-		Collections.addAll(synonyms,cls.getSynonyms());
-		for(String str: synonyms){
-			if(isRegExp(str))
-				terms.add(str);
-			else{
-				// if we have a limit on size of words in a term, enforce it.
-				boolean addTerm = true;
-				if(maxWordsInTerm > -1 && maxWordsInTerm < TextTools.charCount(str,' ')){
-					addTerm = false;
-				}
-				if(addTerm)
-					terms.add(TextTools.normalize(str,stem,stripDigits,stripStopWords,true,false));
-			}
-		}
-		return terms;
-	}
-
-	/**
-	 * check if string is a regular expression
-	 * @param s
-	 * @return
-	 */
-	protected boolean isRegExp(String s){
-		return s != null && s.startsWith("/") && s.endsWith("/");
-	}
-	
 	
 	/**
 	 * get all root concepts. This makes sence if Terminology is in fact ontology
@@ -2217,7 +1769,7 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 				for(Element op: XMLUtils.getElementsByTagName(e,"Option")){
 					p.setProperty(op.getAttribute("name"),op.getAttribute("value"));
 				}
-				setSearchProperties(p);
+				setSearchProperties(this,p);
 			}
 		}
 	}
@@ -2236,7 +1788,7 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 		
 		
 		// split text into words (don't strip digits)
-		NormalizedWordsContainer nwc = getNormalizedWordMap(text);
+		NormalizedWordsContainer nwc = getNormalizedWordMap(this,text);
 		List<String> words = nwc.normalizedWordsList;
 		Map<String,String> normWords = nwc.normalizedWordsMap;
 		Set<String> resultTerms = new LinkedHashSet<String>();
@@ -2296,7 +1848,7 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 				continue;
 			}
 			
-			List<String> textWords = getTextWords(words,count);
+			List<String> textWords = getTextWords(this,words,count);
 			// if textWords is not the same size, regenerate the hash set
 			if(words.size() != textWords.size())
 				hashWords = new HashSet<String>(textWords);
@@ -2305,7 +1857,7 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 			for(String term: getBestTerms(textWords,hashWords,usedWords,word)){
 				resultTerms.add(term);
 				if(ignoreUsedWords)
-					usedWords.addAll(getUsedWords(textWords,term));
+					usedWords.addAll(getUsedWords(this,textWords,term));
 			}
 			
 		}
@@ -2419,10 +1971,12 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 				if(normalizedTerm.equalsIgnoreCase(TextTools.stem(s))){
 					synonymTerm = s;
 					stemmedMatch = true;
-					exactMatch = s.equalsIgnoreCase(originalTerm);
-					if(exactMatch)
-						caseMatch = s.equals(originalTerm);
-					break;
+					if(!exactMatch){
+						exactMatch = s.equalsIgnoreCase(originalTerm);
+						if(exactMatch){
+							caseMatch = s.equals(originalTerm);
+						}
+					}
 				}
 			}
 		}
@@ -2500,21 +2054,9 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 		c.setScore(weight);
 	}
 	
-	private int indexOf(Object o, Collection list){
-		int n = 1;
-		for(Object oo: list){
-			if(oo.equals(0)){
-				return n;
-			}
-			n++;
-		}
-		return -1;
-	}
-	
 	
 	public static void main(String [] args) throws Exception{
-		NobleCoderTerminology t = new NobleCoderTerminology("NCI_Thesaurus_R");
-		t.dispose();
+		
 		/*;
 		System.out.println("compacting .. ");
 		ConceptImporter.getInstance().compactTerminology(t);

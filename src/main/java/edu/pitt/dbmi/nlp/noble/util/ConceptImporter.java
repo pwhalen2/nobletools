@@ -27,6 +27,7 @@ import java.util.Stack;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import edu.pitt.dbmi.nlp.noble.ontology.IClass;
 import edu.pitt.dbmi.nlp.noble.ontology.IOntology;
@@ -44,9 +45,11 @@ import edu.pitt.dbmi.nlp.noble.terminology.Terminology;
 import edu.pitt.dbmi.nlp.noble.terminology.TerminologyException;
 import edu.pitt.dbmi.nlp.noble.terminology.impl.NobleCoderTerminology;
 import edu.pitt.dbmi.nlp.noble.terminology.impl.NobleCoderTerminology.WordStat;
+import edu.pitt.dbmi.nlp.noble.terminology.impl.NobleCoderUtils;
 import edu.pitt.dbmi.nlp.noble.tools.TextTools;
-
+import static edu.pitt.dbmi.nlp.noble.terminology.impl.NobleCoderUtils.*;
 import static edu.pitt.dbmi.nlp.noble.terminology.impl.NobleCoderTerminology.*;
+
 /**
  * import an OBO file to a collection of concept objects
  * @author tseytlin
@@ -103,11 +106,12 @@ public class ConceptImporter {
 	 * @param c
 	 * @throws TerminologyException
 	 */
-	private void addConcept(NobleCoderTerminology term, Concept c) throws TerminologyException{
+	private void addConceptAndRoot(NobleCoderTerminology term, Concept c) throws TerminologyException{
 		if(term == null || c == null)
 			return;
 		//pcs.firePropertyChange(LOADING_MESSAGE,null,"importing concept "+c.getName()+" ..");
-		term.addConcept(c);
+		addConcept(term,c);
+		
 		// if not relations or no breader relations, then it is root
 		if(c.getRelationMap() == null || !c.getRelationMap().containsKey(Relation.BROADER))
 			term.addRoot(c.getCode());
@@ -150,7 +154,7 @@ public class ConceptImporter {
 			pcs.firePropertyChange(LOADING_TOTAL,null,content.size());
 			int i = 0;
 			for(Concept c: content.values()){
-				addConcept(terminology, c);
+				addConceptAndRoot(terminology, c);
 				pcs.firePropertyChange(LOADING_PROGRESS,null,i++);
 			}
 		}
@@ -387,13 +391,22 @@ public class ConceptImporter {
 			}
 						
 			// add concept
-			term.addConcept(concept);
+			addConcept(term,concept,!inmemory);
 			
 			// commit ever so often
 			pcs.firePropertyChange(LOADING_PROGRESS,null,i);
 			
 			storage.getInfoMap().put("offset",""+i);
 		}
+		
+		// load temp terms 
+		if(!inmemory){
+			File tempDir = new File(storage.getLocation(),NobleCoderTerminology.TEMP_WORD_DIR);
+			loadTemporaryTermFiles(pcs,storage, tempDir,compact);
+			removeTemporaryTermFiles(pcs, tempDir);
+		}
+		
+		// load roots		
 		for(IClass r: ontology.getRootClasses())
 			storage.getRootMap().put(getCode(r,false),"");
 		
@@ -402,20 +415,23 @@ public class ConceptImporter {
 			pcs.firePropertyChange(LOADING_MESSAGE,null,"Creating a Blacklist of High Frequency Words ...");
 			BlacklistHandler handler = new BlacklistHandler(term);
 			storage.getBlacklist().putAll(handler.getBlacklist());
+		}else{
+			storage.getInfoMap().put("compacted", "true");
 		}
+		
 		
 		if(!inmemory){
 			storage.getInfoMap().put("status","done");
 			term.save();
+			term.reload();
 		}
 		
 		// dispose of terminology and reload
-		term.reload();
-		
 		// compact terminology
+		/*
 		if(compact){
 			compact(term);
-		}
+		}*/
 	}
 
 	private String getCode(IClass cls, boolean truncateURI){
@@ -883,7 +899,7 @@ public class ConceptImporter {
 					c.addCode(code, source);
 					
 					// set preferred name for the first time
-					if(term.isPreferred()){
+					/*if(term.isPreferred()){
 						// if prefered name source is not set OR
 						// we have filtering and the new source offset is less then old source offset (which means higher priority)
 						if(prefNameSource == null || (filterSources != null && filterSources.indexOf(src) < filterSources.indexOf(prefNameSource))){
@@ -892,11 +908,14 @@ public class ConceptImporter {
 							
 						}
 					}
-					term = null;
+					term = null;*/
 					
 					// now see if we pretty much got the entire concept and should put it in
 					if(previousConcept != null && !previousConcept.getCode().equals(cui)){
-						terminology.addConcept(previousConcept);
+						// figure out the best preferred term
+						previousConcept.setName(getPreferredName(previousConcept));
+						// add concept
+						addConcept(terminology,previousConcept,true);
 						storage.getInfoMap().put("max.terms.per.word",""+storage.maxTermsPerWord);
 						storage.getInfoMap().put("total.terms.per.word",""+storage.totalTermsPerWord);
 						/*if(crash)
@@ -908,8 +927,11 @@ public class ConceptImporter {
 			
 			}
 			// save last one
-			if(previousConcept != null)
-				terminology.addConcept(previousConcept);
+			if(previousConcept != null){
+				// figure out the best preferred term
+				previousConcept.setName(getPreferredName(previousConcept));
+				addConcept(terminology,previousConcept,true);
+			}
 			r.close();
 		}else{
 			pcs.firePropertyChange(LOADING_MESSAGE,null,"Skipping "+RRFile+" file ...");
@@ -924,47 +946,8 @@ public class ConceptImporter {
 
 		// now do temp word dir
 		File tempDir = new File(storage.getLocation(),NobleCoderTerminology.TEMP_WORD_DIR);
-		if(storage.useTempWordFolder && tempDir.exists()){
-			storage.useTempWordFolder = false;
-			File [] files = tempDir.listFiles();
-			offset = 0;
-			RRFile = NobleCoderTerminology.TEMP_WORD_DIR;
-			if(storage.getInfoMap().containsKey(RRFile)){
-				offset = Integer.parseInt(storage.getInfoMap().get(RRFile));
-			}
-			// if offset is smaller then total, read file
-			if(offset < files.length){
-				pcs.firePropertyChange(LOADING_MESSAGE,null,"Loading temporary word files ...");
-				pcs.firePropertyChange(LOADING_TOTAL,null,files.length);
-				i = 0;
-				for(File f: files){
-					if(i < offset){
-						i++;
-						continue;
-					}
-					// display progress bar
-					//if((i % (files.length/100)) == 0){
-					pcs.firePropertyChange(LOADING_PROGRESS,null,i);
-					//}
-					i++;
-					
-					//load file content
-					String word = f.getName();
-					Set<String> terms = new HashSet<String>();
-					BufferedReader rd = new BufferedReader(new FileReader(f));
-					for(String l = rd.readLine();l != null; l = rd.readLine()){
-						terms.add(l.trim());
-					}
-					rd.close();
-				
-					// set words
-					saveWordTerms(storage,word,terms);
-					storage.getInfoMap().put(RRFile,""+i);
-				}
-			}else{
-				pcs.firePropertyChange(LOADING_MESSAGE,null,"Skipping "+RRFile+" file ...");
-			}
-		}
+		loadTemporaryTermFiles(pcs,storage, tempDir,compact);
+		
 		
 		// save some meta information
 		storage.getInfoMap().put("word.count",""+storage.getWordMap().size());
@@ -1207,6 +1190,8 @@ public class ConceptImporter {
 			pcs.firePropertyChange(LOADING_MESSAGE,null,"Creating a Blacklist of High Frequency Words ...");
 			BlacklistHandler handler = new BlacklistHandler(terminology);
 			storage.getBlacklist().putAll(handler.getBlacklist());
+		}else{
+			storage.getInfoMap().put("compacted", "true");
 		}
 		
 		
@@ -1217,22 +1202,16 @@ public class ConceptImporter {
 		
 				
 		// remove temp word files 
-		if(tempDir.exists()){
-			pcs.firePropertyChange(LOADING_MESSAGE,null,"Deleting Temporary Files ...");
-			for(File f: tempDir.listFiles()){
-				f.delete();
-			}
-			tempDir.delete();
-		}
+		removeTemporaryTermFiles(pcs, tempDir);
 		
 		// dispose of terminology and reload
 		terminology.reload();
 		
 		
 		// compact terminology
-		if(compact){
-			compact(terminology);
-		}
+		//if(compact){
+		//compact(terminology); - no need to do compacting here as it is done in line
+		//}
 
 		// serialize boject if appropriate
 		/*if(inmemory){
@@ -1264,106 +1243,91 @@ public class ConceptImporter {
 		
 		return false;
 	}
-	
-	private String getRarestWord(Storage storage, String term){
-		String rarest = null;
-		int rarestTermCount = Integer.MAX_VALUE;
-		for(String word: TextTools.getWords(term)){
-			WordStat st = storage.getWordStatMap().get(word);
-			int i = (st != null)?st.termCount:Integer.MAX_VALUE;
-			if( i < rarestTermCount){
-				rarest = word;
-				rarestTermCount = i;
-			}
-		}
-		return rarest;
+
+	/**
+	 * add concept to terminology
+	 */
+	public boolean addConcept(NobleCoderTerminology terminology,Concept c ) throws TerminologyException {
+		return addConcept(terminology, c,false);
 	}
-	
-	private void saveTemporaryTermFile(File location, String word, Collection<String> termList) throws IOException{
-		if(word == null)
-			return;
-		// if windows OS, check for some speccial files
-		if(System.getProperty("os.name").toLowerCase().startsWith("win")){
-			if(Arrays.asList("con","prn").contains(word))
-				return;
-		}
-		
-		File d = new File(location,TEMP_WORD_DIR);
-		if(!d.exists())
-			d.mkdirs();
-		File f = new File(d,word);
-		BufferedWriter w = new BufferedWriter(new FileWriter(f,true));
-		for(String t: termList){
-			w.write(t+"\n");
-		}
-		w.close();
-	}
-	
 	
 	/**
-	 * add entry to word table
-	 * @param word
-	 * @param terms
+	 * add concept to terminology
 	 */
-	public void saveWordTerms(NobleCoderTerminology.Storage storage, String word,Set<String> terms){
-		//TODO: it would be more efficient to do the rare-word index feature here instead of using compact function after import
+	public boolean addConcept(NobleCoderTerminology terminology,Concept c, boolean saveTermsAsFiles ) throws TerminologyException {
+		NobleCoderTerminology.Storage storage = terminology.getStorage();
+		// don't go into classes that we already visited
+		if(storage.getConceptMap().containsKey(c.getCode()))
+			return true;
 		
-		// filter terms to only include those that contain a given word
-		File location = storage.getLocation();
-		Set<String> termList = filterTerms(word,terms);
-		
-		// if in temp word folder mode, save in temp directory instead of map
-		if(storage.useTempWordFolder && location != null && location.exists()){
+		// check if read only
+		if(storage.isReadOnly(storage.getConceptMap())){
+			terminology.dispose();
 			try {
-				saveTemporaryTermFile(location, word, termList);
+				terminology.load(terminology.getName(),false);
 			} catch (IOException e) {
-				pcs.firePropertyChange(LOADING_MESSAGE,null,"Warning: failed to create file \""+word+"\", reason: "+e.getMessage());
+				throw new TerminologyException("Unable to gain write access to data tables",e);
 			}
-		// else do the normal save to MAP	
-		}else{
-			if(storage.getWordMap().containsKey(word)){
-				termList.addAll(storage.getWordMap().get(word));
-			}
-			try{
-				storage.getWordMap().put(word,termList);
-				storage.commit(storage.getWordMap());
-			}catch(IllegalArgumentException e ){
-				storage.getWordMap().put(word,new HashSet<String>(Collections.singleton(word)));
-				pcs.firePropertyChange(LOADING_MESSAGE,null,"Warning: failed to insert word \""+word+"\", reason: "+e.getMessage());
+		}
+		
+		// get list of terms
+		Set<String> terms = NobleCoderUtils.getTerms(terminology,c);
+		for(String term: terms){
+			// check if term is a regular expression
+			if(NobleCoderUtils.isRegExp(term)){
+				String regex = term.substring(1,term.length()-1);
+				try{
+					Pattern.compile(regex);
+					storage.getRegexMap().put("\\b("+regex+")\\b",c.getCode());
+				}catch(PatternSyntaxException ex){
+					pcs.firePropertyChange(LOADING_MESSAGE,null,"Warning: failed to add regex /"+regex+"/ as synonym, because of pattern error : "+ex.getMessage());
+				}
+			}else{
+				// insert concept concept into a set
+				Set<String> codeList = new HashSet<String>();
+				codeList.add(c.getCode());
+				// add concept codes thate were already in a set
+				if(storage.getTermMap().containsKey(term)){
+					codeList.addAll(storage.getTermMap().get(term));
+				}
+				// insert the set
+				storage.getTermMap().put(term,codeList);
 				
+				// insert words
+				for(String word: TextTools.getWords(term)){
+					// filter terms that contain this word
+					Set<String> termList = Collections.singleton(term);//filterTerms(word,terms);
+					
+					// if we are saving it in a temp file, then
+					if(saveTermsAsFiles){
+						// if in temp word folder mode, save in temp directory instead of map
+						try {
+							saveTemporaryTermFile(storage.getTempLocation(), word, termList);
+						} catch (IOException e) {
+							pcs.firePropertyChange(LOADING_MESSAGE,null,"Warning: failed to insert word \""+word+"\", reason: "+e.getMessage());
+						}
+					}else{
+						saveWordTermsInStorage(terminology.getStorage(), word, termList);
+					}
+
+					// save word statistics
+					saveWordStats(storage, termList, word);	
+			
+				}
 			}
-			// if word already existed, subtract previous value from the total
-			if(storage.getWordStatMap().containsKey(word))
-				storage.totalTermsPerWord -= storage.getWordStatMap().get(word).termCount;
-			
-			WordStat ws = new WordStat();
-			ws.termCount = termList.size();
-			ws.isTerm = termList.contains(word);
-			storage.getWordStatMap().put(word,ws);
-			storage.totalTermsPerWord += termList.size();
-			if(termList.size() > storage.maxTermsPerWord)
-				storage.maxTermsPerWord = termList.size();
 			
 		}
-	}
-	
-	
-	/**
-	 * only return terms where given word occures
-	 * @param workd
-	 * @param terms
-	 * @return
-	 */
-	private Set<String> filterTerms(String word, Set<String> terms){
-		Set<String> result = new HashSet<String>();
-		for(String t: terms){
-			if(t.contains(word))
-				result.add(t);
+		storage.getConceptMap().put(c.getCode(),c.getContent());
+		
+		// now, why can't we insert on other valid codes :) ???? I think we can 
+		for(Object code: c.getCodes().values()){
+			if(!storage.getCodeMap().containsKey(code))
+				storage.getCodeMap().put(code.toString(),c.getCode());
 		}
-		return result;
+		
+		return true;
 	}
-	
-	
+		
 	
 	/**
 	 * compact terminology 
@@ -1383,7 +1347,7 @@ public class ConceptImporter {
 		for(String term:  storage.getTermMap().keySet()){
 			// get rarest word
 			String word = getRarestWord(storage, term);
-			saveTemporaryTermFile(storage.getLocation(), word,Arrays.asList(term));
+			saveTemporaryTermFile(storage.getTempLocation(), word,Arrays.asList(term));
 			// progress bar
 			if((i % (n/100)) == 0){
 				pcs.firePropertyChange(LOADING_PROGRESS,null,i);
@@ -1406,35 +1370,8 @@ public class ConceptImporter {
 		
 		
 		// reload the word map file
-		pcs.firePropertyChange(LOADING_MESSAGE,null,"Loading terms into datastructure ...");
-		storage.useTempWordFolder = false;
 		File tempDir = new File(location,NobleCoderTerminology.TEMP_WORD_DIR);
-		File [] fileList = tempDir.listFiles();
-		if(fileList != null){
-			pcs.firePropertyChange(LOADING_TOTAL,null,fileList.length);
-			i = 0;
-			for(File f: fileList){
-					
-				//load file content
-				String word = f.getName();
-				Set<String> terms = new HashSet<String>();
-				BufferedReader rd = new BufferedReader(new FileReader(f));
-				for(String l = rd.readLine();l != null; l = rd.readLine()){
-					terms.add(l.trim());
-				}
-				rd.close();
-				
-				// set words
-				saveWordTerms(storage,word,terms);
-	
-				
-				// progress bar
-				if((i % (n/100)) == 0){
-					pcs.firePropertyChange(LOADING_PROGRESS,null,i);
-				}
-				i++;
-			}
-		}
+		loadTemporaryTermFiles(pcs,storage, tempDir,true);
 		// check the fact that it has been compacted
 		storage.getInfoMap().put("compacted", "true");
 		
@@ -1450,7 +1387,6 @@ public class ConceptImporter {
 		storage.save();
 	
 	}
-	
 	
 	/**
 	 * @param args

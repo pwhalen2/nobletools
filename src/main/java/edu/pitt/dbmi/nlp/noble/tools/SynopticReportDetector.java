@@ -71,7 +71,7 @@ public class SynopticReportDetector {
 			synopticDetectors.add(new Detector(){
 				public boolean detect(String line){
 					// do we have a line that has a set of upper case words, followed by column and at least 4 spaces and then other characters
-					if(line.matches("^[A-Z ]+:\\s{4,}.*$")){
+					if(line.matches("^[A-Za-z ,'\\(\\)]+:\\s{4,}.*$")){
 						// skip known false positives
 						return !line.matches("^(PROCEDURE|POST-OP).*");
 					}
@@ -242,7 +242,7 @@ public class SynopticReportDetector {
 	 */
 	public static void main(String[] args) throws Exception {
 		//args = new String [] {"/home/tseytlin/Data/Reports/SynopticReportsMany"};
-		args = new String [] {"/home/tseytlin/Data/Reports/ODIE50"};
+		args = new String [] {"/home/tseytlin/Data/DeepPhe/Datasets/GOLD/reports/patient02/patient02_report026_SP.txt"};
 		//args = new String [] {"/home/tseytlin/Data/Reports/SynopticReports"};
 		//args = new String [] {"/home/tseytlin/Data/Reports/SynopticReports","/home/tseytlin/Data/Reports/TIES Reports","/home/tseytlin/Data/Reports/SynopticReportsMany"};
 		//args = new String [] {"/home/tseytlin/Data/Reports/TIES Reports"};

@@ -317,7 +317,7 @@ public class TextTools {
 		//String text = query.replaceAll("('s\\b|\\W+|\\s+)"," ");
 		List<String> list = new ArrayList<String>();
 		// tokenize words by space and add non-empty ones
-		StringTokenizer t = new StringTokenizer(query," ,!?;:-–—~_\\/|\t\n\r<>()[]\"");
+		StringTokenizer t = new StringTokenizer(query," ,!?;:-–—~_\\/|\t\n\r<>^()[]\"");
 		while(t.hasMoreTokens()){
 			String s =t.nextToken();
 			if(s.length() > 0){
