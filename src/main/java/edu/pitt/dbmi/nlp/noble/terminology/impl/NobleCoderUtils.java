@@ -80,6 +80,21 @@ public class NobleCoderUtils {
 		return result;
 	}
 	
+	public static Set<String> singleton(String term){
+		Set<String> result = new HashSet<String>();
+		result.add(term);
+		return result;
+	}
+	
+	public static Set<String> getSingleWordSynonyms(String [] synonyms){
+		Set<String> list = new TreeSet<String>( Collections.reverseOrder());
+		for(String s: synonyms){
+			if(!s.contains(" ")){
+				list.add(s);
+			}
+		}
+		return list;
+	}
 
 	/**
 	 * add entry to word table

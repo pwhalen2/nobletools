@@ -101,6 +101,7 @@ public class NobleCoderTerminologyTest {
 		}
 		return allTerms;
 	}
+	
 	public NobleCoderTerminology getTerminology(){
 		if(terminoloy == null){
 			// create terminology

@@ -1296,7 +1296,7 @@ public class ConceptImporter {
 				// insert words
 				for(String word: TextTools.getWords(term)){
 					// filter terms that contain this word
-					Set<String> termList = Collections.singleton(term);//filterTerms(word,terms);
+					Set<String> termList = singleton(term);//filterTerms(word,terms);
 					
 					// if we are saving it in a temp file, then
 					if(saveTermsAsFiles){

@@ -887,7 +887,7 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 
 				// insert words
 				for (String word : TextTools.getWords(term)) {
-					Set<String> termList = Collections.singleton(term); //filterTerms(word,terms);
+					Set<String> termList = singleton(term); 
 					saveWordTermsInStorage(getStorage(), word, termList);
 					saveWordStats(storage, termList, word);
 				}
@@ -1948,11 +1948,12 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 			return;
 		
 		// get original text
-		boolean singleWord = TextTools.charCount(normalizedTerm,' ') == 0;
-		boolean exactMatch = false, caseMatch = false, stemmedMatch = false;
-		
 		String originalTerm = c.getMatchedTerm();
 		String synonymTerm = null;
+		
+		boolean singleWord = TextTools.charCount(originalTerm,' ') == 0;
+		boolean exactMatch = false, caseMatch = false, stemmedMatch = false;
+		
 		
 		// assign default weight
 		double weight = 1.0;
@@ -1967,15 +1968,32 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 			}
 		// if single word, then try to identify matched synonym
 		}else{
-			for(String s: c.getSynonyms()){
-				if(normalizedTerm.equalsIgnoreCase(TextTools.stem(s))){
+			Set<String> synonyms = getSingleWordSynonyms(c.getSynonyms());
+			// check if there is a case sensitive match
+			for(String s: synonyms){
+				if(s.equals(originalTerm)){
+					caseMatch = exactMatch = stemmedMatch = true;
 					synonymTerm = s;
-					stemmedMatch = true;
-					if(!exactMatch){
-						exactMatch = s.equalsIgnoreCase(originalTerm);
-						if(exactMatch){
-							caseMatch = s.equals(originalTerm);
-						}
+					break;
+				}
+			}
+			// check if there is a case insensitive match
+			if( synonymTerm == null){
+				for(String s: synonyms){
+					if(s.equalsIgnoreCase(originalTerm)){
+						exactMatch = stemmedMatch = true;
+						synonymTerm = s;
+						break;
+					}
+				}
+			}
+			// check if there is a stemmed match only
+			if( synonymTerm == null){
+				for(String s: synonyms){
+					if(normalizedTerm.equalsIgnoreCase(TextTools.stem(s))){
+						stemmedMatch = true;
+						synonymTerm = s;
+						break;
 					}
 				}
 			}
