@@ -11,6 +11,9 @@ import edu.pitt.dbmi.nlp.noble.ontology.IProperty;
 import edu.pitt.dbmi.nlp.noble.ontology.IRestriction;
 
 
+/**
+ * The Class ORestriction.
+ */
 public class ORestriction extends OClass implements IRestriction {
 	private OWLRestriction rest;
 	private IClass owner;
@@ -18,20 +21,40 @@ public class ORestriction extends OClass implements IRestriction {
 	private IProperty tempProp;
 	private ILogicExpression tempExp;
 	
+	/**
+	 * Instantiates a new o restriction.
+	 *
+	 * @param obj the obj
+	 * @param ont the ont
+	 */
 	protected ORestriction(OWLRestriction obj, OOntology ont) {
 		super(obj, ont);
 		this.rest = obj;
 	}
 	
+	/**
+	 * Instantiates a new o restriction.
+	 *
+	 * @param type the type
+	 * @param ont the ont
+	 */
 	protected ORestriction(int type,OOntology ont){
 		super(ont.getOWLDataFactory().getOWLThing(),ont);
 		tempType = type;
 	}
 	
+	/**
+	 * Gets the OWL restriction.
+	 *
+	 * @return the OWL restriction
+	 */
 	public OWLRestriction getOWLRestriction(){
 		return rest;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IRestriction#getRestrictionType()
+	 */
 	public int getRestrictionType() {
 		if(rest instanceof OWLObjectAllValuesFrom || rest instanceof OWLDataAllValuesFrom)
 			return IRestriction.ALL_VALUES_FROM;
@@ -48,6 +71,11 @@ public class ORestriction extends OClass implements IRestriction {
 		return 0;
 	}
 	
+	/**
+	 * Gets the operator.
+	 *
+	 * @return the operator
+	 */
 	private String getOperator() {
 		if(rest instanceof OWLObjectAllValuesFrom || rest instanceof OWLDataAllValuesFrom)
 			return "all";
@@ -64,15 +92,24 @@ public class ORestriction extends OClass implements IRestriction {
 		return "";
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IRestriction#getProperty()
+	 */
 	public IProperty getProperty() {
 		return (IProperty) convertOWLObject(rest.getProperty());
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IRestriction#setProperty(edu.pitt.dbmi.nlp.noble.ontology.IProperty)
+	 */
 	public void setProperty(IProperty prop) {
 		tempProp = prop;
 		createRestriction();
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IRestriction#setParameter(edu.pitt.dbmi.nlp.noble.ontology.ILogicExpression)
+	 */
 	public void setParameter(ILogicExpression exp) {
 		tempExp = exp;
 		createRestriction();
@@ -80,7 +117,7 @@ public class ORestriction extends OClass implements IRestriction {
 	
 	
 	/**
-	 * actually create a restriction once everything is in order
+	 * actually create a restriction once everything is in order.
 	 */
 	private void createRestriction() {
 		if(tempProp != null && tempExp != null){
@@ -151,6 +188,9 @@ public class ORestriction extends OClass implements IRestriction {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IRestriction#getParameter()
+	 */
 	public ILogicExpression getParameter() {
 		if(rest instanceof OWLCardinalityRestriction){
 			return getOntology().createLogicExpression(ILogicExpression.EMPTY,((OWLCardinalityRestriction)rest).getCardinality());
@@ -166,19 +206,28 @@ public class ORestriction extends OClass implements IRestriction {
 
 
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IRestriction#getOwner()
+	 */
 	public IClass getOwner() {
 		return owner;
 	}
 	
+	/**
+	 * Sets the owner.
+	 *
+	 * @param o the new owner
+	 */
 	public void setOwner(IClass o){
 		this.owner = o;
 	}
 	
 	/**
-	 * check if property is satisfied
-	 * @param prop
-	 * @param inst
-	 * @return
+	 * check if property is satisfied.
+	 *
+	 * @param prop the prop
+	 * @param inst the inst
+	 * @return true, if is property satisfied
 	 */
 	private boolean isPropertySatisfied(IProperty prop, IInstance inst){
 		// if property is null, then not satisfied
@@ -224,8 +273,10 @@ public class ORestriction extends OClass implements IRestriction {
 	
 	
 	/**
-	 * is this restriction satisfied for the owner of this restriction
-	 * @param this could be a IClass, IInstance, IReousrceList or java object
+	 * is this restriction satisfied for the owner of this restriction.
+	 *
+	 * @param obj the obj
+	 * @return true, if successful
 	 */
 	public boolean evaluate(Object obj){
 		if(obj instanceof IInstance){
@@ -248,20 +299,33 @@ public class ORestriction extends OClass implements IRestriction {
 	}
 	
 	/**
-	 * how does this thing appear
+	 * how does this thing appear.
+	 *
+	 * @return the name
 	 */
 	public String getName(){
 		return getProperty().getName()+" "+getOperator()+" "+getParameter();
 	}
 
+	/**
+	 * Gets the signature.
+	 *
+	 * @return the signature
+	 */
 	private String getSignature(){
 		return getProperty().getURI()+" "+getOperator()+" "+getParameter();
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.owl.OResource#hashCode()
+	 */
 	public int hashCode() {
 		return getSignature().hashCode();
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.owl.OResource#equals(java.lang.Object)
+	 */
 	public boolean equals(Object obj) {
 		if (obj == null)
 			return false;
@@ -271,6 +335,9 @@ public class ORestriction extends OClass implements IRestriction {
 		return super.equals(obj);
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.owl.OResource#getURI()
+	 */
 	public URI getURI(){
 		return null;
 	}

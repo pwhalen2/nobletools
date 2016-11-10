@@ -36,16 +36,18 @@ import edu.pitt.dbmi.nlp.noble.util.ConceptImporter;
 
 
 /**
- * stand alone helper methods to unload some of the code bulk
- * @author tseytlin
+ * stand alone helper methods to unload some of the code bulk.
  *
+ * @author tseytlin
  */
 public class NobleCoderUtils {
+	
 	/**
-	 * save word statistics for a given word
-	 * @param storage
-	 * @param termList
-	 * @param word
+	 * save word statistics for a given word.
+	 *
+	 * @param storage the storage
+	 * @param termList the term list
+	 * @param word the word
 	 */
 	public static void saveWordStats(NobleCoderTerminology.Storage storage,Set<String> termList, String word){
 		int termCount = termList.size();
@@ -66,10 +68,11 @@ public class NobleCoderUtils {
 	}
 	
 	/**
-	 * only return terms where given word occures
-	 * @param workd
-	 * @param terms
-	 * @return
+	 * only return terms where given word occures.
+	 *
+	 * @param word the word
+	 * @param terms the terms
+	 * @return the sets the
 	 */
 	public static Set<String> filterTerms(String word, Set<String> terms){
 		Set<String> result = new HashSet<String>();
@@ -80,12 +83,24 @@ public class NobleCoderUtils {
 		return result;
 	}
 	
+	/**
+	 * Singleton.
+	 *
+	 * @param term the term
+	 * @return the sets the
+	 */
 	public static Set<String> singleton(String term){
 		Set<String> result = new HashSet<String>();
 		result.add(term);
 		return result;
 	}
 	
+	/**
+	 * Gets the single word synonyms.
+	 *
+	 * @param synonyms the synonyms
+	 * @return the single word synonyms
+	 */
 	public static Set<String> getSingleWordSynonyms(String [] synonyms){
 		Set<String> list = new TreeSet<String>( Collections.reverseOrder());
 		for(String s: synonyms){
@@ -97,9 +112,11 @@ public class NobleCoderUtils {
 	}
 
 	/**
-	 * add entry to word table
+	 * add entry to word table.
+	 *
+	 * @param storage the storage
 	 * @param word - a given word
-	 * @param terms - all terms that contain it
+	 * @param termList the term list
 	 */
 	public static void saveWordTermsInStorage(NobleCoderTerminology.Storage storage, String word,Set<String> termList){
 		if(termList.isEmpty())
@@ -122,6 +139,13 @@ public class NobleCoderUtils {
 	}
 	
 	
+	/**
+	 * Gets the rarest word.
+	 *
+	 * @param storage the storage
+	 * @param term the term
+	 * @return the rarest word
+	 */
 	public static String getRarestWord(Storage storage, String term){
 		String rarest = null;
 		int rarestTermCount = Integer.MAX_VALUE;
@@ -140,6 +164,14 @@ public class NobleCoderUtils {
 		return rarest;
 	}
 	
+	/**
+	 * Save temporary term file.
+	 *
+	 * @param tempLocation the temp location
+	 * @param word the word
+	 * @param termList the term list
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	public static void saveTemporaryTermFile(File tempLocation, String word, Collection<String> termList) throws IOException{
 		if(word == null)
 			return;
@@ -160,6 +192,12 @@ public class NobleCoderUtils {
 	}
 	
 
+	/**
+	 * Removes the temporary term files.
+	 *
+	 * @param pcs the pcs
+	 * @param tempDir the temp dir
+	 */
 	public static void removeTemporaryTermFiles(PropertyChangeSupport pcs, File tempDir){
 		// remove temp word files 
 		if(tempDir.exists()){
@@ -177,10 +215,13 @@ public class NobleCoderUtils {
 	
 	
 	/**
-	 * load temporary term files
-	 * @param storage
-	 * @param tempDir
-	 * @throws IOException
+	 * load temporary term files.
+	 *
+	 * @param pcs the pcs
+	 * @param storage the storage
+	 * @param tempDir the temp dir
+	 * @param useRarestWord the use rarest word
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public static void loadTemporaryTermFiles(PropertyChangeSupport pcs,NobleCoderTerminology.Storage storage, File tempDir, boolean useRarestWord) throws IOException{
 		if(tempDir == null)
@@ -215,6 +256,14 @@ public class NobleCoderUtils {
 	}
 	
 	
+	/**
+	 * Gets the terms by rarest word.
+	 *
+	 * @param storage the storage
+	 * @param word the word
+	 * @param terms the terms
+	 * @return the terms by rarest word
+	 */
 	private static Set<String> getTermsByRarestWord(Storage storage, String word,Set<String> terms){
 		// sort by longest string first
 		Set<String> rarestTerms = new HashSet<String>();
@@ -229,18 +278,23 @@ public class NobleCoderUtils {
 	
 
 	/**
-	 * get list of normalized terms from from the class
-	 * @param name
-	 * @return
+	 * get list of normalized terms from from the class.
+	 *
+	 * @param term the term
+	 * @param cls the cls
+	 * @return the terms
 	 */
 	public static Set<String> getTerms(NobleCoderTerminology term,Concept cls){
 		return getTerms(term,cls,term.isStemWords());
 	}
 	
 	/**
-	 * get list of normalized terms from from the class
-	 * @param name
-	 * @return
+	 * get list of normalized terms from from the class.
+	 *
+	 * @param term the term
+	 * @param cls the cls
+	 * @param stem the stem
+	 * @return the terms
 	 */
 	public static Set<String> getTerms(NobleCoderTerminology term, Concept cls, boolean stem){
 		if(cls == null)
@@ -269,17 +323,34 @@ public class NobleCoderUtils {
 	}
 
 	/**
-	 * check if string is a regular expression
-	 * @param s
-	 * @return
+	 * check if string is a regular expression.
+	 *
+	 * @param s the s
+	 * @return true, if is reg exp
 	 */
 	public static boolean isRegExp(String s){
 		return s != null && s.startsWith("/") && s.endsWith("/");
 	}
 	
+	/**
+	 * Checks if is included.
+	 *
+	 * @param list the list
+	 * @param src the src
+	 * @return true, if is included
+	 */
 	public static boolean isIncluded(List<String> list, String src){
 		return isIncluded(list,src,true);
 	}
+	
+	/**
+	 * Checks if is included.
+	 *
+	 * @param list the list
+	 * @param src the src
+	 * @param strict the strict
+	 * @return true, if is included
+	 */
 	public static boolean isIncluded(List<String> list, String src,boolean strict){
 		if(list == null)
 			return true;
@@ -298,10 +369,12 @@ public class NobleCoderUtils {
 	}
 	
 	/**
-	 * check that the term is contigous within the limits allowed
-	 * @param words
-	 * @param twords
-	 * @return
+	 * check that the term is contigous within the limits allowed.
+	 *
+	 * @param words the words
+	 * @param twords the twords
+	 * @param maxWordGap the max word gap
+	 * @return true, if successful
 	 */
 	public static boolean checkContiguity(List<String> words,List<String> twords, int maxWordGap){
 		// go over every word in a sentence
@@ -327,6 +400,14 @@ public class NobleCoderUtils {
 	}
 	
 	
+	/**
+	 * Index of.
+	 *
+	 * @param list the list
+	 * @param w the w
+	 * @param n the n
+	 * @return the int
+	 */
 	public static int indexOf(List<String> list,String w, int n){
 		for(int i=n;i<list.size();i++){
 			if(list.get(i).equals(w))
@@ -336,9 +417,12 @@ public class NobleCoderUtils {
 	}
 	
 	/**
-	 * check word order
-	 * @param term
-	 * @return
+	 * check word order.
+	 *
+	 * @param words the words
+	 * @param twords the twords
+	 * @param term the term
+	 * @return true, if successful
 	 */
 	public static boolean checkWordOrder(List<String> words,List<String> twords,String term){
 		boolean ordered = true;
@@ -358,9 +442,12 @@ public class NobleCoderUtils {
 	}
 	
 	/**
-	 * get all used words from this term
-	 * @param term
-	 * @return
+	 * get all used words from this term.
+	 *
+	 * @param terminology the terminology
+	 * @param words the words
+	 * @param term the term
+	 * @return the used words
 	 */
 	public static List<String> getUsedWords(NobleCoderTerminology terminology,List<String> words, String term){
 		// if not ignore used words and in overlap mode, return
@@ -396,9 +483,11 @@ public class NobleCoderUtils {
 	/**
 	 * Get a list of contiguous concept annotations from a given concept
 	 * Essentially converts a single concepts that annotates multiple related words to text
-	 * to potentially multiple instances of a concept in text
-	 * @param c
-	 * @return
+	 * to potentially multiple instances of a concept in text.
+	 *
+	 * @param c the c
+	 * @param searchWords the search words
+	 * @return the annotations
 	 */
 	public static List<Annotation> getAnnotations(Concept c,List<String> searchWords){
 		List<Annotation> list = new ArrayList<Annotation>();
@@ -420,7 +509,7 @@ public class NobleCoderUtils {
 	
 
 	/**
-	 * represents a tuple of hashtable and list
+	 * represents a tuple of hashtable and list.
 	 */
 	public static class NormalizedWordsContainer {
 		public Map<String,String> normalizedWordsMap;
@@ -430,11 +519,11 @@ public class NobleCoderUtils {
 	}
 	
 	/**
-	 * perform normalization of a string @see normalize, but return unsorted list of words 
-	 * @param text
-	 * @param stem -stem words
-	 * @param strip - strip digits
-	 * @return Map<String,String> normalized word for its original form
+	 * perform normalization of a string @see normalize, but return unsorted list of words .
+	 *
+	 * @param term the term
+	 * @param text the text
+	 * @return NormalizedWordsContainer - normalized word for its original form
 	 */
 	public static NormalizedWordsContainer getNormalizedWordMap(NobleCoderTerminology term, String text){
 		NormalizedWordsContainer c = new NormalizedWordsContainer();
@@ -454,8 +543,9 @@ public class NobleCoderUtils {
 
 	
 	/**
-	 * save meta information
-	 * @param f
+	 * save meta information.
+	 *
+	 * @param term the term
 	 */
 	public static void saveSearchProperteis(NobleCoderTerminology term){
 		try{
@@ -468,6 +558,12 @@ public class NobleCoderUtils {
 	}
 
 
+	/**
+	 * To string.
+	 *
+	 * @param list the list
+	 * @return the string
+	 */
 	public static String toString(Object [] list){
 		StringBuffer b = new StringBuffer();
 		for(Object o: list){
@@ -477,8 +573,10 @@ public class NobleCoderUtils {
 	}
 	
 	/**
-	 * get properties map with search options
-	 * @return
+	 * get properties map with search options.
+	 *
+	 * @param term the term
+	 * @return the search properties
 	 */
 	public static Properties getSearchProperties(NobleCoderTerminology term){
 		Properties p = new Properties();
@@ -510,8 +608,10 @@ public class NobleCoderUtils {
 	
 	
 	/**
-	 * set search properties
-	 * @param p
+	 * set search properties.
+	 *
+	 * @param term the term
+	 * @param p the p
 	 */
 	public static void setSearchProperties(NobleCoderTerminology term, Properties p){
 		// load default values
@@ -604,8 +704,10 @@ public class NobleCoderUtils {
 	
 	
 	/**
-	 * save meta information
-	 * @param f
+	 * save meta information.
+	 *
+	 * @param term the term
+	 * @param f the f
 	 */
 	public static void loadMetaInfo(NobleCoderTerminology term,File f){
 		try{
@@ -624,8 +726,10 @@ public class NobleCoderUtils {
 	}
 	
 	/**
-	 * save meta information
-	 * @param f
+	 * save meta information.
+	 *
+	 * @param term the term
+	 * @param f the f
 	 */
 	public static void saveMetaInfo(NobleCoderTerminology term,File f){
 		try{
@@ -674,11 +778,12 @@ public class NobleCoderUtils {
 	
 	
 	/**
-	 * get original string
-	 * @param text
-	 * @param term
-	 * @param map
-	 * @return
+	 * get original string.
+	 *
+	 * @param text the text
+	 * @param term the term
+	 * @param map the map
+	 * @return the original term
 	 */
 	public static String getOriginalTerm(String text, String term, Map<String,String> map){
 		StringBuffer ot = new StringBuffer();
@@ -708,9 +813,12 @@ public class NobleCoderUtils {
 	
 	
 	/**
-	 * optionally limit to a sublist of words
-	 * @param words
-	 * @return
+	 * optionally limit to a sublist of words.
+	 *
+	 * @param term the term
+	 * @param words the words
+	 * @param count the count
+	 * @return the text words
 	 */
 	public static List<String> getTextWords(NobleCoderTerminology term, List<String> words,int count) {
 		// currently there is a bug, so can't use window size with used words
@@ -728,10 +836,11 @@ public class NobleCoderUtils {
 	
 
 	/**
-	 * get an index of object in the collection
-	 * @param o
-	 * @param list
-	 * @return
+	 * get an index of object in the collection.
+	 *
+	 * @param o the o
+	 * @param list the list
+	 * @return the int
 	 */
 	public static int indexOf(Object o, Collection list){
 		int n = 1;
@@ -745,6 +854,12 @@ public class NobleCoderUtils {
 	}
 	
 	
+	/**
+	 * Gets the preferred name.
+	 *
+	 * @param c the c
+	 * @return the preferred name
+	 */
 	public static String getPreferredName(Concept c){
 		/*// if prefered name source is not set OR
 		// we have filtering and the new source offset is less then old source offset (which means higher priority)

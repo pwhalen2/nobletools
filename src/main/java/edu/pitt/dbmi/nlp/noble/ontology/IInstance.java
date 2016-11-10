@@ -2,43 +2,45 @@ package edu.pitt.dbmi.nlp.noble.ontology;
 
 
 /**
- * This class describes an ontology instance
- * @author tseytlin
+ * This class describes an ontology instance.
  *
+ * @author tseytlin
  */
 public interface IInstance extends IResource {
 	
 	/**
-	 * add a direct type to this instance
-	 * @param cls
+	 * add a direct type to this instance.
+	 *
+	 * @param cls the cls
 	 */
 	public void addType(IClass cls);
 	
 	/**
-	 * remove a type from this instance
-	 * @param cls
+	 * remove a type from this instance.
+	 *
+	 * @param cls the cls
 	 */
 	public void removeType(IClass cls);		
 	
 	/**
-	 * get all types of a given instance
-	 * @param cls
-	 * @return
+	 * get all types of a given instance.
+	 *
+	 * @return the types
 	 */
 	public IClass [] getTypes();
 	
 	/**
-	 * get direct types of a given instance
-	 * @param inst
-	 * @return
+	 * get direct types of a given instance.
+	 *
+	 * @return the direct types
 	 */
 	public IClass [] getDirectTypes();
 	
 	/**
-	 * Is given instance has a type of cls
-	 * @param inst
-	 * @param cls
-	 * @return
+	 * Is given instance has a type of cls.
+	 *
+	 * @param cls the cls
+	 * @return true, if successful
 	 */
 	public boolean hasType(IClass cls);
 	

@@ -8,17 +8,32 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
+/**
+ * The Class SynopticReportDetector.
+ */
 public class SynopticReportDetector {
 	private static List<Detector> synopticDetectors,falseDetectors;
 	private List<String> emptyFiles  = new ArrayList<String>();
 	private int total,empty,gross,prostate;
+	
+	/**
+	 * The Interface Detector.
+	 */
 	public static interface Detector {
+		
+		/**
+		 * Detect.
+		 *
+		 * @param line the line
+		 * @return true, if successful
+		 */
 		public boolean detect(String line);
 	}
 	
 	/**
-	 * get a list of synoptic line detectors
-	 * @return
+	 * get a list of synoptic line detectors.
+	 *
+	 * @return the synoptic detectors
 	 */
 	private static List<Detector> getSynopticDetectors(){
 		if(synopticDetectors == null){
@@ -99,8 +114,9 @@ public class SynopticReportDetector {
 	}
 	
 	/**
-	 * get a list of synoptic line detectors
-	 * @return
+	 * get a list of synoptic line detectors.
+	 *
+	 * @return the false detectors
 	 */
 	private static List<Detector> getFalseDetectors(){
 		if(falseDetectors == null){
@@ -117,9 +133,10 @@ public class SynopticReportDetector {
 	
 	
 	/**
-	 * does line belong to synoptic report?
-	 * @param line
-	 * @return
+	 * does line belong to synoptic report?.
+	 *
+	 * @param line the line
+	 * @return true, if successful
 	 */
 	public static boolean detect(String line){
 		// if synoptic detector fired
@@ -132,9 +149,11 @@ public class SynopticReportDetector {
 	}
 	
 	/**
-	 * does line belong to synoptic report?
-	 * @param line
-	 * @return
+	 * does line belong to synoptic report?.
+	 *
+	 * @param line the line
+	 * @param list the list
+	 * @return true, if successful
 	 */
 	private static boolean detect(String line,List<Detector> list){
 		for(Detector d: list){
@@ -146,8 +165,10 @@ public class SynopticReportDetector {
 	
 	
 	/**
-	 * process document
-	 * @param dir
+	 * process document.
+	 *
+	 * @param f the f
+	 * @throws Exception the exception
 	 */
 	public void process(File f) throws Exception {
 		if(f.isDirectory()){
@@ -172,6 +193,13 @@ public class SynopticReportDetector {
 		}
 	}
 	
+	/**
+	 * Gets the text.
+	 *
+	 * @param f the f
+	 * @return the text
+	 * @throws Exception the exception
+	 */
 	public String getText(File f) throws Exception {
 		BufferedReader r = new BufferedReader(new FileReader(f));
 		StringBuffer b = new StringBuffer();
@@ -181,6 +209,12 @@ public class SynopticReportDetector {
 		return b.toString();
 	}
 	
+	/**
+	 * Gets the synoptic report range.
+	 *
+	 * @param text the text
+	 * @return the synoptic report range
+	 */
 	public int[] getSynopticReportRange(String text) {
 		int st = -1, en = -1, offs = 0;
 		int dcount = 0;
@@ -226,8 +260,10 @@ public class SynopticReportDetector {
 	
 	
 	/**
-	 * process document
-	 * @param dir
+	 * process document.
+	 *
+	 * @param text the text
+	 * @return the synoptic report
 	 */
 	public String getSynopticReport(String text){
 		int[] offsets = getSynopticReportRange(text);
@@ -238,7 +274,10 @@ public class SynopticReportDetector {
 	
 	
 	/**
-	 * @param args
+	 * The main method.
+	 *
+	 * @param args the arguments
+	 * @throws Exception the exception
 	 */
 	public static void main(String[] args) throws Exception {
 		//args = new String [] {"/home/tseytlin/Data/Reports/SynopticReportsMany"};

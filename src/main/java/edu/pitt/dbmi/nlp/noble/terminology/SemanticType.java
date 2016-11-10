@@ -19,9 +19,9 @@ import edu.pitt.dbmi.nlp.noble.tools.TextTools;
 
 
 /**
- * This class describes a sematic type of a concept
- * @author tseytlin
+ * This class describes a sematic type of a concept.
  *
+ * @author tseytlin
  */
 public class SemanticType implements Serializable, Comparable<SemanticType>{
 	private static final String SEMANTIC_TYPES = "/resources/SemanticTypes.txt";
@@ -31,16 +31,18 @@ public class SemanticType implements Serializable, Comparable<SemanticType>{
 
 	
 	/**
-	 * get a list of predefined semantic types
-	 * @return
+	 * get a list of predefined semantic types.
+	 *
+	 * @return the defined semantic types
 	 */
 	public static SemanticType [] getDefinedSemanticTypes(){
 		return new TreeSet<SemanticType>(getSemanticTypeMap().values()).toArray(new SemanticType [0]);
 	}
 	
 	/**
-	 * get a list of predefined semantic types
-	 * @return
+	 * get a list of predefined semantic types.
+	 *
+	 * @return the semantic type map
 	 */
 	private static Map<String,SemanticType> getSemanticTypeMap(){
 		if(semanticTypes == null){
@@ -68,18 +70,19 @@ public class SemanticType implements Serializable, Comparable<SemanticType>{
 	
 	
 	/**
-	 * Create semantic type w/ name and code
-	 * @param name
-	 * @param code
+	 * Create semantic type w/ name and code.
+	 *
+	 * @param name the name
 	 */
 	private SemanticType(String name){
 		this(name,name);
 	}
 	
 	/**
-	 * Create semantic type w/ name and code
-	 * @param name
-	 * @param code
+	 * Create semantic type w/ name and code.
+	 *
+	 * @param name the name
+	 * @param code the code
 	 */
 	private SemanticType(String name, String code){
 		this.name = name;
@@ -87,6 +90,8 @@ public class SemanticType implements Serializable, Comparable<SemanticType>{
 	}
 	
 	/**
+	 * Gets the code.
+	 *
 	 * @return the code
 	 */
 	public String getCode() {
@@ -94,6 +99,8 @@ public class SemanticType implements Serializable, Comparable<SemanticType>{
 	}
 
 	/**
+	 * Sets the code.
+	 *
 	 * @param code the code to set
 	 */
 	public void setCode(String code) {
@@ -101,6 +108,8 @@ public class SemanticType implements Serializable, Comparable<SemanticType>{
 	}
 
 	/**
+	 * Gets the name.
+	 *
 	 * @return the name
 	 */
 	public String getName() {
@@ -108,6 +117,8 @@ public class SemanticType implements Serializable, Comparable<SemanticType>{
 	}
 
 	/**
+	 * Sets the name.
+	 *
 	 * @param name the name to set
 	 */
 	public void setName(String name) {
@@ -115,16 +126,19 @@ public class SemanticType implements Serializable, Comparable<SemanticType>{
 	}
 	
 	/**
-	 * string representation (name)
+	 * string representation (name).
+	 *
+	 * @return the string
 	 */
 	public String toString(){
 		return name;
 	}
 	
 	/**
-	 * get instance of definition class
-	 * @param text
-	 * @return
+	 * get instance of definition class.
+	 *
+	 * @param text the text
+	 * @return the semantic type
 	 */
 	public static SemanticType getSemanticType(String text){
 		SemanticType st = getSemanticTypeMap().get(text);
@@ -132,9 +146,11 @@ public class SemanticType implements Serializable, Comparable<SemanticType>{
 	}
 	
 	/**
-	 * get instance of definition class
-	 * @param text
-	 * @return
+	 * get instance of definition class.
+	 *
+	 * @param text the text
+	 * @param code the code
+	 * @return the semantic type
 	 */
 	public static SemanticType getSemanticType(String text,String code){
 		SemanticType st = getSemanticTypeMap().get(text);
@@ -146,9 +162,10 @@ public class SemanticType implements Serializable, Comparable<SemanticType>{
 	
 	
 	/**
-	 * get instance of definition class
-	 * @param text
-	 * @return
+	 * get instance of definition class.
+	 *
+	 * @param text the text
+	 * @return the semantic types
 	 */
 	public static SemanticType [] getSemanticTypes(String [] text){
 		if(text == null)
@@ -159,18 +176,26 @@ public class SemanticType implements Serializable, Comparable<SemanticType>{
 		return d;
 	}
 	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
 	public int hashCode() {
 		return toString().hashCode();
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
 	public boolean equals(Object obj) {
 		return toString().equals(obj.toString());
 	}
 	
 	/**
-	 * convert to DOM element
-	 * @param doc
-	 * @return
+	 * convert to DOM element.
+	 *
+	 * @param doc the doc
+	 * @return the element
+	 * @throws TerminologyException the terminology exception
 	 */
 	public Element toElement(Document doc) throws TerminologyException {
 		Element e = doc.createElement("SemanticType");
@@ -180,9 +205,10 @@ public class SemanticType implements Serializable, Comparable<SemanticType>{
 	}
 	
 	/**
-	 * convert from DOM element
-	 * @param element
-	 * @throws TerminologyException
+	 * convert from DOM element.
+	 *
+	 * @param element the element
+	 * @throws TerminologyException the terminology exception
 	 */
 	public void fromElement(Element element) throws TerminologyException{
 		if(element.getTagName().equals("SemanticType")){
@@ -191,6 +217,9 @@ public class SemanticType implements Serializable, Comparable<SemanticType>{
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
 	public int compareTo(SemanticType o) {
 		return getName().compareTo(o.getName());
 	}

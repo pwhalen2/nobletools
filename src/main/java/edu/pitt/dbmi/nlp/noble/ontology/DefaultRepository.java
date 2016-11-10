@@ -24,6 +24,9 @@ import edu.pitt.dbmi.nlp.noble.ontology.owl.OReasoner;
 import edu.pitt.dbmi.nlp.noble.terminology.Terminology;
 import edu.pitt.dbmi.nlp.noble.terminology.impl.NobleCoderTerminology;
 
+/**
+ * The Class DefaultRepository.
+ */
 public class DefaultRepository implements IRepository{
 	public static final File DEFAULT_TERMINOLOGY_LOCATION = new File(System.getProperty("user.home")+File.separator+".noble"+File.separator+"terminologies");
 	public static final File DEFAULT_ONTOLOGY_LOCATION = new File(System.getProperty("user.home")+File.separator+".noble"+File.separator+"ontologies");
@@ -34,61 +37,108 @@ public class DefaultRepository implements IRepository{
 	private Map<String,Terminology> terminologies ; 
 	private File terminologyLocation,ontologyLocation;
 	
+	/**
+	 * Instantiates a new default repository.
+	 */
 	public DefaultRepository(){
 		terminologyLocation = NobleCoderTerminology.getPersistenceDirectory();
 		ontologyLocation = DEFAULT_ONTOLOGY_LOCATION;
 	}
 	
 	
+	/**
+	 * Gets the terminology location.
+	 *
+	 * @return the terminology location
+	 */
 	public File getTerminologyLocation() {
 		return terminologyLocation;
 	}
 
 
+	/**
+	 * Sets the terminology location.
+	 *
+	 * @param terminologyLocation the new terminology location
+	 */
 	public void setTerminologyLocation(File terminologyLocation) {
 		this.terminologyLocation = terminologyLocation;
 		NobleCoderTerminology.setPersistenceDirectory(terminologyLocation);
 	}
 
 
+	/**
+	 * Gets the ontology location.
+	 *
+	 * @return the ontology location
+	 */
 	public File getOntologyLocation() {
 		return ontologyLocation;
 	}
 
 
+	/**
+	 * Sets the ontology location.
+	 *
+	 * @param ontologyLocation the new ontology location
+	 */
 	public void setOntologyLocation(File ontologyLocation) {
 		this.ontologyLocation = ontologyLocation;
 	}
 
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IRepository#addOntology(edu.pitt.dbmi.nlp.noble.ontology.IOntology)
+	 */
 	public void addOntology(IOntology ontology) {
 		ontologies.put(ontology.getURI(),ontology);
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IRepository#addPropertyChangeListener(java.beans.PropertyChangeListener)
+	 */
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
 		pcs.addPropertyChangeListener(listener);
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IRepository#addTerminology(edu.pitt.dbmi.nlp.noble.terminology.Terminology)
+	 */
 	public void addTerminology(Terminology terminology) {
 		terminologies.put(terminology.getName(),terminology);
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IRepository#createOntology(java.net.URI)
+	 */
 	public IOntology createOntology(URI path) throws IOntologyException {
 		return OOntology.createOntology(path);
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IRepository#exportOntology(edu.pitt.dbmi.nlp.noble.ontology.IOntology, int, java.io.OutputStream)
+	 */
 	public void exportOntology(IOntology ont, int format, OutputStream out) throws IOntologyException {
 		ont.write(out,format);
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IRepository#getDescription()
+	 */
 	public String getDescription() {
 		return "OWL Ontology and NOBLE Terminology Repository.";
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IRepository#getName()
+	 */
 	public String getName() {
 		return "OWL Ontology Repository";
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IRepository#getOntologies()
+	 */
 	public IOntology[] getOntologies() {
 		if(ontologies == null){
 			ontologies = new HashMap<URI, IOntology>();
@@ -105,6 +155,9 @@ public class DefaultRepository implements IRepository{
 		return ontologies.values().toArray(new IOntology [0]);
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IRepository#getOntologies(java.lang.String)
+	 */
 	public IOntology[] getOntologies(String name) {
 		List<IOntology> list = new ArrayList<IOntology>();
 		for(URI key: ontologies.keySet()){
@@ -115,10 +168,16 @@ public class DefaultRepository implements IRepository{
 		return list.toArray(new IOntology [0]);
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IRepository#getOntology(java.net.URI)
+	 */
 	public IOntology getOntology(URI name) {
 		return ontologies.get(name);
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IRepository#getReasoner(edu.pitt.dbmi.nlp.noble.ontology.IOntology)
+	 */
 	public IReasoner getReasoner(IOntology ont) {
 		if(ont instanceof OOntology){
 			return new OReasoner((OOntology)ont);
@@ -128,7 +187,8 @@ public class DefaultRepository implements IRepository{
 
 	/**
 	 * convinience method
-	 * get resource from one of the loaded ontologies
+	 * get resource from one of the loaded ontologies.
+	 *
 	 * @param path - input uri
 	 * @return resource or null if resource was not found
 	 */
@@ -150,6 +210,9 @@ public class DefaultRepository implements IRepository{
 	}
 	
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IRepository#getTerminologies()
+	 */
 	public Terminology[] getTerminologies() {
 		if(terminologies == null){
 			terminologies = new HashMap<String, Terminology>();
@@ -190,15 +253,24 @@ public class DefaultRepository implements IRepository{
 		return terms.toArray(new Terminology [0]);
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IRepository#getTerminology(java.lang.String)
+	 */
 	public Terminology getTerminology(String path) {
 		getTerminologies();
 		return terminologies.get(path);
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IRepository#hasOntology(java.lang.String)
+	 */
 	public boolean hasOntology(String name) {
 		return getOntologies(name).length > 0;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IRepository#importOntology(java.net.URI)
+	 */
 	public IOntology importOntology(URI path) throws IOntologyException {
 		URL url = null;
 		try {
@@ -212,6 +284,9 @@ public class DefaultRepository implements IRepository{
 		
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IRepository#importOntology(edu.pitt.dbmi.nlp.noble.ontology.IOntology)
+	 */
 	public void importOntology(IOntology ont) throws IOntologyException {
 		File file = new File(DEFAULT_ONTOLOGY_LOCATION,ont.getName());
 		try {
@@ -225,22 +300,37 @@ public class DefaultRepository implements IRepository{
 		addOntology(ont);
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IRepository#removeOntology(edu.pitt.dbmi.nlp.noble.ontology.IOntology)
+	 */
 	public void removeOntology(IOntology ontology) {
 		ontologies.remove(ontology.getURI());
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IRepository#removePropertyChangeListener(java.beans.PropertyChangeListener)
+	 */
 	public void removePropertyChangeListener(PropertyChangeListener listener) {
 		pcs.removePropertyChangeListener(listener);
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IRepository#removeTerminology(edu.pitt.dbmi.nlp.noble.terminology.Terminology)
+	 */
 	public void removeTerminology(Terminology terminology) {
 		terminologies.remove(terminology.getName());
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IRepository#getOntology(java.net.URI, java.lang.String)
+	 */
 	public IOntology getOntology(URI name, String version) {
 		return getOntology(name);
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IRepository#getVersions(edu.pitt.dbmi.nlp.noble.ontology.IOntology)
+	 */
 	public String[] getVersions(IOntology ont) {
 		return (ont != null)?new String [] {ont.getVersion()}:new String [0];
 	}

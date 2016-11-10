@@ -22,7 +22,8 @@ import edu.pitt.dbmi.nlp.noble.terminology.SemanticType;
 
 
 /**
- * singleton class with lots of usefull ontology related methods
+ * singleton class with lots of usefull ontology related methods.
+ *
  * @author tseytlin
  */
 public class OntologyUtils {
@@ -39,8 +40,9 @@ public class OntologyUtils {
 	
 	
 	/**
-	 * get a paths to root for a given concept
-	 * @param name  - name of the class in question
+	 * get a paths to root for a given concept.
+	 *
+	 * @param cls the cls
 	 * @return list of paths (path is list of classes)
 	 */
 	public static List<ClassPath> getRootPaths(IClass cls){
@@ -54,10 +56,12 @@ public class OntologyUtils {
 	}
 	
 	/**
-	 * get multiple paths to root
-	 * @param cls
-	 * @param path
-	 * @param paths
+	 * get multiple paths to root.
+	 *
+	 * @param cls the cls
+	 * @param path the path
+	 * @param paths the paths
+	 * @return the path
 	 */
 	private static void getPath(IClass cls,ClassPath path, List<ClassPath> paths){
 		// add to paths if path is not in paths
@@ -86,9 +90,10 @@ public class OntologyUtils {
 	}
 	
 	/**
-	 * convert object to String
-	 * @param o
-	 * @return
+	 * convert object to String.
+	 *
+	 * @param o the o
+	 * @return the string
 	 */
 	public static String toHTML(Object o){
 		if(o == null)
@@ -150,18 +155,20 @@ public class OntologyUtils {
 	
 	
 	/**
-	 * derive valid class name from any string
-	 * @param name
-	 * @return
+	 * derive valid class name from any string.
+	 *
+	 * @param name the name
+	 * @return the string
 	 */
 	public static String toResourceName(String name){
 		return name.trim().replaceAll("\\s*\\(.+\\)\\s*","").replaceAll("[^\\w\\-]","_").replaceAll("_+","_");
 	}
 	
 	/**
-	 * Derive prettier version of a class name
-	 * @param resourceName
-	 * @return
+	 * Derive prettier version of a class name.
+	 *
+	 * @param resourceName the resource name
+	 * @return the string
 	 */
 	public static String toPrettyName(String resourceName){
 		// if name is in fact URI, just get a thing after hash
@@ -194,10 +201,11 @@ public class OntologyUtils {
 	}
 	
 	/**
-	 * get ontology URI from an actual XML file
-	 * @param file
-	 * @return
-	 * @throws IOException 
+	 * get ontology URI from an actual XML file.
+	 *
+	 * @param file the file
+	 * @return the ontology URI
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public static URI getOntologyURI(File file) throws IOException{
 		URI uri = null;
@@ -217,10 +225,12 @@ public class OntologyUtils {
 	
 	
 	/**
-	 * get or create property from an ontology
-	 * @param ont
-	 * @param name
-	 * @return
+	 * get or create property from an ontology.
+	 *
+	 * @param ont the ont
+	 * @param name the name
+	 * @param type the type
+	 * @return the or create property
 	 */
 	public static IProperty getOrCreateProperty(IOntology ont, String name, int type){
 		IProperty prop = ont.getProperty(name);
@@ -230,19 +240,21 @@ public class OntologyUtils {
 	}
 	
 	/**
-	 * get or create property from an ontology
-	 * @param ont
-	 * @param name
-	 * @return
+	 * get or create property from an ontology.
+	 *
+	 * @param ont the ont
+	 * @param name the name
+	 * @return the or create property
 	 */
 	public static IProperty getOrCreateProperty(IOntology ont, String name){
 		return getOrCreateProperty(ont, name,IProperty.ANNOTATION);
 	}
 	
 	/**
-	 * add concept info from concept object to class
-	 * @param c
-	 * @param cls
+	 * add concept info from concept object to class.
+	 *
+	 * @param c the c
+	 * @param cls the cls
 	 */
 	public static void copyConceptToClass(Concept c, IClass cls) {
 		IOntology ont = cls.getOntology();
@@ -288,9 +300,10 @@ public class OntologyUtils {
 	}
 
 	/**
-	 * does the string looks loke UMLS (like) concept unique identifier
-	 * @param text
-	 * @return
+	 * does the string looks loke UMLS (like) concept unique identifier.
+	 *
+	 * @param text the text
+	 * @return true, if is cui
 	 */
 	public static boolean isCUI(String text){
 		return text.matches("CL?\\d{4,7}");
@@ -298,9 +311,10 @@ public class OntologyUtils {
 	
 	
 	/**
-	 * does the string looks loke UMLS (like) concept unique identifier
-	 * @param text
-	 * @return
+	 * does the string looks loke UMLS (like) concept unique identifier.
+	 *
+	 * @param text the text
+	 * @return true, if is tui
 	 */
 	public static boolean isTUI(String text){
 		return text.matches("T\\d{2,3}");

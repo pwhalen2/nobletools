@@ -46,9 +46,10 @@ public class ItemInstance implements Comparable {
 	//private TemplateDocument document;
 	
 	/**
-	 * initialise instance from template item and matched concept
-	 * @param template item generating this instance
-	 * @param concept representing the matched root/feature concept
+	 * initialise instance from template item and matched concept.
+	 *
+	 * @param temp the temp
+	 * @param m the m
 	 */
 	public ItemInstance(TemplateItem temp,Mention m){
 		this.mention = m;
@@ -58,9 +59,10 @@ public class ItemInstance implements Comparable {
 	}
 	
 	/**
-	 * initialise instance from template item and matched concept
-	 * @param template item generating this instance
-	 * @param concept representing the matched root/feature concept
+	 * initialise instance from template item and matched concept.
+	 *
+	 * @param temp the temp
+	 * @param c the c
 	 */
 	public ItemInstance(TemplateItem temp,Concept c){
 		this.concept = c;
@@ -69,8 +71,9 @@ public class ItemInstance implements Comparable {
 	}
 	
 	/**
-	 * get template item name
-	 * @return
+	 * get template item name.
+	 *
+	 * @return the name
 	 */
 	public String getName(){
 		return concept.getName();
@@ -78,34 +81,48 @@ public class ItemInstance implements Comparable {
 
 	
 	
+	/**
+	 * Checks if is absent.
+	 *
+	 * @return true, if is absent
+	 */
 	public boolean isAbsent() {
 		return absent;
 	}
 
+	/**
+	 * Sets the absent.
+	 *
+	 * @param absent the new absent
+	 */
 	public void setAbsent(boolean absent) {
 		this.absent = absent;
 	}
 
 	/**
-	 * get a list of annotations
-	 * @return
+	 * get a list of annotations.
+	 *
+	 * @return the annotations
 	 */
 	public List<Annotation> getAnnotations() {
 		if(annotations == null)
 			annotations = new ArrayList<Annotation>();
 		return annotations;
 	}
+	
 	/**
-	 * get a type of template item
-	 * @return
+	 * get a type of template item.
+	 *
+	 * @return the type
 	 */
 	public String getType(){
 		return getTemplateItem().getType();
 	}
 	
 	/**
-	 * get template item definition
-	 * @return
+	 * get template item definition.
+	 *
+	 * @return the description
 	 */
 	public String getDescription(){
 		String d = concept.getDefinition();
@@ -115,32 +132,36 @@ public class ItemInstance implements Comparable {
 	}
 
 	/**
-	 * get a concept object representing this template iterm
-	 * @return
+	 * get a concept object representing this template iterm.
+	 *
+	 * @return the concept
 	 */
 	public Concept getConcept() {
 		return concept;
 	}
 
 	/**
-	 * get a concept object representing this template iterm
-	 * @return
+	 * get a concept object representing this template iterm.
+	 *
+	 * @return the mention
 	 */
 	public Mention getMention() {
 		return mention;
 	}
 	
 	/**
-	 * set a concept object representing this template iterm
-	 * @return
+	 * set a concept object representing this template iterm.
+	 *
+	 * @param concept the new concept
 	 */
 	public void setConcept(Concept concept) {
 		this.concept = concept;
 	}
 	
 	/**
-	 * get a set of attributes associated with this template item
-	 * @return
+	 * get a set of attributes associated with this template item.
+	 *
+	 * @return the attributes
 	 */
 	public Set<ItemInstance> getAttributes(){
 		return getAttributeValues().keySet();
@@ -148,8 +169,9 @@ public class ItemInstance implements Comparable {
 
 
 	/**
-	 * get a mapping between attributes and its associated set of values
-	 * @return
+	 * get a mapping between attributes and its associated set of values.
+	 *
+	 * @return the attribute values
 	 */
 	public Map<ItemInstance, Set<ItemInstance>> getAttributeValues() {
 		if(attributeValues == null)
@@ -158,9 +180,10 @@ public class ItemInstance implements Comparable {
 	}
 	
 	/**
-	 * get attribute values associated with a given attribute
-	 * @param attribute
-	 * @return
+	 * get attribute values associated with a given attribute.
+	 *
+	 * @param attribute the attribute
+	 * @return the attribute values
 	 */
 	public Set<ItemInstance> getAttributeValues(ItemInstance attribute){
 		Set<ItemInstance> list = getAttributeValues().get(attribute);
@@ -168,9 +191,10 @@ public class ItemInstance implements Comparable {
 	}
 	
 	/**
-	 * add a new attribute value to 
-	 * @param attribute
-	 * @param value
+	 * add a new attribute value to .
+	 *
+	 * @param attribute the attribute
+	 * @param value the value
 	 */
 	public void addAttributeValue(ItemInstance attribute, ItemInstance value){
 		Set<ItemInstance> list = getAttributeValues().get(attribute);
@@ -182,9 +206,10 @@ public class ItemInstance implements Comparable {
 	}
 	
 	/**
-	 * add a new attribute value to 
-	 * @param attribute
-	 * @param value
+	 * add a new attribute value to .
+	 *
+	 * @param attribute the attribute
+	 * @param value the value
 	 */
 	public void removeAttributeValue(ItemInstance attribute, ItemInstance value){
 		Set<ItemInstance> list = getAttributeValues().get(attribute);
@@ -194,8 +219,9 @@ public class ItemInstance implements Comparable {
 	}
 
 	/**
-	 * get a set of modifiers
-	 * @return
+	 * get a set of modifiers.
+	 *
+	 * @return the modifiers
 	 */
 	public Set<ItemInstance> getModifiers() {
 		if(modifiers == null)
@@ -204,16 +230,18 @@ public class ItemInstance implements Comparable {
 	}
 	
 	/**
-	 * add a modifier
-	 * @param mod
+	 * add a modifier.
+	 *
+	 * @param mod the mod
 	 */
 	public void addModifier(ItemInstance mod){
 		getModifiers().add(mod);
 	}
 
 	/**
-	 * get all instances that were detected as part of this instance
-	 * @return
+	 * get all instances that were detected as part of this instance.
+	 *
+	 * @return the component instances
 	 */
 	public List<ItemInstance> getComponentInstances(){
 		List<ItemInstance> items = new ArrayList<ItemInstance>();
@@ -229,38 +257,27 @@ public class ItemInstance implements Comparable {
 	}
 	
 	/**
-	 * get a set of available values
-	 * @return
-	 *
-	public Set<TemplateItem> getValues() {
-		if(values == null)
-			values = new TreeSet<TemplateItem>();
-		return values;
-	}
-	*/
-	/**
-	 * get a set of available units per value
-	 * @return
-	 *
-	public Set<TemplateItem> getUnits() {
-		if(units == null)
-			units = new TreeSet<TemplateItem>();
-		return units;
-	}
-	*/
-	
+	 * get a template item representing this instamce
+	 * @return templateItem - that represents it
+	 */
 
 	public TemplateItem getTemplateItem() {
 		return templateItem;
 	}
 
+	/**
+	 * Sets the template item.
+	 *
+	 * @param templateItem the new template item
+	 */
 	public void setTemplateItem(TemplateItem templateItem) {
 		this.templateItem = templateItem;
 	}
 	
 	/**
-	 * get value 
-	 * @return
+	 * get value .
+	 *
+	 * @return the values
 	 */
 	public Set getValues(){
 		if(values == null)
@@ -268,29 +285,55 @@ public class ItemInstance implements Comparable {
 		return values;
 	}
 	
+	/**
+	 * Gets the feature.
+	 *
+	 * @return the feature
+	 */
 	public ItemInstance getFeature() {
 		return feature;
 	}
 
+	/**
+	 * Sets the feature.
+	 *
+	 * @param feature the new feature
+	 */
 	public void setFeature(ItemInstance feature) {
 		this.feature = feature;
 	}
 
+	/**
+	 * Gets the unit.
+	 *
+	 * @return the unit
+	 */
 	public ItemInstance getUnit() {
 		return unit;
 	}
 
+	/**
+	 * Sets the unit.
+	 *
+	 * @param unit the new unit
+	 */
 	public void setUnit(ItemInstance unit) {
 		this.unit = unit;
 	}
 
+	/**
+	 * Adds the value.
+	 *
+	 * @param value the value
+	 */
 	public void addValue(Object value) {
 		getValues().add(value);
 	}
 
 	/**
-	 * get the question
-	 * @return
+	 * get the question.
+	 *
+	 * @return the question
 	 */
 	public String getQuestion(){
 		if(TemplateItem.TYPE_DIAGNOSIS.equals(templateItem.getType()))
@@ -299,16 +342,19 @@ public class ItemInstance implements Comparable {
 	}
 	
 	/**
-	 * get the answer
-	 * @return
+	 * get the answer.
+	 *
+	 * @return the answer
 	 */
 	public String getAnswer(){
 		return getAnswer(true);
 	}
 	
 	/**
-	 * get the answer
-	 * @return
+	 * get the answer.
+	 *
+	 * @param humanReadable the human readable
+	 * @return the answer
 	 */
 	public String getAnswer(boolean humanReadable){
 		// if we have a value, then value plus units
@@ -370,6 +416,13 @@ public class ItemInstance implements Comparable {
 		return isAbsent()?"absent":"present";
 	}
 	
+	/**
+	 * Gets the answer.
+	 *
+	 * @param c the c
+	 * @param humanReadable the human readable
+	 * @return the answer
+	 */
 	private String getAnswer(ItemInstance c, boolean humanReadable){
 		String name =  c.getName();
 		if(!humanReadable){
@@ -390,9 +443,10 @@ public class ItemInstance implements Comparable {
 	}
 	
 	/**
-	 * extract instances from the document that fit this template
-	 * @param doc
-	 * @return
+	 * extract instances from the document that fit this template.
+	 *
+	 * @param doc the doc
+	 * @throws TerminologyException the terminology exception
 	 */
 	public void process(TemplateDocument doc) throws TerminologyException{
 		this.doc = doc;
@@ -496,15 +550,20 @@ public class ItemInstance implements Comparable {
 		//System.out.println(getQuestion()+" instance: "+concept.getName()+" : feature: "+feature+" attr: "+attributeValues+" units: "+unit+" value: "+value);
 	}
 	
+	/**
+	 * Checks if is attribute value domain.
+	 *
+	 * @return true, if is attribute value domain
+	 */
 	public boolean isAttributeValueDomain(){
 		return Arrays.asList(TemplateItem.DOMAIN_ATTRIBUTE,TemplateItem.DOMAIN_VALUE).contains(getTemplateItem().getValueDomain());
 	}
 
 	/**
-	 * filter numeric values if they fit some criteria
-	 * @param inst
-	 * @param annotations2
-	 * @return
+	 * filter numeric values if they fit some criteria.
+	 *
+	 * @param item the item
+	 * @param anat the anat
 	 */
 	private void filterValues(ItemInstance item, List<Annotation> anat) {
 		// remove annotations that happen to be part of other annotations
@@ -517,9 +576,10 @@ public class ItemInstance implements Comparable {
 	}
 
 	/**
-	 * get immediate neighbors for a concept
-	 * @param doc
-	 * @return
+	 * get immediate neighbors for a concept.
+	 *
+	 * @param doc the doc
+	 * @return the neighbors
 	 */
 	private List<Concept> getNeighbors(TemplateDocument doc) {
 		List<Concept> r = new ArrayList<Concept>();
@@ -565,10 +625,11 @@ public class ItemInstance implements Comparable {
 	
 	
 	/**
-	 * get matching instances
-	 * @param items
+	 * get matching instances.
+	 *
+	 * @param items the items
 	 * @param r - optional list of neighbors
-	 * @return
+	 * @return the matching instances
 	 */
 	private List<ItemInstance> getMatchingInstances(Collection<TemplateItem> items, List<Mention> r){
 		// make sure you don't add one item which is part of another
@@ -600,9 +661,23 @@ public class ItemInstance implements Comparable {
 
 
 
+	/**
+	 * Gets the mention.
+	 *
+	 * @param c the c
+	 * @return the mention
+	 */
 	private Mention getMention(Concept c){
 		return getMention(c,true);
 	}
+	
+	/**
+	 * Gets the mention.
+	 *
+	 * @param c the c
+	 * @param updateRefs the update refs
+	 * @return the mention
+	 */
 	private Mention getMention(Concept c, boolean updateRefs){
 		List<Mention> mentions = Mention.getMentions(c);
 		if(mentions.isEmpty())
@@ -631,8 +706,9 @@ public class ItemInstance implements Comparable {
 	}
 	
 	/**
-	 * merge item instances (if one is more general/specific then other)
-	 * @param o
+	 * merge item instances (if one is more general/specific then other).
+	 *
+	 * @param o the o
 	 */
 	public void merge(ItemInstance o) {
 		getAnnotations().addAll(o.getAnnotations());
@@ -640,19 +716,18 @@ public class ItemInstance implements Comparable {
 
 	
 	/**
-	 * does concept contain other concept
-	 * @param out - 
-	 * @param s
-	 * @return
+	 * does concept contain other concept.
 	 *
-	private Concept findConcept(List<Concept> r, TemplateItem in){
-		for(Concept c: r ){
-			if(c != null && (c.equals(in.getConcept()) || in.getPathHelper().hasAncestor(in.getConcept(),c)))
-				return c;
-		}
-		return null;
-	}
-	*/
+	 * @param r the r
+	 * @param in the in
+	 * @return 	private Concept findConcept(List<Concept> r, TemplateItem in){
+	 * 		for(Concept c: r ){
+	 * 			if(c != null && (c.equals(in.getConcept()) || in.getPathHelper().hasAncestor(in.getConcept(),c)))
+	 * 				return c;
+	 * 		}
+	 * 		return null;
+	 * 	}
+	 */
 	/**
 	 * does concept contain other concept
 	 * @param out - 
@@ -668,32 +743,31 @@ public class ItemInstance implements Comparable {
 	}
 	
 	/**
-	 * does concept contain other concept
-	 * @param out - 
-	 * @param s
-	 * @return
+	 * does concept contain other concept.
 	 *
-	private Concept findConcept(TemplateItem in){
-		Concept c = in.getConcept();
-		try{
-			NobleCoderTerminology term = new NobleCoderTerminology();
-			term.setIgnoreSmallWords(false);
-			term.setScoreConcepts(false);
-			term.setSelectBestCandidate(false);
-			term.setIgnoreUsedWords(true);
-			term.setCachingEnabled(false);
-			term.addConcept(c);
-			
-			for(Concept rc: term.search(getConcept().getSearchString())){
-				rc.setTerminology(c.getTerminology());
-				return rc;
-			}
-		}catch(TerminologyException ex){
-			//ex.printStackTrace();
-			
-		}
-		return null;
-	}*/
+	 * @param in the in
+	 * @return 	private Concept findConcept(TemplateItem in){
+	 * 		Concept c = in.getConcept();
+	 * 		try{
+	 * 			NobleCoderTerminology term = new NobleCoderTerminology();
+	 * 			term.setIgnoreSmallWords(false);
+	 * 			term.setScoreConcepts(false);
+	 * 			term.setSelectBestCandidate(false);
+	 * 			term.setIgnoreUsedWords(true);
+	 * 			term.setCachingEnabled(false);
+	 * 			term.addConcept(c);
+	 * 			
+	 * 			for(Concept rc: term.search(getConcept().getSearchString())){
+	 * 				rc.setTerminology(c.getTerminology());
+	 * 				return rc;
+	 * 			}
+	 * 		}catch(TerminologyException ex){
+	 * 			//ex.printStackTrace();
+	 * 			
+	 * 		}
+	 * 		return null;
+	 * 	}
+	 */
 	
 	/**
 	 * does concept contain other concept
@@ -733,28 +807,41 @@ public class ItemInstance implements Comparable {
 	}
 
 	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	public String toString(){
 		return concept.getName();
 	}
 	
 	/**
-	 * compare to other template item
+	 * compare to other template item.
+	 *
+	 * @param o the o
+	 * @return the int
 	 */
 	public int compareTo(Object o) {
 		return getConcept().compareTo(((ItemInstance)o).getConcept());
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
 	public int hashCode() {
 		return getConcept().hashCode();
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
 	public boolean equals(Object obj) {
 		return getConcept().equals(((ItemInstance)obj).getConcept());
 	}
 
 	/**
-	 * is this item instance satisfied
-	 * @return
+	 * is this item instance satisfied.
+	 *
+	 * @return true, if is satisfied
 	 */
 	public boolean isSatisfied() {
 		return satisfied;

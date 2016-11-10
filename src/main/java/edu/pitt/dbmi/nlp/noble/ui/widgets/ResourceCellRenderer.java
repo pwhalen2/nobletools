@@ -16,6 +16,9 @@ import edu.pitt.dbmi.nlp.noble.ontology.IResource;
 import edu.pitt.dbmi.nlp.noble.terminology.Concept;
 import edu.pitt.dbmi.nlp.noble.terminology.Terminology;
 
+/**
+ * The Class ResourceCellRenderer.
+ */
 public class ResourceCellRenderer extends DefaultListCellRenderer {
 	private final URL ONTOLOGY_ICON = getClass().getResource("/icons/Ontology.gif");
 	private final URL TERMINOLOGY_ICON = getClass().getResource("/icons/Terminology.gif");
@@ -27,7 +30,14 @@ public class ResourceCellRenderer extends DefaultListCellRenderer {
 	private Icon instanceIcon = new ImageIcon(INSTANCE_ICON);
 	
 	/**
-	 * add icon
+	 * add icon.
+	 *
+	 * @param a the a
+	 * @param b the b
+	 * @param c the c
+	 * @param d the d
+	 * @param e the e
+	 * @return the list cell renderer component
 	 */
 	public Component getListCellRendererComponent(JList a, Object b,int c, boolean d, boolean e){
 		JLabel lbl = (JLabel) super.getListCellRendererComponent(a, b, c, d, e);

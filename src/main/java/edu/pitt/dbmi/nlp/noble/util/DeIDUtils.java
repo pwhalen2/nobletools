@@ -6,11 +6,16 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * The Class DeIDUtils.
+ */
 public class DeIDUtils {
+	
 	/**
-	 * parse date produced by DeID software in format **DATE[Oct 15 2007] 1453 
-	 * @param d
-	 * @return
+	 * parse date produced by DeID software in format **DATE[Oct 15 2007] 1453 .
+	 *
+	 * @param d the d
+	 * @return the date
 	 */
 	public static Date parseDate(String d){
 		SimpleDateFormat sd1 = new SimpleDateFormat("MMM d yyyy HH:mm");
@@ -33,9 +38,10 @@ public class DeIDUtils {
 	}
 	
 	/**
-	 * is this line a predefine De-ID header that should be ignored?
-	 * @param line
-	 * @return
+	 * is this line a predefine De-ID header that should be ignored?.
+	 *
+	 * @param line the line
+	 * @return true, if is de ID header
 	 */
 	public static boolean isDeIDHeader(String line){
 		return line != null && (line.trim().matches("\\[.* de\\-identified.*De\\-ID.*\\]") || line.matches("[SE]_O_[HR]"));
@@ -44,9 +50,10 @@ public class DeIDUtils {
 	
 	
 	/**
-	 * blank out DeID tags from text
-	 * @param line
-	 * @return
+	 * blank out DeID tags from text.
+	 *
+	 * @param line the line
+	 * @return the string
 	 */
 	public static String filterDeIDTags(String line){
 		if(line == null || line.length() == 0)
@@ -61,6 +68,12 @@ public class DeIDUtils {
 		return buffer.toString();
 	}
 
+	/**
+	 * Fill.
+	 *
+	 * @param length the length
+	 * @return the string
+	 */
 	private static String fill(int length) {
 		StringBuffer b = new StringBuffer();
 		for(int i=0;i<length;i++)

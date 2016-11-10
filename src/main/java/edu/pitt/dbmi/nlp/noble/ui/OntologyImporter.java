@@ -56,7 +56,8 @@ import edu.pitt.dbmi.nlp.noble.terminology.Terminology;
 import edu.pitt.dbmi.nlp.noble.ui.widgets.ResourceCellRenderer;
 
 /**
- * this class is responsible for copying one ontology into the other
+ * this class is responsible for copying one ontology into the other.
+ *
  * @author tseytlin
  */
 
@@ -90,20 +91,38 @@ public class OntologyImporter implements 	ActionListener, PropertyChangeListener
 		
 	} ;
 
+	/**
+	 * Instantiates a new ontology importer.
+	 *
+	 * @param r the r
+	 */
 	public OntologyImporter(IRepository r){
 		repository = r;
 	}
 
+	/**
+	 * Adds the property change listener.
+	 *
+	 * @param listener the listener
+	 */
 	public void addPropertyChangeListener(PropertyChangeListener listener){
 		pcs.addPropertyChangeListener(listener);
 	}
 	
+	/**
+	 * Removes the property change listener.
+	 *
+	 * @param listener the listener
+	 */
 	public void removePropertyChangeListener(PropertyChangeListener listener){
 		pcs.removePropertyChangeListener(listener);
 	}
 	
 	/**
-	 * create an import wizzard
+	 * create an import wizzard.
+	 *
+	 * @param owner the owner
+	 * @return the j dialog
 	 */
 	public JDialog showImportWizard(Component owner){
 		main = new JOptionPane(createWizardPanel(),
@@ -118,8 +137,9 @@ public class OntologyImporter implements 	ActionListener, PropertyChangeListener
 	
 	
 	/**
-	 * what is the status of deep copy?
-	 * @return
+	 * what is the status of deep copy?.
+	 *
+	 * @return true, if is deep copy
 	 */
 	public boolean isDeepCopy() {
 		return deepCopy;
@@ -128,7 +148,8 @@ public class OntologyImporter implements 	ActionListener, PropertyChangeListener
 	
 	/**
 	 * not only copy the hierarchy, but properties, restrictions etc..
-	 * @param deepCopy
+	 *
+	 * @param deepCopy the new deep copy
 	 */
 	public void setDeepCopy(boolean deepCopy) {
 		this.deepCopy = deepCopy;
@@ -138,8 +159,9 @@ public class OntologyImporter implements 	ActionListener, PropertyChangeListener
 	 * the ontology importer will first try to load
 	 * an ontology, this can have different effects depending on implementation
 	 * BioPortal ontologies can be efficiently preloaded into memory, while on Protege
-	 * ontologies this option will not have any effect, since they are already preloaded
-	 * @param b
+	 * ontologies this option will not have any effect, since they are already preloaded.
+	 *
+	 * @param b the new pre load
 	 */
 	public void setPreLoad(boolean b){
 		this.preload = b;
@@ -150,8 +172,9 @@ public class OntologyImporter implements 	ActionListener, PropertyChangeListener
 	 * the ontology importer will first try to load
 	 * an ontology, this can have different effects depending on implementation
 	 * BioPortal ontologies can be efficiently preloaded into memory, while on Protege
-	 * ontologies this option will not have any effect, since they are already preloaded
-	 * @param b
+	 * ontologies this option will not have any effect, since they are already preloaded.
+	 *
+	 * @return true, if is pre load
 	 */
 	public boolean isPreLoad(){
 		return preload;
@@ -164,8 +187,8 @@ public class OntologyImporter implements 	ActionListener, PropertyChangeListener
 	 * we don't need to revisit it.
 	 * On the other hand, this performance saving might not be desireable whent the target ontology
 	 * may have classes w/ the same names, but different set of children.
-	 * 
-	 * @param freshCopy
+	 *
+	 * @return true, if is fresh copy
 	 */
 	public boolean isFreshCopy() {
 		return freshCopy;
@@ -178,8 +201,8 @@ public class OntologyImporter implements 	ActionListener, PropertyChangeListener
 	 * we don't need to revisit it.
 	 * On the other hand, this performance saving might not be desireable whent the target ontology
 	 * may have classes w/ the same names, but different set of children.
-	 * 
-	 * @param freshCopy
+	 *
+	 * @param freshCopy the new fresh copy
 	 */
 	public void setFreshCopy(boolean freshCopy) {
 		this.freshCopy = freshCopy;
@@ -187,7 +210,7 @@ public class OntologyImporter implements 	ActionListener, PropertyChangeListener
 
 	
 	/**
-	 * load ontologies
+	 * load ontologies.
 	 */
 	public void loadOntologies(){
 		(new Thread(new Runnable(){
@@ -210,8 +233,9 @@ public class OntologyImporter implements 	ActionListener, PropertyChangeListener
 	}
 	
 	/**
-	 * display busy
-	 * @param b
+	 * display busy.
+	 *
+	 * @param busy the new busy
 	 */
 	public void setBusy(boolean busy){
 		if(busy){
@@ -229,8 +253,9 @@ public class OntologyImporter implements 	ActionListener, PropertyChangeListener
 	}
 	
 	/**
-	 * create ontology selector panel
-	 * @return
+	 * create ontology selector panel.
+	 *
+	 * @return the j panel
 	 */
 	private JPanel createWizardPanel(){
 		JPanel panel = new JPanel();
@@ -317,6 +342,9 @@ public class OntologyImporter implements 	ActionListener, PropertyChangeListener
 		return panel;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+	 */
 	// actions
 	public void actionPerformed(ActionEvent e) {
 		String cmd = e.getActionCommand();
@@ -332,6 +360,9 @@ public class OntologyImporter implements 	ActionListener, PropertyChangeListener
 		}
 	}
 	
+	/**
+	 * Do explore.
+	 */
 	private void doExplore() {
 		final IOntology ont = getSelectedOntology();
 		if(ont == null)
@@ -365,7 +396,9 @@ public class OntologyImporter implements 	ActionListener, PropertyChangeListener
 	}
 
 	/**
-	 * add classes to a list
+	 * add classes to a list.
+	 *
+	 * @param evt the evt
 	 */
 	public void propertyChange(PropertyChangeEvent evt) {
 		String cmd = evt.getPropertyName();
@@ -381,16 +414,29 @@ public class OntologyImporter implements 	ActionListener, PropertyChangeListener
 		}
 	}
 
+	/**
+	 * Checks if is dispose source.
+	 *
+	 * @return true, if is dispose source
+	 */
 	public boolean isDisposeSource() {
 		return disposeSource;
 	}
 
+	/**
+	 * Sets the dispose source.
+	 *
+	 * @param disposeSource the new dispose source
+	 */
 	public void setDisposeSource(boolean disposeSource) {
 		this.disposeSource = disposeSource;
 	}
 
 
 	
+	/**
+	 * Do add.
+	 */
 	private void doAdd(){
 		final IOntology ont = getSelectedOntology();
 		if(ont == null)
@@ -430,8 +476,9 @@ public class OntologyImporter implements 	ActionListener, PropertyChangeListener
 	
 	
 	/**
-	 * add root class
-	 * @param obj
+	 * add root class.
+	 *
+	 * @param obj the obj
 	 */
 	private void addRootClass(Object obj){
 		DefaultListModel model = (DefaultListModel) rootList.getModel();
@@ -440,8 +487,9 @@ public class OntologyImporter implements 	ActionListener, PropertyChangeListener
 	}
 	
 	/**
-	 * get selected ontology
-	 * @return
+	 * get selected ontology.
+	 *
+	 * @return the selected ontology
 	 */
 	public IOntology getSelectedOntology(){
 		Object obj = ontologyList.getSelectedValue();
@@ -449,8 +497,9 @@ public class OntologyImporter implements 	ActionListener, PropertyChangeListener
 	}
 	
 	/**
-	 * get selected classes
-	 * @return
+	 * get selected classes.
+	 *
+	 * @return the selected classes
 	 */
 	public IClass [] getSelectedClasses(){
 		IOntology ont = getSelectedOntology();
@@ -463,6 +512,9 @@ public class OntologyImporter implements 	ActionListener, PropertyChangeListener
 	}
 	
 
+	/* (non-Javadoc)
+	 * @see javax.swing.event.ListSelectionListener#valueChanged(javax.swing.event.ListSelectionEvent)
+	 */
 	public void valueChanged(ListSelectionEvent e) {
 		if(e.getSource() == ontologyList && !e.getValueIsAdjusting()){
 			Object obj = ontologyList.getSelectedValue();
@@ -487,26 +539,16 @@ public class OntologyImporter implements 	ActionListener, PropertyChangeListener
 	}
 
 	/**
-	 * has selection been made
-	 * @return
+	 * has selection been made.
+	 *
+	 * @return true, if is selected
 	 */
 	public boolean isSelected(){
 		Integer i = JOptionPane.OK_OPTION;
 		return i.equals(main.getValue()) && getSelectedOntology() != null;
 	}
 	
-	/**
-	 * import source ontology into destination ontology
-	 * @param source
-	 * @param roots
-	 * @param destination
-	 * @param root
-	 
-	public void copy(IClass [] sourceRoots,IClass targetRoot){
-		copy(sourceRoots,targetRoot,null);
-	}
-	*/
-	
+
 	/**
 	 * import source ontology into destination ontology avoid cycles
 	 * @param source
@@ -530,36 +572,24 @@ public class OntologyImporter implements 	ActionListener, PropertyChangeListener
 		copy(sourceRoots,targetRoot,bar);
 	}
 	*/
+
 	/**
-	 * import source ontology into destination ontology
-	 * @param source
-	 * @param roots
-	 * @param destination
-	 * @param root
+	 * import source ontology into destination ontology.
+	 *
+	 * @param sourceRoots the source roots
+	 * @param targetRoot the target root
 	 */
+	
 	public void copyClasses(IClass [] sourceRoots,IClass targetRoot){
 		copy(sourceRoots,targetRoot);
 	}
 	
 	
 	/**
-	 * import source ontology into destination ontology avoiding cycles
-	 * @param source
-	 * @param roots
-	 * @param destination
-	 * @param root
+	 * import source ontology into destination ontology avoiding cycles.
 	 *
-	public void copyClassesNoCycle(IClass [] sourceRoots,IClass targetRoot){
-		copyNoCycle(sourceRoots,targetRoot);
-	}
-	*/
-	
-	/**
-	 * import source ontology into destination ontology
-	 * @param source
-	 * @param roots
-	 * @param destination
-	 * @param root
+	 * @param sourceRoots the source roots
+	 * @param targetRoot the target root
 	 */
 	public void copy(IClass [] sourceRoots, IClass targetRoot){
 		// preload ontology
@@ -612,31 +642,7 @@ public class OntologyImporter implements 	ActionListener, PropertyChangeListener
 		*/
 	}
 	
-	/**
-	 * import source ontology into destination ontology avoiding cycles
-	 * @param source
-	 * @param roots
-	 * @param destination
-	 * @param root
-	 *
-	public void copyNoCycle(IClass [] sourceRoots, IClass targetRoot, JProgressBar bar){
-		// copy all classes
-		for(IClass c: sourceRoots){
-			try{
-				copyClassNoCycle(targetRoot, c, new TreeSet<IClass>(classComparator), bar);
-			}catch(Exception ex){
-				System.out.println("Error: Could not copy class "+c);
-				ex.printStackTrace();
-			}
-		}
-		// copy metadata for ontologies
-		if(sourceRoots.length > 0){
-			IOntology src = sourceRoots[0].getOntology();
-			IOntology dst = targetRoot.getOntology();
-			copyResourceInfo(src, dst);			
-		}
-	}
-	*/
+	
 	/**
 	 * import source ontology into destination ontology
 	 * @param source
@@ -650,11 +656,10 @@ public class OntologyImporter implements 	ActionListener, PropertyChangeListener
 	*/
 	
 	/**
-	 * import source ontology into destination ontology
-	 * @param source
-	 * @param roots
-	 * @param destination
-	 * @param root
+	 * import source ontology into destination ontology avoiding cycles.
+	 *
+	 * @param source the source
+	 * @param target the target
 	 */
 	public void copyValues(IOntology source, IOntology target){
 		// copy all properties
@@ -666,11 +671,10 @@ public class OntologyImporter implements 	ActionListener, PropertyChangeListener
 	}
 	
 	/**
-	 * import source ontology into destination ontology
-	 * @param source
-	 * @param roots
-	 * @param destination
-	 * @param root
+	 * import source ontology into destination ontology.
+	 *
+	 * @param source the source
+	 * @param target the target
 	 */
 	public void copyValues(IClass [] source, IClass target){
 		if(source.length == 0 || target == null)
@@ -686,9 +690,10 @@ public class OntologyImporter implements 	ActionListener, PropertyChangeListener
 	
 	
 	/**
-	 * copy resource info
-	 * @param src
-	 * @param dst
+	 * copy resource info.
+	 *
+	 * @param src the src
+	 * @param dst the dst
 	 */
 	private void copyResourceInfo(IResource src, IResource dst){
 		// copy superficial stuff
@@ -701,11 +706,10 @@ public class OntologyImporter implements 	ActionListener, PropertyChangeListener
 	}
 	
 	/**
-	 * import source ontology into destination ontology
-	 * @param source
-	 * @param roots
-	 * @param destination
-	 * @param root
+	 * import source ontology into destination ontology.
+	 *
+	 * @param source the source
+	 * @param target the target
 	 */
 	public void copy(IOntology source,IOntology target){
 		copyClasses(source.getRootClasses(),target.getRoot());
@@ -715,25 +719,11 @@ public class OntologyImporter implements 	ActionListener, PropertyChangeListener
 	
 
 	/**
-	 * import source ontology into destination ontology avoiding cycles
-	 * @param source
-	 * @param roots
-	 * @param destination
-	 * @param root
+	 * import source ontology into destination ontology avoiding cycles.
 	 *
-	public void copyNoCycle(IOntology source,IOntology target){
-		
-		// Delegate some of progress reporting to the paging ontology
-		if (source instanceof edu.pitt.dbmi.ontology.bioportal.BOntology) {
-			((edu.pitt.dbmi.ontology.bioportal.paged.BOntology)source).setPropertyChangeSupport(this.pcs) ;
-			((edu.pitt.dbmi.ontology.bioportal.paged.BOntology)source).setProgressMessage(this.progressMessage) ;	
-		}
-		
-		copyClassesNoCycle(source.getRootClasses(),target.getRoot());
-		if(deepCopy)
-			copyValues(source, target);
-	}
-	*/
+	 * @param parent the parent
+	 * @param source the source
+	 */
 	
 	/**
 	 * create class from 
@@ -783,51 +773,52 @@ public class OntologyImporter implements 	ActionListener, PropertyChangeListener
 	
 	
 	/**
-	 * create class from 
-	 * @return
+	 * create class from .
 	 *
-	private void copyClassNoCycle(IClass parent, IClass source, TreeSet<IClass> traversalPath, JProgressBar bar){
-		// figure out the name
-		//String [] l = source.getLabels();
-		//String name = getClassName((l.length > 0)?l[0]:source.getName());
-		String name = source.getName();
-		String msg = "Copying class "+name+" ...";
-		
-		// notify of progress
-		if(bar != null){
-			bar.setString(msg);
-		}else{
-			pcs.firePropertyChange(PROPERTY_PROGRESS_MSG, progressMessage, msg);
-			progressMessage = msg;
-		}
-		
-		//check if name exits
-		IOntology ont = parent.getOntology();
-		IClass cls = ont.getClass(name);
-		IClass [] children = source.getDirectSubClasses();
-		
-		if(cls == null){
-			cls = parent.createSubClass(name);
-			copyResourceInfo(source,cls);
-		}else if(!cls.hasSuperClass(parent)){
-			cls.addSuperClass(parent);
-		}
-		
-		TreeSet<IClass> newTraversalPath = new TreeSet<IClass>(classComparator) ;
-		newTraversalPath.add(source) ;
-		newTraversalPath.addAll(traversalPath) ;
-		
-		// go into children
-		for(IClass child: children){
-			if (!newTraversalPath.contains(child)) {  // Avoid self describing class (BIRNLex, BioTOP)
-				copyClassNoCycle(cls,child,newTraversalPath,bar);
-			}
-		}
-		
-		if(disposeSource)
-			source.dispose();
-	}
-	*/
+	 * @param src the src
+	 * @param target the target
+	 * @return 	private void copyClassNoCycle(IClass parent, IClass source, TreeSet<IClass> traversalPath, JProgressBar bar){
+	 * 		// figure out the name
+	 * 		//String [] l = source.getLabels();
+	 * 		//String name = getClassName((l.length > 0)?l[0]:source.getName());
+	 * 		String name = source.getName();
+	 * 		String msg = "Copying class "+name+" ...";
+	 * 		
+	 * 		// notify of progress
+	 * 		if(bar != null){
+	 * 			bar.setString(msg);
+	 * 		}else{
+	 * 			pcs.firePropertyChange(PROPERTY_PROGRESS_MSG, progressMessage, msg);
+	 * 			progressMessage = msg;
+	 * 		}
+	 * 		
+	 * 		//check if name exits
+	 * 		IOntology ont = parent.getOntology();
+	 * 		IClass cls = ont.getClass(name);
+	 * 		IClass [] children = source.getDirectSubClasses();
+	 * 		
+	 * 		if(cls == null){
+	 * 			cls = parent.createSubClass(name);
+	 * 			copyResourceInfo(source,cls);
+	 * 		}else if(!cls.hasSuperClass(parent)){
+	 * 			cls.addSuperClass(parent);
+	 * 		}
+	 * 		
+	 * 		TreeSet<IClass> newTraversalPath = new TreeSet<IClass>(classComparator) ;
+	 * 		newTraversalPath.add(source) ;
+	 * 		newTraversalPath.addAll(traversalPath) ;
+	 * 		
+	 * 		// go into children
+	 * 		for(IClass child: children){
+	 * 			if (!newTraversalPath.contains(child)) {  // Avoid self describing class (BIRNLex, BioTOP)
+	 * 				copyClassNoCycle(cls,child,newTraversalPath,bar);
+	 * 			}
+	 * 		}
+	 * 		
+	 * 		if(disposeSource)
+	 * 			source.dispose();
+	 * 	}
+	 */
 	
 	/**
 	 * copy all properties
@@ -894,20 +885,23 @@ public class OntologyImporter implements 	ActionListener, PropertyChangeListener
 	}
 	
 	/**
-	 * convert an array of resources to different onology
-	 * @param ont
-	 * @param values
-	 * @return
+	 * convert an array of resources to different onology.
+	 *
+	 * @param ont the ont
+	 * @param values the values
+	 * @return the object[]
 	 */
 	private Object [] convertResources(IOntology ont, Object [] values){
 		return convertResources(ont, values,null);
 	}
 	
 	/**
-	 * convert an array of resources to different onology
-	 * @param ont
-	 * @param values
-	 * @return
+	 * convert an array of resources to different onology.
+	 *
+	 * @param ont the ont
+	 * @param values the values
+	 * @param type the type
+	 * @return the object[]
 	 */
 	private Object [] convertResources(IOntology ont, Object [] values, Class type){
 		ArrayList list = new ArrayList();
@@ -931,10 +925,11 @@ public class OntologyImporter implements 	ActionListener, PropertyChangeListener
 	}
 	
 	/**
-	 * convert an array of resources to different onology
-	 * @param ont
-	 * @param values
-	 * @return
+	 * convert an array of resources to different onology.
+	 *
+	 * @param ont the ont
+	 * @param value the value
+	 * @return the object
 	 */
 	private Object  convertResource(IOntology ont, Object value){
 		if(value == null)
@@ -972,9 +967,10 @@ public class OntologyImporter implements 	ActionListener, PropertyChangeListener
 	
 	
 	/**
-	 * recursively copy class content when all classes were created already
-	 * @param source
-	 * @param destination
+	 * recursively copy class content when all classes were created already.
+	 *
+	 * @param ont the ont
+	 * @param source the source
 	 */
 	private void copyClassContent(IOntology ont, IClass source){
 		String name = source.getName();
@@ -1081,9 +1077,10 @@ public class OntologyImporter implements 	ActionListener, PropertyChangeListener
 	
 	
 	/**
-	 * create ontology friendly class name
-	 * @param name
-	 * @return
+	 * create ontology friendly class name.
+	 *
+	 * @param name the name
+	 * @return the class name
 	 */
 	private String getClassName(String name){
 		return name.trim().replaceAll("\\s*\\(.+\\)\\s*","").replaceAll("\\W","_").replaceAll("_+","_");
@@ -1093,6 +1090,13 @@ public class OntologyImporter implements 	ActionListener, PropertyChangeListener
 	 * @param args
 	 */
 	static long time2;
+	
+	/**
+	 * The main method.
+	 *
+	 * @param args the arguments
+	 * @throws Exception the exception
+	 */
 	public static void main(String[] args) throws Exception {
 		/*
 		String driver = "com.mysql.jdbc.Driver";
@@ -1163,6 +1167,11 @@ public class OntologyImporter implements 	ActionListener, PropertyChangeListener
 			
 	}
 
+	/**
+	 * Show ontology.
+	 *
+	 * @param ont the ont
+	 */
 	private static void showOntology(IOntology ont){
 		OntologyExplorer e = new OntologyExplorer();
 		JFrame frame = new JFrame("Ontology Explorer");

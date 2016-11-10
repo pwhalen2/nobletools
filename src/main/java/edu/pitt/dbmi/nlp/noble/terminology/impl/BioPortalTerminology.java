@@ -34,24 +34,45 @@ import edu.pitt.dbmi.nlp.noble.terminology.SemanticType;
 import edu.pitt.dbmi.nlp.noble.terminology.Source;
 import edu.pitt.dbmi.nlp.noble.terminology.TerminologyException;
 
+/**
+ * The Class BioPortalTerminology.
+ */
 public class BioPortalTerminology extends AbstractTerminology {
 	private BOntology ontology;
 	private BioPortalRepository repository = new BioPortalRepository();
 
+	/**
+	 * Instantiates a new bio portal terminology.
+	 */
 	public BioPortalTerminology(){
 		super();
 	}
 	
+	/**
+	 * Instantiates a new bio portal terminology.
+	 *
+	 * @param ontology the ontology
+	 */
 	public BioPortalTerminology(BOntology ontology){
 		super();
 		this.ontology = ontology;
 	}
 	
 	
+	/**
+	 * Sets the ontology.
+	 *
+	 * @param ontology the new ontology
+	 */
 	public void setOntology(BOntology ontology) {
 		this.ontology = ontology;
 	}
 
+	/**
+	 * Sets the ontology.
+	 *
+	 * @param name the new ontology
+	 */
 	public void setOntology(String name) {
 		// repository.getOntology("NCI_Thesaurus");
 		IOntology [] ont = repository.getOntologies(name);
@@ -60,7 +81,10 @@ public class BioPortalTerminology extends AbstractTerminology {
 	}
 
 	/**
-	 * converts IClass to Concept
+	 * converts IClass to Concept.
+	 *
+	 * @param obj the obj
+	 * @return the concept
 	 */
 	protected Concept convertConcept(Object obj) {
 		if (obj instanceof IClass)
@@ -69,10 +93,16 @@ public class BioPortalTerminology extends AbstractTerminology {
 			return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Terminology#getSourceFilter()
+	 */
 	public Source[] getSourceFilter() {
 		return getSources();
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.AbstractTerminology#getRelatedConcepts(edu.pitt.dbmi.nlp.noble.terminology.Concept, edu.pitt.dbmi.nlp.noble.terminology.Relation)
+	 */
 	public Concept[] getRelatedConcepts(Concept c, Relation r) throws TerminologyException {
 		IClass cls = c.getConceptClass();
 		if(r == Relation.BROADER){
@@ -129,6 +159,12 @@ public class BioPortalTerminology extends AbstractTerminology {
 		*/	
 	}
 
+	/**
+	 * Convert concepts.
+	 *
+	 * @param clses the clses
+	 * @return the concept[]
+	 */
 	private Concept [] convertConcepts(IClass [] clses){
 		Concept [] concepts = new Concept[clses.length];
 		for(int i=0;i<concepts.length;i++)
@@ -136,6 +172,12 @@ public class BioPortalTerminology extends AbstractTerminology {
 		return concepts;
 	}
 	
+	/**
+	 * Convert concepts.
+	 *
+	 * @param clses the clses
+	 * @return the concept[]
+	 */
 	private Concept [] convertConcepts(Collection<IClass> clses){
 		Concept [] concepts = new Concept[clses.size()];
 		int i=0;
@@ -145,6 +187,9 @@ public class BioPortalTerminology extends AbstractTerminology {
 	}
 	
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.AbstractTerminology#getRelatedConcepts(edu.pitt.dbmi.nlp.noble.terminology.Concept)
+	 */
 	public Map getRelatedConcepts(Concept c) throws TerminologyException {
 		Map<Relation,List<Concept>> map = new HashMap<Relation,List<Concept>>();
 		map.put(Relation.BROADER,Arrays.asList(getRelatedConcepts(c,Relation.BROADER)));
@@ -154,12 +199,17 @@ public class BioPortalTerminology extends AbstractTerminology {
 	}
 
 	/**
-	 * get all ontologies in bioportal
+	 * get all ontologies in bioportal.
+	 *
+	 * @return the sources
 	 */
 	public Source[] getSources() {
 		return iOntologiesToSource(repository.getOntologies());
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.AbstractTerminology#lookupConcept(java.lang.String)
+	 */
 	public Concept lookupConcept(String cui) throws TerminologyException {
 		if(ontology == null)
 			return null;
@@ -170,6 +220,11 @@ public class BioPortalTerminology extends AbstractTerminology {
 	/**
 	 * According to the Bioportal 2.0 docs there should be "exactmatch" and
 	 * "contains" only.
+	 *
+	 * @param text the text
+	 * @param method the method
+	 * @return the concept[]
+	 * @throws TerminologyException the terminology exception
 	 */
 	public Concept[] search(String text, String method) throws TerminologyException {
 		return (ontology != null)?ontology.search(text, method):searchAll(text, method);
@@ -178,6 +233,11 @@ public class BioPortalTerminology extends AbstractTerminology {
 	/**
 	 * The search result should be light- not BClass, but Concept. We can create
 	 * BClasses later if needed
+	 *
+	 * @param text the text
+	 * @param method the method
+	 * @return the concept[]
+	 * @throws TerminologyException the terminology exception
 	 */
 	public Concept[] searchAll(String text, String method) throws TerminologyException {
 	    /*
@@ -246,6 +306,9 @@ public class BioPortalTerminology extends AbstractTerminology {
 	}
 	
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.AbstractTerminology#search(java.lang.String)
+	 */
 	public Concept[] search(String text) throws TerminologyException {
 		Concept [] result =  search(text, "exactmatch");
 		for(Concept c: result)
@@ -254,38 +317,68 @@ public class BioPortalTerminology extends AbstractTerminology {
 	}
 
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.AbstractTerminology#getSearchMethods()
+	 */
 	public String[] getSearchMethods() {
 		return new String [] {BioPortalHelper.EXACT_MATCH,BioPortalHelper.CONTAINS_MATCH,BioPortalHelper.PROPERTIES_MATCH};
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Terminology#setSourceFilter(edu.pitt.dbmi.nlp.noble.terminology.Source[])
+	 */
 	public void setSourceFilter(Source[] srcs) {
 		// NOOP
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Describable#getDescription()
+	 */
 	public String getDescription() {
 		return ontology.getDescription();
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Describable#getFormat()
+	 */
 	public String getFormat() {
 		return ontology.getFormat();
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Describable#getLocation()
+	 */
 	public String getLocation() {
 		return ontology.getLocation();
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Describable#getName()
+	 */
 	public String getName() {
 		return "BioPortal";
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Describable#getURI()
+	 */
 	public URI getURI() {
 		return URI.create(BioPortalRepository.DEFAULT_BIOPORTAL_URL);
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Describable#getVersion()
+	 */
 	public String getVersion() {
 		return "2.0";
 	}
 
+	/**
+	 * I ontologies to source.
+	 *
+	 * @param iontologies the iontologies
+	 * @return the source[]
+	 */
 	private Source[] iOntologiesToSource(IOntology[] iontologies) {
 		Source[] sources = new Source[iontologies.length];
 
@@ -299,7 +392,9 @@ public class BioPortalTerminology extends AbstractTerminology {
 	/**
 	 * get all root concepts. This makes sence if Terminology is in fact ontology
 	 * that has heirchichal structure
-	 * @return
+	 *
+	 * @return the root concepts
+	 * @throws TerminologyException the terminology exception
 	 */
 	public Concept[] getRootConcepts() throws TerminologyException {
 		IClass [] clss = ontology.getRootClasses();
@@ -309,11 +404,22 @@ public class BioPortalTerminology extends AbstractTerminology {
 		return list;
 	}
 	
+	/**
+	 * Gets the ontology.
+	 *
+	 * @return the ontology
+	 */
 	public IOntology getOntology(){
 		return ontology;
 	}
 	
 	
+	/**
+	 * The main method.
+	 *
+	 * @param args the arguments
+	 * @throws Exception the exception
+	 */
 	public static void main(String [] args) throws Exception{
 		BioPortalTerminology term = new BioPortalTerminology();
 		term.setOntology("NCI_Thesaurus");
@@ -342,12 +448,18 @@ public class BioPortalTerminology extends AbstractTerminology {
 	}
 
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Terminology#getSemanticTypeFilter()
+	 */
 	public SemanticType[] getSemanticTypeFilter() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Terminology#setSemanticTypeFilter(edu.pitt.dbmi.nlp.noble.terminology.SemanticType[])
+	 */
 	public void setSemanticTypeFilter(SemanticType[] srcs) {
 		// TODO Auto-generated method stub
 		

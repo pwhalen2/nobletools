@@ -6,22 +6,35 @@ import java.io.ObjectOutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
+/**
+ * The Class Sender.
+ */
 public class Sender {
 	private URL servletURL;
 	
 	/**
-	 * set servlet URL
+	 * set servlet URL.
+	 *
+	 * @param s the s
 	 */
 	public Sender(URL s){
 		servletURL = s;	 
 	}
 	
+	/**
+	 * Gets the servlet URL.
+	 *
+	 * @return the servlet URL
+	 */
 	public URL getServletURL(){
 		return servletURL;
 	}
 	
 	/**
-	 * Send object to the servlet and get a reply
+	 * Send object to the servlet and get a reply.
+	 *
+	 * @param obj the obj
+	 * @return the object
 	 */
 	public Object sendObject(Object obj) {
 		URLConnection conn = null;

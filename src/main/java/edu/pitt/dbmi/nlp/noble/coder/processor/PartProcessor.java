@@ -8,12 +8,18 @@ import java.util.regex.Pattern;
 import edu.pitt.dbmi.nlp.noble.coder.model.*;
 import edu.pitt.dbmi.nlp.noble.terminology.TerminologyException;
 
+/**
+ * The Class PartProcessor.
+ */
 public class PartProcessor implements Processor<Section> {
 	public static final String PART_PATTERN = "PARTS?\\s+\\d+(\\s+AND\\s+\\d+)?:"; 
 	private long time;
 	
 	/**
-	 * identify parts in a section and attach them to this section
+	 * identify parts in a section and attach them to this section.
+	 *
+	 * @param text the text
+	 * @return the section
 	 */
 	public Section process(String text) {
 		Section section = new Section();
@@ -21,8 +27,12 @@ public class PartProcessor implements Processor<Section> {
 		section.setBody(text);
 		return process(section);
 	}
+	
 	/**
-	 * identify parts in a section and attach them to this section
+	 * identify parts in a section and attach them to this section.
+	 *
+	 * @param section the section
+	 * @return the section
 	 */
 	public Section process(Section section)  {
 		time = System.currentTimeMillis();
@@ -62,10 +72,19 @@ public class PartProcessor implements Processor<Section> {
 		return section;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.coder.model.Processor#getProcessTime()
+	 */
 	public long getProcessTime() {
 		return time;
 	}
 
+	/**
+	 * The main method.
+	 *
+	 * @param args the arguments
+	 * @throws TerminologyException the terminology exception
+	 */
 	public static void main(String [] args) throws TerminologyException{
 		String text = "";
 		DocumentProcessor dp = new DocumentProcessor();

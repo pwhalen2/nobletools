@@ -59,6 +59,9 @@ import edu.pitt.dbmi.nlp.noble.ui.widgets.ResourceCellRenderer;
 import edu.pitt.dbmi.nlp.noble.util.ConceptImporter;
 import edu.pitt.dbmi.nlp.noble.util.FileTools;
 
+/**
+ * The Class RepositoryManager.
+ */
 public class RepositoryManager implements ActionListener, ListSelectionListener, PropertyChangeListener{
 	
 	private JFrame frame;
@@ -79,19 +82,26 @@ public class RepositoryManager implements ActionListener, ListSelectionListener,
 	
 	
 	/**
-	 * create GUI manager
+	 * create GUI manager.
 	 */
 	public RepositoryManager(){
 		frame = createGUI(TERMINOLOGIES_ONLY);
 	}
 	
+	/**
+	 * Instantiates a new repository manager.
+	 *
+	 * @param mode the mode
+	 */
 	public RepositoryManager(int mode){
 		frame = createGUI(mode);
 	}
 	
 	/**
-	 * create GUI component
-	 * @return
+	 * create GUI component.
+	 *
+	 * @param mode the mode
+	 * @return the j frame
 	 */
 	private JFrame createGUI(int mode){
 		JFrame f = new JFrame("Terminology Manager");
@@ -152,8 +162,9 @@ public class RepositoryManager implements ActionListener, ListSelectionListener,
 	}
 	
 	/**
-	 * display busy
-	 * @param b
+	 * display busy.
+	 *
+	 * @param busy the new busy
 	 */
 	public void setBusy(boolean busy){
 		if(busy){
@@ -168,21 +179,9 @@ public class RepositoryManager implements ActionListener, ListSelectionListener,
 	}
 	
 	/**
-	 * start application
-	 * @param config
+	 * start application.
 	 *
-	public void start(String config){
-		try{
-			start(new ProtegeRepository(config));
-		}catch(IOntologyException ex){
-			ex.printStackTrace();
-		}
-	}
-	*/
-	
-	/**
-	 * start application
-	 * @param config
+	 * @param r the repository
 	 */
 	public void start(IRepository r){
 		frame.setVisible(true);
@@ -223,7 +222,9 @@ public class RepositoryManager implements ActionListener, ListSelectionListener,
 	
 	
 	/**
-	 * handle reloads
+	 * handle reloads.
+	 *
+	 * @param evt the evt
 	 */
 	public void propertyChange(PropertyChangeEvent evt){
 		if(OntologyImporter.PROPERTY_PROGRESS_MSG.equals(evt.getPropertyName())){
@@ -237,9 +238,12 @@ public class RepositoryManager implements ActionListener, ListSelectionListener,
 	}
 	
 	/**
-	 * create button
-	 * @param text
-	 * @return
+	 * create button.
+	 *
+	 * @param text the text
+	 * @param icon the icon
+	 * @param tip the tip
+	 * @return the j button
 	 */
 	private JButton createButton(String text, String icon, String tip){
 		JButton bt = new JButton(text);
@@ -254,8 +258,9 @@ public class RepositoryManager implements ActionListener, ListSelectionListener,
 	}
 	
 	/**
-	 * create toolbar with buttons
-	 * @return
+	 * create toolbar with buttons.
+	 *
+	 * @return the j component
 	 */
 	private JComponent createToolBar(){
 		JToolBar toolbar = new JToolBar(JToolBar.VERTICAL);
@@ -277,8 +282,9 @@ public class RepositoryManager implements ActionListener, ListSelectionListener,
 	
 	
 	/**
-	 * get selected value
-	 * @return
+	 * get selected value.
+	 *
+	 * @return the selected value
 	 */
 	private Describable getSelectedValue(){
 		Describable d = (Describable) ontologies.getSelectedValue();
@@ -289,8 +295,9 @@ public class RepositoryManager implements ActionListener, ListSelectionListener,
 	
 	
 	/**
-	 * actions on buttons
-	 * @param e
+	 * actions on buttons.
+	 *
+	 * @param e the e
 	 */
 	public void actionPerformed(ActionEvent e){
 		String cmd = e.getActionCommand();
@@ -317,6 +324,9 @@ public class RepositoryManager implements ActionListener, ListSelectionListener,
 		}
 	}
 
+	/**
+	 * Do path.
+	 */
 	private void doPath(){
 		JFileChooser fc = new JFileChooser(repositoryPath.getText());
 		fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -330,6 +340,9 @@ public class RepositoryManager implements ActionListener, ListSelectionListener,
 	}
 	
 	
+	/**
+	 * Do add.
+	 */
 	private void doAdd(){
 		JFileChooser fc = new JFileChooser();
 		fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
@@ -373,7 +386,7 @@ public class RepositoryManager implements ActionListener, ListSelectionListener,
 	
 	
 	/**
-	 * remove ontology
+	 * remove ontology.
 	 */
 	private void doRemove(){
 		if(terminologies.getSelectedValues().length == 0){
@@ -404,6 +417,9 @@ public class RepositoryManager implements ActionListener, ListSelectionListener,
 	}
 	
 	
+	/**
+	 * Refresh terminologies.
+	 */
 	private void refreshTerminologies(){
 		repository = new DefaultRepository();
 		((DefaultRepository)repository).setTerminologyLocation(NobleCoderTerminology.getPersistenceDirectory());
@@ -411,7 +427,7 @@ public class RepositoryManager implements ActionListener, ListSelectionListener,
 	}
 	
 	/**
-	 * remove ontology
+	 * remove ontology.
 	 */
 	private void doCompact(){
 		final Terminology term = (Terminology) terminologies.getSelectedValue();
@@ -489,7 +505,7 @@ public class RepositoryManager implements ActionListener, ListSelectionListener,
 	}
 
 	/**
-	 * import ontology
+	 * import ontology.
 	 */
 	private void doPortal(){
 		
@@ -577,6 +593,9 @@ public class RepositoryManager implements ActionListener, ListSelectionListener,
 		}
 	}
 
+	/**
+	 * Do export.
+	 */
 	private void doExport() {
 		if(exporter == null)
 			exporter = new TerminologyExporter(repository);
@@ -643,6 +662,9 @@ public class RepositoryManager implements ActionListener, ListSelectionListener,
 
 	}
 	
+	/**
+	 * Do explore.
+	 */
 	private void doExplore() {
 		Object value = getSelectedValue();
 		if(value != null && value instanceof Terminology){
@@ -656,8 +678,7 @@ public class RepositoryManager implements ActionListener, ListSelectionListener,
 	}
 	
 	/**
-	 * open ontology expolorer
-	 *
+	 * open ontology expolorer.
 	 */
 	private void doBrowser(){
 		final OntologyExplorer explorer = new OntologyExplorer();
@@ -700,8 +721,7 @@ public class RepositoryManager implements ActionListener, ListSelectionListener,
 	}
 	
 	/**
-	 * open ontology expolorer
-	 *
+	 * open ontology expolorer.
 	 */
 	private void doQuery(){
 		final QueryTool explorer = new QueryTool();
@@ -733,7 +753,9 @@ public class RepositoryManager implements ActionListener, ListSelectionListener,
 	
 	
 	/**
-	 * follow lists
+	 * follow lists.
+	 *
+	 * @param e the e
 	 */
 	public void valueChanged(ListSelectionEvent e){
 		if(!e.getValueIsAdjusting() && !selectionSwitch){
@@ -750,8 +772,9 @@ public class RepositoryManager implements ActionListener, ListSelectionListener,
 	}
 	
 	/**
-	 * enable/disable ontology buttons
-	 * @param b
+	 * enable/disable ontology buttons.
+	 *
+	 * @param b the new ontology buttons enabled
 	 */
 	private void setOntologyButtonsEnabled(boolean b){
 		if(toolbar != null){
@@ -762,6 +785,8 @@ public class RepositoryManager implements ActionListener, ListSelectionListener,
 	}
 	
 	/**
+	 * Gets the frame.
+	 *
 	 * @return the frame
 	 */
 	public JFrame getFrame() {
@@ -770,6 +795,8 @@ public class RepositoryManager implements ActionListener, ListSelectionListener,
 	
 
 	/**
+	 * Gets the repository.
+	 *
 	 * @return the repository
 	 */
 	public IRepository getRepository() {
@@ -777,7 +804,10 @@ public class RepositoryManager implements ActionListener, ListSelectionListener,
 	}
 
 	/**
-	 * @param args
+	 * The main method.
+	 *
+	 * @param args the arguments
+	 * @throws Exception the exception
 	 */
 	public static void main(String[] args) throws Exception {
 		RepositoryManager manager = new RepositoryManager(TERMINOLOGIES_ONLY);

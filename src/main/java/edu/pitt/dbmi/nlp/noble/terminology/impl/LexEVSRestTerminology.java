@@ -29,6 +29,9 @@ import edu.pitt.dbmi.nlp.noble.terminology.Term;
 import edu.pitt.dbmi.nlp.noble.terminology.Terminology;
 import edu.pitt.dbmi.nlp.noble.terminology.TerminologyException;
 
+/**
+ * The Class LexEVSRestTerminology.
+ */
 public class LexEVSRestTerminology extends AbstractTerminology {
 	private static String TAG_QUERY_RESPONSE = "queryResponse";
 	private static String TAG_CLASS = "class";
@@ -37,6 +40,11 @@ public class LexEVSRestTerminology extends AbstractTerminology {
 	private String location;
 	private String scheme;
 	
+	/**
+	 * Instantiates a new lex EVS rest terminology.
+	 *
+	 * @param server the server
+	 */
 	public LexEVSRestTerminology(String server){
 		this.location = server;
 		// check if url contains schema name
@@ -53,6 +61,9 @@ public class LexEVSRestTerminology extends AbstractTerminology {
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.AbstractTerminology#convertConcept(java.lang.Object)
+	 */
 	protected Concept convertConcept(Object obj) {
 		if(obj instanceof Element){
 			Element element = (Element) obj;
@@ -203,9 +214,10 @@ public class LexEVSRestTerminology extends AbstractTerminology {
 	}
 	
 	/**
-	 * 
-	 * @param doc
-	 * @return
+	 * Process response.
+	 *
+	 * @param doc the doc
+	 * @return the list
 	 */
 	private List<Concept> processResponse(Document doc){
 		Element root = doc.getDocumentElement();
@@ -225,9 +237,10 @@ public class LexEVSRestTerminology extends AbstractTerminology {
 	
 	
 	/**
-	 * convert element to a map
-	 * @param element
-	 * @return
+	 * convert element to a map.
+	 *
+	 * @param element the element
+	 * @return the map
 	 */
 	private Map processElement(Element element){
 		Map<String,Object> content = new HashMap<String, Object>();
@@ -259,34 +272,47 @@ public class LexEVSRestTerminology extends AbstractTerminology {
 	
 
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Terminology#getSourceFilter()
+	 */
 	public Source[] getSourceFilter() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.AbstractTerminology#getRelatedConcepts(edu.pitt.dbmi.nlp.noble.terminology.Concept, edu.pitt.dbmi.nlp.noble.terminology.Relation)
+	 */
 	public Concept[] getRelatedConcepts(Concept c, Relation r) throws TerminologyException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.AbstractTerminology#getRelatedConcepts(edu.pitt.dbmi.nlp.noble.terminology.Concept)
+	 */
 	public Map getRelatedConcepts(Concept c) throws TerminologyException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.AbstractTerminology#getSources()
+	 */
 	public Source[] getSources() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	/**
-	 * lookup concept by code
-	 * @param cui
-	 * @return
-	 * @throws TerminologyException
+	 * lookup concept by code.
+	 *
+	 * @param cui the cui
+	 * @return the concept
+	 * @throws TerminologyException the terminology exception
 	 */
 	public Concept lookupConcept(String cui) throws TerminologyException {
 		try{
@@ -302,7 +328,11 @@ public class LexEVSRestTerminology extends AbstractTerminology {
 
 	
 	/**
-	 * do search
+	 * do search.
+	 *
+	 * @param text the text
+	 * @return the concept[]
+	 * @throws TerminologyException the terminology exception
 	 */
 	public Concept[] search(String text) throws TerminologyException {
 		
@@ -320,44 +350,72 @@ public class LexEVSRestTerminology extends AbstractTerminology {
 	}
 
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Terminology#setSourceFilter(edu.pitt.dbmi.nlp.noble.terminology.Source[])
+	 */
 	public void setSourceFilter(Source[] srcs) {
 		// TODO Auto-generated method stub
 
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Describable#getDescription()
+	 */
 	public String getDescription() {
 		return "Provides access to LexEVS instances through REST service calls";
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Describable#getFormat()
+	 */
 	public String getFormat() {
 	return "REST";
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Describable#getLocation()
+	 */
 	public String getLocation() {
 		return location;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Describable#getName()
+	 */
 	public String getName() {
 		return "LexEVS REST";
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Describable#getURI()
+	 */
 	public URI getURI() {
 		return URI.create(getLocation());
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Describable#getVersion()
+	 */
 	public String getVersion() {
 		return "1.0";
 	}
 
+	/**
+	 * Filter.
+	 *
+	 * @param str the str
+	 * @return the string
+	 */
 	private String filter(String str){
 		return str.replaceAll(" ","%20");
 	}
 	
 	/**
-	 * parse XML document
-	 * @param in
-	 * @return
-	 * @throws IOException
+	 * parse XML document.
+	 *
+	 * @param in the in
+	 * @return the document
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	private Document parseXML(InputStream in) throws IOException {
 		Document document = null;
@@ -380,7 +438,10 @@ public class LexEVSRestTerminology extends AbstractTerminology {
 	}
 	
 	/**
-	 * @param args
+	 * The main method.
+	 *
+	 * @param args the arguments
+	 * @throws Exception the exception
 	 */
 	public static void main(String[] args) throws Exception{
 		//String server = "http://lexevsapi.nci.nih.gov/lexevsapi50/";
@@ -407,12 +468,18 @@ public class LexEVSRestTerminology extends AbstractTerminology {
 	}
 
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Terminology#getSemanticTypeFilter()
+	 */
 	public SemanticType[] getSemanticTypeFilter() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Terminology#setSemanticTypeFilter(edu.pitt.dbmi.nlp.noble.terminology.SemanticType[])
+	 */
 	public void setSemanticTypeFilter(SemanticType[] srcs) {
 		// TODO Auto-generated method stub
 		

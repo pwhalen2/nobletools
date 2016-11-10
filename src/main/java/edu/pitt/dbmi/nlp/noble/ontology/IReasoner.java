@@ -5,7 +5,8 @@ import java.beans.PropertyChangeListener;
 import edu.pitt.dbmi.nlp.noble.terminology.Describable;
 
 /**
- * this class wraps the functions of a reasoner
+ * this class wraps the functions of a reasoner.
+ *
  * @author tseytlin
  */
 public interface IReasoner  {
@@ -14,33 +15,37 @@ public interface IReasoner  {
 	
 	
 	/**
-	 * initialize this reasoner
-	 * @return
+	 * initialize this reasoner.
+	 *
+	 * @throws IOntologyException the i ontology exception
 	 */
 	public void initialize() throws IOntologyException;
 	
 	/**
-	 * dispose of this reasoner instance
+	 * dispose of this reasoner instance.
 	 */
 	public void dispose();
 	
 	
 	/**
-	 * add property changed listener
-	 * @param listener
+	 * add property changed listener.
+	 *
+	 * @param listener the listener
 	 */
 	public void addPropertyChangeListener(PropertyChangeListener listener);
 	
 	/**
-	 * remove property changed listener
-	 * @param listener
+	 * remove property changed listener.
+	 *
+	 * @param listener the listener
 	 */
 	public void removePropertyChangeListener(PropertyChangeListener listener);
 	
 	
 	/**
-	 * get ontology this reasoner is using
-	 * @return
+	 * get ontology this reasoner is using.
+	 *
+	 * @return the ontology
 	 */
 	public IOntology getOntology();
 	
@@ -49,11 +54,15 @@ public interface IReasoner  {
 	 * this method queries the reasoner for the consistency of the class, 
 	 * its inferred super classes and its inferred equivalent classes.
 	 * Assert the result
+	 *
+	 * @return the i result[]
 	 */
 	public IResult [] computeInferredHierarchy();
 	
 	/**
 	 * infer types for all individuals in ontology. Assert the result
+	 *
+	 * @return the i result[]
 	 */
 	public IResult [] computeInferredTypes();
 	
@@ -63,79 +72,93 @@ public interface IReasoner  {
 	 * this method queries the reasoner for the consistency of the class, 
 	 * its inferred super classes and its inferred equivalent classes.
 	 * Assert the result
+	 *
+	 * @param cls the cls
+	 * @return the i result[]
 	 */
 	public IResult [] computeInferredHierarchy(IClass cls);
 	
 	/**
 	 * infer types for all individuals in ontology. Assert the result
+	 *
+	 * @param inst the inst
+	 * @return the i result[]
 	 */
 	public IResult [] computeInferredTypes(IInstance inst);
 	
 	
 	/**
-	 * get inferrred super classes
-	 * @param cls
-	 * @return
+	 * get inferrred super classes.
+	 *
+	 * @param cls the cls
+	 * @return the super classes
 	 */
 	public IClass [] getSuperClasses(IClass cls);
 	
 	/**
-	 * get inferrred direct sub classes
-	 * @param cls
-	 * @return
+	 * get inferrred direct sub classes.
+	 *
+	 * @param cls the cls
+	 * @return the direct sub classes
 	 */
 	public IClass [] getDirectSubClasses(IClass cls);
 	
 	
 	/**
-	 * get inferrred direct super classes
-	 * @param cls
-	 * @return
+	 * get inferrred direct super classes.
+	 *
+	 * @param cls the cls
+	 * @return the direct super classes
 	 */
 	public IClass [] getDirectSuperClasses(IClass cls);
 	
 	/**
-	 * get inferrred sub classes
-	 * @param cls
-	 * @return
+	 * get inferrred sub classes.
+	 *
+	 * @param cls the cls
+	 * @return the sub classes
 	 */
 	public IClass [] getSubClasses(IClass cls);
 	
 	
 	/**
-	 * get inferrred sub classes
-	 * @param cls
-	 * @return
+	 * get inferrred sub classes.
+	 *
+	 * @param cls the cls
+	 * @return the equivalent classes
 	 */
 	public IClass [] getEquivalentClasses(IClass cls);
 	
 	/**
-	 * get inferred instances
-	 * @param cls
-	 * @return
+	 * get inferred instances.
+	 *
+	 * @param cls the cls
+	 * @return the instances
 	 */
 	public IInstance [] getInstances(IClass cls);
 	
 	/**
-	 * get inferred types
-	 * @param cls
-	 * @return
+	 * get inferred types.
+	 *
+	 * @param inst the inst
+	 * @return the types
 	 */
 	public IClass [] getTypes(IInstance inst);
 	
 	/**
-	 * get inferred types
-	 * @param cls
-	 * @return
+	 * get inferred types.
+	 *
+	 * @param inst the inst
+	 * @return the direct types
 	 */
 	public IClass [] getDirectTypes(IInstance inst);
 	
 	
 	/**
 	 * this class represents a TODO action item that was produced
-	 * by a reasoner
-	 * @author tseytlin
+	 * by a reasoner.
 	 *
+	 * @author tseytlin
 	 */
 	public static interface IResult{
 		public static final int ADD_SUPERCLASS = 11;
@@ -149,25 +172,28 @@ public interface IReasoner  {
 		
 		
 		/**
-		 * assert this action item
+		 * assert this action item.
 		 */
 		public void assertResult();
 		
 		/**
-		 * get a resource that this operation was on
-		 * @return
+		 * get a resource that this operation was on.
+		 *
+		 * @return the operand
 		 */
 		public IResource getOperand();
 		
 		/**
-		 * get operation type
-		 * @return
+		 * get operation type.
+		 *
+		 * @return the operation
 		 */
 		public int getOperation();
 		
 		/**
-		 * get parameter of this operation
-		 * @return
+		 * get parameter of this operation.
+		 *
+		 * @return the parameter
 		 */
 		public IResource getParameter();
 	}

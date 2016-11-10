@@ -4,7 +4,8 @@ import java.util.List;
 
 /**
  * a list of resources that could be either
- * conjunction or disjunction
+ * conjunction or disjunction.
+ *
  * @author tseytlin
  */
 public interface ILogicExpression extends List {
@@ -17,8 +18,9 @@ public interface ILogicExpression extends List {
 	 * get expression type
 	 * AND, OR, NOT
 	 * if 0 is returned then expression is just a container 
-	 * for a single value ex: (A)  
-	 * @return
+	 * for a single value ex: (A)  .
+	 *
+	 * @return the expression type
 	 */
 	public int getExpressionType();
 	
@@ -27,34 +29,39 @@ public interface ILogicExpression extends List {
 	 * set expression type
 	 * AND, OR, NOT
 	 * if 0 is returned then expression is just a container 
-	 * for a single value ex: (A)  
-	 * @return
+	 * for a single value ex: (A)  .
+	 *
+	 * @param type the new expression type
 	 */
 	public void setExpressionType(int type);
 	
 	/**
 	 * true if expression has only one parameter
-	 * Ex: NOT or empty expression
-	 * @return
+	 * Ex: NOT or empty expression.
+	 *
+	 * @return true, if is singleton
 	 */
 	public boolean isSingleton();
 	
 	/**
-	 * get single operand, usefull when singleton expression
-	 * @return
+	 * get single operand, usefull when singleton expression.
+	 *
+	 * @return the operand
 	 */
 	public Object getOperand();
 	
 	/**
-	 * get all operands
-	 * @return
+	 * get all operands.
+	 *
+	 * @return the operands
 	 */
 	public List getOperands();
 	
 	
 	/**
-	 * evaluate this expression against given object
-	 * @param object
+	 * evaluate this expression against given object.
+	 *
+	 * @param obj the obj
 	 * @return true if object passes this expression, false otherwise
 	 */
 	public boolean evaluate(Object obj);

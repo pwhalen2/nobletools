@@ -9,7 +9,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 /**
- * Implements Source
+ * Implements Source.
+ *
  * @author tseytlin
  */
 public class Source implements Serializable, Comparable {
@@ -20,13 +21,15 @@ public class Source implements Serializable, Comparable {
 	
 	
 	/**
-	 * Create empty source
+	 * Create empty source.
 	 */
 	public Source(){}
 	
 	
 	/**
-	 * Create empty source
+	 * Create empty source.
+	 *
+	 * @param name the name
 	 */
 	public Source(String name){
 		this(name,"",name);
@@ -34,10 +37,11 @@ public class Source implements Serializable, Comparable {
 	
 	
 	/**
-	 * Constract source w all values filled in
-	 * @param name
-	 * @param description
-	 * @param code
+	 * Constract source w all values filled in.
+	 *
+	 * @param name the name
+	 * @param description the description
+	 * @param code the code
 	 */
 	public Source(String name,String description, String code){
 		this.name = name;
@@ -46,6 +50,8 @@ public class Source implements Serializable, Comparable {
 	}
 	
 	/**
+	 * Gets the code.
+	 *
 	 * @return the code
 	 */
 	public String getCode() {
@@ -53,6 +59,8 @@ public class Source implements Serializable, Comparable {
 	}
 
 	/**
+	 * Sets the code.
+	 *
 	 * @param code the code to set
 	 */
 	public void setCode(String code) {
@@ -60,6 +68,8 @@ public class Source implements Serializable, Comparable {
 	}
 
 	/**
+	 * Gets the description.
+	 *
 	 * @return the description
 	 */
 	public String getDescription() {
@@ -67,6 +77,8 @@ public class Source implements Serializable, Comparable {
 	}
 
 	/**
+	 * Sets the description.
+	 *
 	 * @param description the description to set
 	 */
 	public void setDescription(String description) {
@@ -74,6 +86,8 @@ public class Source implements Serializable, Comparable {
 	}
 
 	/**
+	 * Gets the name.
+	 *
 	 * @return the name
 	 */
 	public String getName() {
@@ -81,6 +95,8 @@ public class Source implements Serializable, Comparable {
 	}
 
 	/**
+	 * Sets the name.
+	 *
 	 * @param name the name to set
 	 */
 	public void setName(String name) {
@@ -88,12 +104,19 @@ public class Source implements Serializable, Comparable {
 	}
 	
 	/**
-	 * String representation
+	 * String representation.
+	 *
+	 * @return the string
 	 */
 	public String toString(){
 		return code;
 	}
 	
+	/**
+	 * Gets the version.
+	 *
+	 * @return the version
+	 */
 	public String getVersion() {
 		if(version == null && description != null){
 			Matcher m = Pattern.compile(".*,\\s*(.{1,15})").matcher(description);
@@ -104,13 +127,21 @@ public class Source implements Serializable, Comparable {
 	}
 
 
+	/**
+	 * Sets the version.
+	 *
+	 * @param version the new version
+	 */
 	public void setVersion(String version) {
 		this.version = version;
 	}
 
 
 	/**
-	 * compare 2 sources
+	 * compare 2 sources.
+	 *
+	 * @param obj the obj
+	 * @return the int
 	 */
 	public int compareTo(Object obj){
 		if(obj instanceof Source){
@@ -120,18 +151,20 @@ public class Source implements Serializable, Comparable {
 	}
 	
 	/**
-	 * get instance of definition class
-	 * @param text
-	 * @return
+	 * get instance of definition class.
+	 *
+	 * @param text the text
+	 * @return the source
 	 */
 	public static Source getSource(String text){
 		return new Source(text);
 	}
 	
 	/**
-	 * get instance of definition class
-	 * @param text
-	 * @return
+	 * get instance of definition class.
+	 *
+	 * @param text the text
+	 * @return the sources
 	 */
 	public static Source [] getSources(String [] text){
 		if(text == null)
@@ -142,19 +175,27 @@ public class Source implements Serializable, Comparable {
 		return d;
 	}
 	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
 	public int hashCode() {
 		return toString().hashCode();
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
 	public boolean equals(Object obj) {
 		return toString().equals(obj.toString());
 	}
 
 
 	/**
-	 * convert to DOM element
-	 * @param doc
-	 * @return
+	 * convert to DOM element.
+	 *
+	 * @param doc the doc
+	 * @return the element
+	 * @throws TerminologyException the terminology exception
 	 */
 	public Element toElement(Document doc) throws TerminologyException {
 		Element root = doc.createElement("Source");
@@ -165,10 +206,12 @@ public class Source implements Serializable, Comparable {
 			root.setTextContent(getDescription());
 		return root;
 	}
+	
 	/**
-	 * convert from DOM element
-	 * @param element
-	 * @throws TerminologyException
+	 * convert from DOM element.
+	 *
+	 * @param element the element
+	 * @throws TerminologyException the terminology exception
 	 */
 	public void fromElement(Element element) throws TerminologyException{
 		if(element.getTagName().equals("Source")){

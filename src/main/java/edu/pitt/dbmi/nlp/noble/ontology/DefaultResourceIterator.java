@@ -3,42 +3,72 @@ package edu.pitt.dbmi.nlp.noble.ontology;
 import java.util.*;
 
 /**
- * resource iterator that wrapps regular iterator
+ * resource iterator that wrapps regular iterator.
+ *
  * @author tseytlin
  */
 public class DefaultResourceIterator implements IResourceIterator {
 	protected Iterator it;
 	protected int offset,limit, count, total = -1;
 	
+	/**
+	 * Instantiates a new default resource iterator.
+	 *
+	 * @param it the it
+	 */
 	public DefaultResourceIterator(Iterator it){
 		this.it = it;
 	}
+	
+	/**
+	 * Instantiates a new default resource iterator.
+	 *
+	 * @param it the it
+	 */
 	public DefaultResourceIterator(Collection it){
 		this.it = it.iterator();
 		total = it.size();
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IResourceIterator#getCount()
+	 */
 	public int getCount() {
 		return count;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IResourceIterator#getLimit()
+	 */
 	public int getLimit() {
 		return limit;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IResourceIterator#getOffset()
+	 */
 	public int getOffset() {
 		return offset;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.util.Iterator#next()
+	 */
 	public Object next() {
 		count++;
 		return (it.hasNext())?it.next():null;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IResourceIterator#setLimit(int)
+	 */
 	public void setLimit(int limit) {
 		this.limit = limit;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IResourceIterator#setOffset(int)
+	 */
 	public void setOffset(int offset) {
 		this.offset = offset;
 		//advance forward if offset is greater then current count
@@ -55,7 +85,9 @@ public class DefaultResourceIterator implements IResourceIterator {
 	}
 
 	/**
-	 * has next
+	 * has next.
+	 *
+	 * @return true, if successful
 	 */
 	public boolean hasNext() {
 		//TODO FIX THE MISTAKES OF THE WORLD EUGENE< YES U HAVE TO DO IT NOBODY ELSE WILL
@@ -66,10 +98,16 @@ public class DefaultResourceIterator implements IResourceIterator {
 		return it.hasNext();
 	}
 
+	/* (non-Javadoc)
+	 * @see java.util.Iterator#remove()
+	 */
 	public void remove() {
 		it.remove();
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IResourceIterator#getTotal()
+	 */
 	public int getTotal(){
 		return total;
 	}

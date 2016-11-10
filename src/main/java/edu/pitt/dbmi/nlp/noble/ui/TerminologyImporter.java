@@ -68,9 +68,9 @@ import edu.pitt.dbmi.nlp.noble.util.StringUtils;
 
 
 /**
- * loads IndexFinder loaders
- * @author tseytlin
+ * loads IndexFinder loaders.
  *
+ * @author tseytlin
  */
 public class TerminologyImporter implements ItemListener, ActionListener, PropertyChangeListener {
 	private final String [] FORMAT_NAMES = new String [] 
@@ -94,10 +94,20 @@ public class TerminologyImporter implements ItemListener, ActionListener, Proper
 	private JTextField maxWordsInTerm;
 	private JCheckBox maxWordsInTermCheck;
 	
+	/**
+	 * Adds the property change listener.
+	 *
+	 * @param l the l
+	 */
 	public void addPropertyChangeListener(PropertyChangeListener l){
 		pcs.addPropertyChangeListener(l);
 	}
 	
+	/**
+	 * Removes the property change listener.
+	 *
+	 * @param l the l
+	 */
 	public void removePropertyChangeListener(PropertyChangeListener l){
 		pcs.removePropertyChangeListener(l);
 	}
@@ -105,7 +115,7 @@ public class TerminologyImporter implements ItemListener, ActionListener, Proper
 	
 	
 	/**
-	 * create UI
+	 * create UI.
 	 */
 	public void showDialog() {
 		Vector<String> formats = new Vector<String>();
@@ -198,11 +208,21 @@ public class TerminologyImporter implements ItemListener, ActionListener, Proper
 		frame.setLocation(new Point((d.width-s.width)/2,(d.height-s.height)/2));
 	}
 	
+	/**
+	 * Gets the frame.
+	 *
+	 * @return the frame
+	 */
 	public JFrame getFrame(){
 		return frame;
 	}
 	
 	
+	/**
+	 * Do browse.
+	 *
+	 * @param text the text
+	 */
 	private void doBrowse(JTextField text){
 		// if input location and BioPortal selected
 		if(text == inputLocation && inputFormats.getSelectedIndex() == 3){
@@ -258,6 +278,9 @@ public class TerminologyImporter implements ItemListener, ActionListener, Proper
 		}
 	}
 	
+	/**
+	 * Do run.
+	 */
 	private void doRun(){
 		(new Thread(new Runnable(){
 			public void run() {
@@ -363,6 +386,11 @@ public class TerminologyImporter implements ItemListener, ActionListener, Proper
 	}
 	
 	
+	/**
+	 * Execute.
+	 *
+	 * @param args the args
+	 */
 	private void execute(List<String> args){
 		try {
 				load(args.toArray(new String [0]));
@@ -387,13 +415,25 @@ public class TerminologyImporter implements ItemListener, ActionListener, Proper
 		}*/
 	}
 	
+	/**
+	 * The Class StreamGobbler.
+	 */
 	private class StreamGobbler extends Thread {
 	    private InputStream is;
-	    public StreamGobbler(InputStream is){
+	    
+    	/**
+    	 * Instantiates a new stream gobbler.
+    	 *
+    	 * @param is the is
+    	 */
+    	public StreamGobbler(InputStream is){
 	        this.is = is;
 	    }
 	    
-	    public void run(){
+	    /* (non-Javadoc)
+    	 * @see java.lang.Thread#run()
+    	 */
+    	public void run(){
 	        try {
 	            InputStreamReader isr = new InputStreamReader(is);
 	            BufferedReader br = new BufferedReader(isr);
@@ -408,6 +448,11 @@ public class TerminologyImporter implements ItemListener, ActionListener, Proper
 	}
 	
 	
+	/**
+	 * Gets the common options.
+	 *
+	 * @return the common options
+	 */
 	private JPanel getCommonOptions(){
 		if(commonOptions == null){
 			commonOptions = new JPanel();
@@ -459,6 +504,11 @@ public class TerminologyImporter implements ItemListener, ActionListener, Proper
 		return commonOptions;
 	}
 	
+	/**
+	 * Gets the OWL dialog.
+	 *
+	 * @return the OWL dialog
+	 */
 	private JPanel getOWLDialog(){
 		if(owlOptions == null){
 			JPanel panel = new JPanel();
@@ -473,6 +523,11 @@ public class TerminologyImporter implements ItemListener, ActionListener, Proper
 		return owlOptions;
 	}
 	
+	/**
+	 * Gets the bioportal dialog.
+	 *
+	 * @return the bioportal dialog
+	 */
 	private JPanel getBioportalDialog(){
 		//if(owlOptions == null){
 		JPanel panel = new JPanel();
@@ -491,6 +546,11 @@ public class TerminologyImporter implements ItemListener, ActionListener, Proper
 		return panel;
 	}
 	
+	/**
+	 * Gets the txt dialog.
+	 *
+	 * @return the txt dialog
+	 */
 	private JPanel getTxtDialog(){
 		if(txtOptions == null){
 			JPanel panel = new JPanel();
@@ -543,6 +603,11 @@ public class TerminologyImporter implements ItemListener, ActionListener, Proper
 	
 	
 	
+	/**
+	 * Gets the RRF dialog.
+	 *
+	 * @return the RRF dialog
+	 */
 	private JPanel getRRFDialog(){
 		if(rrfOptions == null){
 			JPanel panel = new JPanel();
@@ -594,6 +659,9 @@ public class TerminologyImporter implements ItemListener, ActionListener, Proper
 	
 	
 	
+	/**
+	 * Do options.
+	 */
 	private void doOptions(){
 		switch(inputFormats.getSelectedIndex()){
 		case 0: JOptionPane.showMessageDialog(frame,getRRFDialog(),"RRF Options",JOptionPane.PLAIN_MESSAGE);;break;
@@ -604,6 +672,9 @@ public class TerminologyImporter implements ItemListener, ActionListener, Proper
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+	 */
 	public void actionPerformed(ActionEvent e) {
 		String cmd = e.getActionCommand();
 		if("run".equals(cmd)){
@@ -623,6 +694,9 @@ public class TerminologyImporter implements ItemListener, ActionListener, Proper
 		}	
 	}
 
+	/* (non-Javadoc)
+	 * @see java.awt.event.ItemListener#itemStateChanged(java.awt.event.ItemEvent)
+	 */
 	public void itemStateChanged(ItemEvent e) {
 		if(e.getStateChange() == ItemEvent.SELECTED){
 			//options.setEnabled(false);
@@ -638,6 +712,9 @@ public class TerminologyImporter implements ItemListener, ActionListener, Proper
 		
 	}
 	
+	/* (non-Javadoc)
+	 * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
+	 */
 	public void propertyChange(PropertyChangeEvent e) {
 		final String prop = e.getPropertyName();
 		final String val  = ""+ e.getNewValue();
@@ -663,10 +740,11 @@ public class TerminologyImporter implements ItemListener, ActionListener, Proper
 	}
 	
 	/**
-	 * get option from parameter list, null if not passed
-	 * @param params
-	 * @param option
-	 * @return
+	 * get option from parameter list, null if not passed.
+	 *
+	 * @param params the params
+	 * @param option the option
+	 * @return the option
 	 */
 	private String getOption(List<String> params, String option){
 		int i = params.indexOf(option);
@@ -677,7 +755,10 @@ public class TerminologyImporter implements ItemListener, ActionListener, Proper
 	}
 	
 	/**
-	 * actually load
+	 * actually load.
+	 *
+	 * @param args the args
+	 * @throws Exception the exception
 	 */
 	public void load(String [] args) throws Exception{
 		List<String> params = Arrays.asList(args);
@@ -832,6 +913,11 @@ public class TerminologyImporter implements ItemListener, ActionListener, Proper
 	}
 	
 	
+	/**
+	 * Log.
+	 *
+	 * @param obj the obj
+	 */
 	private void log(Object obj){
 		System.out.println(obj);
 		if(console != null){
@@ -840,6 +926,12 @@ public class TerminologyImporter implements ItemListener, ActionListener, Proper
 	}
 	
 	
+	/**
+	 * Prints the info.
+	 *
+	 * @param terminology the terminology
+	 * @throws Exception the exception
+	 */
 	public void printInfo(Terminology terminology) throws Exception {
 		log("\n[INFO]");
 		log("name:\t\t"+terminology.getName());
@@ -858,6 +950,13 @@ public class TerminologyImporter implements ItemListener, ActionListener, Proper
 	}
 	
 	
+	/**
+	 * Read list.
+	 *
+	 * @param text the text
+	 * @return the list
+	 * @throws Exception the exception
+	 */
 	private List<String> readList(String text) throws Exception {
 		List<String> list = null;
 		File file = new File(text);
@@ -877,7 +976,9 @@ public class TerminologyImporter implements ItemListener, ActionListener, Proper
 	}
 
 	/**
-	 * @param args
+	 * The main method.
+	 *
+	 * @param args the arguments
 	 */
 	public static void main(String[] args){
 		//args = new String [] {"-bioportal","http://bioportal.bioontology.org/ontologies/African_Traditional_Medicine"};

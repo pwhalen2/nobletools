@@ -13,15 +13,27 @@ import edu.pitt.dbmi.nlp.noble.ontology.IResource;
 import edu.pitt.dbmi.nlp.noble.ontology.IResourceIterator;
 
 
+/**
+ * The Class OResourceIterator.
+ */
 public class OResourceIterator extends DefaultResourceIterator{
 	private OOntology ont;
 	
 	
+	/**
+	 * Instantiates a new o resource iterator.
+	 *
+	 * @param list the list
+	 * @param ont the ont
+	 */
 	public OResourceIterator(Collection list ,OOntology ont){
 		super(list);
 		this.ont =  ont;
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.DefaultResourceIterator#next()
+	 */
 	public Object next(){
 		Object obj = null;
 		do{

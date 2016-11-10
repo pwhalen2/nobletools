@@ -3,7 +3,8 @@ package edu.pitt.dbmi.nlp.noble.ontology;
 import java.util.*;
 
 /**
- * list of resources that could be conjunction or disjunction
+ * list of resources that could be conjunction or disjunction.
+ *
  * @author tseytlin
  */
 public class LogicExpression extends ArrayList implements ILogicExpression {
@@ -11,16 +12,18 @@ public class LogicExpression extends ArrayList implements ILogicExpression {
 
 	
 	/**
-	 * create logic expression of a type
-	 * @param type
+	 * create logic expression of a type.
+	 *
+	 * @param obj the obj
 	 */
 	public LogicExpression(Object obj){
 		this(0,obj);
 	}
 	
 	/**
-	 * create logic expression of a type
-	 * @param type
+	 * create logic expression of a type.
+	 *
+	 * @param type the type
 	 */
 	public LogicExpression(int type){
 		super();
@@ -28,8 +31,10 @@ public class LogicExpression extends ArrayList implements ILogicExpression {
 	}
 	
 	/**
-	 * create logic expression of a type
-	 * @param type
+	 * create logic expression of a type.
+	 *
+	 * @param type the type
+	 * @param c the c
 	 */
 	public LogicExpression(int type, Collection c){
 		super(c);
@@ -37,8 +42,10 @@ public class LogicExpression extends ArrayList implements ILogicExpression {
 	}
 	
 	/**
-	 * create logic expression of a type
-	 * @param type
+	 * create logic expression of a type.
+	 *
+	 * @param type the type
+	 * @param obj the obj
 	 */
 	public LogicExpression(int type, Object obj){
 		super();
@@ -48,25 +55,30 @@ public class LogicExpression extends ArrayList implements ILogicExpression {
 	
 	
 	/**
-	 * create logic expression of a type
-	 * @param type
+	 * create logic expression of a type.
+	 *
+	 * @param type the type
+	 * @param obj the obj
 	 */
 	public LogicExpression(int type, Object [] obj){
 		super();
 		this.type = type;
 		Collections.addAll(this,obj);
 	}
+	
 	/**
-	 * get single operand, usefull when singleton expression
-	 * @return
+	 * get single operand, usefull when singleton expression.
+	 *
+	 * @return the operand
 	 */
 	public Object getOperand(){
 		return (size() > 0)?get(0):null;
 	}
 	
 	/**
-	 * get all operands
-	 * @return
+	 * get all operands.
+	 *
+	 * @return the operands
 	 */
 	public List getOperands(){
 		return this;
@@ -76,8 +88,9 @@ public class LogicExpression extends ArrayList implements ILogicExpression {
 	 * get expression type
 	 * AND, OR, NOT
 	 * if 0 is returned then expression is just a container 
-	 * for a single value ex: (A)  
-	 * @return
+	 * for a single value ex: (A)  .
+	 *
+	 * @return the expression type
 	 */
 	public int getExpressionType(){
 		return type;
@@ -87,8 +100,9 @@ public class LogicExpression extends ArrayList implements ILogicExpression {
 	 * set expression type
 	 * AND, OR, NOT
 	 * if 0 is returned then expression is just a container 
-	 * for a single value ex: (A)  
-	 * @return
+	 * for a single value ex: (A)  .
+	 *
+	 * @param type the new expression type
 	 */
 	public void setExpressionType(int type){
 		this.type = type;
@@ -96,8 +110,9 @@ public class LogicExpression extends ArrayList implements ILogicExpression {
 	
 	/**
 	 * true if expression has only one parameter
-	 * Ex: NOT or empty expression
-	 * @return
+	 * Ex: NOT or empty expression.
+	 *
+	 * @return true, if is singleton
 	 */
 	public boolean isSingleton(){
 		//return size() == 1;
@@ -106,7 +121,10 @@ public class LogicExpression extends ArrayList implements ILogicExpression {
 	
 	
 	/**
-	 * add object enforce singleton
+	 * add object enforce singleton.
+	 *
+	 * @param obj the obj
+	 * @return true, if successful
 	 */
 	public boolean add(Object obj){
 		if(type <= NOT && !isEmpty()){
@@ -118,9 +136,11 @@ public class LogicExpression extends ArrayList implements ILogicExpression {
 	}
 	
 	/**
-	 * evaluate single parameter
-	 * @param obj
-	 * @return
+	 * evaluate single parameter.
+	 *
+	 * @param obj the obj
+	 * @param param the param
+	 * @return true, if successful
 	 */
 	private boolean evaluateParameter(Object obj, Object param){
 		if(obj instanceof ILogicExpression){
@@ -132,8 +152,9 @@ public class LogicExpression extends ArrayList implements ILogicExpression {
 	}
 	
 	/**
-	 * evaluate this expression against given object
-	 * @param object
+	 * evaluate this expression against given object.
+	 *
+	 * @param obj the obj
 	 * @return true if object passes this expression, false otherwise
 	 */
 	public boolean evaluate(Object obj){
@@ -163,7 +184,9 @@ public class LogicExpression extends ArrayList implements ILogicExpression {
 	
 	
 	/**
-	 * create pretty printed expressions
+	 * create pretty printed expressions.
+	 *
+	 * @return the string
 	 */
 	public String toString(){
 		if(type == AND)
@@ -177,7 +200,10 @@ public class LogicExpression extends ArrayList implements ILogicExpression {
 	
 	
 	/**
-	 * are two expressions equal?
+	 * are two expressions equal?.
+	 *
+	 * @param obj the obj
+	 * @return true, if successful
 	 */
 	public boolean equals(Object obj){
 		if(obj instanceof ILogicExpression){

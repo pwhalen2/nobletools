@@ -11,6 +11,9 @@ import edu.pitt.dbmi.nlp.noble.tools.SentenceDetector;
 import edu.pitt.dbmi.nlp.noble.tools.SynopticReportDetector;
 import edu.pitt.dbmi.nlp.noble.tools.TextTools;
 
+/**
+ * The Class DocumentProcessor.
+ */
 public class DocumentProcessor implements Processor<Document> {
 	private static final String AB = "AB"; //medline abstract tag
 	private static final String PROSE_PATTERN = ".*\\b[a-z]+\\.\\s+[A-Z][a-z]+\\b.*";
@@ -19,14 +22,16 @@ public class DocumentProcessor implements Processor<Document> {
 	private long time;
 	
 	/**
-	 * initialize document processor with default (medical report) setting
+	 * initialize document processor with default (medical report) setting.
 	 */
 	public DocumentProcessor(){
 		this(Document.TYPE_MEDICAL_REPORT);
 	}
 	
 	/**
-	 * initialize document processor with document type
+	 * initialize document processor with document type.
+	 *
+	 * @param type the type
 	 */
 	public DocumentProcessor(String type){
 		setDocumentType(type);
@@ -39,15 +44,17 @@ public class DocumentProcessor implements Processor<Document> {
 	
 	
 	/**
-	 * get document type that this processor is configured to handle
-	 * @return
+	 * get document type that this processor is configured to handle.
+	 *
+	 * @return the document type
 	 */
 	public String getDocumentType() {
 		return documentType;
 	}
 
 	/**
-	 * set document type 
+	 * set document type .
+	 *
 	 * @param documentType that this processor is configured to handle
 	 */
 
@@ -57,9 +64,10 @@ public class DocumentProcessor implements Processor<Document> {
 
 
 	/**
-	 * suggest document type based on text
-	 * @param text
-	 * @return
+	 * suggest document type based on text.
+	 *
+	 * @param text the text
+	 * @return the string
 	 */
 	public static String suggestDocumentType(String text){
 		if(text.matches("(?s)^[A-Z]{2}  - .*"))
@@ -69,8 +77,10 @@ public class DocumentProcessor implements Processor<Document> {
 
 
 	/**
-	 * process document
-	 * @param dir
+	 * process document.
+	 *
+	 * @param f the f
+	 * @throws Exception the exception
 	 */
 	public void processFile(File f) throws Exception {
 		if(f.isDirectory()){
@@ -88,12 +98,14 @@ public class DocumentProcessor implements Processor<Document> {
 		
 		}
 	}
+	
 	/**
-	 * parse document into Sections and Sentences
-	 * @param  file where document is located
-	 * @return processed document 
-	 * @throws IOException 
-	 * @throws FileNotFoundException 
+	 * parse document into Sections and Sentences.
+	 *
+	 * @param file the file
+	 * @return processed document
+	 * @throws FileNotFoundException the file not found exception
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public Document process(File file) throws FileNotFoundException, IOException {
 		Document doc = process(new FileInputStream(file));
@@ -104,19 +116,21 @@ public class DocumentProcessor implements Processor<Document> {
 	}
 	
 	/**
-	 * parse document into Sections and Sentences
-	 * @param  file where document is located
-	 * @return processed document 
-	 * @throws IOException 
+	 * parse document into Sections and Sentences.
+	 *
+	 * @param is the is
+	 * @return processed document
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public Document process(InputStream is) throws IOException {
 		return process(TextTools.getText(is));
 	}
 	
 	/**
-	 * parse document into Sections and Sentences
-	 * @param  document text
-	 * @return processed document 
+	 * parse document into Sections and Sentences.
+	 *
+	 * @param text the text
+	 * @return processed document
 	 */
 	public Document process(String text) {
 		Document doc = new Document();
@@ -126,8 +140,9 @@ public class DocumentProcessor implements Processor<Document> {
 	}
 	
 	/**
-	 * process MEDLINE record
-	 * @param doc
+	 * process MEDLINE record.
+	 *
+	 * @param doc the doc
 	 */
 	private void processMedline(Document doc){
 		String text = doc.getText();
@@ -177,8 +192,9 @@ public class DocumentProcessor implements Processor<Document> {
 	
 	
 	/**
-	 * process Medical Report
-	 * @param doc
+	 * process Medical Report.
+	 *
+	 * @param doc the doc
 	 */
 	private void processReport(Document doc){
 		String text = doc.getText();
@@ -226,9 +242,10 @@ public class DocumentProcessor implements Processor<Document> {
 	
 	
 	/**
-	 * parse document into Sections and Sentences
-	 * @param  unprocessed document
-	 * @return processed document 
+	 * parse document into Sections and Sentences.
+	 *
+	 * @param doc the doc
+	 * @return processed document
 	 */
 	public Document process(Document doc) {
 		time = System.currentTimeMillis();
@@ -247,11 +264,12 @@ public class DocumentProcessor implements Processor<Document> {
 	}
 	
 	/**
-	 * parse sentences for a region of text based on type
-	 * @param doc
-	 * @param text
-	 * @param offset
-	 * @param type
+	 * parse sentences for a region of text based on type.
+	 *
+	 * @param doc the doc
+	 * @param text the text
+	 * @param offset the offset
+	 * @param type the type
 	 */
 	private void parseSentences(Document doc, String text, int offset, String type){
 		// if sentence starts with lots of 
@@ -307,9 +325,10 @@ public class DocumentProcessor implements Processor<Document> {
 	}
 	
 	/**
-	 * parse properties in a document
-	 * @param doc
-	 * @param text
+	 * parse properties in a document.
+	 *
+	 * @param doc the doc
+	 * @param text the text
 	 */
 	private void parseProperties(Document doc, String text){
 		Pattern p = Pattern.compile("([A-Z][A-Za-z /]{3,25})(?:\\.{2,}|\\:)(.{2,25})");
@@ -320,13 +339,21 @@ public class DocumentProcessor implements Processor<Document> {
 	}
 	
 	/**
-	 * get the process time for the 
-	 * @return
+	 * get the process time for the .
+	 *
+	 * @return the process time
 	 */
 	public long getProcessTime(){
 		return time;
 	}
 	
+	/**
+	 * Merge lines.
+	 *
+	 * @param last the last
+	 * @param s the s
+	 * @return true, if successful
+	 */
 	private boolean mergeLines(String last, String s) {
 		if(last == null)
 			return false;
@@ -341,6 +368,16 @@ public class DocumentProcessor implements Processor<Document> {
 		return false;
 	}
 
+	/**
+	 * Section.
+	 *
+	 * @param doc the doc
+	 * @param offs the offs
+	 * @param pt the pt
+	 * @param mt the mt
+	 * @param list the list
+	 * @return the list
+	 */
 	private List<Section> section(String doc,int offs,Pattern pt, Matcher mt,List<Section> list){
 		while(mt.find()){
 			int st = offs+mt.start();

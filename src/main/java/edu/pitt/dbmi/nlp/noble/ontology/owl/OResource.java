@@ -23,24 +23,47 @@ import edu.pitt.dbmi.nlp.noble.ontology.IResource;
 import edu.pitt.dbmi.nlp.noble.ontology.LogicExpression;
 
 
+/**
+ * The Class OResource.
+ */
 public class OResource implements IResource{
 	private OOntology ontology;
 	protected OWLObject obj;
 	protected Properties info;
 	
 	
+	/**
+	 * Instantiates a new o resource.
+	 *
+	 * @param obj the obj
+	 */
 	protected OResource(OWLObject obj){
 		this.obj = obj;
 	}
+	
+	/**
+	 * Instantiates a new o resource.
+	 *
+	 * @param obj the obj
+	 * @param ont the ont
+	 */
 	protected OResource(OWLObject obj,OOntology ont){
 		this.obj = obj;
 		this.ontology = ont;
 	}
 	
+	/**
+	 * Sets the ontology.
+	 *
+	 * @param ont the new ontology
+	 */
 	public void setOntology(OOntology ont){
 		ontology = ont;
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Describable#getFormat()
+	 */
 	public String getFormat() {
 		OWLOntology o = getOWLOntology();
 		if(o != null)
@@ -48,21 +71,37 @@ public class OResource implements IResource{
 		return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Describable#getLocation()
+	 */
 	public String getLocation() {
 		return getIRI().toString();
 	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
 	public int compareTo(IResource o) {
 		return getURI().compareTo(o.getURI());
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IResource#getDescription()
+	 */
 	public String getDescription() {
 		return getComments().length > 0?getComments()[0]:"";
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IResource#setDescription(java.lang.String)
+	 */
 	public void setDescription(String text) {
 		addComment(text);
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IResource#getName()
+	 */
 	public String getName() {
 		IRI iri = getIRI();
 		URI uri = iri.toURI();
@@ -74,6 +113,9 @@ public class OResource implements IResource{
 		return nm;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IResource#getLabel()
+	 */
 	public String getLabel(){
 		if(getLabels().length > 0)
 			return getLabels()[0];
@@ -81,28 +123,47 @@ public class OResource implements IResource{
 	}
 	
 	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	public String toString(){
 		return getName();
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IResource#dispose()
+	 */
 	public void dispose() {
 		obj = null;
 		info = null;
 		ontology = null;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IResource#getVersion()
+	 */
 	public String getVersion() {
 		String [] v = getAnnotations(getOWLDataFactory().getOWLVersionInfo()).toArray(new String [0]);
 		return v.length > 0?v[0]:null;
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IResource#getURI()
+	 */
 	public URI getURI() {
 		return getIRI().toURI();
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IResource#getNameSpace()
+	 */
 	public String getNameSpace() {
 		return getIRI().getNamespace();
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IResource#getPrefix()
+	 */
 	public String getPrefix() {
 		PrefixManager pm = ((OOntology)getOntology()).getPrefixManager(); 
 		Map<String,String> map = pm.getPrefixName2PrefixMap();
@@ -113,6 +174,9 @@ public class OResource implements IResource{
 		return ":";
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IResource#getProperties()
+	 */
 	public IProperty[] getProperties() {
 		OWLEntity e = asOWLEntity();
 		if(e != null){
@@ -127,11 +191,17 @@ public class OResource implements IResource{
 		return new IProperty [0];
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IResource#getPropertyValue(edu.pitt.dbmi.nlp.noble.ontology.IProperty)
+	 */
 	public Object getPropertyValue(IProperty prop) {
 		Object [] a = getPropertyValues(prop);
 		return a.length > 0?a[0]:null;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IResource#getPropertyValues(edu.pitt.dbmi.nlp.noble.ontology.IProperty)
+	 */
 	public Object[] getPropertyValues(IProperty prop) {
 		OWLEntity e = asOWLEntity();
 		if(e != null){
@@ -148,6 +218,9 @@ public class OResource implements IResource{
 		return new Object [0];
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IResource#addPropertyValue(edu.pitt.dbmi.nlp.noble.ontology.IProperty, java.lang.Object)
+	 */
 	public void addPropertyValue(IProperty prop, Object value) {
 		if(prop.isAnnotationProperty()){
 			addAxiom(getAnnotationAxiom((OWLAnnotationProperty)convertOntologyObject(prop),(OWLAnnotationValue)convertOntologyObject(value)));
@@ -155,6 +228,9 @@ public class OResource implements IResource{
 			throw new IOntologyError("Not implemented for "+getClass().getName());
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IResource#setPropertyValue(edu.pitt.dbmi.nlp.noble.ontology.IProperty, java.lang.Object)
+	 */
 	public void setPropertyValue(IProperty prop, Object value) {
 		if(prop.isAnnotationProperty()){
 			removePropertyValues(prop);
@@ -163,6 +239,9 @@ public class OResource implements IResource{
 			throw new IOntologyError("Not implemented for "+getClass().getName());
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IResource#setPropertyValues(edu.pitt.dbmi.nlp.noble.ontology.IProperty, java.lang.Object[])
+	 */
 	public void setPropertyValues(IProperty prop, Object[] values) {
 		if(prop.isAnnotationProperty()){
 			removePropertyValues(prop);
@@ -173,6 +252,9 @@ public class OResource implements IResource{
 			throw new IOntologyError("Not implemented for "+getClass().getName());
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IResource#removePropertyValues(edu.pitt.dbmi.nlp.noble.ontology.IProperty)
+	 */
 	public void removePropertyValues(IProperty prop) {
 		OWLEntity e = asOWLEntity();
 		if(e != null){
@@ -186,12 +268,19 @@ public class OResource implements IResource{
 			}
 		}
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IResource#removePropertyValue(edu.pitt.dbmi.nlp.noble.ontology.IProperty, java.lang.Object)
+	 */
 	public void removePropertyValue(IProperty prop, Object value) {
 		if(prop.isAnnotationProperty()){
 			removeAxiom(getAnnotationAxiom((OWLAnnotationProperty)convertOntologyObject(prop),(OWLAnnotationValue)convertOntologyObject(value)));
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IResource#removePropertyValues()
+	 */
 	public void removePropertyValues() {
 		OWLEntity e = asOWLEntity();
 		if(e != null){
@@ -203,6 +292,9 @@ public class OResource implements IResource{
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IResource#hasPropetyValue(edu.pitt.dbmi.nlp.noble.ontology.IProperty, java.lang.Object)
+	 */
 	public boolean hasPropetyValue(IProperty p, Object value) {
 		OWLEntity e = asOWLEntity();
 		if(e != null){
@@ -218,6 +310,9 @@ public class OResource implements IResource{
 		return false;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IResource#addLabel(java.lang.String)
+	 */
 	public void addLabel(String label) {
 		List<String> labels = getAnnotations(getOWLDataFactory().getRDFSLabel());
 		if(!labels.contains(label)){
@@ -225,6 +320,9 @@ public class OResource implements IResource{
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IResource#addComment(java.lang.String)
+	 */
 	public void addComment(String comment) {
 		List<String> labels = getAnnotations(getOWLDataFactory().getRDFSComment());
 		if(!labels.contains(comment)){
@@ -232,6 +330,9 @@ public class OResource implements IResource{
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IResource#removeLabel(java.lang.String)
+	 */
 	public void removeLabel(String label) {
 		List<String> labels = getAnnotations(getOWLDataFactory().getRDFSLabel());
 		if(labels.contains(label)){
@@ -239,6 +340,10 @@ public class OResource implements IResource{
 		}
 		
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IResource#removeComment(java.lang.String)
+	 */
 	public void removeComment(String comment) {
 		List<String> labels = getAnnotations(getOWLDataFactory().getRDFSComment());
 		if(labels.contains(comment)){
@@ -246,12 +351,19 @@ public class OResource implements IResource{
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IResource#addVersion(java.lang.String)
+	 */
 	public void addVersion(String version) {
 		List<String> labels = getAnnotations(getOWLDataFactory().getOWLVersionInfo());
 		if(!labels.contains(version)){
 			addAnnotation(getOWLDataFactory().getOWLVersionInfo(),version);
 		}
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IResource#removeVersion(java.lang.String)
+	 */
 	public void removeVersion(String version) {
 		List<String> labels = getAnnotations(getOWLDataFactory().getOWLVersionInfo());
 		if(labels.contains(version)){
@@ -259,19 +371,26 @@ public class OResource implements IResource{
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IResource#getLabels()
+	 */
 	public String[] getLabels() {
 		return getAnnotations(getOWLDataFactory().getRDFSLabel()).toArray(new String [0]);
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IResource#getComments()
+	 */
 	public String[] getComments() {
 		return getAnnotations(getOWLDataFactory().getRDFSComment()).toArray(new String [0]);
 	}
 	
 	
 	/**
-	 * get annotations associated with a given entry
-	 * @param prop
-	 * @return
+	 * get annotations associated with a given entry.
+	 *
+	 * @param prop the prop
+	 * @return the annotations
 	 */
 	private List<String> getAnnotations(OWLAnnotationProperty prop){
 		List<String> list = new ArrayList<String>();
@@ -298,36 +417,45 @@ public class OResource implements IResource{
 	
 	
 	/**
-	 * get defining ontology for this attribute
-	 * @return
+	 * get defining ontology for this attribute.
 	 *
-	protected OWLOntology getDefiningOntology(){
-		OWLEntity e = asOWLEntity();
-		OWLOntology o = null;
-		if(e != null){
-			OWLOntologyManager man = getOWLOntologyManager();
-			String s = getNameSpace();
-			if(s.endsWith("#"))
-				s = s.substring(0,s.length()-1);
-			o =  man.getOntology(IRI.create(s));
-		}
-		return o != null?o:getOWLOntology();
-	}*/
+	 * @return 	protected OWLOntology getDefiningOntology(){
+	 * 		OWLEntity e = asOWLEntity();
+	 * 		OWLOntology o = null;
+	 * 		if(e != null){
+	 * 			OWLOntologyManager man = getOWLOntologyManager();
+	 * 			String s = getNameSpace();
+	 * 			if(s.endsWith("#"))
+	 * 				s = s.substring(0,s.length()-1);
+	 * 			o =  man.getOntology(IRI.create(s));
+	 * 		}
+	 * 		return o != null?o:getOWLOntology();
+	 * 	}
+	 */
 	
 	protected Set<OWLOntology> getDefiningOntologies(){
 		return getOWLOntologyManager().getOntologies();
 	}
 
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IResource#isSystem()
+	 */
 	public boolean isSystem() {
 		OWLEntity o = asOWLEntity();
 		return (o != null)?o.isBuiltIn():false;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IResource#getOntology()
+	 */
 	public OOntology getOntology() {
 		return ontology;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IResource#delete()
+	 */
 	public void delete() {
 		if(obj instanceof OWLEntity){
 			OWLEntityRemover remover = getOWLEntityRemover();
@@ -337,6 +465,9 @@ public class OResource implements IResource{
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IResource#setName(java.lang.String)
+	 */
 	public void setName(String name) {
 		if(obj instanceof OWLEntity){
 			OWLEntityRenamer renamer = getOWLEntityRenamer();
@@ -345,19 +476,37 @@ public class OResource implements IResource{
 			getOWLOntologyManager().applyChanges(changes);
 	 	}
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IResource#getLogicExpression()
+	 */
 	public ILogicExpression getLogicExpression() {
 		return new LogicExpression(this);
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IResource#getResourceProperties()
+	 */
 	public Properties getResourceProperties() {
 		if(info == null)
 			info = new Properties();
 		return info;
 	}
 
+	/**
+	 * Gets the OWL object.
+	 *
+	 * @return the OWL object
+	 */
 	protected OWLObject getOWLObject(){
 		return obj;
 	}
+	
+	/**
+	 * Gets the iri.
+	 *
+	 * @return the iri
+	 */
 	protected IRI getIRI(){
 		if(obj instanceof OWLOntology)
 			return ((OWLOntology)obj).getOntologyID().getOntologyIRI();
@@ -365,6 +514,12 @@ public class OResource implements IResource{
 			return ((OWLNamedObject)obj).getIRI();
 		return null;
 	}
+	
+	/**
+	 * As OWL entity.
+	 *
+	 * @return the OWL entity
+	 */
 	protected OWLEntity asOWLEntity(){
 		if(obj instanceof OWLEntity)
 			return (OWLEntity) obj;
@@ -372,21 +527,34 @@ public class OResource implements IResource{
 	}
 
 	
+	/**
+	 * Adds the annotation.
+	 *
+	 * @param prop the prop
+	 * @param str the str
+	 */
 	protected void addAnnotation(OWLAnnotationProperty prop,String str){
 		OWLDataFactory df = getOWLDataFactory();
 		addAxiom(getAnnotationAxiom(prop, df.getOWLLiteral(str)));
 	}
 	
+	/**
+	 * Removes the annotation.
+	 *
+	 * @param prop the prop
+	 * @param str the str
+	 */
 	protected void removeAnnotation(OWLAnnotationProperty prop,String str){
 		OWLDataFactory df = getOWLDataFactory();
 		removeAxiom(getAnnotationAxiom(prop, df.getOWLLiteral(str)));
 	}
 	
 	/**
-	 * get annotation axiom
-	 * @param prop
-	 * @param val
-	 * @return
+	 * get annotation axiom.
+	 *
+	 * @param prop the prop
+	 * @param val the val
+	 * @return the annotation axiom
 	 */
 	private OWLAxiom getAnnotationAxiom(OWLAnnotationProperty prop,OWLAnnotationValue val){
 		OWLDataFactory df = getOWLDataFactory();
@@ -395,9 +563,10 @@ public class OResource implements IResource{
 	}
 	
 	/**
-	 * check if a language is in a filter
-	 * @param lang
-	 * @return
+	 * check if a language is in a filter.
+	 *
+	 * @param lang the lang
+	 * @return true, if is language in filter
 	 */
 	protected boolean isLanguageInFilter(String lang){
 		if(lang == null || lang.length() == 0 || getOntology().getLanguageFilter() == null || getOntology().getLanguageFilter().isEmpty())
@@ -407,9 +576,10 @@ public class OResource implements IResource{
 		
 	
 	/**
-	 * get annotation value as java object
-	 * @param val
-	 * @return
+	 * get annotation value as java object.
+	 *
+	 * @param val the val
+	 * @return the object
 	 */
 	protected Object convertOWLObject(OWLObject val){
 		if(val == null)
@@ -491,9 +661,10 @@ public class OResource implements IResource{
 	}
 	
 	/**
-	 * convert Ontology object back to OWL-API
-	 * @param val
-	 * @return
+	 * convert Ontology object back to OWL-API.
+	 *
+	 * @param val the val
+	 * @return the object
 	 */
 	protected Object convertOntologyObject(Object val){
 		if(val == null)
@@ -571,10 +742,10 @@ public class OResource implements IResource{
 	
 	
 	/**
-	 * method to get super/sub direct/all classes
-	 * @param parent
-	 * @param direct
-	 * @return
+	 * method to get super/sub direct/all classes.
+	 *
+	 * @param list the list
+	 * @return the classes
 	 */
 	protected IClass [] getClasses(Collection<OWLClass> list){
 		Set<IClass> c = new LinkedHashSet<IClass>();
@@ -585,6 +756,12 @@ public class OResource implements IResource{
 		return (IClass []) c.toArray(new IClass [0]);
 	}
 	
+	/**
+	 * Gets the properties.
+	 *
+	 * @param list the list
+	 * @return the properties
+	 */
 	protected IProperty [] getProperties(Collection list){
 		List<IProperty> props = new ArrayList<IProperty>();
 		for(Object p: list){
@@ -598,10 +775,10 @@ public class OResource implements IResource{
 	}
 	
 	/**
-	 * method to get super/sub direct/all classes
-	 * @param parent
-	 * @param direct
-	 * @return
+	 * method to get super/sub direct/all classes.
+	 *
+	 * @param list the list
+	 * @return the instances
 	 */
 	protected IInstance [] getInstances(Collection<OWLNamedIndividual> list){
 		Set<IInstance> c = new LinkedHashSet<IInstance>();
@@ -612,43 +789,90 @@ public class OResource implements IResource{
 		return (IInstance []) c.toArray(new IInstance [0]);
 	}
 	
+	/**
+	 * Adds the axiom.
+	 *
+	 * @param ax the ax
+	 */
 	protected void addAxiom(OWLAxiom ax){
 		getOWLOntologyManager().addAxiom(getOWLOntology(),ax);
 	}
 	
+	/**
+	 * Removes the axiom.
+	 *
+	 * @param ax the ax
+	 */
 	protected void removeAxiom(OWLAxiom ax){
 		getOWLOntologyManager().removeAxiom(getOWLOntology(),ax);
 	}
 
+	/**
+	 * Gets the OWL ontology.
+	 *
+	 * @return the OWL ontology
+	 */
 	protected OWLOntology getOWLOntology(){
 		return getOntology().getOWLOntology();
 	}
 	
+	/**
+	 * Gets the OWL data factory.
+	 *
+	 * @return the OWL data factory
+	 */
 	protected OWLDataFactory getOWLDataFactory(){
 		return getOntology().getOWLDataFactory();
 	}
 	
+	/**
+	 * Gets the OWL ontology manager.
+	 *
+	 * @return the OWL ontology manager
+	 */
 	protected OWLOntologyManager getOWLOntologyManager(){
 		return getOntology().getOWLOntologyManager();
 	}
 	
+	/**
+	 * Gets the OWL reasoner.
+	 *
+	 * @return the OWL reasoner
+	 */
 	protected OWLReasoner getOWLReasoner(){
 		return getOntology().getOWLReasoner();
 	}
+	
+	/**
+	 * Gets the OWL entity remover.
+	 *
+	 * @return the OWL entity remover
+	 */
 	protected OWLEntityRemover getOWLEntityRemover(){
 		return getOntology().getOWLEntityRemover();
 	}
+	
+	/**
+	 * Gets the OWL entity renamer.
+	 *
+	 * @return the OWL entity renamer
+	 */
 	protected OWLEntityRenamer getOWLEntityRenamer(){
 		return getOntology().getOWLEntityRenamer();
 	}
 	
 	/**
-	 * where there is equals, there is hashCode
+	 * where there is equals, there is hashCode.
+	 *
+	 * @return the int
 	 */
 	public int hashCode() {
 		return getURI().hashCode();
 	}
 	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
 	public boolean equals(Object obj) {
 		if(obj == null)
 			return false;

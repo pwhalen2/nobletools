@@ -31,6 +31,9 @@ import edu.pitt.dbmi.nlp.noble.terminology.TerminologyException;
 import edu.pitt.dbmi.nlp.noble.terminology.impl.NobleCoderTerminology;
 import edu.pitt.dbmi.nlp.noble.util.PathHelper;
 
+/**
+ * The Class ConText.
+ */
 public class ConText implements Processor<Sentence> {
 	public static final String DEFAULT_MODIFIER_ONTOLOGY = "http://blulab.chpc.utah.edu/ontologies/v2/Modifier.owl";
 	public static final List<String> CONTEXT_ROOTS =  Arrays.asList("Closure","Pseudo","LinguisticModifier");
@@ -91,7 +94,7 @@ public class ConText implements Processor<Sentence> {
 	
 	/**
 	 * initialize ConText with default modifier ontology
-	 * first check the cache, if not there load/save from the web
+	 * first check the cache, if not there load/save from the web.
 	 */
 	public ConText(){
 		try{
@@ -110,6 +113,11 @@ public class ConText implements Processor<Sentence> {
 	}
 	
 	
+	/**
+	 * Instantiates a new con text.
+	 *
+	 * @param ont the ont
+	 */
 	public ConText(IOntology ont){
 		try {
 			load(ont);
@@ -120,11 +128,11 @@ public class ConText implements Processor<Sentence> {
 	}
 	
 	/**
-	 * load ConText ontology from a given ontology object
-	 * @param ontology
-	 * @return
-	 * @throws TerminologyException
-	 * @throws IOException
+	 * load ConText ontology from a given ontology object.
+	 *
+	 * @param ontology the ontology
+	 * @throws TerminologyException the terminology exception
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	private void load(IOntology ontology) throws TerminologyException, IOException {
 		// setup special interest of noble coder
@@ -175,6 +183,13 @@ public class ConText implements Processor<Sentence> {
 		terminology.save();
 	}
 
+	/**
+	 * Adds the concept.
+	 *
+	 * @param inst the inst
+	 * @return the concept
+	 * @throws TerminologyException the terminology exception
+	 */
 	private Concept addConcept(IInstance inst) throws TerminologyException {
 		Concept concept = new Concept(inst);
 		concept.setCode(inst.getName());
@@ -214,10 +229,11 @@ public class ConText implements Processor<Sentence> {
 	}
 	
 	/**
-	 * get modifier value
-	 * @param type
-	 * @param c
-	 * @return
+	 * get modifier value.
+	 *
+	 * @param type the type
+	 * @param c the c
+	 * @return the modifier value
 	 */
 	private String getModifierValue(String type, IClass c){
 		IOntology o = c.getOntology();
@@ -234,6 +250,12 @@ public class ConText implements Processor<Sentence> {
 	
 	
 
+	/**
+	 * Checks if is root instance.
+	 *
+	 * @param inst the inst
+	 * @return true, if is root instance
+	 */
 	private boolean isRootInstance(IInstance inst) {
 		for(IClass c: inst.getDirectTypes()){
 			if(CONTEXT_ROOTS.contains(c.getName()))
@@ -242,6 +264,13 @@ public class ConText implements Processor<Sentence> {
 		return false;
 	}
 
+	/**
+	 * Adds the concept.
+	 *
+	 * @param cls the cls
+	 * @return the concept
+	 * @throws TerminologyException the terminology exception
+	 */
 	private Concept addConcept(IClass cls) throws TerminologyException{
 		Concept concept = cls.getConcept();
 		//overwrite URI, with name
@@ -316,14 +345,31 @@ public class ConText implements Processor<Sentence> {
 	}
 	
 	
+	/**
+	 * Gets the terminology.
+	 *
+	 * @return the terminology
+	 */
 	public Terminology getTerminology() {
 		return terminology;
 	}
 
+	/**
+	 * Checks if is modifier type.
+	 *
+	 * @param cls the cls
+	 * @return true, if is modifier type
+	 */
 	private boolean isModifierType(IClass cls){
 		return cls.getURI().toString().contains(CONTEXT_OWL) && !cls.getName().contains("_");
 	}
 	
+	/**
+	 * Checks if is default value.
+	 *
+	 * @param cls the cls
+	 * @return true, if is default value
+	 */
 	private boolean isDefaultValue(IClass cls){
 		for(Object o: cls.getDirectNecessaryRestrictions()){
 			if(o instanceof IRestriction){
@@ -339,6 +385,12 @@ public class ConText implements Processor<Sentence> {
 	}
 	
 	
+	/**
+	 * Gets the semantic types.
+	 *
+	 * @param cls the cls
+	 * @return the semantic types
+	 */
 	private Set<SemanticType> getSemanticTypes(IClass cls) {
 		Set<SemanticType> semTypes = new LinkedHashSet<SemanticType>();
 		// if defined in ConText ontology, then class is its own SemType
@@ -357,9 +409,10 @@ public class ConText implements Processor<Sentence> {
 
 	
 	/**
-	 * get default values map
-	 * @return
-	 * @throws TerminologyException
+	 * get default values map.
+	 *
+	 * @return the default values
+	 * @throws TerminologyException the terminology exception
 	 */
 	private Map<String,String> getDefaultValues() throws TerminologyException{
 		if(defaultValues == null){
@@ -379,7 +432,11 @@ public class ConText implements Processor<Sentence> {
 	
 	
 	/**
-	 * now actually process sentence and see what we have
+	 * now actually process sentence and see what we have.
+	 *
+	 * @param sentence the sentence
+	 * @return the sentence
+	 * @throws TerminologyException the terminology exception
 	 */
 	
 	public Sentence process(Sentence sentence) throws TerminologyException {
@@ -409,6 +466,13 @@ public class ConText implements Processor<Sentence> {
 	}
 
 	
+	/**
+	 * Gets the modifiers.
+	 *
+	 * @param m the m
+	 * @return the modifiers
+	 * @throws TerminologyException the terminology exception
+	 */
 	private List<Modifier> getModifiers(Mention m) throws TerminologyException{
 		List<Modifier> modifiers = Modifier.getModifiers(m);
 		for(Modifier mod: modifiers){
@@ -418,6 +482,13 @@ public class ConText implements Processor<Sentence> {
 		return modifiers;
 	}
 	
+	/**
+	 * Gets the modifier.
+	 *
+	 * @param type the type
+	 * @param value the value
+	 * @return the modifier
+	 */
 	private Modifier getModifier(String type, String value){
 		Modifier modifier = Modifier.getModifier(type,value);
 		modifier.setDefaultValue(true);
@@ -425,6 +496,15 @@ public class ConText implements Processor<Sentence> {
 	}
 	
 	
+	/**
+	 * Gets the target mentions.
+	 *
+	 * @param modifier the modifier
+	 * @param targetText the target text
+	 * @param terminators the terminators
+	 * @return the target mentions
+	 * @throws TerminologyException the terminology exception
+	 */
 	private List<Mention> getTargetMentions(Mention modifier, Sentence targetText, List<Mention> terminators) throws TerminologyException {
 		List<Mention> list = new ArrayList<Mention>();
 
@@ -470,6 +550,15 @@ public class ConText implements Processor<Sentence> {
 		return list;
 	}
 
+	/**
+	 * Gets the word window index.
+	 *
+	 * @param modifier the modifier
+	 * @param targetText the target text
+	 * @param beforeModifier the before modifier
+	 * @return the word window index
+	 * @throws TerminologyException the terminology exception
+	 */
 	private int getWordWindowIndex(Mention modifier, Sentence targetText, boolean beforeModifier) throws TerminologyException {
 		int offs;
 		int windowSize = getWindowSize(modifier.getConcept());
@@ -499,6 +588,14 @@ public class ConText implements Processor<Sentence> {
 	}
 
 
+	/**
+	 * Gets the terminators.
+	 *
+	 * @param modifier the modifier
+	 * @param text the text
+	 * @return the terminators
+	 * @throws TerminologyException the terminology exception
+	 */
 	private List<Mention> getTerminators(Mention modifier,Sentence text) throws TerminologyException{
 		List<Mention> list = new ArrayList<Mention>();
 		List<String> terminators = getTermination(modifier.getConcept());
@@ -517,10 +614,11 @@ public class ConText implements Processor<Sentence> {
 
 	
 	/**
-	 * get a list of linguistic modifiers that are not pseudo modifiers
-	 * @param text
-	 * @return
-	 * @throws TerminologyException
+	 * get a list of linguistic modifiers that are not pseudo modifiers.
+	 *
+	 * @param text the text
+	 * @return the linguistic modifiers
+	 * @throws TerminologyException the terminology exception
 	 */
 	private List<Mention> getLinguisticModifiers(Sentence text) throws TerminologyException{
 		List<Mention> list = new ArrayList<Mention>();
@@ -536,10 +634,11 @@ public class ConText implements Processor<Sentence> {
 	
 	
 	/**
-	 * get a list of pseudo modifier
-	 * @param text
-	 * @return
-	 * @throws TerminologyException
+	 * get a list of pseudo modifier.
+	 *
+	 * @param text the text
+	 * @return the pseudo modifiers
+	 * @throws TerminologyException the terminology exception
 	 */
 	private List<Mention> getPseudoModifiers(Sentence text) throws TerminologyException{
 		List<Mention> list = new ArrayList<Mention>();
@@ -554,10 +653,12 @@ public class ConText implements Processor<Sentence> {
 	
 
 	/**
-	 * is this method interacting with any of the pseudo modifiers?
-	 * @param m
-	 * @return
-	 * @throws TerminologyException 
+	 * is this method interacting with any of the pseudo modifiers?.
+	 *
+	 * @param m the m
+	 * @param pseudo the pseudo
+	 * @return true, if is pseudo
+	 * @throws TerminologyException the terminology exception
 	 */
 	private boolean isPseudo(Mention m, List<Mention> pseudo) throws TerminologyException {
 		if(pseudo.isEmpty())
@@ -586,6 +687,13 @@ public class ConText implements Processor<Sentence> {
 	}
 
 
+	/**
+	 * Gets the action.
+	 *
+	 * @param c the c
+	 * @return the action
+	 * @throws TerminologyException the terminology exception
+	 */
 	private static List<String> getAction(Concept c) throws TerminologyException {
 		List<String> list = new ArrayList<String>();
 		list.add(c.getProperty(RELATION_ACTION));
@@ -597,10 +705,11 @@ public class ConText implements Processor<Sentence> {
 	
 	
 	/**
-	 * get window size
-	 * @param c
-	 * @return
-	 * @throws TerminologyException
+	 * get window size.
+	 *
+	 * @param c the c
+	 * @return the window size
+	 * @throws TerminologyException the terminology exception
 	 */
 	private static int getWindowSize(Concept c) throws TerminologyException {
 		if(c.getProperties().containsKey(PROP_WINDOW_SIZE))
@@ -612,9 +721,10 @@ public class ConText implements Processor<Sentence> {
 	}
 	
 	/**
-	 * get modifier type for a given modifier mention
-	 * @param c
-	 * @return
+	 * get modifier type for a given modifier mention.
+	 *
+	 * @param c the c
+	 * @return the modifier types
 	 */
 	public static List<String> getModifierTypes(Concept c){
 		List<String> types = new ArrayList<String>();
@@ -626,16 +736,24 @@ public class ConText implements Processor<Sentence> {
 	}
 	
 	/**
-	 * get modifier value for a given mention
-	 * @param type
-	 * @param c
-	 * @return
+	 * get modifier value for a given mention.
+	 *
+	 * @param type the type
+	 * @param c the c
+	 * @return the modifier value
 	 */
 	public static String getModifierValue(String type, Concept c) {
 		return c.getProperty(type);
 	}
 	
 	
+	/**
+	 * Gets the termination.
+	 *
+	 * @param c the c
+	 * @return the termination
+	 * @throws TerminologyException the terminology exception
+	 */
 	private List<String> getTermination(Concept c) throws TerminologyException {
 		List<String> list = new ArrayList<String>();
 		for(Concept p: c.getParentConcepts()){
@@ -646,6 +764,13 @@ public class ConText implements Processor<Sentence> {
 		return list;
 	}
 	
+	/**
+	 * Gets the pseudo.
+	 *
+	 * @param c the c
+	 * @return the pseudo
+	 * @throws TerminologyException the terminology exception
+	 */
 	private List<String> getPseudo(Concept c) throws TerminologyException {
 		List<String> list = new ArrayList<String>();
 		for(Concept p: c.getParentConcepts()){
@@ -658,11 +783,22 @@ public class ConText implements Processor<Sentence> {
 	
 	
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.coder.model.Processor#getProcessTime()
+	 */
 	public long getProcessTime() {
 		return time;
 	}
 
 	
+	/**
+	 * The main method.
+	 *
+	 * @param args the arguments
+	 * @throws IOntologyException the i ontology exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws TerminologyException the terminology exception
+	 */
 	public static void main(String[] args) throws IOntologyException, IOException, TerminologyException {
 		ConText conText = new ConText();
 		

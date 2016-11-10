@@ -20,6 +20,12 @@ public class SentenceDetector {
 	}
 
 	
+	/**
+	 * Checks if is exception.
+	 *
+	 * @param s the s
+	 * @return true, if is exception
+	 */
 	private static boolean isException(String s){
 		// check if this period is some known abreviation
 		for(String ex: exceptionList)
@@ -33,8 +39,9 @@ public class SentenceDetector {
 	 * Parse English sentences from a blurb of text. 
 	 * Each sentence should be terminated by .! or ?
 	 * Periods in digits and some acronyms should be skipped
-	 * @param txt
-	 * @return
+	 *
+	 * @param txt the txt
+	 * @return the sentences
 	 */
 	public static List<String> getSentences(String txt) {
 		List<String> sentences =new ArrayList<String>();
@@ -81,12 +88,15 @@ public class SentenceDetector {
 		
 		return sentences;
 	}
+	
 	/**
 	 * Parse English sentences from a blurb of text. 
 	 * Each sentence should be terminated by .! or ?
 	 * Periods in digits and some acronyms should be skipped
-	 * @param txt
-	 * @return
+	 *
+	 * @param txt the txt
+	 * @param offset the offset
+	 * @return the sentences
 	 */
 	public static List<Sentence> getSentences(String txt,int offset) {
 		List<Sentence> sentences =new ArrayList<Sentence>();

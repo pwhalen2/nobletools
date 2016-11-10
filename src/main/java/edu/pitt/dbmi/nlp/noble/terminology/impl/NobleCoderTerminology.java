@@ -63,7 +63,8 @@ import edu.pitt.dbmi.nlp.noble.util.XMLUtils;
 
 
 /**
- * Implementation of Terminology using IndexFinder algorithm
+ * Implementation of Terminology using IndexFinder algorithm.
+ *
  * @author Eugene Tseytlin (University of Pittsburgh)
  */
 
@@ -139,9 +140,9 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 	private long processTime;
 	
 	/**
-	 * isolated storage object that deals with all of the MAPS
-	 * @author tseytlin
+	 * isolated storage object that deals with all of the MAPS.
 	 *
+	 * @author tseytlin
 	 */
 	public static class Storage implements Serializable{
 		public int maxTermsPerWord,totalTermsPerWord;
@@ -158,45 +159,125 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 		private Map<String,String> codeMap;
 		
 		
+		/**
+		 * Instantiates a new storage.
+		 */
 		public Storage(){
 			init();
 		}
+		
+		/**
+		 * Instantiates a new storage.
+		 *
+		 * @param file the file
+		 * @throws IOException Signals that an I/O exception has occurred.
+		 */
 		public Storage(File file) throws IOException{
 			load(file);
 		}
+		
+		/**
+		 * Gets the info map.
+		 *
+		 * @return the info map
+		 */
 		public Map<String, String> getInfoMap() {
 			return infoMap;
 		}
+		
+		/**
+		 * Sets the info map.
+		 *
+		 * @param infoMap the info map
+		 */
 		public void setInfoMap(Map<String, String> infoMap) {
 			this.infoMap = infoMap;
 		}
+		
+		/**
+		 * Gets the word map.
+		 *
+		 * @return the word map
+		 */
 		public Map<String, Set<String>> getWordMap() {
 			return wordMap;
 		}
+		
+		/**
+		 * Gets the word stat map.
+		 *
+		 * @return the word stat map
+		 */
 		public Map<String, WordStat> getWordStatMap() {
 			return wordStatMap;
 		}
+		
+		/**
+		 * Gets the term map.
+		 *
+		 * @return the term map
+		 */
 		public Map<String, Set<String>> getTermMap() {
 			return termMap;
 		}
+		
+		/**
+		 * Gets the regex map.
+		 *
+		 * @return the regex map
+		 */
 		public Map<String, String> getRegexMap() {
 			return regexMap;
 		}
+		
+		/**
+		 * Gets the concept map.
+		 *
+		 * @return the concept map
+		 */
 		public Map<String, Concept.Content> getConceptMap() {
 			return conceptMap;
 		}
+		
+		/**
+		 * Gets the source map.
+		 *
+		 * @return the source map
+		 */
 		public Map<String, Source> getSourceMap() {
 			return sourceMap;
 		}
+		
+		/**
+		 * Gets the root map.
+		 *
+		 * @return the root map
+		 */
 		public Map<String, String> getRootMap() {
 			return rootMap;
 		}
+		
+		/**
+		 * Gets the code map.
+		 *
+		 * @return the code map
+		 */
 		public Map<String, String> getCodeMap() {
 			return codeMap;
 		}
+		
+		/**
+		 * Gets the blacklist.
+		 *
+		 * @return the blacklist
+		 */
 		public Map<String, Set<String>> getBlacklist() {
 			return blacklist;
 		}
+		
+		/**
+		 * Inits the.
+		 */
 		public void init(){
 			wordMap = new HashMap<String,Set<String>>();
 			blacklist = new HashMap<String,Set<String>>();
@@ -209,10 +290,24 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 			rootMap = new HashMap<String,String>();
 			codeMap = new HashMap<String,String>();
 		}
+		
+		/**
+		 * Load.
+		 *
+		 * @param name the name
+		 * @throws IOException Signals that an I/O exception has occurred.
+		 */
 		public void load(File name) throws IOException{
 			load(name,false);
 		}
 		
+		/**
+		 * Load.
+		 *
+		 * @param location the location
+		 * @param readonly the readonly
+		 * @throws IOException Signals that an I/O exception has occurred.
+		 */
 		public void load(File location,boolean readonly) throws IOException{
 			this.location = location;
 			String prefix = location.getAbsolutePath()+File.separator+"table";
@@ -229,19 +324,38 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 			codeMap = new JDBMMap<String,String>(prefix,"codeMap",readonly);
 		}
 		
+		/**
+		 * Table exists.
+		 *
+		 * @param tablename the tablename
+		 * @return true, if successful
+		 */
 		public boolean tableExists(String tablename){
 			String f = location.getAbsolutePath()+File.separator+"table"+"_"+tablename;
 			return new File(f+JDBMMap.JDBM_SUFFIX ).exists();
 		}
 		
+		/**
+		 * Gets the location.
+		 *
+		 * @return the location
+		 */
 		public File getLocation() {
 			return location;
 		}
 		
+		/**
+		 * Gets the temp location.
+		 *
+		 * @return the temp location
+		 */
 		public File getTempLocation(){
 			return new File(location,TEMP_WORD_DIR);
 		}
 		
+		/**
+		 * Clear.
+		 */
 		public void clear(){
 			wordMap.clear();
 			blacklist.clear();
@@ -257,15 +371,30 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 		
 		
 		
+		/**
+		 * Checks if is read only.
+		 *
+		 * @param map the map
+		 * @return true, if is read only
+		 */
 		public boolean isReadOnly(Map map){
 			return map instanceof JDBMMap && ((JDBMMap)map).isReadOnly();
 		}
 		
+		/**
+		 * Commit.
+		 *
+		 * @param map the map
+		 */
 		public void commit(Map map){
 			if(map instanceof JDBMMap){
 				((JDBMMap) map).commit();
 			}
 		}
+		
+		/**
+		 * Commit.
+		 */
 		public void commit(){
 			if(wordMap instanceof JDBMMap){
 				//commit
@@ -281,6 +410,10 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 				((JDBMMap) codeMap).commit();
 			}
 		}
+		
+		/**
+		 * Defrag.
+		 */
 		public void defrag(){
 			if(wordMap instanceof JDBMMap){
 				//defrag
@@ -296,14 +429,18 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 				((JDBMMap) codeMap).compact();
 			}
 		}
+		
 		/**
-		 * save all information to disc
+		 * save all information to disc.
 		 */
 		public void save(){
 			commit();
 			defrag();
 		}
 		
+		/**
+		 * Dispose.
+		 */
 		public void dispose(){
 			if(wordMap instanceof JDBMMap){
 				((JDBMMap) wordMap).dispose();
@@ -320,10 +457,11 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 		}
 		
 		/**
-		 * save object
-		 * @param location
-		 * @throws FileNotFoundException
-		 * @throws IOException
+		 * save object.
+		 *
+		 * @param location the location
+		 * @throws FileNotFoundException the file not found exception
+		 * @throws IOException Signals that an I/O exception has occurred.
 		 */
 		public void saveObject(File location) throws FileNotFoundException, IOException{
 			ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(location));
@@ -332,11 +470,13 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 		}
 		
 		/**
-		 * save object
-		 * @param location
-		 * @throws FileNotFoundException
-		 * @throws IOException
-		 * @throws ClassNotFoundException 
+		 * save object.
+		 *
+		 * @param location the location
+		 * @return the storage
+		 * @throws FileNotFoundException the file not found exception
+		 * @throws IOException Signals that an I/O exception has occurred.
+		 * @throws ClassNotFoundException the class not found exception
 		 */
 		public static Storage loadObject(File location) throws FileNotFoundException, IOException, ClassNotFoundException{
 			ObjectInputStream os = new ObjectInputStream(new FileInputStream(location));
@@ -346,6 +486,11 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 		}
 	}
 
+	/**
+	 * Checks if is compacted.
+	 *
+	 * @return true, if is compacted
+	 */
 	public boolean isCompacted(){
 		return compacted;
 	}
@@ -366,13 +511,19 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 	}
 
 	/**
-	 * set directory where persistence files should be saved
-	 * @param f
+	 * set directory where persistence files should be saved.
+	 *
+	 * @param f the new persistence directory
 	 */
 	public static void setPersistenceDirectory(File f){
 		dir = f;
 	}
 	
+	/**
+	 * Sets the location.
+	 *
+	 * @param location the new location
+	 */
 	public void setLocation(File location) {
 		this.location = location;
 		if(storage != null)
@@ -380,8 +531,9 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 	}
 
 	/**
-	 * set directory where persistence files should be saved
-	 * @param f
+	 * set directory where persistence files should be saved.
+	 *
+	 * @return the persistence directory
 	 */
 	public static File getPersistenceDirectory(){
 		if(dir != null && !dir.exists())
@@ -391,12 +543,17 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 	
 	
 	/**
-	 * represents several word stats
+	 * represents several word stats.
+	 *
 	 * @author tseytlin
 	 */
 	public static class WordStat implements Serializable {
 		public int termCount;
 		public boolean isTerm;
+		
+		/* (non-Javadoc)
+		 * @see java.lang.Object#toString()
+		 */
 		public String toString(){
 			return "termCount: "+termCount+(isTerm?", is a term":"");
 		}
@@ -414,9 +571,11 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 	/**
 	 * initialize empty in-memory terminology that has to be
 	 * filled up manual using Terminology.addConcept()
-	 * @throws IOntologyException 
-	 * @throws TerminologyException 
-	 * @throws IOException 
+	 *
+	 * @param ont the ont
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws TerminologyException the terminology exception
+	 * @throws IOntologyException the i ontology exception
 	 */
 	public NobleCoderTerminology(IOntology ont) throws IOException, TerminologyException, IOntologyException{
 		init();
@@ -424,7 +583,7 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 	}
 	
 	/**
-	 * initialize with in memory maps
+	 * initialize with in memory maps.
 	 */
 	public void init(){
 		storage = new Storage();
@@ -434,7 +593,10 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 	
 	/**
 	 * initialize a named terminology that has already been 
-	 * persisted on disk
+	 * persisted on disk.
+	 *
+	 * @param name the name
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public NobleCoderTerminology(String name) throws IOException{
 		load(name,true);
@@ -442,7 +604,11 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 	
 	/**
 	 * initialize a named terminology that either has already been 
-	 * persisted on disk, or will be persisted on disk
+	 * persisted on disk, or will be persisted on disk.
+	 *
+	 * @param name the name
+	 * @param readonly the readonly
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public NobleCoderTerminology(String name, boolean readonly) throws IOException{
 		load(name,readonly);
@@ -450,7 +616,10 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 	
 	/**
 	 * initialize a named terminology that either has already been 
-	 * persisted on disk, or will be persisted on disk from file
+	 * persisted on disk, or will be persisted on disk from file.
+	 *
+	 * @param dir the dir
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public NobleCoderTerminology(File dir) throws IOException{
 		setPersistenceDirectory(dir.getParentFile());
@@ -459,9 +628,10 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 	
 	/**
 	 * check if terminology with a given name exists inside
-	 * default persisted directory
-	 * @param name
-	 * @return
+	 * default persisted directory.
+	 *
+	 * @param name the name
+	 * @return true, if successful
 	 */
 	public static boolean hasTerminology(String name){
 		if(name.endsWith(TERM_SUFFIX))
@@ -472,20 +642,25 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 	
 	
 	/**
-	 * get Object representing NobleCoder storage
-	 * @return
+	 * get Object representing NobleCoder storage.
+	 *
+	 * @return the storage
 	 */
 	public Storage getStorage() {
 		return storage;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#finalize()
+	 */
 	protected void finalize() throws Throwable {
 		dispose();
 	}
 
 	/**
-	 * add property change listener to subscribe to progress messages
-	 * @param l
+	 * add property change listener to subscribe to progress messages.
+	 *
+	 * @param l the l
 	 */
 	public void addPropertyChangeListener(PropertyChangeListener l){
 		pcs.addPropertyChangeListener(l);
@@ -493,8 +668,9 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 	}
 	
 	/**
-	 * add property change listener to subscribe to progress messages
-	 * @param l
+	 * add property change listener to subscribe to progress messages.
+	 *
+	 * @param l the l
 	 */
 	public void removePropertyChangeListener(PropertyChangeListener l){
 		pcs.removePropertyChangeListener(l);
@@ -502,13 +678,21 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 	}
 	
 	/**
-	 * load persitent tables
+	 * load persitent tables.
+	 *
+	 * @param name the name
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public void load(String name) throws IOException{
 		load(name,false);
 	}
+	
 	/**
-	 * load persitent tables
+	 * load persitent tables.
+	 *
+	 * @param name the name
+	 * @param readonly the readonly
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public void load(String name,boolean readonly) throws IOException{
 		if(name.endsWith(TERM_SUFFIX))
@@ -588,19 +772,30 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 		
 	}
 	
+	/**
+	 * Reload.
+	 *
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	public void reload() throws IOException{
 		dispose();
 		load(name);
 	}
 	
+	/**
+	 * Gets the terminology properties.
+	 *
+	 * @return the terminology properties
+	 */
 	public Map<String,String> getTerminologyProperties(){
 		return storage.getInfoMap();
 	}
 	
 	
 	/**
-	 * get properties map with search options
-	 * @return
+	 * get properties map with search options.
+	 *
+	 * @return the search properties
 	 */
 	public Properties getSearchProperties(){
 		return NobleCoderUtils.getSearchProperties(this);
@@ -608,8 +803,9 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 	
 	
 	/**
-	 * save meta information
-	 * @param f
+	 * save meta information.
+	 *
+	 * @param f the f
 	 */
 	private void loadMetaInfo(File f){
 		try{
@@ -630,8 +826,9 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 	
 	
 	/**
-	 * get the entire set of concept codes
-	 * @return
+	 * get the entire set of concept codes.
+	 *
+	 * @return the all concepts
 	 */
 	public Set<String> getAllConcepts(){
 		return storage.getConceptMap().keySet();
@@ -639,7 +836,9 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 	
 	/**
 	 * get all available concept objects in terminology. Only sensible for small terminologies
-	 * @return
+	 *
+	 * @return the concepts
+	 * @throws TerminologyException the terminology exception
 	 */
 	public Collection<Concept> getConcepts()  throws TerminologyException{
 		List<Concept> list = new ArrayList<Concept>();
@@ -650,7 +849,7 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 	}
 	
 	/**
-	 * reload tables to save space
+	 * reload tables to save space.
 	 */
 	public void crash(){
 		if(crashing)
@@ -665,30 +864,39 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 	
 	
 	/**
-	 * load index finder tables from an IOntology object
-	 * @param ontology
-	 * @throws IOException
-	 * @throws TerminologyException 
+	 * load index finder tables from an IOntology object.
+	 *
+	 * @param ontology the ontology
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws TerminologyException the terminology exception
+	 * @throws IOntologyException the i ontology exception
 	 */
 	public void loadOntology(IOntology ontology) throws IOException, TerminologyException, IOntologyException {
 		loadOntology(ontology,null);
 	}
 	
 	/**
-	 * load index finder tables from an IOntology object
-	 * @param ontology
-	 * @throws IOException
-	 * @throws TerminologyException 
+	 * load index finder tables from an IOntology object.
+	 *
+	 * @param ontology the ontology
+	 * @param name the name
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws TerminologyException the terminology exception
+	 * @throws IOntologyException the i ontology exception
 	 */
 	public void loadOntology(IOntology ontology, String name) throws IOException, TerminologyException, IOntologyException {
 		loadOntology(ontology,name,false);
 	}
 	
 	/**
-	 * load index finder tables from an IOntology object
-	 * @param ontology
-	 * @throws IOException
-	 * @throws TerminologyException 
+	 * load index finder tables from an IOntology object.
+	 *
+	 * @param ontology the ontology
+	 * @param name the name
+	 * @param inmemory the inmemory
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws TerminologyException the terminology exception
+	 * @throws IOntologyException the i ontology exception
 	 */
 	public void loadOntology(IOntology ontology, String name, boolean inmemory) throws IOException, TerminologyException, IOntologyException {
 		ConceptImporter.getInstance().setInMemory(inmemory);
@@ -697,9 +905,12 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 	
 	/**
 	 * load from RRF files (Rich Release Files)
-	 * This is a common distribution method for UMLS and NCI Meta
-	 * @param directory that contains MRCONSO.RRF, MRDEF.RRF, MRSTY.RRF etc...
-	 * by default uses ALL sources, but only for English language
+	 * This is a common distribution method for UMLS and NCI Meta.
+	 *
+	 * @param dir the dir
+	 * @throws FileNotFoundException the file not found exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws TerminologyException the terminology exception
 	 */
 	public void loadRRF(File dir) throws FileNotFoundException, IOException, TerminologyException {
 		Map<String,List<String>> params = new HashMap<String, List<String>>();
@@ -710,14 +921,13 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 	
 	/**
 	 * load from RRF files (Rich Release Files)
-	 * This is a common distribution method for UMLS and NCI Meta
-	 * @param directory that contains MRCONSO.RRF, MRDEF.RRF, MRSTY.RRF etc...
-	 * @param Map<String,List<String>> filter property object, where some properties are:
-	 * name - change ontology name
-	 * languages - only include languages in a given list languages
-	 * sources - only include concepts from a given list of sources
-	 * semanticTypes - filter result by a list of semantic types attached
-	 * hierarchySources - only include hierarhy information from a list of sources
+	 * This is a common distribution method for UMLS and NCI Meta.
+	 *
+	 * @param dir the dir
+	 * @param params the params
+	 * @throws FileNotFoundException the file not found exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws TerminologyException the terminology exception
 	 */
 	public void loadRRF(File dir, Map<String,List<String>> params) throws FileNotFoundException, IOException, TerminologyException {
 		ConceptImporter.getInstance().loadRRF(this, dir, params);
@@ -725,14 +935,14 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 	
 	/**
 	 * load from RRF files (Rich Release Files)
-	 * This is a common distribution method for UMLS and NCI Meta
-	 * @param directory that contains MRCONSO.RRF, MRDEF.RRF, MRSTY.RRF etc...
-	 * @param Map<String,List<String>> filter property object, where some properties are:
-	 * name - change ontology name
-	 * languages - only include languages in a given list languages
-	 * sources - only include concepts from a given list of sources
-	 * semanticTypes - filter result by a list of semantic types attached
-	 * hierarchySources - only include hierarhy information from a list of sources
+	 * This is a common distribution method for UMLS and NCI Meta.
+	 *
+	 * @param dir the dir
+	 * @param params the params
+	 * @param inmem the inmem
+	 * @throws FileNotFoundException the file not found exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws TerminologyException the terminology exception
 	 */
 	public void loadRRF(File dir, Map<String,List<String>> params,boolean inmem) throws FileNotFoundException, IOException, TerminologyException {
 		ConceptImporter.getInstance().setInMemory(inmem);
@@ -740,26 +950,32 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 	}
 	
 	/**
-	 * load terms file
-	 * @param file
-	 * @throws Exception
+	 * load terms file.
+	 *
+	 * @param file the file
+	 * @param name the name
+	 * @throws Exception the exception
 	 */
 	public void loadText(File file,String name) throws Exception {
 		ConceptImporter.getInstance().loadText(this,file, name);
 	}
 	
 	/**
-	 * load terms file
-	 * @param file
-	 * @throws Exception
+	 * load terms file.
+	 *
+	 * @param file the file
+	 * @param name the name
+	 * @param term the term
+	 * @throws Exception the exception
 	 */
 	public void loadText(File file,String name,Terminology term) throws Exception {
 		ConceptImporter.getInstance().loadText(this,file, name,term);
 	}
 	
 	/**
-	 * returns true if this terminology doesn't contain any terms
-	 * @return
+	 * returns true if this terminology doesn't contain any terms.
+	 *
+	 * @return true, if is empty
 	 */
 	public boolean isEmpty(){
 		return storage.getWordMap().isEmpty();
@@ -767,14 +983,9 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 	
 	
 	/**
-	 * get all concept objects in the entire terminology
-	 * @return
+	 * clear storage 
 	 *
-	public Collection<Concept> getAllConcepts(){
-		return storage.getConceptMap().values();
-	}
-	*/
-	
+	 */
 	public void clear(){
 		storage.clear();
 	}
@@ -796,45 +1007,66 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 		storage.save();
 	}
 	
+	/**
+	 * Dispose.
+	 */
 	public void dispose(){
 		storage.dispose();
 	}
 	
 	/**
 	 * ignore digits in concept names for matching
-	 * default is false
-	 * @param b
+	 * default is false.
+	 *
+	 * @param b the new ignore digits
 	 */
 	public void setIgnoreDigits(boolean b){
 		stripDigits = b;
 	}
 	
 	
+	/**
+	 * Checks if is strip stop words.
+	 *
+	 * @return true, if is strip stop words
+	 */
 	public boolean isStripStopWords() {
 		return stripStopWords;
 	}
 
+	/**
+	 * Sets the strip stop words.
+	 *
+	 * @param stripStopWords the new strip stop words
+	 */
 	public void setStripStopWords(boolean stripStopWords) {
 		this.stripStopWords = stripStopWords;
 	}
 
 	/**
 	 * use porter stemmer to stem words during search
-	 * default is true
-	 * @param stemWords
+	 * default is true.
+	 *
+	 * @param stemWords the new stem words
 	 */
 	public void setStemWords(boolean stemWords) {
 		this.stemWords = stemWords;
 	}
 
+	/**
+	 * Checks if is stem words.
+	 *
+	 * @return true, if is stem words
+	 */
 	public boolean isStemWords(){
 		return stemWords;
 	}
 	
 	/**
 	 * ignore one letter words to avoid parsing common junk
-	 * default is true
-	 * @param stemWords
+	 * default is true.
+	 *
+	 * @param ignoreSmallWords the new ignore small words
 	 */
 
 	public void setIgnoreSmallWords(boolean ignoreSmallWords) {
@@ -844,7 +1076,11 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 
 
 	/**
-	 * add concept to terminology
+	 * add concept to terminology.
+	 *
+	 * @param c the c
+	 * @return true, if successful
+	 * @throws TerminologyException the terminology exception
 	 */
 	public boolean addConcept(Concept c) throws TerminologyException {
 		// don't go into classes that we already visited
@@ -906,8 +1142,10 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 	}
 	
 	/**
-	 * add concept as a root
-	 * @param code
+	 * add concept as a root.
+	 *
+	 * @param code the code
+	 * @return true, if successful
 	 */
 	public boolean addRoot(String code){
 		if(storage.getConceptMap().containsKey(code)){
@@ -919,6 +1157,9 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 	
 	
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.AbstractTerminology#removeConcept(edu.pitt.dbmi.nlp.noble.terminology.Concept)
+	 */
 	public boolean removeConcept(Concept c) throws TerminologyException {
 		// find concept terms
 		if(storage.getConceptMap().containsKey(c.getCode()))
@@ -941,6 +1182,9 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 		return true;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.AbstractTerminology#updateConcept(edu.pitt.dbmi.nlp.noble.terminology.Concept)
+	 */
 	public boolean updateConcept(Concept c) throws TerminologyException {
 		removeConcept(c);
 		addConcept(c);
@@ -956,22 +1200,29 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 	 * precise-match: subsumption of concepts, overlap of concepts, contiguity of term
 	 * nonoverlap-match: subsumption of concepts
 	 * partial-match: partial term match, overlap of concepts
-	 * custom-match: use flags to tweak search 
+	 * custom-match: use flags to tweak search.
+	 *
+	 * @return the search methods
 	 */
 	public String[] getSearchMethods() {
 		return new String [] {BEST_MATCH,ALL_MATCH,PRECISE_MATCH,PARTIAL_MATCH,CUSTOM_MATCH};
 	}
 	
 	/**
-	 * try to find the best possible match for given query
+	 * try to find the best possible match for given query.
+	 *
+	 * @param text the text
+	 * @return the concept[]
+	 * @throws TerminologyException the terminology exception
 	 */
 	public Concept[] search(String text) throws TerminologyException {
 		return search(text,defaultSearchMethod);
 	}
 	
 	/**
-	 * setup search method
-	 * @param metho
+	 * setup search method.
+	 *
+	 * @param method the new up search
 	 */
 	private void setupSearch(String method){
 		if(method == null)
@@ -1027,7 +1278,8 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 	 * Stop words are ignored in this count
 	 * Example: 'red swift dog' won't match 'red dog' if word gap is 0,
 	 *          but will match if it is 1 or more.
-	 * @return
+	 *
+	 * @return the maximum word gap
 	 */
 	public int getMaximumWordGap() {
 		return maxWordGap;
@@ -1038,7 +1290,8 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 	 * Stop words are ignored in this count
 	 * Example: 'red swift dog' won't match 'red dog' if word gap is 0,
 	 *          but will match if it is 1 or more.
-	 * @return
+	 *
+	 * @param wordWindowSize the new maximum word gap
 	 */
 	public void setMaximumWordGap(int wordWindowSize) {
 		this.maxWordGap = wordWindowSize;
@@ -1047,7 +1300,12 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 
 	
 	/**
-	 * try to find the best possible match for given query
+	 * try to find the best possible match for given query.
+	 *
+	 * @param text the text
+	 * @param method the method
+	 * @return the concept[]
+	 * @throws TerminologyException the terminology exception
 	 */
 	public Concept[] search(String text,String method) throws TerminologyException {
 		Map<Concept,Concept> result = new TreeMap<Concept,Concept>(new Comparator<Concept>() {
@@ -1089,6 +1347,12 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 	}
 	
 	
+	/**
+	 * Checks if is acronym.
+	 *
+	 * @param c the c
+	 * @return true, if is acronym
+	 */
 	private boolean isAcronym(Concept c) {
 		for(Term t: c.getTerms()){
 			if(("ACR".equals(t.getForm()) || t.getForm().endsWith("AB")) && t.getText().equalsIgnoreCase(c.getMatchedTerm()))
@@ -1101,8 +1365,9 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 	
 	/**
 	 * set the maximum size a single term can take, to limit the search for very long input
-	 * default is 0, which means no limit
-	 * @param n
+	 * default is 0, which means no limit.
+	 *
+	 * @param n the new window size
 	 */
 	public void setWindowSize(int n){
 		windowSize = n;
@@ -1111,10 +1376,10 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 	
 	
 	/**
-	 * get best candidates for all concepts that match a single term
-	 * @param text
-	 * @param concepts
-	 * @return
+	 * get best candidates for all concepts that match a single term.
+	 *
+	 * @param concepts the concepts
+	 * @return the best candidates
 	 */
 	private List<Concept> getBestCandidates(List<Concept> concepts){
 		final double THRESHOLD = 0.0;
@@ -1147,9 +1412,10 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 	
 	
 	/**
-	 * get all terms associated with a word
-	 * @param word
-	 * @return
+	 * get all terms associated with a word.
+	 *
+	 * @param word the word
+	 * @return the word terms
 	 */
 	private Set<String> getWordTerms(String word){
 		return storage.getWordMap().get(word);
@@ -1157,9 +1423,10 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 	
 	
 	/**
-	 * search through regular expressions
-	 * @param text
-	 * @return
+	 * search through regular expressions.
+	 *
+	 * @param term the term
+	 * @return the collection
 	 */
 	private Collection<Concept> searchRegExp(String term){
 		List<Concept> result = null;
@@ -1218,10 +1485,13 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 	}
 	
 	/**
-	 * get best term that spans most words
+	 * get best term that spans most words.
+	 *
 	 * @param words in search string
+	 * @param swords the swords
+	 * @param usedWords the used words
 	 * @param word in question
-	 * @return
+	 * @return the best terms
 	 */
 	private Collection<String> getBestTerms(List<String> words, Set<String> swords,Set<String> usedWords, String word){
 		// get list of terms that have a given word associated with it
@@ -1308,9 +1578,10 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 	
 	
 	/**
-	 * should the concept be filtered out based on some filtering technique
-	 * @param c
-	 * @return
+	 * should the concept be filtered out based on some filtering technique.
+	 *
+	 * @param c the c
+	 * @return true, if is filtered out
 	 */
 	private boolean isFilteredOut(Concept c) {
 		boolean filteredOut = false;
@@ -1394,7 +1665,9 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 	/**
 	 * get all root concepts. This makes sence if Terminology is in fact ontology
 	 * that has heirchichal structure
-	 * @return
+	 *
+	 * @return the root concepts
+	 * @throws TerminologyException the terminology exception
 	 */
 	public Concept[] getRootConcepts() throws TerminologyException {
 		List<Concept> roots = new ArrayList<Concept>();
@@ -1408,7 +1681,11 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 	
 
 	/**
-	 * get related concepts map
+	 * get related concepts map.
+	 *
+	 * @param c the c
+	 * @return the related concepts
+	 * @throws TerminologyException the terminology exception
 	 */
 	public Map getRelatedConcepts(Concept c) throws TerminologyException {
 		Map<String,Set<String>> relationMap = c.getRelationMap();
@@ -1430,6 +1707,9 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 		return Collections.EMPTY_MAP;
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.AbstractTerminology#getRelatedConcepts(edu.pitt.dbmi.nlp.noble.terminology.Concept, edu.pitt.dbmi.nlp.noble.terminology.Relation)
+	 */
 	public Concept[] getRelatedConcepts(Concept c, Relation r) throws TerminologyException {
 		// if we have a class already, use the ontology
 		if(getRelatedConcepts(c).containsKey(r)){
@@ -1439,6 +1719,9 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 		return new Concept [0];
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.AbstractTerminology#convertConcept(java.lang.Object)
+	 */
 	public Concept convertConcept(Object obj) {
 		if(obj instanceof Concept)
 			return (Concept) obj;
@@ -1456,6 +1739,9 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 		return null;
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.AbstractTerminology#lookupConcept(java.lang.String)
+	 */
 	public Concept lookupConcept(String cui) throws TerminologyException {
 		Concept c =  convertConcept(storage.getConceptMap().get(cui));
 		// try other code mappings
@@ -1471,7 +1757,10 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 	}
 	
 	/**
-	 * Get all supported relations between concepts
+	 * Get all supported relations between concepts.
+	 *
+	 * @return the relations
+	 * @throws TerminologyException the terminology exception
 	 */
 	public Relation[] getRelations() throws TerminologyException {
 		return new Relation [] { Relation.BROADER, Relation.NARROWER, Relation.SIMILAR };
@@ -1479,31 +1768,52 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 
 	/**
 	 * Get all relations for specific concept, one actually needs to explore
-	 * a concept graph (if available) to determine those
+	 * a concept graph (if available) to determine those.
+	 *
+	 * @param c the c
+	 * @return the relations
+	 * @throws TerminologyException the terminology exception
 	 */
 	public Relation[] getRelations(Concept c) throws TerminologyException {
 		return getRelations();
 	}
 	
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Terminology#getSourceFilter()
+	 */
 	public Source[] getSourceFilter() {
 		return (filteredSources == null)?new Source [0]:filteredSources.toArray(new Source [0]);
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Terminology#getSemanticTypeFilter()
+	 */
 	public SemanticType[] getSemanticTypeFilter() {
 		return (filteredSemanticTypes == null)?new SemanticType [0]:filteredSemanticTypes.toArray(new SemanticType [0]);
 	}
 	
+	/**
+	 * Gets the language filter.
+	 *
+	 * @return the language filter
+	 */
 	public String [] getLanguageFilter() {
 		return (filteredLanguages == null)?new String [0]:filteredLanguages.toArray(new String [0]);
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.AbstractTerminology#getSources()
+	 */
 	public Source[] getSources() {
 		if(storage != null && !storage.getSourceMap().isEmpty())
 			return storage.getSourceMap().values().toArray(new Source [0]);
 		return new Source[]{new Source(getName(),getDescription(),""+getURI())};
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Terminology#setSourceFilter(edu.pitt.dbmi.nlp.noble.terminology.Source[])
+	 */
 	public void setSourceFilter(Source[] srcs) {
 		if(srcs == null || srcs.length == 0)
 			filteredSources = null;
@@ -1514,6 +1824,9 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Terminology#setSemanticTypeFilter(edu.pitt.dbmi.nlp.noble.terminology.SemanticType[])
+	 */
 	public void setSemanticTypeFilter(SemanticType[] srcs) {
 		if(srcs == null || srcs.length == 0)
 			filteredSemanticTypes = null;
@@ -1524,36 +1837,63 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 		}
 	}
 	
+	/**
+	 * Sets the language filter.
+	 *
+	 * @param lang the new language filter
+	 */
 	public void setLanguageFilter(String [] lang) {
 		if(filteredLanguages == null)
 			filteredLanguages = new LinkedHashSet();
 		Collections.addAll(filteredLanguages, lang);
 	}
 	
+	/**
+	 * Sets the select best candidate.
+	 *
+	 * @param selectBestCandidate the new select best candidate
+	 */
 	public void setSelectBestCandidate(boolean selectBestCandidate) {
 		this.selectBestCandidate = selectBestCandidate;
 		if(selectBestCandidate)
 			this.scoreConcepts = selectBestCandidate;
 	}
 
+	/**
+	 * Sets the default search method.
+	 *
+	 * @param s the new default search method
+	 */
 	public void setDefaultSearchMethod(String s){
 		this.defaultSearchMethod = s;
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Describable#getDescription()
+	 */
 	public String getDescription() {
 		if(storage != null && storage.getInfoMap().containsKey("description"))
 			return storage.getInfoMap().get("description");
 		return "NobleCoderTerminlogy uses an IndexFinder-like algorithm to map text to concepts.";
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Describable#getFormat()
+	 */
 	public String getFormat() {
 		return "index finder tables";
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Describable#getLocation()
+	 */
 	public String getLocation() {
 		return (location != null)?location.getAbsolutePath():"memory";
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Describable#getName()
+	 */
 	public String getName() {
 		if(name != null)
 			return name;
@@ -1564,34 +1904,54 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 		return "NobleCoderTool Terminology";
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Describable#getURI()
+	 */
 	public URI getURI() {
 		if(storage != null && storage.getInfoMap().containsKey("uri"))
 			return URI.create(storage.getInfoMap().get("uri"));
 		return URI.create("http://slidetutor.upmc.edu/curriculum/terminolgies/"+getName().replaceAll("\\W+","_"));
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Describable#getVersion()
+	 */
 	public String getVersion() {
 		if(storage != null && storage.getInfoMap().containsKey("version"))
 			return storage.getInfoMap().get("version");
 		return "1.0";
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	public String toString(){
 		return getName();
 	}
 	
 	/**
-	 * don't try to match common English words
-	 * @param ignoreCommonWords
+	 * don't try to match common English words.
+	 *
+	 * @param ignoreCommonWords the new ignore common words
 	 */
 	public void setIgnoreCommonWords(boolean ignoreCommonWords) {
 		this.ignoreCommonWords = ignoreCommonWords;
 	}
 	
+	/**
+	 * Gets the partial match threshold.
+	 *
+	 * @return the partial match threshold
+	 */
 	public double getPartialMatchThreshold() {
 		return partialMatchThreshold;
 	}
 
+	/**
+	 * Sets the partial match threshold.
+	 *
+	 * @param partialMatchThreshold the new partial match threshold
+	 */
 	public void setPartialMatchThreshold(double partialMatchThreshold) {
 		this.partialMatchThreshold = partialMatchThreshold;
 	}
@@ -1599,116 +1959,247 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 
 	
 	/**
-	 * comput concept match score
-	 * @param b
+	 * comput concept match score.
+	 *
+	 * @param b the new score concepts
 	 */
 	public void setScoreConcepts(boolean b) {
 		this.scoreConcepts = b;
 	}
 	
+	/**
+	 * Checks if is score concepts.
+	 *
+	 * @return true, if is score concepts
+	 */
 	public boolean isScoreConcepts(){
 		return scoreConcepts;
 	}
 
+	/**
+	 * Checks if is ignore digits.
+	 *
+	 * @return true, if is ignore digits
+	 */
 	public boolean isIgnoreDigits() {
 		return stripDigits;
 	}
 
+	/**
+	 * Checks if is ignore small words.
+	 *
+	 * @return true, if is ignore small words
+	 */
 	public boolean isIgnoreSmallWords() {
 		return ignoreSmallWords;
 	}
 
+	/**
+	 * Checks if is ignore common words.
+	 *
+	 * @return true, if is ignore common words
+	 */
 	public boolean isIgnoreCommonWords() {
 		return ignoreCommonWords;
 	}
 
+	/**
+	 * Checks if is select best candidate.
+	 *
+	 * @return true, if is select best candidate
+	 */
 	public boolean isSelectBestCandidate() {
 		return selectBestCandidate;
 	}
 	
+	/**
+	 * Gets the window size.
+	 *
+	 * @return the window size
+	 */
 	public int getWindowSize() {
 		return windowSize;
 	}
 	
 	
 
+	/**
+	 * Gets the maximum words in term.
+	 *
+	 * @return the maximum words in term
+	 */
 	public int getMaximumWordsInTerm() {
 		return maxWordsInTerm;
 	}
 
+	/**
+	 * Sets the maximum words in term.
+	 *
+	 * @param maxWordsInTerm the new maximum words in term
+	 */
 	public void setMaximumWordsInTerm(int maxWordsInTerm) {
 		this.maxWordsInTerm = maxWordsInTerm;
 	}
 
+	/**
+	 * Gets the default search method.
+	 *
+	 * @return the default search method
+	 */
 	public String getDefaultSearchMethod() {
 		return defaultSearchMethod;
 	}
+	
+	/**
+	 * Checks if is ignore acronyms.
+	 *
+	 * @return true, if is ignore acronyms
+	 */
 	public boolean isIgnoreAcronyms() {
 		return ignoreAcronyms;
 	}
 
+	/**
+	 * Sets the ignore acronyms.
+	 *
+	 * @param ignoreAcronyms the new ignore acronyms
+	 */
 	public void setIgnoreAcronyms(boolean ignoreAcronyms) {
 		this.ignoreAcronyms = ignoreAcronyms;
 	}
+	
+	/**
+	 * Checks if is ignore used words.
+	 *
+	 * @return true, if is ignore used words
+	 */
 	public boolean isIgnoreUsedWords() {
 		return ignoreUsedWords;
 	}
 
+	/**
+	 * Sets the ignore used words.
+	 *
+	 * @param ignoreUsedWords the new ignore used words
+	 */
 	public void setIgnoreUsedWords(boolean ignoreUsedWords) {
 		this.ignoreUsedWords = ignoreUsedWords;
 	}
 
+	/**
+	 * Checks if is subsumption mode.
+	 *
+	 * @return true, if is subsumption mode
+	 */
 	public boolean isSubsumptionMode() {
 		return subsumptionMode;
 	}
 
+	/**
+	 * Sets the subsumption mode.
+	 *
+	 * @param subsumptionMode the new subsumption mode
+	 */
 	public void setSubsumptionMode(boolean subsumptionMode) {
 		this.subsumptionMode = subsumptionMode;
 	}
 
+	/**
+	 * Checks if is overlap mode.
+	 *
+	 * @return true, if is overlap mode
+	 */
 	public boolean isOverlapMode() {
 		return overlapMode;
 	}
 
+	/**
+	 * Sets the overlap mode.
+	 *
+	 * @param overlapMode the new overlap mode
+	 */
 	public void setOverlapMode(boolean overlapMode) {
 		this.overlapMode = overlapMode;
 	}
 
+	/**
+	 * Checks if is ordered mode.
+	 *
+	 * @return true, if is ordered mode
+	 */
 	public boolean isOrderedMode() {
 		return orderedMode;
 	}
 
+	/**
+	 * Sets the ordered mode.
+	 *
+	 * @param orderedMode the new ordered mode
+	 */
 	public void setOrderedMode(boolean orderedMode) {
 		this.orderedMode = orderedMode;
 	}
 
+	/**
+	 * Checks if is contiguous mode.
+	 *
+	 * @return true, if is contiguous mode
+	 */
 	public boolean isContiguousMode() {
 		return contiguousMode;
 	}
 
+	/**
+	 * Sets the contiguous mode.
+	 *
+	 * @param contiguousMode the new contiguous mode
+	 */
 	public void setContiguousMode(boolean contiguousMode) {
 		this.contiguousMode = contiguousMode;
 	}
 
+	/**
+	 * Checks if is partial mode.
+	 *
+	 * @return true, if is partial mode
+	 */
 	public boolean isPartialMode() {
 		return partialMode;
 	}
 
+	/**
+	 * Sets the partial mode.
+	 *
+	 * @param partialMode the new partial mode
+	 */
 	public void setPartialMode(boolean partialMode) {
 		this.partialMode = partialMode;
 	}
 	
+	/**
+	 * Checks if is handle possible acronyms.
+	 *
+	 * @return true, if is handle possible acronyms
+	 */
 	public boolean isHandlePossibleAcronyms() {
 		return handlePossibleAcronyms;
 	}
 
+	/**
+	 * Sets the handle possible acronyms.
+	 *
+	 * @param handleProblemTerms the new handle possible acronyms
+	 */
 	public void setHandlePossibleAcronyms(boolean handleProblemTerms) {
 		this.handlePossibleAcronyms = handleProblemTerms;
 	}
 
 	/**
-	 * convert Template to XML DOM object representation
-	 * @return
+	 * convert Template to XML DOM object representation.
+	 *
+	 * @param doc the doc
+	 * @return the element
+	 * @throws TerminologyException the terminology exception
 	 */
 	public Element toElement(Document doc)  throws TerminologyException{
 		Element root = super.toElement(doc);
@@ -1725,8 +2216,10 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 	}
 	
 	/**
-	 * convert Template to XML DOM object representation
-	 * @return
+	 * convert Template to XML DOM object representation.
+	 *
+	 * @param element the element
+	 * @throws TerminologyException the terminology exception
 	 */
 	public void fromElement(Element element) throws TerminologyException{
 		name = element.getAttribute("name");
@@ -1775,7 +2268,11 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 	}
 
 	/**
-	 * process sentence and add Mentions to it
+	 * process sentence and add Mentions to it.
+	 *
+	 * @param sentence the sentence
+	 * @return the sentence
+	 * @throws TerminologyException the terminology exception
 	 */
 	
 	public Sentence process(Sentence sentence) throws TerminologyException {
@@ -1931,6 +2428,9 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 		return sentence;
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.AbstractTerminology#getProcessTime()
+	 */
 	public long getProcessTime() {
 		return processTime;
 	}
@@ -1938,9 +2438,11 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 	
 
 	/**
-	 * 
-	 * @param c
-	 * @param normalizedTerm
+	 * Score concept.
+	 *
+	 * @param c the c
+	 * @param normalizedTerm the normalized term
+	 * @param resultTerms the result terms
 	 */
 	
 	private void scoreConcept(Concept c, String normalizedTerm, Set<String> resultTerms){
@@ -2073,6 +2575,12 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 	}
 	
 	
+	/**
+	 * The main method.
+	 *
+	 * @param args the arguments
+	 * @throws Exception the exception
+	 */
 	public static void main(String [] args) throws Exception{
 		
 		/*;

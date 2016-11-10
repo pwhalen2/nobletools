@@ -7,7 +7,17 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * The Class StringUtils.
+ */
 public class StringUtils {
+	
+	/**
+	 * Checks if is empty.
+	 *
+	 * @param s the s
+	 * @return true, if is empty
+	 */
 	public static boolean isEmpty(String s) {
 		return s == null || s.length() == 0 || "null".equals(s);
 	}
@@ -61,8 +71,8 @@ public class StringUtils {
 	 * <p>
 	 * NOTE: This method changed in version .. It now more closely matches Perl
 	 * chomp. For the previous behavior, use
-	 * {@link #substringBeforeLast(String, String)}. This method uses
-	 * {@link String#endsWith(String)}.
+	 * 
+	 *
 	 * </p>
 	 * 
 	 * <pre>
@@ -90,6 +100,13 @@ public class StringUtils {
 	}
 	
 	
+	/**
+	 * Join.
+	 *
+	 * @param str the str
+	 * @param s the s
+	 * @return the string
+	 */
 	public static String join(final String [] str, final String s){
 		StringBuffer buff = new StringBuffer();
 		for (String st : str) {
@@ -103,9 +120,11 @@ public class StringUtils {
 	
 	
 	/**
-	 * extract owl filename from path
-	 * @param path
-	 * @return
+	 * extract owl filename from path.
+	 *
+	 * @param path the path
+	 * @param stripSuffix the strip suffix
+	 * @return the ontology name
 	 */
 	public static String getOntologyName(URI path,boolean stripSuffix) {
 		String p = path.getPath();
@@ -141,9 +160,10 @@ public class StringUtils {
 	
 	
 	/**
-	 * extract owl filename from path
-	 * @param path
-	 * @return
+	 * extract owl filename from path.
+	 *
+	 * @param path the path
+	 * @return the ontology name
 	 */
 	public static String getOntologyName(URI path) {
 		return getOntologyName(path,false);
@@ -151,9 +171,10 @@ public class StringUtils {
 	
 	
 	/**
-	 * create abbreviated version of URI to use that instead of concept code
-	 * @param uri
-	 * @return
+	 * create abbreviated version of URI to use that instead of concept code.
+	 *
+	 * @param uri the uri
+	 * @return the abbreviated URI
 	 */
 	
 	public static String getAbbreviatedURI(String uri){
@@ -177,11 +198,12 @@ public class StringUtils {
 	
 	
 	/**
-	 * index of a word in an array 
-	 * @param words
-	 * @param text
-	 * @param lastWordOffset
-	 * @return
+	 * index of a word in an array .
+	 *
+	 * @param words the words
+	 * @param text the text
+	 * @param lastWordOffset the last word offset
+	 * @return the int
 	 */
 	public static int indexOf(String[] words, String text, int lastWordOffset) {
 		for(int i=Math.max(0,lastWordOffset);i<words.length;i++){
@@ -193,9 +215,10 @@ public class StringUtils {
 	
 	
 	/**
-	 * if input text ends with something like a suffix, strip it
-	 * @param text
-	 * @return
+	 * if input text ends with something like a suffix, strip it.
+	 *
+	 * @param text the text
+	 * @return the string
 	 */
 	
 	public static String stripSuffix(String text){
@@ -206,9 +229,10 @@ public class StringUtils {
 	
 	
 	/**
-	 * get number of tabs that are prefixed in a string
-	 * @param s
-	 * @return
+	 * get number of tabs that are prefixed in a string.
+	 *
+	 * @param str the str
+	 * @return the tab offset
 	 */
 	public static int getTabOffset(String str){
 		int count = 0;

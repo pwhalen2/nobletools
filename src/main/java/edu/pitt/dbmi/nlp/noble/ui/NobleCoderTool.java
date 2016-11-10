@@ -80,9 +80,9 @@ import edu.pitt.dbmi.nlp.noble.util.HTMLExporter;
 
 
 /**
- * wrapper class that wraps NobleCoderTerminology to do stand-alon concept coding
- * @author tseytlin
+ * wrapper class that wraps NobleCoderTerminology to do stand-alon concept coding.
  *
+ * @author tseytlin
  */
 public class NobleCoderTool implements ActionListener{
 	private final URL LOGO_ICON = getClass().getResource("/icons/NobleLogo256.png");
@@ -134,7 +134,10 @@ public class NobleCoderTool implements ActionListener{
 	
 	
 	/**
-	 * @param args
+	 * The main method.
+	 *
+	 * @param args the arguments
+	 * @throws Exception the exception
 	 */
 	public static void main(String[] args) throws Exception {
 		try{
@@ -163,7 +166,9 @@ public class NobleCoderTool implements ActionListener{
 	}
 	
 	/**
-	 * print usage statement
+	 * print usage statement.
+	 *
+	 * @param out the out
 	 */
 	private void printUsage(PrintStream out) {
 		out.println("Usage: java -jar NobleCoderTool.jar -terminology <name> -input <dir> -output <dir> [options]");
@@ -194,7 +199,7 @@ public class NobleCoderTool implements ActionListener{
 
 
 	/**
-	 * create dialog for noble coder
+	 * create dialog for noble coder.
 	 */
 	public void showDialog(){
 		frame = new JFrame("Noble Coder");
@@ -326,6 +331,11 @@ public class NobleCoderTool implements ActionListener{
 	}
 	
 
+	/**
+	 * Gets the menu bar.
+	 *
+	 * @return the menu bar
+	 */
 	private JMenuBar getMenuBar() {
 		JMenuBar menu = new JMenuBar();
 		JMenu file = new JMenu("File");
@@ -383,6 +393,9 @@ public class NobleCoderTool implements ActionListener{
 		return menu;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+	 */
 	public void actionPerformed(ActionEvent e) {
 		String cmd = e.getActionCommand();
 		if("run".equals(cmd)){
@@ -423,6 +436,9 @@ public class NobleCoderTool implements ActionListener{
 		
 	}
 	
+	/**
+	 * Do query.
+	 */
 	private void doQuery() {
 		if(terminology != null){
 			registerOptions();
@@ -450,6 +466,9 @@ public class NobleCoderTool implements ActionListener{
 		}
 	}
 
+	/**
+	 * Do path.
+	 */
 	private void doPath() {
 		JPanel p = new JPanel();
 		p.setLayout(new BorderLayout());
@@ -469,6 +488,9 @@ public class NobleCoderTool implements ActionListener{
 		}
 	}
 	
+	/**
+	 * Refresh terminologies.
+	 */
 	private void refreshTerminologies(){
 		repository = null;
 		SwingUtilities.invokeLater(new Runnable(){
@@ -479,6 +501,9 @@ public class NobleCoderTool implements ActionListener{
 	}
 	
 
+	/**
+	 * Do manage.
+	 */
 	private void doManage() {
 		if(imanager == null){
 			imanager = new RepositoryManager(RepositoryManager.TERMINOLOGIES_ONLY);
@@ -490,6 +515,9 @@ public class NobleCoderTool implements ActionListener{
 		}
 	}
 
+	/**
+	 * Do import.
+	 */
 	private void doImport() {
 		if(loader == null){
 			loader = new TerminologyImporter();
@@ -506,6 +534,9 @@ public class NobleCoderTool implements ActionListener{
 		}
 	}
 
+	/**
+	 * Do export.
+	 */
 	private void doExport() {
 		if(exporter == null)
 			exporter = new TerminologyExporter(repository);
@@ -534,6 +565,9 @@ public class NobleCoderTool implements ActionListener{
     	 }
      }
 	
+	/**
+	 * Load defaults.
+	 */
 	private void loadDefaults(){
 		// set up defaults
 		terminology = null;
@@ -597,6 +631,9 @@ public class NobleCoderTool implements ActionListener{
 		}
 	}
 	
+	/**
+	 * Sync options.
+	 */
 	private void syncOptions(){
 		String strategy =searchMethods.getSelectedItem().toString();
 		if(NobleCoderTerminology.BEST_MATCH.equals(strategy)){
@@ -703,7 +740,7 @@ public class NobleCoderTool implements ActionListener{
 	
 	
 	/**
-	 * register options with selected terminology
+	 * register options with selected terminology.
 	 */
 	private void registerOptions(){
 		// extrac handlers
@@ -754,6 +791,11 @@ public class NobleCoderTool implements ActionListener{
 	}
 	
 	
+	/**
+	 * Gets the semantic type panel.
+	 *
+	 * @return the semantic type panel
+	 */
 	private JPanel getSemanticTypePanel(){
 		if(semanticPanel == null){
 			semanticPanel = new JPanel();
@@ -783,6 +825,11 @@ public class NobleCoderTool implements ActionListener{
 		return semanticPanel;
 	}
 	
+	/**
+	 * Gets the source panel.
+	 *
+	 * @return the source panel
+	 */
 	private JPanel getSourcePanel(){
 		if(sourcePanel == null){
 			sourcePanel = new JPanel();
@@ -818,6 +865,11 @@ public class NobleCoderTool implements ActionListener{
 	}
 	
 	
+	/**
+	 * Gets the options.
+	 *
+	 * @return the options
+	 */
 	private JPanel getOptions() {
 		if(options == null){
 			options = new JPanel();
@@ -1013,11 +1065,19 @@ public class NobleCoderTool implements ActionListener{
 	}
 
 
+	/**
+	 * Gets the search methods.
+	 *
+	 * @return the search methods
+	 */
 	private String [] getSearchMethods() {
 		Terminology t = getTerminology();
 		return (t != null)?t.getSearchMethods():new String [] {""};
 	}
 
+	/**
+	 * Do info.
+	 */
 	private void doInfo() {
 		Terminology d = getTerminology();
 		JEditorPane text = new JEditorPane();
@@ -1039,6 +1099,11 @@ public class NobleCoderTool implements ActionListener{
 		
 	}
 	
+	/**
+	 * Sets the busy.
+	 *
+	 * @param busy the new busy
+	 */
 	private void setBusy(final boolean busy){
 		SwingUtilities.invokeLater(new Runnable(){
 			public void run(){
@@ -1055,6 +1120,9 @@ public class NobleCoderTool implements ActionListener{
 	}
 
 
+	/**
+	 * Do run.
+	 */
 	private void doRun() {
 		if(checkInputs())
 			return;
@@ -1158,6 +1226,11 @@ public class NobleCoderTool implements ActionListener{
 		
 	}
 
+	/**
+	 * Check inputs.
+	 *
+	 * @return true, if successful
+	 */
 	protected boolean checkInputs() {
 		if(getTerminology() == null){
 			JOptionPane.showMessageDialog(frame,"You don't have any terminologies imported","Error",JOptionPane.ERROR_MESSAGE);
@@ -1178,9 +1251,10 @@ public class NobleCoderTool implements ActionListener{
 	}
 
 	/**
-	 * get string from check list
-	 * @param p
-	 * @return
+	 * get string from check list.
+	 *
+	 * @param p the p
+	 * @return the check list
 	 */
 	private String getCheckList(JPanel p){
 		StringBuffer b = new StringBuffer();
@@ -1193,9 +1267,10 @@ public class NobleCoderTool implements ActionListener{
 	}
 	
 	/**
-	 * get string from check list
-	 * @param p
-	 * @return
+	 * get string from check list.
+	 *
+	 * @param p the p
+	 * @param s the s
 	 */
 	private void setCheckList(JPanel p,String s){
 		for(Component c: p.getComponents()){
@@ -1210,6 +1285,11 @@ public class NobleCoderTool implements ActionListener{
 		}
 	}
 	
+	/**
+	 * Do browse.
+	 *
+	 * @param text the text
+	 */
 	private void doBrowse(JTextField text){
 		if(text == sources){
 			setCheckList(getSourcePanel(),sources.getText());
@@ -1249,6 +1329,11 @@ public class NobleCoderTool implements ActionListener{
 		}
 	}
 	
+	/**
+	 * Gets the terminologies.
+	 *
+	 * @return the terminologies
+	 */
 	private Terminology [] getTerminologies() {
 		if(repository == null)
 			repository =  new DefaultRepository();
@@ -1262,6 +1347,9 @@ public class NobleCoderTool implements ActionListener{
 		return terms;
 	}
 	
+	/**
+	 * Download terminology.
+	 */
 	private void downloadTerminology(){
 		(new Thread(){
 			public void run(){
@@ -1297,12 +1385,23 @@ public class NobleCoderTool implements ActionListener{
 	}
 	
 	
+	/**
+	 * Gets the terminology.
+	 *
+	 * @return the terminology
+	 */
 	public NobleCoderTerminology getTerminology(){
 		if(terminology == null && terminologies != null)
 			terminology = (NobleCoderTerminology) terminologies.getSelectedItem();
 		return terminology;
 	}
 
+	/**
+	 * Gets the semantic types.
+	 *
+	 * @param str the str
+	 * @return the semantic types
+	 */
 	private SemanticType [] getSemanticTypes(String str){
 		String [] p = str.split(";");
 		SemanticType [] src = new SemanticType [p.length];
@@ -1311,6 +1410,12 @@ public class NobleCoderTool implements ActionListener{
 		return src;
 	}
 	
+	/**
+	 * Gets the source.
+	 *
+	 * @param str the str
+	 * @return the source
+	 */
 	private Source [] getSource(String str ){
 		String [] p = str.split(";");
 		Source [] src = new Source [p.length];
@@ -1320,8 +1425,10 @@ public class NobleCoderTool implements ActionListener{
 	}
 	
 	/**
-	 * process  documents
-	 * @param args
+	 * process  documents.
+	 *
+	 * @param args the args
+	 * @throws Exception the exception
 	 */
 	public void process(List<String> args) throws Exception{
 		getTerminologies();
@@ -1497,6 +1604,13 @@ public class NobleCoderTool implements ActionListener{
 		progress("Average process time per report:\t"+ave+" ms\n");
 	}
 
+	/**
+	 * Gets the files.
+	 *
+	 * @param in the in
+	 * @param list the list
+	 * @return the files
+	 */
 	private List<File> getFiles(File in,List<File> list) {
 		if(in.isDirectory()){
 			for(File f: in.listFiles()){
@@ -1525,8 +1639,9 @@ public class NobleCoderTool implements ActionListener{
 
 	
 	/**
-	 * get a list of all emantic types
-	 * @return
+	 * get a list of all emantic types.
+	 *
+	 * @return the all semantic types
 	 */
 	private List<String> getAllSemanticTypes(){
 		List list = new ArrayList();
@@ -1538,13 +1653,19 @@ public class NobleCoderTool implements ActionListener{
 	}
 	
 		
+	/**
+	 * Checks if is abbrreviation filtering.
+	 *
+	 * @return true, if is abbrreviation filtering
+	 */
 	public boolean isAbbrreviationFiltering() {
 		return !skipAbbrreviationLogic;
 	}
 	
 	/**
 	 * set abbreviation filtering against the abbreviation terminology and white list if available.
-	 * @param filter
+	 *
+	 * @param filter the new abbrreviation filtering
 	 */
 	public void setAbbrreviationFiltering(boolean filter) {
 		this.skipAbbrreviationLogic = !filter;
@@ -1552,16 +1673,18 @@ public class NobleCoderTool implements ActionListener{
 
 	
 	/**
-	 * is acronym expansion enabled
-	 * @return
+	 * is acronym expansion enabled.
+	 *
+	 * @return true, if is acronym expansion
 	 */
 	public boolean isAcronymExpansion() {
 		return handleAcronyms;
 	}
 
 	/**
-	 * handle acronym expansion
-	 * @param handleAcronyms
+	 * handle acronym expansion.
+	 *
+	 * @param handleAcronyms the new acronym expansion
 	 */
 	public void setAcronymExpansion(boolean handleAcronyms) {
 		this.handleAcronyms = handleAcronyms;
@@ -1569,15 +1692,30 @@ public class NobleCoderTool implements ActionListener{
 
 	
 	
+	/**
+	 * Checks if is handle negation.
+	 *
+	 * @return true, if is handle negation
+	 */
 	public boolean isHandleNegation() {
 		return handleNegation;
 	}
 
+	/**
+	 * Sets the handle negation.
+	 *
+	 * @param handleNegation the new handle negation
+	 */
 	public void setHandleNegation(boolean handleNegation) {
 		this.handleNegation = handleNegation;
 	}
 	
 	
+	/**
+	 * Progress.
+	 *
+	 * @param str the str
+	 */
 	private void progress(String str){
 		System.out.print(str);
 		if(console != null){

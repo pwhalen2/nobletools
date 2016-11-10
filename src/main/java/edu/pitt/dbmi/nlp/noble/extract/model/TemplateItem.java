@@ -29,9 +29,9 @@ import edu.pitt.dbmi.nlp.noble.util.XMLUtils;
 
 /**
  * this class represents a single piece of information
- * and its possible values that need to be extracted from text
- * @author tseytlin
+ * and its possible values that need to be extracted from text.
  *
+ * @author tseytlin
  */
 public class TemplateItem implements Comparable {
 	public static final String TYPE_DIAGNOSIS = "diagnosis";
@@ -60,44 +60,63 @@ public class TemplateItem implements Comparable {
 	private List<DocumentFilter> filters;
 	
 	/**
-	 * get template item name
-	 * @return
+	 * get template item name.
+	 *
+	 * @return the name
 	 */
 	public String getName(){
 		return concept.getName();
 	}
 	
 	/**
-	 * get a type of template item
-	 * @return
+	 * get a type of template item.
+	 *
+	 * @return the type
 	 */
 	public String getType(){
 		return type;
 	}
 	
+	/**
+	 * Sets the type.
+	 *
+	 * @param type the new type
+	 */
 	public void setType(String type) {
 		this.type = type;
 	}
 
+	/**
+	 * Gets the value domain.
+	 *
+	 * @return the value domain
+	 */
 	public String getValueDomain() {
 		return valueDomain;
 	}
 
+	/**
+	 * Sets the value domain.
+	 *
+	 * @param valueDomain the new value domain
+	 */
 	public void setValueDomain(String valueDomain) {
 		this.valueDomain = valueDomain;
 	}
 
 	/**
-	 * get template item definition
-	 * @return
+	 * get template item definition.
+	 *
+	 * @return the description
 	 */
 	public String getDescription(){
 		return concept.getDefinition();
 	}
 
 	/**
-	 * get document filters
-	 * @return
+	 * get document filters.
+	 *
+	 * @return the filters
 	 */
 	public List<DocumentFilter> getFilters() {
 		if(filters == null)
@@ -106,24 +125,27 @@ public class TemplateItem implements Comparable {
 	}
 	
 	/**
-	 * get a concept object representing this template iterm
-	 * @return
+	 * get a concept object representing this template iterm.
+	 *
+	 * @return the concept
 	 */
 	public Concept getConcept() {
 		return concept;
 	}
 
 	/**
-	 * set a concept object representing this template iterm
-	 * @return
+	 * set a concept object representing this template iterm.
+	 *
+	 * @param concept the new concept
 	 */
 	public void setConcept(Concept concept) {
 		this.concept = concept;
 	}
 	
 	/**
-	 * get a set of attributes associated with this template item
-	 * @return
+	 * get a set of attributes associated with this template item.
+	 *
+	 * @return the attributes
 	 */
 	public Set<TemplateItem> getAttributes(){
 		return getAttributeValues().keySet();
@@ -131,24 +153,27 @@ public class TemplateItem implements Comparable {
 
 	
 	/**
-	 * get a feature that is associated with an attribute 
-	 * @return
+	 * get a feature that is associated with an attribute .
+	 *
+	 * @return the feature
 	 */
 	public TemplateItem getFeature() {
 		return (feature != null)?feature:this;
 	}
 
 	/**
-	 * set a feature associated with an attribute
-	 * @param feature
+	 * set a feature associated with an attribute.
+	 *
+	 * @param feature the new feature
 	 */
 	public void setFeature(TemplateItem feature) {
 		this.feature = feature;
 	}
 
 	/**
-	 * get a mapping between attributes and its associated set of values
-	 * @return
+	 * get a mapping between attributes and its associated set of values.
+	 *
+	 * @return the attribute values
 	 */
 	public Map<TemplateItem, Set<TemplateItem>> getAttributeValues() {
 		if(attributeValues == null)
@@ -158,9 +183,10 @@ public class TemplateItem implements Comparable {
 	
 	
 	/**
-	 * get attribute values associated with a given attribute
-	 * @param attribute
-	 * @return
+	 * get attribute values associated with a given attribute.
+	 *
+	 * @param attribute the attribute
+	 * @return the attribute values
 	 */
 	public Set<TemplateItem> getAttributeValues(TemplateItem attribute){
 		Set<TemplateItem> list = getAttributeValues().get(attribute);
@@ -168,9 +194,10 @@ public class TemplateItem implements Comparable {
 	}
 	
 	/**
-	 * add a new attribute value to 
-	 * @param attribute
-	 * @param value
+	 * add a new attribute value to .
+	 *
+	 * @param attribute the attribute
+	 * @param value the value
 	 */
 	public void addAttributeValue(TemplateItem attribute, TemplateItem value){
 		Set<TemplateItem> list = getAttributeValues().get(attribute);
@@ -182,9 +209,10 @@ public class TemplateItem implements Comparable {
 	}
 	
 	/**
-	 * add a new attribute value to 
-	 * @param attribute
-	 * @param value
+	 * add a new attribute value to .
+	 *
+	 * @param attribute the attribute
+	 * @param value the value
 	 */
 	public void removeAttributeValue(TemplateItem attribute, TemplateItem value){
 		Set<TemplateItem> list = getAttributeValues().get(attribute);
@@ -194,8 +222,9 @@ public class TemplateItem implements Comparable {
 	}
 
 	/**
-	 * get a set of modifiers
-	 * @return
+	 * get a set of modifiers.
+	 *
+	 * @return the modifiers
 	 */
 	public Set<TemplateItem> getModifiers() {
 		if(modifiers == null)
@@ -204,8 +233,9 @@ public class TemplateItem implements Comparable {
 	}
 	
 	/**
-	 * add a modifier
-	 * @param mod
+	 * add a modifier.
+	 *
+	 * @param mod the mod
 	 */
 	public void addModifier(TemplateItem mod){
 		getModifiers().add(mod);
@@ -213,8 +243,9 @@ public class TemplateItem implements Comparable {
 
 	
 	/**
-	 * get a set of available values
-	 * @return
+	 * get a set of available values.
+	 *
+	 * @return the values
 	 */
 	public Set<TemplateItem> getValues() {
 		if(values == null)
@@ -223,8 +254,9 @@ public class TemplateItem implements Comparable {
 	}
 
 	/**
-	 * get a set of available units per value
-	 * @return
+	 * get a set of available units per value.
+	 *
+	 * @return the units
 	 */
 	public Set<TemplateItem> getUnits() {
 		if(units == null)
@@ -233,28 +265,36 @@ public class TemplateItem implements Comparable {
 	}
 
 	/**
-	 * get a list of templates that include this item
-	 * @return
+	 * get a list of templates that include this item.
+	 *
+	 * @return the template
 	 */
 	public Template getTemplate() {
 		return template;
 	}
 
 	/**
-	 * add template to a list
-	 * @param template
+	 * add template to a list.
+	 *
+	 * @param template the new template
 	 */
 	public void setTemplate(Template template) {
 		this.template = template;
 	}
 	
 	/**
-	 * compare to other template item
+	 * compare to other template item.
+	 *
+	 * @param o the o
+	 * @return the int
 	 */
 	public int compareTo(Object o) {
 		return getConcept().compareTo(((TemplateItem)o).getConcept());
 	}
 	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	public String toString(){
 		String md = "";
 		String at = "";
@@ -272,18 +312,25 @@ public class TemplateItem implements Comparable {
 	}
 	
 	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
 	public boolean equals(Object o){
 		return getConcept().equals(((TemplateItem)o).getConcept());
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
 	public int hashCode() {
 		return getConcept().hashCode();
 	}
 	
 	
 	/**
-	 * get terminology
-	 * @return
+	 * get terminology.
+	 *
+	 * @return the terminology
 	 */
 	public Terminology getTerminology(){
 		if(template != null)
@@ -293,8 +340,9 @@ public class TemplateItem implements Comparable {
 	
 	
 	/**
-	 * get path helper
-	 * @return
+	 * get path helper.
+	 *
+	 * @return the path helper
 	 */
 	public PathHelper getPathHelper(){
 		if(template != null)
@@ -303,8 +351,9 @@ public class TemplateItem implements Comparable {
 	}
 	
 	/**
-	 * get the question
-	 * @return
+	 * get the question.
+	 *
+	 * @return the questions
 	 */
 	public List<String> getQuestions(){
 		List<String> list = new ArrayList<String>();
@@ -324,9 +373,10 @@ public class TemplateItem implements Comparable {
 	}
 	
 	/**
-	 * get the attribute template item for a name
-	 * @param name
-	 * @return
+	 * get the attribute template item for a name.
+	 *
+	 * @param name the name
+	 * @return the attribute
 	 */
 	public TemplateItem getAttribute(String name){
 		if(name == null)
@@ -340,9 +390,11 @@ public class TemplateItem implements Comparable {
 	
 	
 	/**
-	 * extract instances from the document that fit this template
-	 * @param doc
-	 * @return
+	 * extract instances from the document that fit this template.
+	 *
+	 * @param doc the doc
+	 * @return the list
+	 * @throws TerminologyException the terminology exception
 	 */
 	public List<ItemInstance> process(TemplateDocument doc) throws TerminologyException{
 		List<ItemInstance> items = new ArrayList<ItemInstance>();
@@ -450,6 +502,13 @@ public class TemplateItem implements Comparable {
 		return items;
 	}
 
+	/**
+	 * Adds the instance.
+	 *
+	 * @param paths the paths
+	 * @param items the items
+	 * @param i the i
+	 */
 	// add item to a list in a clever way
 	private void addInstance(PathHelper paths, List<ItemInstance> items, ItemInstance i){
 		if(items.isEmpty()){
@@ -488,10 +547,12 @@ public class TemplateItem implements Comparable {
 	}
 	
 	/**
-	 * convert Template to XML DOM object representation
-	 * @return
-	 * @throws Exception 
-	 * @throws DOMException 
+	 * convert Template to XML DOM object representation.
+	 *
+	 * @param doc the doc
+	 * @return the element
+	 * @throws DOMException the DOM exception
+	 * @throws Exception the exception
 	 */
 	public Element toElement(Document doc) throws DOMException, Exception{
 		Element root = doc.createElement("TemplateItem");
@@ -558,8 +619,10 @@ public class TemplateItem implements Comparable {
 	
 
 	/**
-	 * initialize template from XML DOM object representation
-	 * @param element
+	 * initialize template from XML DOM object representation.
+	 *
+	 * @param element the element
+	 * @throws Exception the exception
 	 */
 	public void fromElement(Element element) throws Exception{
 		concept = getTemplate().getTerminology().lookupConcept(element.getAttribute("concept"));

@@ -33,9 +33,9 @@ import edu.pitt.dbmi.nlp.noble.tools.TextTools;
 
 
 /**
- * connect to UMLS compatible RRF database schema
- * @author tseytlin
+ * connect to UMLS compatible RRF database schema.
  *
+ * @author tseytlin
  */
 public class UMLSTerminology extends AbstractTerminology {
 	public static final String SEARCH_EXACT = "exactMatch";
@@ -51,11 +51,12 @@ public class UMLSTerminology extends AbstractTerminology {
 	private Source [] sources, filterSources;
 	
 	/**
-	 * connect to new URML instance
-	 * @param driver
-	 * @param url
-	 * @param user
-	 * @param pass
+	 * connect to new URML instance.
+	 *
+	 * @param driver the driver
+	 * @param url the url
+	 * @param user the user
+	 * @param pass the pass
 	 */
 	public UMLSTerminology(String driver,String url,String user, String pass){
 		this.driver = driver;
@@ -66,9 +67,10 @@ public class UMLSTerminology extends AbstractTerminology {
 	
 	
 	/**
-	 * get connection to the database
-	 * @return
-	 * @throws Exception
+	 * get connection to the database.
+	 *
+	 * @return the connection
+	 * @throws Exception the exception
 	 */
 	private Connection getConnection() throws Exception{
 		if(conn == null){
@@ -95,20 +97,32 @@ public class UMLSTerminology extends AbstractTerminology {
 	}
 	
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.AbstractTerminology#convertConcept(java.lang.Object)
+	 */
 	protected Concept convertConcept(Object obj) {
 		//NOOP
 		return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Terminology#getSourceFilter()
+	 */
 	public Source[] getSourceFilter() {
 		return filterSources;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.AbstractTerminology#getRelatedConcepts(edu.pitt.dbmi.nlp.noble.terminology.Concept, edu.pitt.dbmi.nlp.noble.terminology.Relation)
+	 */
 	public Concept[] getRelatedConcepts(Concept c, Relation r) throws TerminologyException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.AbstractTerminology#getRelatedConcepts(edu.pitt.dbmi.nlp.noble.terminology.Concept)
+	 */
 	public Map getRelatedConcepts(Concept c) throws TerminologyException {
 		// TODO Auto-generated method stub
 		return null;
@@ -116,17 +130,26 @@ public class UMLSTerminology extends AbstractTerminology {
 
 	
 	/**
-	 * set default language (english is default), null is everything
-	 * @param l
+	 * set default language (english is default), null is everything.
+	 *
+	 * @param l the new language
 	 */
 	public void setLanguage(String l){
 		lang = l;
 	}
 	
+	/**
+	 * Gets the language.
+	 *
+	 * @return the language
+	 */
 	public String getLanguage(){
 		return lang;
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.AbstractTerminology#getSources()
+	 */
 	public Source[] getSources() {
 		if(sources == null){
 			try{
@@ -160,7 +183,11 @@ public class UMLSTerminology extends AbstractTerminology {
 	}
 
 	/**
-	 * get concept entry for a cui
+	 * get concept entry for a cui.
+	 *
+	 * @param cui the cui
+	 * @return the concept
+	 * @throws TerminologyException the terminology exception
 	 */
 	public Concept lookupConcept(String cui) throws TerminologyException {
 		try{
@@ -266,20 +293,28 @@ public class UMLSTerminology extends AbstractTerminology {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.AbstractTerminology#search(java.lang.String)
+	 */
 	public Concept[] search(String text) throws TerminologyException {
 		return search(text,SEARCH_NGRAM);
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.AbstractTerminology#getSearchMethods()
+	 */
 	public String[] getSearchMethods() {
 		return new String [] {SEARCH_EXACT,SEARCH_BEST,SEARCH_STARTS_WITH,SEARCH_ENDS_WITH,SEARCH_CONTAINS,SEARCH_NGRAM};
 	}
 
 	
 	/**
-	 * is ngram used elsewhere
-	 * @param list
-	 * @param str
-	 * @return
+	 * is ngram used elsewhere.
+	 *
+	 * @param text the text
+	 * @param list the list
+	 * @param ng the ng
+	 * @return true, if is used
 	 */
 	private boolean isUsed(String text, List<String> list, String ng){
 		int st = text.indexOf(ng);
@@ -300,7 +335,12 @@ public class UMLSTerminology extends AbstractTerminology {
 	}
 	
 	/**
-	 * do concept search
+	 * do concept search.
+	 *
+	 * @param text the text
+	 * @param method the method
+	 * @return the concept[]
+	 * @throws TerminologyException the terminology exception
 	 */
 	public Concept[] search(String text, String method) throws TerminologyException {
 		// to do best, simple first do exact match, then contains with
@@ -402,36 +442,60 @@ public class UMLSTerminology extends AbstractTerminology {
 	}
 
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Terminology#setSourceFilter(edu.pitt.dbmi.nlp.noble.terminology.Source[])
+	 */
 	public void setSourceFilter(Source[] srcs) {
 		filterSources = srcs;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Describable#getDescription()
+	 */
 	public String getDescription() {
 		return "UMLS or compatible terminology distribution deployed in Rich Release Format (RRF)";
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Describable#getFormat()
+	 */
 	public String getFormat() {
 		return "RRF";
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Describable#getLocation()
+	 */
 	public String getLocation() {
 		return url;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Describable#getName()
+	 */
 	public String getName() {
 		return "UMLS Terminology";
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Describable#getURI()
+	 */
 	public URI getURI() {
 		return URI.create(getLocation());
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Describable#getVersion()
+	 */
 	public String getVersion() {
 		return "1.0";
 	}
 
 	/**
-	 * @param args
+	 * The main method.
+	 *
+	 * @param args the arguments
+	 * @throws Exception the exception
 	 */
 	public static void main(String[] args) throws Exception {
 		Terminology term = new UMLSTerminology("oracle.jdbc.driver.OracleDriver",
@@ -458,6 +522,9 @@ public class UMLSTerminology extends AbstractTerminology {
 
 
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Terminology#getSemanticTypeFilter()
+	 */
 	public SemanticType[] getSemanticTypeFilter() {
 		// TODO Auto-generated method stub
 		return null;
@@ -465,6 +532,9 @@ public class UMLSTerminology extends AbstractTerminology {
 
 
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Terminology#setSemanticTypeFilter(edu.pitt.dbmi.nlp.noble.terminology.SemanticType[])
+	 */
 	public void setSemanticTypeFilter(SemanticType[] srcs) {
 		// TODO Auto-generated method stub
 		

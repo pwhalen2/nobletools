@@ -8,9 +8,9 @@ import edu.pitt.dbmi.nlp.noble.tools.TextTools;
 import java.util.*;
 
 /**
- * This object represents a concept mention in text
- * @author tseytlin
+ * This object represents a concept mention in text.
  *
+ * @author tseytlin
  */
 public class Mention implements Spannable, Comparable<Mention> {
 	private Concept concept;
@@ -19,24 +19,58 @@ public class Mention implements Spannable, Comparable<Mention> {
 	private Map<String,Modifier> modifiers;
 	
 	
+	/**
+	 * Gets the concept.
+	 *
+	 * @return the concept
+	 */
 	public Concept getConcept() {
 		return concept;
 	}
+	
+	/**
+	 * Sets the concept.
+	 *
+	 * @param concept the new concept
+	 */
 	public void setConcept(Concept concept) {
 		this.concept = concept;
 	}
+	
+	/**
+	 * Gets the annotations.
+	 *
+	 * @return the annotations
+	 */
 	public List<Annotation> getAnnotations() {
 		if(annotations == null)
 			annotations = new ArrayList<Annotation>();
 		return annotations;
 	}
+	
+	/**
+	 * Sets the annotations.
+	 *
+	 * @param annotations the new annotations
+	 */
 	public void setAnnotations(List<Annotation> annotations) {
 		this.annotations = annotations;
 	}
 	
+	/**
+	 * Gets the sentence.
+	 *
+	 * @return the sentence
+	 */
 	public Sentence getSentence() {
 		return sentence;
 	}
+	
+	/**
+	 * Sets the sentence.
+	 *
+	 * @param sentence the new sentence
+	 */
 	public void setSentence(Sentence sentence) {
 		this.sentence = sentence;
 		for(Annotation a: getAnnotations()){
@@ -45,6 +79,9 @@ public class Mention implements Spannable, Comparable<Mention> {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.coder.model.Spannable#getText()
+	 */
 	public String getText(){
 		StringBuffer b = new StringBuffer();
 		
@@ -54,38 +91,79 @@ public class Mention implements Spannable, Comparable<Mention> {
 		
 		return b.toString().trim();
 	}
+	
+	/**
+	 * Gets the name.
+	 *
+	 * @return the name
+	 */
 	public String getName() {
 		return concept.getName();
 	}
+	
+	/**
+	 * Gets the code.
+	 *
+	 * @return the code
+	 */
 	public String getCode() {
 		return concept.getCode();
 	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	public String toString(){
 		return getText();
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.coder.model.Spannable#getStartPosition()
+	 */
 	public int getStartPosition() {
 		return !getAnnotations().isEmpty()?getAnnotations().get(0).getStartPosition():0;
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.coder.model.Spannable#getEndPosition()
+	 */
 	public int getEndPosition() {
 		return !getAnnotations().isEmpty()?getAnnotations().get(getAnnotations().size()-1).getEndPosition():0;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.coder.model.Spannable#contains(edu.pitt.dbmi.nlp.noble.coder.model.Spannable)
+	 */
 	public boolean contains(Spannable s) {
 		return getStartPosition() <= s.getStartPosition() && s.getEndPosition() <= getEndPosition();
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.coder.model.Spannable#intersects(edu.pitt.dbmi.nlp.noble.coder.model.Spannable)
+	 */
 	public boolean intersects(Spannable s) {
 		return !(getEndPosition() < s.getStartPosition() || s.getEndPosition() < getStartPosition());
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.coder.model.Spannable#before(edu.pitt.dbmi.nlp.noble.coder.model.Spannable)
+	 */
 	public boolean before(Spannable s) {
 		return getEndPosition() <= s.getStartPosition();
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.coder.model.Spannable#after(edu.pitt.dbmi.nlp.noble.coder.model.Spannable)
+	 */
 	public boolean after(Spannable s) {
 		return s.getEndPosition() <= getStartPosition();
 	}
 
 	/**
-	 * compare to other mentions
+	 * compare to other mentions.
+	 *
+	 * @param o the o
+	 * @return the int
 	 */
 	public int compareTo(Mention o) {
 		int n = getStartPosition() - o.getStartPosition();
@@ -101,18 +179,21 @@ public class Mention implements Spannable, Comparable<Mention> {
 	}
 	
 	/**
-	 * convert a found concept to a set of mentions
-	 * @param c
-	 * @return
+	 * convert a found concept to a set of mentions.
+	 *
+	 * @param c the c
+	 * @return the mentions
 	 */
 	public static List<Mention> getMentions(Concept c) {
 		return getMentions(c,Arrays.asList(c.getAnnotations()));
 	}
 	
 	/**
-	 * convert a found concept to a set of mentions
-	 * @param c
-	 * @return
+	 * convert a found concept to a set of mentions.
+	 *
+	 * @param c the c
+	 * @param annotations the annotations
+	 * @return the mentions
 	 */
 	public static List<Mention> getMentions(Concept c, List<Annotation> annotations) {
 		List<Mention> list = new ArrayList<Mention>();
@@ -180,17 +261,19 @@ public class Mention implements Spannable, Comparable<Mention> {
 
 
 	/**
-	 * modifier types used throught the system
-	 * @return
+	 * modifier types used throught the system.
+	 *
+	 * @return the modifier types
 	 */
 	public static List<String> getModifierTypes(){
 		return ConText.MODIFIER_TYPES;
 	}
 
 	/**
-	 * get a mapping of linguistic context found for this mention
-	 * @return
-     */
+	 * get a mapping of linguistic context found for this mention.
+	 *
+	 * @return the modifiers
+	 */
 	public Map<String,Modifier> getModifiers(){
 		if(modifiers == null){
 			modifiers = new LinkedHashMap<String,Modifier>();
@@ -198,6 +281,11 @@ public class Mention implements Spannable, Comparable<Mention> {
 		return modifiers;
 	}
 	
+	/**
+	 * Gets the modifier annotations.
+	 *
+	 * @return the modifier annotations
+	 */
 	public List<Annotation> getModifierAnnotations(){
 		List<Annotation> list = new ArrayList<Annotation>();
 		for(Modifier m: getModifiers().values()){
@@ -207,8 +295,9 @@ public class Mention implements Spannable, Comparable<Mention> {
 	}
 
 	/**
-	 * add linguistic mofifier of this mention
-	 * @param m
+	 * add linguistic mofifier of this mention.
+	 *
+	 * @param m the m
 	 */
 	public void addModifier(Modifier m) {
 		// if we don't have modifier defined for that type, or it is default, or the new value is not default
@@ -216,9 +305,11 @@ public class Mention implements Spannable, Comparable<Mention> {
 			getModifiers().put(m.getType(),m);
 		}
 	}
+	
 	/**
-	 * add linguistic mofifier of this mention
-	 * @param m
+	 * add linguistic mofifier of this mention.
+	 *
+	 * @param list the list
 	 */
 	public void addModifiers(List<Modifier> list) {
 		for(Modifier m: list){
@@ -226,25 +317,58 @@ public class Mention implements Spannable, Comparable<Mention> {
 		}
 	}
 	
+	/**
+	 * Gets the modifier.
+	 *
+	 * @param type the type
+	 * @return the modifier
+	 */
 	public Modifier getModifier(String type){
 		return getModifiers().get(type);
 	}
 	
+	/**
+	 * Gets the modifier value.
+	 *
+	 * @param type the type
+	 * @return the modifier value
+	 */
 	public String getModifierValue(String type){
 		return getModifiers().containsKey(type)?getModifiers().get(type).getValue():null;
 	}
 	
+	/**
+	 * Checks if is negated.
+	 *
+	 * @return true, if is negated
+	 */
 	public boolean isNegated(){
 		return ConText.MODIFIER_VALUE_NEGATIVE.equals(getModifierValue(ConText.MODIFIER_TYPE_POLARITY));
 	}
 	
+	/**
+	 * Checks if is hedged.
+	 *
+	 * @return true, if is hedged
+	 */
 	public boolean isHedged(){
 		return ConText.MODIFIER_VALUE_HEDGED.equals(getModifierValue(ConText.MODIFIER_TYPE_MODALITY));
 	}
 	
+	/**
+	 * Checks if is historical.
+	 *
+	 * @return true, if is historical
+	 */
 	public boolean isHistorical(){
 		return  ConText.MODIFIER_VALUE_HISTORICAL.equals(getModifierValue(ConText.MODIFIER_TYPE_TEMPORALITY));
 	}
+	
+	/**
+	 * Checks if is family member.
+	 *
+	 * @return true, if is family member
+	 */
 	public boolean isFamilyMember(){
 		return ConText.MODIFIER_VALUE_FAMILY_MEMBER.equals(getModifierValue(ConText.MODIFIER_TYPE_EXPERIENCER));
 	}

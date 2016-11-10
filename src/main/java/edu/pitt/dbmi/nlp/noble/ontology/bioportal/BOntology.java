@@ -74,9 +74,9 @@ import edu.pitt.dbmi.nlp.noble.terminology.TerminologyException;
 import edu.pitt.dbmi.nlp.noble.tools.TextTools;
 
 /**
- * this class represents BioPortal ontology
- * @author Eugene Tseytlin
+ * this class represents BioPortal ontology.
  *
+ * @author Eugene Tseytlin
  */
 public class BOntology extends BResource implements IOntology, Terminology {
 	private static final String LAST_PROCESSED_PAGE = "LAST_PROCESSED_PAGE";
@@ -107,7 +107,10 @@ public class BOntology extends BResource implements IOntology, Terminology {
 	public static final int BIOPORTAL_PAGE_SIZE = 500;
 	
 	/**
-	 * create new BioPortal ontology
+	 * create new BioPortal ontology.
+	 *
+	 * @param r the r
+	 * @param id the id
 	 */
 	BOntology(BioPortalRepository r, String id) {
 		super();
@@ -124,7 +127,10 @@ public class BOntology extends BResource implements IOntology, Terminology {
 	}
 	
 	/**
-	 * create new BioPortal ontology
+	 * create new BioPortal ontology.
+	 *
+	 * @param r the r
+	 * @param elem the elem
 	 */
 	public BOntology(BioPortalRepository r, Element elem) {
 		super();
@@ -139,8 +145,9 @@ public class BOntology extends BResource implements IOntology, Terminology {
 	}
 
 	/**
-	 * load ontology content
-	 * @param elem
+	 * load ontology content.
+	 *
+	 * @param elem the elem
 	 */
 	public void load(Element elem){
 		// pull in all ontology data
@@ -194,16 +201,25 @@ public class BOntology extends BResource implements IOntology, Terminology {
 	}
 	
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.bioportal.BResource#getVersion()
+	 */
 	public String getVersion(){
 		loadMetaInfo();
 		return super.getVersion();
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.bioportal.BResource#getFormat()
+	 */
 	public String getFormat() {
 		loadMetaInfo();
 		return super.getFormat();
 	}
 
+	/**
+	 * Load meta info.
+	 */
 	public void loadMetaInfo(){
 		// if we got a format, then it is OK
 		if(super.getFormat().length() > 0)
@@ -241,19 +257,31 @@ public class BOntology extends BResource implements IOntology, Terminology {
 	}
 	
 	
+	/**
+	 * Register class.
+	 *
+	 * @param cls the cls
+	 */
 	public void registerClass(BClass cls){
 		// do not replace existing classes, they maybe better defined
 		if(!classMap.containsKey(cls.getName()))
 			classMap.put(cls.getName(),cls);
 	}
+	
+	/**
+	 * Unregister class.
+	 *
+	 * @param cls the cls
+	 */
 	public void unregisterClass(BClass cls){
 		classMap.remove(cls.getName());
 	}
 	
 	
 	/**
-	 * add listener to listen to misc ontology events
-	 * @param listener
+	 * add listener to listen to misc ontology events.
+	 *
+	 * @param listener the listener
 	 */
 	public void addPropertyChangeListener(PropertyChangeListener listener){
 		pcs.addPropertyChangeListener(listener);
@@ -261,17 +289,24 @@ public class BOntology extends BResource implements IOntology, Terminology {
 	
 	
 	/**
-	 * remove listener to listen to misc ontology events
-	 * @param listener
+	 * remove listener to listen to misc ontology events.
+	 *
+	 * @param listener the listener
 	 */
 	public void removePropertyChangeListener(PropertyChangeListener listener){
 		pcs.removePropertyChangeListener(listener);
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#addImportedOntology(edu.pitt.dbmi.nlp.noble.ontology.IOntology)
+	 */
 	public void addImportedOntology(IOntology o) throws IOntologyException {
 		throw new IOntologyException("BioPortal is read-only");
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#createLogicExpression(int, java.lang.Object)
+	 */
 	public ILogicExpression createLogicExpression(int type, Object param) {
 		if (param instanceof Collection)
 			return new LogicExpression(type, (Collection) param);
@@ -281,10 +316,16 @@ public class BOntology extends BResource implements IOntology, Terminology {
 			return new LogicExpression(type, param);
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#createLogicExpression()
+	 */
 	public ILogicExpression createLogicExpression() {
 		return new LogicExpression(ILogicExpression.EMPTY);
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#createProperty(java.lang.String, int)
+	 */
 	public IProperty createProperty(String name, int type) {
 		BProperty p = new BProperty();
 		p.setName(name);
@@ -293,33 +334,54 @@ public class BOntology extends BResource implements IOntology, Terminology {
 		return p;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#createRestriction(int)
+	 */
 	public IRestriction createRestriction(int type) {
 		throw new IOntologyError("Operation not supported");
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.bioportal.BResource#dispose()
+	 */
 	public void dispose() {
 		classMap = null;
 		propertyMap = null;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#executeQuery(edu.pitt.dbmi.nlp.noble.ontology.IQuery)
+	 */
 	public IQueryResults executeQuery(IQuery query) {
 		throw new IOntologyError("Operation not supported");
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#getAllClasses()
+	 */
 	public IResourceIterator getAllClasses() {
 		return new DefaultResourceIterator(classMap.values().iterator());
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#getAllProperties()
+	 */
 	public IResourceIterator getAllProperties() {
 		throw new IOntologyError("Operation not supported");
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#getAllResources()
+	 */
 	public IResourceIterator getAllResources() {
 		return new DefaultResourceIterator(classMap.values().iterator());
 	}
 
 	/**
-	 * get existing class
+	 * get existing class.
+	 *
+	 * @param name the name
+	 * @return the class
 	 */
 	public IClass getClass(String name) {
 		// if we got a uri as a code
@@ -346,8 +408,9 @@ public class BOntology extends BResource implements IOntology, Terminology {
 	}
 	
 	/**
-	 * download ontology
-	 * @return
+	 * download ontology.
+	 *
+	 * @return the download URL
 	 */
 	public URL getDownloadURL(){
 		String url = null;
@@ -360,22 +423,34 @@ public class BOntology extends BResource implements IOntology, Terminology {
 	}
 	
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#getImportedOntologies()
+	 */
 	public IOntology[] getImportedOntologies() {
 		return new IOntology[0];
 	}
 
 	/**
-	 * no instances supported
+	 * no instances supported.
+	 *
+	 * @param name the name
+	 * @return single instance of BOntology
 	 */
 	public IInstance getInstance(String name) {
 		return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#getMatchingResources(edu.pitt.dbmi.nlp.noble.ontology.IProperty, java.lang.Object)
+	 */
 	public IResourceIterator getMatchingResources(IProperty p, Object value) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#getMatchingResources(java.lang.String)
+	 */
 	public IResourceIterator getMatchingResources(String regex) {
 		List list = new ArrayList();
 		try{
@@ -388,6 +463,9 @@ public class BOntology extends BResource implements IOntology, Terminology {
 		return new DefaultResourceIterator(list.listIterator());
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#getProperty(java.lang.String)
+	 */
 	public IProperty getProperty(String name) {
 		// convert a name to valid property
 		String oname = name;
@@ -401,15 +479,24 @@ public class BOntology extends BResource implements IOntology, Terminology {
 		return p;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.bioportal.BResource#getProperties()
+	 */
 	public IProperty [] getProperties(){
 		return propertyMap.values().toArray(new IProperty [0]);
 	}
 	
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#getRepository()
+	 */
 	public IRepository getRepository() {
 		return repository;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#getResource(java.lang.String)
+	 */
 	public IResource getResource(String name) {
 		IClass c = getClass(name);
 		// search if not in caseh, can't rely on lookup
@@ -425,10 +512,16 @@ public class BOntology extends BResource implements IOntology, Terminology {
 	
 	
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#getRoot()
+	 */
 	public IClass getRoot() {
 		throw new IOntologyError("Operation not supported");
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#getRootClasses()
+	 */
 	public IClass[] getRootClasses() {
 		if(roots == null){
 			roots = BioPortalHelper.getClassList(this, getId()+CONCEPTS+ROOT+"?"+repository.getAPIKey());
@@ -436,21 +529,32 @@ public class BOntology extends BResource implements IOntology, Terminology {
 		return roots.toArray(new IClass [0]);
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#hasResource(java.lang.String)
+	 */
 	public boolean hasResource(String path) {
 		return classMap.containsKey(path) || propertyMap.containsKey(path);
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#isLoaded()
+	 */
 	public boolean isLoaded() {
 		return loaded;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#isModified()
+	 */
 	public boolean isModified() {
 		return false;
 	}
 
 	
 	/**
-	 * load an entire ontology
+	 * load an entire ontology.
+	 *
+	 * @throws IOntologyException the i ontology exception
 	 */
 	public void load() throws IOntologyException {
 		if(isLoaded())
@@ -521,9 +625,10 @@ public class BOntology extends BResource implements IOntology, Terminology {
 	}
 
 	/**
-	 * get import properties for the target ontology
-	 * @param ont
-	 * @return
+	 * get import properties for the target ontology.
+	 *
+	 * @param ont the ont
+	 * @return the properties
 	 */
 	private Properties loadImportProperties(IOntology ont){
 		Properties p = new Properties();
@@ -576,8 +681,10 @@ public class BOntology extends BResource implements IOntology, Terminology {
 	}
 	
 	/**
-	 * store import properties
-	 * @param p
+	 * store import properties.
+	 *
+	 * @param ont the ont
+	 * @param p the p
 	 */
 	private void storeImportProperties(IOntology ont, Properties p){
 		// get file location
@@ -603,8 +710,9 @@ public class BOntology extends BResource implements IOntology, Terminology {
 	}
 	
 	/**
-	 * clean temporary files
-	 * @param p
+	 * clean temporary files.
+	 *
+	 * @param p the p
 	 */
 	private void cleanImportProperties(Properties p){
 		// remove temp ontology
@@ -633,8 +741,9 @@ public class BOntology extends BResource implements IOntology, Terminology {
 	
 	/**
 	 * try to do a memory efficiently copy this ontology into a target ontology
-	 * This method goes over BioPortal paged access and copies stuff directly into it
-	 * @param target
+	 * This method goes over BioPortal paged access and copies stuff directly into it.
+	 *
+	 * @param target the target
 	 */
 	public void copy(IOntology target){
 		
@@ -887,8 +996,9 @@ public class BOntology extends BResource implements IOntology, Terminology {
 
 	/**
 	 * try to do a memory efficiently copy this ontology into a target ontology
-	 * This method goes over BioPortal paged access and copies stuff directly into it
-	 * @param target
+	 * This method goes over BioPortal paged access and copies stuff directly into it.
+	 *
+	 * @param target the target
 	 */
 	public void copy2(IOntology target){
 		
@@ -1031,9 +1141,10 @@ public class BOntology extends BResource implements IOntology, Terminology {
 	
 	
 	/**
-	 * dispose of helper property
-	 * @param ont
-	 * @param name
+	 * dispose of helper property.
+	 *
+	 * @param ont the ont
+	 * @param name the name
 	 */
 	private void disposeProperty(IOntology ont, String name){
 		if(ont.hasResource(name)){
@@ -1043,8 +1154,9 @@ public class BOntology extends BResource implements IOntology, Terminology {
 	
 	
 	/**
-	 * dispose of class and dependencies
-	 * @param cls
+	 * dispose of class and dependencies.
+	 *
+	 * @param cls the cls
 	 */
 	private void disposeClass(BClass cls){
 		// clear superclasses
@@ -1063,9 +1175,11 @@ public class BOntology extends BResource implements IOntology, Terminology {
 	
 	
 	/**
-	 * get list of classes from list of objects
-	 * @param obj
-	 * @return
+	 * get list of classes from list of objects.
+	 *
+	 * @param ont the ont
+	 * @param obj the obj
+	 * @return the class list
 	 */
 	private List<IClass> getClassList(IOntology ont, Object [] obj){
 		List<IClass> list = new ArrayList<IClass>();
@@ -1083,9 +1197,10 @@ public class BOntology extends BResource implements IOntology, Terminology {
 	
 	
 	/**
-	 * copy class content to target class
-	 * @param cls
-	 * @param target
+	 * copy class content to target class.
+	 *
+	 * @param src the src
+	 * @param target the target
 	 */
 	private void copyClass(BClass src, IOntology target){
 		// if no such resource, then add it
@@ -1137,9 +1252,11 @@ public class BOntology extends BResource implements IOntology, Terminology {
 	}
 	
 	/**
-	 * copy class content to target class
-	 * @param cls
-	 * @param target
+	 * copy class content to target class.
+	 *
+	 * @param src the src
+	 * @param parent the parent
+	 * @return the class 2
 	 */
 	private IClass getClass2(BClass src,IClass parent){
 		IClass dst = null;
@@ -1160,9 +1277,11 @@ public class BOntology extends BResource implements IOntology, Terminology {
 	}
 	
 	/**
-	 * copy class content to target class
-	 * @param cls
-	 * @param target
+	 * copy class content to target class.
+	 *
+	 * @param src the src
+	 * @param parent the parent
+	 * @return the i class
 	 */
 	private IClass copyClass2(BClass src,IClass parent){
 		long time = System.currentTimeMillis();
@@ -1252,10 +1371,11 @@ public class BOntology extends BResource implements IOntology, Terminology {
 	}
 	
 	/**
-	 * save relations from source class into some tempoprary property of destination class
-	 * @param src
-	 * @param dst
-	 * @param relation
+	 * save relations from source class into some tempoprary property of destination class.
+	 *
+	 * @param src the src
+	 * @param dst the dst
+	 * @param relation the relation
 	 */
 	private void copyClassRelations(BClass src, IClass dst, String relation){
 		// get or create temp property
@@ -1277,49 +1397,86 @@ public class BOntology extends BResource implements IOntology, Terminology {
 	}
 	
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#reload()
+	 */
 	public void reload() throws IOntologyException {
 		// NOOP
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#removeImportedOntology(edu.pitt.dbmi.nlp.noble.ontology.IOntology)
+	 */
 	public void removeImportedOntology(IOntology o) {
 		throw new IOntologyError("BioPortal is read-only");
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#flush()
+	 */
 	public void flush() {
 		// no-op
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#save()
+	 */
 	public void save() throws IOntologyException {
 		throw new IOntologyException("BioPortal is read-only");
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#setRepository(edu.pitt.dbmi.nlp.noble.ontology.IRepository)
+	 */
 	public void setRepository(IRepository r) {
 		repository = (BioPortalRepository) r;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#write(java.io.OutputStream, int)
+	 */
 	public void write(OutputStream out, int format) throws IOntologyException {
 		throw new IOntologyException("writing BioPortal is not supported yet");
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.bioportal.BResource#getOntology()
+	 */
 	public IOntology getOntology() {
 		return this;
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#createClass(edu.pitt.dbmi.nlp.noble.ontology.ILogicExpression)
+	 */
 	public IClass createClass(ILogicExpression exp) {
 		throw new IOntologyError("Operation not supported");
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Terminology#addConcept(edu.pitt.dbmi.nlp.noble.terminology.Concept)
+	 */
 	public boolean addConcept(Concept c) throws TerminologyException {
 		throw new TerminologyException("Operation not supported");
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Terminology#getSourceFilter()
+	 */
 	public Source[] getSourceFilter() {
 		return getSources();
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Terminology#getLanguages()
+	 */
 	public String[] getLanguages() {
 		return new String[] { "en" };
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Terminology#getRelatedConcepts(edu.pitt.dbmi.nlp.noble.terminology.Concept, edu.pitt.dbmi.nlp.noble.terminology.Relation)
+	 */
 	public Concept[] getRelatedConcepts(Concept c, Relation r)
 			throws TerminologyException {
 		IClass cls = c.getConceptClass();
@@ -1348,6 +1505,9 @@ public class BOntology extends BResource implements IOntology, Terminology {
 		return new Concept[0];
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Terminology#getRelatedConcepts(edu.pitt.dbmi.nlp.noble.terminology.Concept)
+	 */
 	public Map getRelatedConcepts(Concept c) throws TerminologyException {
 		Map<Relation, List<Concept>> map = new HashMap<Relation, List<Concept>>();
 		map.put(Relation.BROADER, Arrays.asList(getRelatedConcepts(c,
@@ -1359,6 +1519,12 @@ public class BOntology extends BResource implements IOntology, Terminology {
 		return map;
 	}
 
+	/**
+	 * Convert concepts.
+	 *
+	 * @param clses the clses
+	 * @return the concept[]
+	 */
 	private Concept[] convertConcepts(IClass[] clses) {
 		Concept[] concepts = new Concept[clses.length];
 		for (int i = 0; i < concepts.length; i++)
@@ -1366,6 +1532,12 @@ public class BOntology extends BResource implements IOntology, Terminology {
 		return concepts;
 	}
 
+	/**
+	 * Convert concepts.
+	 *
+	 * @param clses the clses
+	 * @return the concept[]
+	 */
 	private Concept[] convertConcepts(Collection<IClass> clses) {
 		Concept[] concepts = new Concept[clses.size()];
 		int i = 0;
@@ -1374,15 +1546,24 @@ public class BOntology extends BResource implements IOntology, Terminology {
 		return concepts;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Terminology#getRelations()
+	 */
 	public Relation[] getRelations() throws TerminologyException {
 		return new Relation[] { Relation.BROADER, Relation.NARROWER,
 				Relation.SIMILAR };
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Terminology#getRelations(edu.pitt.dbmi.nlp.noble.terminology.Concept)
+	 */
 	public Relation[] getRelations(Concept c) throws TerminologyException {
 		return getRelations();
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Terminology#getRootConcepts()
+	 */
 	public Concept[] getRootConcepts() throws TerminologyException {
 		IClass[] cls = getRootClasses();
 		Concept[] c = new Concept[cls.length];
@@ -1391,19 +1572,31 @@ public class BOntology extends BResource implements IOntology, Terminology {
 		return c;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Terminology#getSearchMethods()
+	 */
 	public String[] getSearchMethods() {
 		return new String[] { BioPortalHelper.EXACT_MATCH };
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Terminology#getSources()
+	 */
 	public Source[] getSources() {
 		return new Source[] { new Source(getName(), getDescription(), ""
 				+ getURI()) };
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Terminology#getSources(java.lang.String)
+	 */
 	public Source[] getSources(String matchtext) {
 		return getSources();
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Terminology#lookupConcept(java.lang.String)
+	 */
 	public Concept lookupConcept(String cui) throws TerminologyException {
 		//IClass cls = getClass(cui);
 		//return (cls != null) ? cls.getConcept() : null;
@@ -1411,10 +1604,16 @@ public class BOntology extends BResource implements IOntology, Terminology {
 		return (cls != null && cls instanceof IClass)?((IClass)cls).getConcept():null;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Terminology#removeConcept(edu.pitt.dbmi.nlp.noble.terminology.Concept)
+	 */
 	public boolean removeConcept(Concept c) throws TerminologyException {
 		throw new TerminologyException("Operation not supported");
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Terminology#search(java.lang.String)
+	 */
 	public Concept[] search(String text) throws TerminologyException {
 		return search(text,EXACT_MATCH);
 	}
@@ -1422,6 +1621,11 @@ public class BOntology extends BResource implements IOntology, Terminology {
 	/**
 	 * The search result should be light- not BClass, but Concept. We can create
 	 * BClasses later if needed
+	 *
+	 * @param text the text
+	 * @param method the method
+	 * @return the concept[]
+	 * @throws TerminologyException the terminology exception
 	 */
 	public Concept[] search(String text, String method) throws TerminologyException {
 	    /*
@@ -1451,16 +1655,25 @@ public class BOntology extends BResource implements IOntology, Terminology {
 	
 	
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Terminology#setSourceFilter(edu.pitt.dbmi.nlp.noble.terminology.Source[])
+	 */
 	public void setSourceFilter(Source[] srcs) {
 		// NOOP
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Terminology#updateConcept(edu.pitt.dbmi.nlp.noble.terminology.Concept)
+	 */
 	public boolean updateConcept(Concept c) throws TerminologyException {
 		throw new TerminologyException("Operation not supported");
 	}
 
 	/**
-	 * create new concepts
+	 * create new concepts.
+	 *
+	 * @param name the name
+	 * @return the i class
 	 */
 	public IClass createClass(String name) {
 		throw new IOntologyError("Operation not supported");
@@ -1492,9 +1705,12 @@ public class BOntology extends BResource implements IOntology, Terminology {
 		}
 		return ontologyMap;
 	}
+	
 	/**
 	 * get all available concept objects in terminology. Only sensible for small terminologies
-	 * @return
+	 *
+	 * @return the concepts
+	 * @throws TerminologyException the terminology exception
 	 */
 	public Collection<Concept> getConcepts()  throws TerminologyException{
 		List<Concept> concepts = new ArrayList<Concept>();
@@ -1508,8 +1724,11 @@ public class BOntology extends BResource implements IOntology, Terminology {
 	}
 	
 	/**
-	 * convert Template to XML DOM object representation
-	 * @return
+	 * convert Template to XML DOM object representation.
+	 *
+	 * @param doc the doc
+	 * @return the element
+	 * @throws TerminologyException the terminology exception
 	 */
 	public Element toElement(Document doc)  throws TerminologyException{
 		Element root = doc.createElement("Terminology");
@@ -1546,15 +1765,21 @@ public class BOntology extends BResource implements IOntology, Terminology {
 	}
 	
 	/**
-	 * convert Template to XML DOM object representation
-	 * @return
+	 * convert Template to XML DOM object representation.
+	 *
+	 * @param element the element
+	 * @throws TerminologyException the terminology exception
 	 */
 	public void fromElement(Element element) throws TerminologyException{
 		throw new TerminologyException("Not implemented");
 	}
 	
 	/**
-	 * process sentence
+	 * process sentence.
+	 *
+	 * @param s the s
+	 * @return the sentence
+	 * @throws TerminologyException the terminology exception
 	 */
 	public Sentence process(Sentence s) throws TerminologyException {
 		time = System.currentTimeMillis();
@@ -1568,17 +1793,26 @@ public class BOntology extends BResource implements IOntology, Terminology {
 	}
 
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.coder.model.Processor#getProcessTime()
+	 */
 	public long getProcessTime() {
 		return time;
 	}
 
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Terminology#getSemanticTypeFilter()
+	 */
 	public SemanticType[] getSemanticTypeFilter() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.terminology.Terminology#setSemanticTypeFilter(edu.pitt.dbmi.nlp.noble.terminology.SemanticType[])
+	 */
 	public void setSemanticTypeFilter(SemanticType[] srcs) {
 		// TODO Auto-generated method stub
 		

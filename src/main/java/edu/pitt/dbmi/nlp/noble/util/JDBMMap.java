@@ -12,9 +12,10 @@ import org.apache.jdbm.DBMaker;
 /**
  * This class wraps JDBM http://jdbm.sourceforge.net/ HTree
  * To create a persistent hashtable on disk
+ *
  * @author tseytlin
- * @param <K>
- * @param <V>
+ * @param <K> the key type
+ * @param <V> the value type
  */
 
 public class JDBMMap<K extends Comparable, V> implements Map<K, V> {
@@ -26,14 +27,23 @@ public class JDBMMap<K extends Comparable, V> implements Map<K, V> {
 	
 	
 	/**
-	 * create an instance of persistent hash map
+	 * create an instance of persistent hash map.
+	 *
+	 * @param filename the filename
+	 * @param tablename the tablename
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public JDBMMap(String filename, String tablename) throws IOException{
 		this(filename,tablename,false);
 	}
 			
 	/**
-	 * create an instance of persistent hash map
+	 * create an instance of persistent hash map.
+	 *
+	 * @param filename the filename
+	 * @param tablename the tablename
+	 * @param readonly the readonly
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public JDBMMap(String filename, String tablename, boolean readonly) throws IOException{
 		this.name = tablename;
@@ -69,40 +79,65 @@ public class JDBMMap<K extends Comparable, V> implements Map<K, V> {
 		if(map == null)
 			map = db.createHashMap(tablename);
 	}
+	
+	/**
+	 * Checks if is read only.
+	 *
+	 * @return true, if is read only
+	 */
 	public boolean isReadOnly(){
 		return readonly;
 	}
 	
+	/**
+	 * Gets the table name.
+	 *
+	 * @return the table name
+	 */
 	public String getTableName(){
 		return name;
 	}
 	
+	/**
+	 * Gets the file name.
+	 *
+	 * @return the file name
+	 */
 	public String getFileName(){
 		return filename;
 	}
 	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#finalize()
+	 */
 	protected void finalize() throws Throwable {
 		dispose();
 	}
 	
 
+	/**
+	 * Dispose.
+	 */
 	public void dispose(){
 		db.close();
 	}
 	
 	/**
-	 * commit transaction
+	 * commit transaction.
 	 */
 	public void commit(){
 		db.commit();
 	}
 	
+	/**
+	 * Compact.
+	 */
 	public void compact(){
 		db.defrag(true);
 	}
 	
 	/**
-	 * remove all records at once
+	 * remove all records at once.
 	 */
 	public void clear() {
 		map.clear();
@@ -110,14 +145,20 @@ public class JDBMMap<K extends Comparable, V> implements Map<K, V> {
 
 	
 	/**
-	 * contains key
+	 * contains key.
+	 *
+	 * @param key the key
+	 * @return true, if successful
 	 */
 	public boolean containsKey(Object key) {
 		return map.containsKey(key);
 	}
 
 	/**
-	 * this is very expensive call to check for values
+	 * this is very expensive call to check for values.
+	 *
+	 * @param e the e
+	 * @return true, if successful
 	 */
 	public boolean containsValue(Object e) {
 		return map.containsValue(e);
@@ -125,7 +166,9 @@ public class JDBMMap<K extends Comparable, V> implements Map<K, V> {
 
 	
 	/**
-	 * this is a very expensive call to get all of the entry set
+	 * this is a very expensive call to get all of the entry set.
+	 *
+	 * @return the sets the
 	 */
 	public Set<Map.Entry<K, V>> entrySet() {
 		return map.entrySet();
@@ -133,33 +176,47 @@ public class JDBMMap<K extends Comparable, V> implements Map<K, V> {
 
 	
 	/**
-	 * get value for given key
+	 * get value for given key.
+	 *
+	 * @param key the key
+	 * @return the v
 	 */
 	public V get(Object key) {
 		return map.get(key);
 	}
 
+	/* (non-Javadoc)
+	 * @see java.util.Map#isEmpty()
+	 */
 	public boolean isEmpty() {
 		return map.isEmpty();
 	}
 
 	
 	/**
-	 * this is an expensive call to get all of the keys
+	 * this is an expensive call to get all of the keys.
+	 *
+	 * @return the sets the
 	 */
 	public Set<K> keySet() {
 		return map.keySet();
 	}
 
 	/**
-	 * put values into the table
+	 * put values into the table.
+	 *
+	 * @param key the key
+	 * @param value the value
+	 * @return the v
 	 */
 	public V put(K key, V value) {
 		return map.put(key,value);
 	}
 
 	/**
-	 * put all values
+	 * put all values.
+	 *
+	 * @param m the m
 	 */
 	public void putAll(Map<? extends K, ? extends V> m) {
 		map.putAll(m);
@@ -167,22 +224,34 @@ public class JDBMMap<K extends Comparable, V> implements Map<K, V> {
 
 	
 	/**
-	 * remove entry from hashtable
+	 * remove entry from hashtable.
+	 *
+	 * @param key the key
+	 * @return the v
 	 */
 	public V remove(Object key) {
 		return map.remove(key);
 	}
 
+	/* (non-Javadoc)
+	 * @see java.util.Map#size()
+	 */
 	public int size() {
 		return map.size();
 	}
 
 	/**
-	 * this is an expensive call to get all of the values
+	 * this is an expensive call to get all of the values.
+	 *
+	 * @return the collection
 	 */
 	public Collection<V> values() {
 		return map.values();
 	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	public String toString(){
 		return map.toString();
 	}

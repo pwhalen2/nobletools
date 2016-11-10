@@ -1,31 +1,21 @@
 package edu.pitt.dbmi.nlp.noble.ontology.bioportal;
 
-import static edu.pitt.dbmi.nlp.noble.ontology.bioportal.BioPortalHelper.CHILD_COUNT;
 import static edu.pitt.dbmi.nlp.noble.ontology.bioportal.BioPortalHelper.CODE;
 import static edu.pitt.dbmi.nlp.noble.ontology.bioportal.BioPortalHelper.CONCEPTS;
 import static edu.pitt.dbmi.nlp.noble.ontology.bioportal.BioPortalHelper.DISJOINT_CLASS;
-import static edu.pitt.dbmi.nlp.noble.ontology.bioportal.BioPortalHelper.EQUIVALENT_CLASS;
 import static edu.pitt.dbmi.nlp.noble.ontology.bioportal.BioPortalHelper.PROPERTIES;
-import static edu.pitt.dbmi.nlp.noble.ontology.bioportal.BioPortalHelper.RELATIONSHIPS;
-import static edu.pitt.dbmi.nlp.noble.ontology.bioportal.BioPortalHelper.ROOT;
 import static edu.pitt.dbmi.nlp.noble.ontology.bioportal.BioPortalHelper.SEMANTIC_TYPE;
-import static edu.pitt.dbmi.nlp.noble.ontology.bioportal.BioPortalHelper.SUB_CLASS;
-import static edu.pitt.dbmi.nlp.noble.ontology.bioportal.BioPortalHelper.SUPER_CLASS;
 import static edu.pitt.dbmi.nlp.noble.ontology.bioportal.BioPortalHelper.TYPE_CLASS;
 import static edu.pitt.dbmi.nlp.noble.ontology.bioportal.BioPortalHelper.deriveName;
 import static edu.pitt.dbmi.nlp.noble.ontology.bioportal.BioPortalHelper.getElementByTagName;
 import static edu.pitt.dbmi.nlp.noble.ontology.bioportal.BioPortalHelper.getElementsByTagName;
-import static edu.pitt.dbmi.nlp.noble.ontology.bioportal.BioPortalHelper.getRecursiveElementsByTagName;
 import static edu.pitt.dbmi.nlp.noble.ontology.bioportal.BioPortalHelper.isReservedProperty;
 import static edu.pitt.dbmi.nlp.noble.ontology.bioportal.BioPortalHelper.openURL;
 import static edu.pitt.dbmi.nlp.noble.ontology.bioportal.BioPortalHelper.parseXML;
 
 import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -46,9 +36,9 @@ import edu.pitt.dbmi.nlp.noble.terminology.Source;
 import edu.pitt.dbmi.nlp.noble.tools.TextTools;
 
 /**
- * this represents a bioportal class
- * @author Eugene Tseytlin
+ * this represents a bioportal class.
  *
+ * @author Eugene Tseytlin
  */
 public class BClass extends BResource implements IClass {
 	private boolean loaded;
@@ -56,9 +46,10 @@ public class BClass extends BResource implements IClass {
 	private Set<IClass> superClasses,subClasses,directSuperClasses,directSubClasses;
 	
 	/**
-	 * create new class if id is not known
-	 * @param ont
-	 * @param id
+	 * create new class if id is not known.
+	 *
+	 * @param ont the ont
+	 * @param id the id
 	 */
 	public BClass(BOntology ont, String id){
 		super();
@@ -71,9 +62,9 @@ public class BClass extends BResource implements IClass {
 	}
 
 	/**
-	 * add necessary restriction to this class
-	 * @param name
-	 * @return IInstance that was created
+	 * add necessary restriction to this class.
+	 *
+	 * @param restriction the restriction
 	 */
 	public void addNecessaryRestriction(ILogicExpression restriction){
 		throw new IOntologyError("Not Implemented");
@@ -81,35 +72,37 @@ public class BClass extends BResource implements IClass {
 	
 
 	/**
-	 * remove restriction to this class
-	 * @param name
-	 * @return IInstance that was created
+	 * remove restriction to this class.
+	 *
+	 * @param restriction the restriction
 	 */
 	public void removeNecessaryRestriction(ILogicExpression restriction){
 		throw new IOntologyError("Not Implemented");
 	}
+	
 	/**
-	 * add equivalent Necessary and Sufficient restriction to this class
-	 * @param name
-	 * @return IInstance that was created
+	 * add equivalent Necessary and Sufficient restriction to this class.
+	 *
+	 * @param restriction the restriction
 	 */
 	public void addEquivalentRestriction(ILogicExpression restriction){
 		throw new IOntologyError("Not Implemented");
 	}
 
 	/**
-	 * remove restriction to this class
-	 * @param name
-	 * @return IInstance that was created
+	 * remove restriction to this class.
+	 *
+	 * @param restriction the restriction
 	 */
 	public void removeEquivalentRestriction(ILogicExpression restriction){
 		throw new IOntologyError("Not Implemented");
 	}
 	
 	/**
-	 * create bclass from the element
-	 * @param ont
-	 * @param e
+	 * create bclass from the element.
+	 *
+	 * @param ont the ont
+	 * @param e the e
 	 */
 	BClass(BOntology ont, Element e){
 		super();
@@ -119,8 +112,9 @@ public class BClass extends BResource implements IClass {
 	
 	
 	/**
-	 * load class content
-	 * @param element
+	 * load class content.
+	 *
+	 * @param element the element
 	 */
 	public void load(Element element){
 		// pull in all class data
@@ -207,6 +201,9 @@ public class BClass extends BResource implements IClass {
 		
 	}
 	
+	/**
+	 * Load.
+	 */
 	public void load(){
 		// if not loaded 
 		if(!isLoaded()){
@@ -223,7 +220,7 @@ public class BClass extends BResource implements IClass {
 	}
 	
 	/**
-	 * dispose of resources
+	 * dispose of resources.
 	 */
 	public void dispose(){
 		super.dispose();
@@ -232,41 +229,71 @@ public class BClass extends BResource implements IClass {
 		concept = null;
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IClass#addDisjointClass(edu.pitt.dbmi.nlp.noble.ontology.IClass)
+	 */
 	public void addDisjointClass(IClass a) {
 		throw new IOntologyError("Operation Not Supported");
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IClass#addEquivalentClass(edu.pitt.dbmi.nlp.noble.ontology.IClass)
+	 */
 	public void addEquivalentClass(IClass a) {
 		throw new IOntologyError("Operation Not Supported");	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IClass#addEquivalentRestriction(edu.pitt.dbmi.nlp.noble.ontology.IRestriction)
+	 */
 	public void addEquivalentRestriction(IRestriction restriction) {
 		throw new IOntologyError("Operation Not Supported");
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IClass#addNecessaryRestriction(edu.pitt.dbmi.nlp.noble.ontology.IRestriction)
+	 */
 	public void addNecessaryRestriction(IRestriction restriction) {
 		throw new IOntologyError("Operation Not Supported");
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IClass#addSubClass(edu.pitt.dbmi.nlp.noble.ontology.IClass)
+	 */
 	public void addSubClass(IClass child) {
 		throw new IOntologyError("Operation Not Supported");
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IClass#addSuperClass(edu.pitt.dbmi.nlp.noble.ontology.IClass)
+	 */
 	public void addSuperClass(IClass parent) {
 		throw new IOntologyError("Operation Not Supported");
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IClass#createInstance(java.lang.String)
+	 */
 	public IInstance createInstance(String name) {
 		throw new IOntologyError("Operation Not Supported");
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IClass#createInstance()
+	 */
 	public IInstance createInstance() {
 		throw new IOntologyError("Operation Not Supported");
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IClass#createSubClass(java.lang.String)
+	 */
 	public IClass createSubClass(String name) {
 		throw new IOntologyError("Operation Not Supported");
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IClass#evaluate(java.lang.Object)
+	 */
 	public boolean evaluate(Object obj) {
 		if(obj instanceof IClass){
 			IClass c2 = (IClass) obj;
@@ -278,6 +305,9 @@ public class BClass extends BResource implements IClass {
 		return false;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IClass#getConcept()
+	 */
 	public Concept getConcept() {
 		//return  new Concept(getId(),getName());
 		if(concept == null){
@@ -312,18 +342,25 @@ public class BClass extends BResource implements IClass {
 		return concept;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IClass#getDirectInstances()
+	 */
 	public IInstance[] getDirectInstances() {
 		return new IInstance [0];
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IClass#getDirectNecessaryRestrictions()
+	 */
 	public ILogicExpression getDirectNecessaryRestrictions() {
 		return getOntology().createLogicExpression();
 	}
 	
 	/**
-	 * load list of classes
-	 * @param key
-	 * @return
+	 * load list of classes.
+	 *
+	 * @param key the key
+	 * @return the class list
 	 */
 	private Set<IClass> getClassList(String key){
 		//load content
@@ -334,7 +371,9 @@ public class BClass extends BResource implements IClass {
 	}
 	
 	/**
-	 * get direct sub classes
+	 * get direct sub classes.
+	 *
+	 * @return the direct sub classes
 	 */
 	public IClass[] getDirectSubClasses() {
 		if(directSubClasses == null){
@@ -343,16 +382,25 @@ public class BClass extends BResource implements IClass {
 		return 	directSubClasses.toArray(new IClass [0]);
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.bioportal.BResource#getLabels()
+	 */
 	public String [] getLabels(){
 		load();
 		return super.getLabels();
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.bioportal.BResource#getComments()
+	 */
 	public String [] getComments(){
 		load();
 		return super.getComments();
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IClass#getDirectSuperClasses()
+	 */
 	public IClass [] getDirectSuperClasses() {
 		if(directSuperClasses == null){
 			directSuperClasses = getClassList(BioPortalHelper.PARENTS);
@@ -360,33 +408,53 @@ public class BClass extends BResource implements IClass {
 		return 	directSuperClasses.toArray(new IClass [0]);
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IClass#getDisjointClasses()
+	 */
 	public IClass[] getDisjointClasses() {
 		return new IClass [0];
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IClass#getEquivalentClasses()
+	 */
 	public IClass[] getEquivalentClasses() {
 		return new IClass [0];
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IClass#getEquivalentRestrictions()
+	 */
 	public ILogicExpression getEquivalentRestrictions() {
 		return new LogicExpression(ILogicExpression.EMPTY);
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IClass#getInstances()
+	 */
 	public IInstance[] getInstances() {
 		// TODO Auto-generated method stub
 		return new IInstance [0];
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IClass#getNecessaryRestrictions()
+	 */
 	public ILogicExpression getNecessaryRestrictions() {
 		return new LogicExpression(ILogicExpression.EMPTY);
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IClass#getRestrictions(edu.pitt.dbmi.nlp.noble.ontology.IProperty)
+	 */
 	public IRestriction[] getRestrictions(IProperty p) {
 		return new IRestriction [0];
 	}
 
 	/**
-	 * get all subclasses
+	 * get all subclasses.
+	 *
+	 * @return the sub classes
 	 */
 	public IClass[] getSubClasses() {
 		if(subClasses == null){
@@ -395,6 +463,9 @@ public class BClass extends BResource implements IClass {
 		return 	subClasses.toArray(new IClass [0]);
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IClass#getSuperClasses()
+	 */
 	public IClass[] getSuperClasses() {
 		if(superClasses == null){
 			superClasses = getClassList(BioPortalHelper.ANCESTORS);
@@ -402,20 +473,27 @@ public class BClass extends BResource implements IClass {
 		return 	superClasses.toArray(new IClass [0]);
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IClass#hasSubClass(edu.pitt.dbmi.nlp.noble.ontology.IClass)
+	 */
 	public boolean hasSubClass(IClass child) {
 		getSubClasses();
 		return subClasses.contains(child);
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IClass#hasSuperClass(edu.pitt.dbmi.nlp.noble.ontology.IClass)
+	 */
 	public boolean hasSuperClass(IClass parent) {
 		getSuperClasses();
 		return superClasses.contains(parent);
 	}
 	
 	/**
-	 * is child a sub class of parent
-	 * @param child
-	 * @return
+	 * is child a sub class of parent.
+	 *
+	 * @param child the child
+	 * @return true, if successful
 	 */
 	public boolean hasEquivalentClass(IClass child){
 		return false;
@@ -423,9 +501,10 @@ public class BClass extends BResource implements IClass {
 	
 	
 	/**
-	 * is parent a direct super class of child
-	 * @param parent
-	 * @return
+	 * is parent a direct super class of child.
+	 *
+	 * @param parent the parent
+	 * @return true, if successful
 	 */
 	public boolean hasDirectSuperClass(IClass parent){
 		getDirectSuperClasses();
@@ -434,56 +513,89 @@ public class BClass extends BResource implements IClass {
 	
 	
 	/**
-	 * is child a direct sub class of parent
-	 * @param child
-	 * @return
+	 * is child a direct sub class of parent.
+	 *
+	 * @param child the child
+	 * @return true, if successful
 	 */
 	public boolean hasDirectSubClass(IClass child){
 		getDirectSubClasses();
 		return directSubClasses.contains(child);
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IClass#isAnonymous()
+	 */
 	public boolean isAnonymous() {
 		return false;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IClass#hasDisjointClass(edu.pitt.dbmi.nlp.noble.ontology.IClass)
+	 */
 	public boolean hasDisjointClass(IClass a) {
 		return getClassList(DISJOINT_CLASS).contains(a);
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IClass#removeDisjointClass(edu.pitt.dbmi.nlp.noble.ontology.IClass)
+	 */
 	public void removeDisjointClass(IClass a) {
 		throw new IOntologyError("Operation Not Supported");
 
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IClass#removeEquivalentClass(edu.pitt.dbmi.nlp.noble.ontology.IClass)
+	 */
 	public void removeEquivalentClass(IClass a) {
 		throw new IOntologyError("Operation Not Supported");
 
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IClass#removeEquivalentRestriction(edu.pitt.dbmi.nlp.noble.ontology.IRestriction)
+	 */
 	public void removeEquivalentRestriction(IRestriction restriction) {
 		throw new IOntologyError("Operation Not Supported");
 
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IClass#removeNecessaryRestriction(edu.pitt.dbmi.nlp.noble.ontology.IRestriction)
+	 */
 	public void removeNecessaryRestriction(IRestriction restriction) {
 		throw new IOntologyError("Operation Not Supported");
 
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IClass#removeSubClass(edu.pitt.dbmi.nlp.noble.ontology.IClass)
+	 */
 	public void removeSubClass(IClass child) {
 		throw new IOntologyError("Operation Not Supported");
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IClass#removeSuperClass(edu.pitt.dbmi.nlp.noble.ontology.IClass)
+	 */
 	public void removeSuperClass(IClass parent) {
 		throw new IOntologyError("Operation Not Supported");
 
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.bioportal.BResource#getNameSpace()
+	 */
 	public String getNameSpace(){
 		return getOntology().getNameSpace();
 	}
 	
+	/**
+	 * Checks if is loaded.
+	 *
+	 * @return true, if is loaded
+	 */
 	public boolean isLoaded(){
 		return loaded;
 	}

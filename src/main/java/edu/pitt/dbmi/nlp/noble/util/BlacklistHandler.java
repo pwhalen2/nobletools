@@ -9,7 +9,8 @@ import edu.pitt.dbmi.nlp.noble.tools.TextTools;
 
 /**
  * create a blacklist for a terminology that takes top 1% of the most frequent words (by number of terms that include them)
- * and creates a blacklist that avoids an expensive lookup
+ * and creates a blacklist that avoids an expensive lookup.
+ *
  * @author tseytlin
  */
 public class BlacklistHandler {
@@ -21,17 +22,18 @@ public class BlacklistHandler {
 	private boolean debug = true;
 	
 	/**
-	 * initialize blacklist handler with a terminology
-	 * @param term
+	 * initialize blacklist handler with a terminology.
+	 *
+	 * @param term the term
 	 */
 	public BlacklistHandler(NobleCoderTerminology term){
 		st = term.getStorage();
 	}
 	
 	/**
-	 * get top words based on global cutoff
-	 * @param map
-	 * @return
+	 * get top words based on global cutoff.
+	 *
+	 * @return the top words
 	 */
 	private List<String> getTopWords(){
 		// make a smaller copy of reasanable size
@@ -56,9 +58,11 @@ public class BlacklistHandler {
 	}
 	
 	/**
-	 * get the top words from a set of top words
-	 * @param top
-	 * @return
+	 * get the top words from a set of top words.
+	 *
+	 * @param list the list
+	 * @param size the size
+	 * @return the top words
 	 */
 	
 	private List<String> getTopWords(Collection<String> list, int size) {
@@ -75,9 +79,9 @@ public class BlacklistHandler {
 	
 	/**
 	 * create a blacklist of most common words that are associated with
-	 * a list of terms that are in this list
-	 * @param top
-	 * @return
+	 * a list of terms that are in this list.
+	 *
+	 * @return the blacklist
 	 */
 	public Map<String,Set<String>> getBlacklist(){
 		if(blacklist == null){
@@ -108,8 +112,9 @@ public class BlacklistHandler {
 	
 
 	/**
-	 * does the blacklist exist for this terminology
-	 * @return
+	 * does the blacklist exist for this terminology.
+	 *
+	 * @return true, if successful
 	 */
 	
 	public boolean hasBlacklist(){
@@ -117,8 +122,9 @@ public class BlacklistHandler {
 	}
 	
 	/**
-	 * save blacklist in an appropriate location
-	 * @throws IOException 
+	 * save blacklist in an appropriate location.
+	 *
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public void save() throws IOException{
 		String prefix = st.getLocation().getAbsolutePath()+File.separator+"table";
@@ -130,8 +136,9 @@ public class BlacklistHandler {
 	}
 	
 	/**
-	 * load existing blacklist
-	 * @throws IOException
+	 * load existing blacklist.
+	 *
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public void load() throws IOException {
 		if(hasBlacklist()){
@@ -141,10 +148,11 @@ public class BlacklistHandler {
 	}
 	
 	/**
-	 * Are all words in this term contain words menitioned in a list
-	 * @param t
-	 * @param top
-	 * @return
+	 * Are all words in this term contain words menitioned in a list.
+	 *
+	 * @param term the term
+	 * @param words the words
+	 * @return true, if successful
 	 */
 	
 	private boolean contains(String term, List<String> words) {
@@ -162,6 +170,12 @@ public class BlacklistHandler {
 	}
 	
 	
+	/**
+	 * The main method.
+	 *
+	 * @param args the arguments
+	 * @throws Exception the exception
+	 */
 	public static void main(String[] args) throws Exception {
 		String name = "RadLex";
 		NobleCoderTerminology term = new NobleCoderTerminology(name);

@@ -41,14 +41,17 @@ import org.xml.sax.helpers.DefaultHandler;
 import edu.pitt.dbmi.nlp.noble.ontology.IClass;
 import edu.pitt.dbmi.nlp.noble.tools.TextTools;
 
-/**
+/*
  * varies helper methods
  * http://data.bioontology.org/documentation#Ontology
  * http://data.bioontology.org/ontologies/NCIT/classes/http%3A%2F%2Fncicb.nci.nih.gov%2Fxml%2Fowl%2FEVS%2FThesaurus.owl%23C17828/children
  * http://data.bioontology.org/ontologies/NCIT/classes/C17828?format=xml
  * http://data.bioontology.org/ontologies/NCIT/classes/roots?apikkey=6ebc962a-e7ae-40e4-af41-472224ef81aa&format=xml&display_links=false
  * http://data.bioontology.org/ontologies/?apikey=6ebc962a-e7ae-40e4-af41-472224ef81aa&format=xml&display_links=false
- * 
+ */
+
+/** 
+ * Interact with BioPortal through REST API
  * @author tseytlin
  * 
  */
@@ -174,9 +177,10 @@ public class BioPortalHelper {
 	
 	
 	/**
-	 * is reserved property
-	 * @param key
-	 * @return
+	 * is reserved property.
+	 *
+	 * @param key the key
+	 * @return true, if is reserved property
 	 */
 	public static boolean isReservedProperty(Object key){
 		for(String s: RESERVED_PROPERTIES){
@@ -190,7 +194,10 @@ public class BioPortalHelper {
 	
 	
 	/**
-	 * fetch all ontologies from URL
+	 * fetch all ontologies from URL.
+	 *
+	 * @param url the url
+	 * @param handler the handler
 	 */
 	public static void processRequest(String url, DefaultHandler handler){
 		// fix url
@@ -255,9 +262,10 @@ public class BioPortalHelper {
 	}
 
 	/**
-	 * extract name from URI
-	 * @param name
-	 * @return
+	 * extract name from URI.
+	 *
+	 * @param name the name
+	 * @return the name
 	 */
 	public static String getName(String name){
 		// if we got a uri as a code
@@ -268,9 +276,12 @@ public class BioPortalHelper {
 	}
 	
 	/**
-	 * get input stream from URL
-	 * @param urlAsString
-	 * @return
+	 * get input stream from URL.
+	 *
+	 * @param u the u
+	 * @return the input stream
+	 * @throws MalformedURLException the malformed URL exception
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public static InputStream getInputStream(String u) throws MalformedURLException, IOException {
 		URL url = new URL(u);
@@ -290,9 +301,10 @@ public class BioPortalHelper {
 	}
 
 	/**
-	 * parse integer value
-	 * @param longAsString
-	 * @return
+	 * parse integer value.
+	 *
+	 * @param longAsString the long as string
+	 * @return the long
 	 */
 	public static Long parseLong(String longAsString) {
 		Long result = null;
@@ -303,9 +315,10 @@ public class BioPortalHelper {
 	}
 
 	/**
-	 * parse timestamp
-	 * @param timeStampString
-	 * @return
+	 * parse timestamp.
+	 *
+	 * @param timeStampString the time stamp string
+	 * @return the timestamp
 	 */
 	public static Timestamp parseTimeStamp(String timeStampString) {
 		Timestamp result = null;
@@ -325,10 +338,11 @@ public class BioPortalHelper {
 
 	
 	/**
-	 * get string from input stream
-	 * @param is
-	 * @param charEncoding
-	 * @return
+	 * get string from input stream.
+	 *
+	 * @param is the is
+	 * @param charEncoding the char encoding
+	 * @return the string
 	 */
 	public static String getString(final InputStream is, final String charEncoding) {
 		try {
@@ -355,9 +369,10 @@ public class BioPortalHelper {
 	}
 
 	/**
-	 * generate tabs
-	 * @param level
-	 * @return
+	 * generate tabs.
+	 *
+	 * @param level the level
+	 * @return the string
 	 */
 	public static String generateTabsOfLength(int level) {
 		StringBuffer sb = new StringBuffer();
@@ -368,9 +383,10 @@ public class BioPortalHelper {
 	}
 	
 	/**
-	 * create ontology friendly class name
-	 * @param name
-	 * @return
+	 * create ontology friendly class name.
+	 *
+	 * @param name the name
+	 * @return the string
 	 */
 	public static String deriveName(String name){
 		return name.replaceAll("\\s*\\(.+\\)\\s*","").replaceAll("\\W","_").replaceAll("_+","_");
@@ -379,16 +395,18 @@ public class BioPortalHelper {
 	
 	
 	/**
-	 * print out a warning
-	 * @param str
+	 * print out a warning.
+	 *
+	 * @param str the str
 	 */
 	public static void warn(String str){
 		System.err.println(str);
 	}
 	
 	/**
-	 * print out a fatal error message
-	 * @param str
+	 * print out a fatal error message.
+	 *
+	 * @param str the str
 	 */
 	public static void fatal(String str){
 		System.err.println("ERROR: "+str);
@@ -396,8 +414,9 @@ public class BioPortalHelper {
 	
 	
 	/**
-	 * open stream from URL
-	 * @param url
+	 * open stream from URL.
+	 *
+	 * @param url the url
 	 * @return null if invalid url
 	 */
 	public static InputStream openURL(String url){
@@ -410,10 +429,10 @@ public class BioPortalHelper {
 	}
 	
 	/**
-	 * parse XML document
-	 * @param in
-	 * @return
-	 * @throws IOException
+	 * parse XML document.
+	 *
+	 * @param in the in
+	 * @return the document
 	 */
 	public static Document parseXML(InputStream in) {
 		if(in == null)
@@ -440,10 +459,11 @@ public class BioPortalHelper {
 	}
 	
 	/**
-	 * get single element by tag name
-	 * @param element
-	 * @param tag
-	 * @return
+	 * get single element by tag name.
+	 *
+	 * @param element the element
+	 * @param tag the tag
+	 * @return the element by tag name
 	 */
 	public static Element getElementByTagName(Element element, String tag){
 		NodeList list = element.getElementsByTagName(tag);
@@ -457,10 +477,11 @@ public class BioPortalHelper {
 	}
 	
 	/**
-	 * get single element by tag name
-	 * @param element
-	 * @param tag
-	 * @return
+	 * get single element by tag name.
+	 *
+	 * @param element the element
+	 * @param tag the tag
+	 * @return the elements by tag name
 	 */
 	public static List<Element> getElementsByTagName(Element element, String tag){
 		List<Element> elements = new ArrayList<Element>();
@@ -477,10 +498,11 @@ public class BioPortalHelper {
 	}
 	
 	/**
-	 * get single element by tag name
-	 * @param element
-	 * @param tag
-	 * @return
+	 * get single element by tag name.
+	 *
+	 * @param element the element
+	 * @param tag the tag
+	 * @return the recursive elements by tag name
 	 */
 	public static List<Element> getRecursiveElementsByTagName(Element element, String tag){
 		List<Element> elements = new ArrayList<Element>();
@@ -497,10 +519,11 @@ public class BioPortalHelper {
 	
 	
 	/**
-	 * return a list of classes for a given ontology from this URL, handles pagination
-	 * @param ontology
-	 * @param url
-	 * @return
+	 * return a list of classes for a given ontology from this URL, handles pagination.
+	 *
+	 * @param ontology the ontology
+	 * @param url the url
+	 * @return the class list
 	 */
 	public static Set<IClass> getClassList(BOntology ontology, String url){
 		Set<IClass> list = new LinkedHashSet<IClass>();

@@ -17,6 +17,9 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+/**
+ * The Class DynamicList.
+ */
 public class DynamicList extends JList implements DocumentListener {
 	public static final int STARTS_WITH_MATCH = 0;
 	public static final int CONTAINS_MATCH = 1;
@@ -26,11 +29,22 @@ public class DynamicList extends JList implements DocumentListener {
 	private DefaultListModel model;
 	private int matchMode;
 	
+	/**
+	 * Instantiates a new dynamic list.
+	 *
+	 * @param text the text
+	 */
 	public DynamicList(JTextField text){
 		this(text,Collections.EMPTY_LIST);
 	}
 	
 		
+	/**
+	 * Instantiates a new dynamic list.
+	 *
+	 * @param text the text
+	 * @param content the content
+	 */
 	public DynamicList(JTextField text,Collection content){
 		super(new DefaultListModel());
 		this.content = content;
@@ -65,6 +79,11 @@ public class DynamicList extends JList implements DocumentListener {
 		});
 	}
 	
+	/**
+	 * Load.
+	 *
+	 * @param list the list
+	 */
 	private void load(Collection list){
 		for(Object o: list){
 			model.addElement(o);
@@ -72,12 +91,17 @@ public class DynamicList extends JList implements DocumentListener {
 	}
 	
 	/**
-	 * get text editor
+	 * get text editor.
+	 *
+	 * @return the text editor
 	 */
 	public JTextField getTextEditor(){
 		return text;
 	}
 	
+	/**
+	 * Clear.
+	 */
 	public void clear(){
 		model.removeAllElements();
 		text.setText("");
@@ -85,14 +109,20 @@ public class DynamicList extends JList implements DocumentListener {
 	
 	/**
 	 * set match mode
-	 * STARTS_WITH_MATCH,CONTAINS_MATCH
-	 * @param mode
+	 * STARTS_WITH_MATCH,CONTAINS_MATCH.
+	 *
+	 * @param mode the new match mode
 	 */
 	public void setMatchMode(int mode){
 		matchMode = mode;
 	}
 	
 	
+	/**
+	 * Sync.
+	 *
+	 * @param str the str
+	 */
 	//sync combobox w/ what is typed in
 	private void sync(String str) {
 		model.removeAllElements();
@@ -112,6 +142,9 @@ public class DynamicList extends JList implements DocumentListener {
 	}
 
 	
+	/**
+	 * Sync.
+	 */
 	private synchronized void sync(){
 		block = true;
 		SwingUtilities.invokeLater(new Runnable(){
@@ -123,9 +156,10 @@ public class DynamicList extends JList implements DocumentListener {
 	}
 	
 	/**
-	 * 
-	 * @param str
-	 * @return
+	 * Gets the matching objects.
+	 *
+	 * @param str the str
+	 * @return the matching objects
 	 */
 	private List getMatchingObjects(String str){
 		str = str.toLowerCase();
@@ -139,6 +173,13 @@ public class DynamicList extends JList implements DocumentListener {
 	}
 	
 	
+	/**
+	 * Match.
+	 *
+	 * @param s1 the s 1
+	 * @param s2 the s 2
+	 * @return true, if successful
+	 */
 	private boolean match(String s1, String s2){
 		if(text.getForeground().equals(Color.LIGHT_GRAY))
 			return true;
@@ -154,16 +195,25 @@ public class DynamicList extends JList implements DocumentListener {
 	}
 	
 	
+	/* (non-Javadoc)
+	 * @see javax.swing.event.DocumentListener#changedUpdate(javax.swing.event.DocumentEvent)
+	 */
 	public void changedUpdate(DocumentEvent arg0) {
 		if(!block)
 			sync();
 	}
 
+	/* (non-Javadoc)
+	 * @see javax.swing.event.DocumentListener#insertUpdate(javax.swing.event.DocumentEvent)
+	 */
 	public void insertUpdate(DocumentEvent arg0) {
 		if(!block)
 			sync();
 	}
 
+	/* (non-Javadoc)
+	 * @see javax.swing.event.DocumentListener#removeUpdate(javax.swing.event.DocumentEvent)
+	 */
 	public void removeUpdate(DocumentEvent arg0) {
 		if(!block)
 			sync();

@@ -71,6 +71,9 @@ import edu.pitt.dbmi.nlp.noble.terminology.TerminologyException;
 import edu.pitt.dbmi.nlp.noble.ui.widgets.ResourceCellRenderer;
 import edu.pitt.dbmi.nlp.noble.util.PathHelper;
 
+/**
+ * The Class OntologyExplorer.
+ */
 public class OntologyExplorer extends JPanel implements HyperlinkListener, ActionListener {
 	public static final String VALUE_SELECTED_EVENT = "VALUE_SELECTED_EVENT";
 	private final URL ONTOLOGY_ICON = getClass().getResource("/icons/Ontology.gif");
@@ -102,6 +105,9 @@ public class OntologyExplorer extends JPanel implements HyperlinkListener, Actio
 	private Terminology terminology;
 	private PathHelper pathHelper;
 	
+	/**
+	 * Instantiates a new ontology explorer.
+	 */
 	public OntologyExplorer(){
 		super();
 		explorer = this;
@@ -171,22 +177,27 @@ public class OntologyExplorer extends JPanel implements HyperlinkListener, Actio
 	}
 	
 	/**
-	 * add listener
+	 * add listener.
+	 *
+	 * @param l the l
 	 */
 	public void addPropertyChangeListener(PropertyChangeListener l){
 		pcs.addPropertyChangeListener(l);
 	}
 	
 	/**
-	 * remove listener
+	 * remove listener.
+	 *
+	 * @param l the l
 	 */
 	public void removePropertyChangeListener(PropertyChangeListener l){
 		pcs.removePropertyChangeListener(l);
 	}
 	
 	/**
-	 * create popup menu
-	 * @return
+	 * create popup menu.
+	 *
+	 * @return the j popup menu
 	 */
 	private JPopupMenu createPopupMenu(){
 		JPopupMenu menu = new JPopupMenu();
@@ -195,8 +206,9 @@ public class OntologyExplorer extends JPanel implements HyperlinkListener, Actio
 	}
 	
 	/**
-	 * get popup menu
-	 * @return
+	 * get popup menu.
+	 *
+	 * @return the popup menu
 	 */
 	public JPopupMenu getPopupMenu(){
 		if(popup == null)
@@ -206,9 +218,10 @@ public class OntologyExplorer extends JPanel implements HyperlinkListener, Actio
 	
 	
 	/**
-	 * get HTML info string for a concept
-	 * @param c
-	 * @return
+	 * get HTML info string for a concept.
+	 *
+	 * @param c the c
+	 * @return the HTML info
 	 */
 	public String getHTMLInfo(Object c){
 		if(c instanceof Concept)
@@ -219,9 +232,10 @@ public class OntologyExplorer extends JPanel implements HyperlinkListener, Actio
 	}
 	
 	/**
-	 * get HTML info string for a concept
-	 * @param c
-	 * @return
+	 * get HTML info string for a concept.
+	 *
+	 * @param c the c
+	 * @return the HTML info
 	 */
 	public String getHTMLInfo(Concept c){
 		StringBuffer buffer = new StringBuffer("<html>");
@@ -244,8 +258,9 @@ public class OntologyExplorer extends JPanel implements HyperlinkListener, Actio
 	
 	
 	/**
-	 * display relations map
-	 * @param e
+	 * display relations map.
+	 *
+	 * @param e the e
 	 */
 	public void hyperlinkUpdate(HyperlinkEvent e){
 		if(e.getEventType() == HyperlinkEvent.EventType.ACTIVATED){
@@ -313,6 +328,13 @@ public class OntologyExplorer extends JPanel implements HyperlinkListener, Actio
 	}
 	
 
+	/**
+	 * Gets the ancestry info.
+	 *
+	 * @param code the code
+	 * @return the ancestry info
+	 * @throws TerminologyException the terminology exception
+	 */
 	private String getAncestryInfo(String code) throws TerminologyException {
 		if(terminology == null)
 			return "";
@@ -369,6 +391,11 @@ public class OntologyExplorer extends JPanel implements HyperlinkListener, Actio
 		return "";
 	}
 
+	/**
+	 * Gets the path helper.
+	 *
+	 * @return the path helper
+	 */
 	private PathHelper getPathHelper() {
 		if(pathHelper == null && terminology != null){
 			pathHelper = new PathHelper(terminology);
@@ -376,6 +403,9 @@ public class OntologyExplorer extends JPanel implements HyperlinkListener, Actio
 		return pathHelper;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+	 */
 	public void actionPerformed(ActionEvent e) {
 		String cmd = e.getActionCommand();
 		if("search".equals(cmd)){
@@ -395,8 +425,9 @@ public class OntologyExplorer extends JPanel implements HyperlinkListener, Actio
 	
 	
 	/**
-	 * display specific class (path to root)
-	 * @param c
+	 * display specific class (path to root).
+	 *
+	 * @param c the new class
 	 */
 	public void setClass(IClass c){
 		// get path
@@ -441,8 +472,9 @@ public class OntologyExplorer extends JPanel implements HyperlinkListener, Actio
 	}
 	
 	/**
-	 * display specific instance (path to root)
-	 * @param i
+	 * display specific instance (path to root).
+	 *
+	 * @param i the new instance
 	 */
 	public void setInstance(IInstance i){
 		IClass c = i.getDirectTypes()[0];
@@ -450,6 +482,11 @@ public class OntologyExplorer extends JPanel implements HyperlinkListener, Actio
 		//panel.setSelectedValue(i);
 	}
 	
+	/**
+	 * Sets the concept.
+	 *
+	 * @param c the new concept
+	 */
 	public void setConcept(Concept c){
 		final Concept cc = c;
 		new Thread( new Runnable(){
@@ -517,8 +554,9 @@ public class OntologyExplorer extends JPanel implements HyperlinkListener, Actio
 	}
 	
 	/**
-	 * display busy
-	 * @param b
+	 * display busy.
+	 *
+	 * @param busy the new busy
 	 */
 	public void setBusy(boolean busy){
 		if(busy){
@@ -533,7 +571,8 @@ public class OntologyExplorer extends JPanel implements HyperlinkListener, Actio
 	}
 	
 	/**
-	 * Return selected Concept
+	 * Return selected Concept.
+	 *
 	 * @return Concept
 	 */
 	 public Object getSelectedEntry(){
@@ -541,16 +580,18 @@ public class OntologyExplorer extends JPanel implements HyperlinkListener, Actio
 	 }
 	 
 	/**
-	 * set selected Concept
-	 * @param Concept
+	 * set selected Concept.
+	 *
+	 * @param e the new selected entry
 	 */
 	 private void setSelectedEntry(Object e){
 		 selected = e;
 	 }
 	
 	/**
-	 * Set root element for the explorer
-	 * @param Concept root
+	 * Set root element for the explorer.
+	 *
+	 * @param e the new root
 	 */	
 	public void setRoot(Concept e){
 		//explorer.setBusy(true);
@@ -559,14 +600,20 @@ public class OntologyExplorer extends JPanel implements HyperlinkListener, Actio
 		//explorer.setBusy(false);
 	}
 	
+	/**
+	 * Sets the terminology.
+	 *
+	 * @param term the new terminology
+	 */
 	public void setTerminology(Terminology term){
 		terminology = term;
 		search.setTerminology(term);
 	}
 	
 	/**
-	 * Set root element for the explorer
-	 * @param Concept root
+	 * Set root element for the explorer.
+	 *
+	 * @param e the new root
 	 */	
 	public void setRoot(Concept [] e){
 		//explorer.setBusy(true);
@@ -578,8 +625,9 @@ public class OntologyExplorer extends JPanel implements HyperlinkListener, Actio
 	}
 	
 	/**
-	 * Set root element for the explorer
-	 * @param Concept root
+	 * Set root element for the explorer.
+	 *
+	 * @param e the new root
 	 */	
 	public void setRoot(IResource e){
 		//explorer.setBusy(true);
@@ -590,8 +638,9 @@ public class OntologyExplorer extends JPanel implements HyperlinkListener, Actio
 	}
 	
 	/**
-	 * Set root element for the explorer
-	 * @param Concept root
+	 * Set root element for the explorer.
+	 *
+	 * @param e the new root
 	 */	
 	public void setRoot(IResource [] e){
 		//explorer.setBusy(true);
@@ -605,7 +654,9 @@ public class OntologyExplorer extends JPanel implements HyperlinkListener, Actio
 	
 	
 	/**
-	 * show lexical entry in info panel
+	 * show lexical entry in info panel.
+	 *
+	 * @param e the e
 	 */ 
 	private void show(Object e){
 		if(e instanceof Concept){
@@ -621,7 +672,9 @@ public class OntologyExplorer extends JPanel implements HyperlinkListener, Actio
 	
 	
 	/**
-	 * show lexical entry in info panel
+	 * show lexical entry in info panel.
+	 *
+	 * @param ee the ee
 	 */ 
 	private void show(Concept ee){
 		final Concept e = ee;
@@ -650,9 +703,10 @@ public class OntologyExplorer extends JPanel implements HyperlinkListener, Actio
 	
 	
 	/**
-	 * get info for resource
-	 * @param e
-	 * @return
+	 * get info for resource.
+	 *
+	 * @param e the e
+	 * @return the HTML info
 	 */
 	private String getHTMLInfo(IResource e){
 		StringBuffer buffer = new StringBuffer("<html>");
@@ -720,7 +774,9 @@ public class OntologyExplorer extends JPanel implements HyperlinkListener, Actio
 	
 	
 	/**
-	 * show lexical entry in info panel
+	 * show lexical entry in info panel.
+	 *
+	 * @param e the e
 	 */ 
 	private void show(IResource e){
 		info.setText((e != null)?getHTMLInfo(e):"");
@@ -729,6 +785,11 @@ public class OntologyExplorer extends JPanel implements HyperlinkListener, Actio
 	}
 	
 	
+	/**
+	 * Adds the panel.
+	 *
+	 * @param p the p
+	 */
 	private void addPanel(JPanel p){
 		panel.add(p);
 		panel.validate();
@@ -737,7 +798,7 @@ public class OntologyExplorer extends JPanel implements HyperlinkListener, Actio
 	
 	
 	/**
-	 * This is represents one panel
+	 * This is represents one panel.
 	 */	
 	private class ExplorerPanel extends JPanel implements ListSelectionListener, ActionListener  {
 		private ExplorerPanel next,prev;
@@ -748,6 +809,9 @@ public class OntologyExplorer extends JPanel implements HyperlinkListener, Actio
 		private boolean loading = true;
 		
 		
+		/**
+		 * Instantiates a new explorer panel.
+		 */
 		public ExplorerPanel(){
 			setLayout(new BorderLayout());
 			label = new JLabel(" ");
@@ -765,16 +829,26 @@ public class OntologyExplorer extends JPanel implements HyperlinkListener, Actio
 			add(new JScrollPane(list));
 		}
 		
+		/**
+		 * Sets the loading.
+		 *
+		 * @param b the new loading
+		 */
 		public void setLoading(boolean b){
 			loading = b;
 		}
 		
+		/**
+		 * Checks if is loading.
+		 *
+		 * @return true, if is loading
+		 */
 		public boolean isLoading(){
 			return loading;
 		}
 			
 		/**
-		 * dispose of resources
+		 * dispose of resources.
 		 */
 		public void dispose(){
 			list.removeListSelectionListener(this);
@@ -785,6 +859,9 @@ public class OntologyExplorer extends JPanel implements HyperlinkListener, Actio
 			prev = next = null;
 		}
 		
+		/* (non-Javadoc)
+		 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+		 */
 		public void actionPerformed(ActionEvent e){
 			String cmd = e.getActionCommand();
 			if(cmd.equals("delete")){
@@ -799,6 +876,11 @@ public class OntologyExplorer extends JPanel implements HyperlinkListener, Actio
 			}
 		}
 		
+		/**
+		 * Creates the popup.
+		 *
+		 * @return the j popup menu
+		 */
 		private JPopupMenu createPopup(){
 			JPopupMenu popup = new JPopupMenu();
 			JMenuItem del = new JMenuItem("Delete");
@@ -809,10 +891,15 @@ public class OntologyExplorer extends JPanel implements HyperlinkListener, Actio
 		}
 		
 		/**
-		 * mouse adapter
+		 * mouse adapter.
+		 *
 		 * @author tseytlin
 		 */
 		private class ExplorerMouseAdapter extends MouseAdapter {
+			
+			/* (non-Javadoc)
+			 * @see java.awt.event.MouseAdapter#mouseClicked(java.awt.event.MouseEvent)
+			 */
 			public void mouseClicked(MouseEvent e) {
 				if(e.getClickCount() > 1){
 					Rectangle r = list.getCellBounds(0,list.getModel().getSize()-1);
@@ -823,6 +910,10 @@ public class OntologyExplorer extends JPanel implements HyperlinkListener, Actio
 					}
 				}
 			}
+			
+			/* (non-Javadoc)
+			 * @see java.awt.event.MouseAdapter#mousePressed(java.awt.event.MouseEvent)
+			 */
 			public void mousePressed(MouseEvent e){
 				if(e.isPopupTrigger()){
 					popup.show(list,e.getX(),e.getY());
@@ -830,15 +921,29 @@ public class OntologyExplorer extends JPanel implements HyperlinkListener, Actio
 			}
 		}
 		
+		/**
+		 * Sets the next.
+		 *
+		 * @param p the new next
+		 */
 		// set next panel
 		public void setNext(ExplorerPanel p){
 			next = p;	
 		}
+		
+		/**
+		 * Sets the prev.
+		 *
+		 * @param p the new prev
+		 */
 		// set next panel
 		public void setPrev(ExplorerPanel p){
 			prev = p;	
 		}
 		
+		/**
+		 * Clear.
+		 */
 		// recursively clear list
 		public void clear(){
 			SwingUtilities.invokeLater(new Runnable(){
@@ -869,6 +974,11 @@ public class OntologyExplorer extends JPanel implements HyperlinkListener, Actio
 		}
 		*/
 		
+		/**
+		 * Sets the root.
+		 *
+		 * @param o the new root
+		 */
 		public void setRoot(Object o){
 			if(o instanceof Concept)
 				setRoot((Concept)o);
@@ -878,6 +988,11 @@ public class OntologyExplorer extends JPanel implements HyperlinkListener, Actio
 		}
 		
 				
+		/**
+		 * Sets the root.
+		 *
+		 * @param e the new root
+		 */
 		// set root for this panel
 		public void setRoot(Concept e){
 			if(e != null){	
@@ -903,6 +1018,11 @@ public class OntologyExplorer extends JPanel implements HyperlinkListener, Actio
 			}
 		}
 		
+		/**
+		 * Sets the root.
+		 *
+		 * @param clist the new root
+		 */
 		// set root for this panel
 		public void setRoot(Concept [] clist){
 			if(clist != null){	
@@ -925,6 +1045,11 @@ public class OntologyExplorer extends JPanel implements HyperlinkListener, Actio
 			}
 		}
 		
+		/**
+		 * Sets the root.
+		 *
+		 * @param e the new root
+		 */
 		//		 set root for this panel
 		public void setRoot(IResource e){
 			if(e != null){	
@@ -945,6 +1070,11 @@ public class OntologyExplorer extends JPanel implements HyperlinkListener, Actio
 			}
 		}
 		
+		/**
+		 * Sets the root.
+		 *
+		 * @param clist the new root
+		 */
 		// set root for this panel
 		public void setRoot(IResource [] clist){
 			if(clist != null){	
@@ -972,6 +1102,9 @@ public class OntologyExplorer extends JPanel implements HyperlinkListener, Actio
 		
 		
 		
+		/* (non-Javadoc)
+		 * @see javax.swing.event.ListSelectionListener#valueChanged(javax.swing.event.ListSelectionEvent)
+		 */
 		// value changes		
 		public void valueChanged(ListSelectionEvent e){
 			//System.out.println(e.getValueIsAdjusting()+" "+list.getSelectedValue());
@@ -980,6 +1113,9 @@ public class OntologyExplorer extends JPanel implements HyperlinkListener, Actio
 			}
 		}
 		
+		/**
+		 * Load children.
+		 */
 		private void loadChildren(){
 			Object entry = list.getSelectedValue();
 			if(entry != null){
@@ -995,6 +1131,11 @@ public class OntologyExplorer extends JPanel implements HyperlinkListener, Actio
 			}
 		}
 		
+		/**
+		 * Sets the selected value.
+		 *
+		 * @param entry the new selected value
+		 */
 		public void setSelectedValue(Object entry){
 			// if selecting value, next panel might be busy
 			if(getNext() != null)
@@ -1020,6 +1161,8 @@ public class OntologyExplorer extends JPanel implements HyperlinkListener, Actio
 		}
 		
 		/**
+		 * Gets the next.
+		 *
 		 * @return the next
 		 */
 		public ExplorerPanel getNext() {
@@ -1027,6 +1170,8 @@ public class OntologyExplorer extends JPanel implements HyperlinkListener, Actio
 		}
 		
 		/**
+		 * Gets the prev.
+		 *
 		 * @return the next
 		 */
 		public ExplorerPanel getPrev() {
@@ -1035,7 +1180,8 @@ public class OntologyExplorer extends JPanel implements HyperlinkListener, Actio
 	}
 	
 	/**
-	 * search combobox for searches
+	 * search combobox for searches.
+	 *
 	 * @author tseytlin
 	 */
 	private class SearchComboBox extends JComboBox implements DocumentListener, ActionListener {
@@ -1044,6 +1190,9 @@ public class OntologyExplorer extends JPanel implements HyperlinkListener, Actio
 		private JTextField text;
 		private boolean block,selected,search;
 		
+		/**
+		 * Instantiates a new search combo box.
+		 */
 		public SearchComboBox(){
 			super();
 			setEditable(true);
@@ -1053,27 +1202,42 @@ public class OntologyExplorer extends JPanel implements HyperlinkListener, Actio
 			putClientProperty("JComboBox.isTableCellEditor", Boolean.TRUE);
 		}
 		
+		/* (non-Javadoc)
+		 * @see javax.swing.JComboBox#actionPerformed(java.awt.event.ActionEvent)
+		 */
 		public void actionPerformed(ActionEvent e){
 			search = false;
 		}
 		
 		/**
-		 * get text editor
+		 * get text editor.
+		 *
+		 * @return the text editor
 		 */
 		public JTextField getTextEditor(){
 			return text;
 		}
 		
+		/**
+		 * Sets the ontology.
+		 *
+		 * @param ont the new ontology
+		 */
 		public void setOntology(IOntology ont){
 			ontology = ont;
 		}
 		
+		/**
+		 * Sets the terminology.
+		 *
+		 * @param term the new terminology
+		 */
 		public void setTerminology(Terminology term){
 			terminology = term;
 		}
 		
 		/**
-		 * notify that we are done
+		 * notify that we are done.
 		 */
 		protected void fireActionEvent() {
 			//disable firing during sync
@@ -1083,16 +1247,31 @@ public class OntologyExplorer extends JPanel implements HyperlinkListener, Actio
 			}
 		}
 
+		/**
+		 * Clear.
+		 */
 		public void clear(){
 			removeAllItems();
 			//s = new StringBuffer();
 			text.setText("");
 		}
+		
+		/**
+		 * Sync.
+		 *
+		 * @param str the str
+		 */
 		//sync combobox w/ what is typed in
 		private void sync(String str) {
 			sync(str,false);
 		}
 		
+		/**
+		 * Sync.
+		 *
+		 * @param str the str
+		 * @param force the force
+		 */
 		//sync combobox w/ what is typed in
 		private void sync(String str,boolean force) {
 			if(!search)
@@ -1135,10 +1314,18 @@ public class OntologyExplorer extends JPanel implements HyperlinkListener, Actio
 		}
 
 		
+		/**
+		 * Sync.
+		 */
 		private synchronized void sync(){
 			sync(false);
 		}
 		
+		/**
+		 * Sync.
+		 *
+		 * @param force the force
+		 */
 		private synchronized void sync(boolean force){
 			block = true;
 			final boolean f = force;
@@ -1151,7 +1338,9 @@ public class OntologyExplorer extends JPanel implements HyperlinkListener, Actio
 		}
 		
 		/**
-		 * get selected item
+		 * get selected item.
+		 *
+		 * @return the selected item
 		 */
 		public Object getSelectedItem() {
 			selected = false;
@@ -1167,18 +1356,27 @@ public class OntologyExplorer extends JPanel implements HyperlinkListener, Actio
 			return obj;
 		}
 		
+		/* (non-Javadoc)
+		 * @see javax.swing.event.DocumentListener#changedUpdate(javax.swing.event.DocumentEvent)
+		 */
 		public void changedUpdate(DocumentEvent arg0) {
 			search = true;
 			if(!block)
 				sync();
 		}
 
+		/* (non-Javadoc)
+		 * @see javax.swing.event.DocumentListener#insertUpdate(javax.swing.event.DocumentEvent)
+		 */
 		public void insertUpdate(DocumentEvent arg0) {
 			search = true;
 			if(!block)
 				sync();
 		}
 
+		/* (non-Javadoc)
+		 * @see javax.swing.event.DocumentListener#removeUpdate(javax.swing.event.DocumentEvent)
+		 */
 		public void removeUpdate(DocumentEvent arg0) {
 			search = true;
 			if(!block)
@@ -1189,18 +1387,30 @@ public class OntologyExplorer extends JPanel implements HyperlinkListener, Actio
 	
 	
 	/**
-	 * loading of children
+	 * loading of children.
 	 */
 	private class ChildLoader extends Thread {
 		private ExplorerPanel panel;
 		private Object entry;
 		private boolean cancel;
 		
+		/**
+		 * Instantiates a new child loader.
+		 *
+		 * @param next the next
+		 * @param entry the entry
+		 */
 		public ChildLoader(ExplorerPanel next, Object entry){
 			this.panel = next;
 			this.entry = entry;
 		}
 		
+		/**
+		 * Checks for children.
+		 *
+		 * @param entry the entry
+		 * @return true, if successful
+		 */
 		// check if concept has children
 		private boolean hasChildren(Object entry){
 			if(entry instanceof Concept){
@@ -1234,6 +1444,11 @@ public class OntologyExplorer extends JPanel implements HyperlinkListener, Actio
 		}
 		*/
 		
+		/**
+		 * Removes the panel.
+		 *
+		 * @param panel the panel
+		 */
 		private void removePanel(ExplorerPanel panel){
 			// remove next panel first
 			if(panel.getNext() != null)
@@ -1250,10 +1465,16 @@ public class OntologyExplorer extends JPanel implements HyperlinkListener, Actio
 			}
 		}
 		
+		/**
+		 * Cancel.
+		 */
 		public void cancel(){
 			cancel = true;
 		}
 		
+		/* (non-Javadoc)
+		 * @see java.lang.Thread#run()
+		 */
 		//run loading of resource
 		public void run(){
 			boolean hasChildren = hasChildren(entry);
@@ -1311,7 +1532,10 @@ public class OntologyExplorer extends JPanel implements HyperlinkListener, Actio
 	
 	
 	/**
-	 * display ontology explorer in a non-modal window
+	 * display ontology explorer in a non-modal window.
+	 *
+	 * @param o the o
+	 * @return the j dialog
 	 */
 	public static JDialog showOntology(IOntology o){
 		final IOntology ont = o;

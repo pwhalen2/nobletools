@@ -8,7 +8,16 @@ import edu.pitt.dbmi.nlp.noble.terminology.Concept;
 import edu.pitt.dbmi.nlp.noble.terminology.SemanticType;
 import edu.pitt.dbmi.nlp.noble.terminology.Source;
 
+/**
+ * The Class BioPortalConcept.
+ */
 public class BioPortalConcept extends Concept {
+	
+	/**
+	 * Instantiates a new bio portal concept.
+	 *
+	 * @param cls the cls
+	 */
 	public BioPortalConcept(IClass cls) {
 		super(cls);
 		

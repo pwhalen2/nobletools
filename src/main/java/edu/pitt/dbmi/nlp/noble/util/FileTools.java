@@ -11,6 +11,9 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 
+/**
+ * The Class FileTools.
+ */
 public class FileTools {
 
 	/**
@@ -18,10 +21,10 @@ public class FileTools {
 	 * http://javadevtips.blogspot.com/2011/10/unzip-files.html
 	 * http://www.thecoderscorner.com/team-blog/java-and-jvm/12-reading-a-zip-file-from-java-using-zipinputstream
 	 * and modified
-	 * 
-	 * @param is
-	 * @param destDirectory
-	 * @return
+	 *
+	 * @param is the is
+	 * @param destDirectory the dest directory
+	 * @throws Exception the exception
 	 */
 	public static void unzip(InputStream is, File destDirectory) throws Exception {
 		// create the destination directory structure (if needed)
@@ -70,8 +73,9 @@ public class FileTools {
 	}
 
 	/**
-	 * recursivley delete directory
-	 * @param directory
+	 * recursivley delete directory.
+	 *
+	 * @param directory the directory
 	 */
 	public static void deleteDirectory(File directory){
 		if(directory.exists()){
@@ -86,13 +90,11 @@ public class FileTools {
 	}
 	
 	/**
-	 * This method gets a text file (HTML too) from input stream from given map
-	 * 
-	 * @param InputStream
-	 *            text input
+	 * This method gets a text file (HTML too) from input stream from given map.
+	 *
+	 * @param in the in
 	 * @return String that was produced
-	 * @throws IOException
-	 *             if something is wrong WARNING!!! if you use this to read HTML
+	 * @throws IOException             if something is wrong WARNING!!! if you use this to read HTML
 	 *             text and want to put it somewhere you should delete newlines
 	 */
 	public static String getText(InputStream in) throws IOException {
@@ -100,15 +102,12 @@ public class FileTools {
 	}
 
 	/**
-	 * This method gets a text file (HTML too) from input stream from given map
-	 * 
-	 * @param InputStream
-	 *            text input
-	 * @param lineSeperator
-	 *            to use "\n" or \r\n or System.getProperty("line.separator")
+	 * This method gets a text file (HTML too) from input stream from given map.
+	 *
+	 * @param in the in
+	 * @param lineSeparator the line separator
 	 * @return String that was produced
-	 * @throws IOException
-	 *             if something is wrong WARNING!!! if you use this to read HTML
+	 * @throws IOException             if something is wrong WARNING!!! if you use this to read HTML
 	 *             text and want to put it somewhere you should delete newlines
 	 */
 	public static String getText(InputStream in, String lineSeparator) throws IOException {

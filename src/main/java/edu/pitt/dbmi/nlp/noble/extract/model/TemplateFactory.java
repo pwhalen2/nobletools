@@ -56,13 +56,24 @@ import edu.pitt.dbmi.nlp.noble.util.StringUtils;
 import edu.pitt.dbmi.nlp.noble.util.XMLUtils;
 
 /**
- * create Templates for information extraction from various sources
+ * create Templates for information extraction from various sources.
+ *
  * @author tseytlin
  */
 public class TemplateFactory {
 	private Map<String,Template> templates;
 	private static TemplateFactory instance;
+	
+	/**
+	 * Instantiates a new template factory.
+	 */
 	private TemplateFactory(){}
+	
+	/**
+	 * Gets the single instance of TemplateFactory.
+	 *
+	 * @return single instance of TemplateFactory
+	 */
 	public static TemplateFactory getInstance(){
 		if(instance == null)
 			instance = new TemplateFactory();
@@ -70,7 +81,9 @@ public class TemplateFactory {
 	}
 	
 	/**
-	 * get a map of templates
+	 * get a map of templates.
+	 *
+	 * @return the template map
 	 */
 	public Map<String,Template> getTemplateMap(){
 		if(templates == null)
@@ -79,14 +92,19 @@ public class TemplateFactory {
 	}
 	
 	/**
-	 * get template based on name
+	 * get template based on name.
+	 *
+	 * @param name the name
+	 * @return the template
 	 */
 	public Template getTemplate(String name){
 		return getTemplateMap().get(name);
 	}
 	
 	/**
-	 * get all template based on name
+	 * get all template based on name.
+	 *
+	 * @return the templates
 	 */
 	public List<Template> getTemplates(){
 		if(getTemplateMap().values() instanceof List)
@@ -96,8 +114,10 @@ public class TemplateFactory {
 	
 	/**
 	 * import templates from url
-	 * looks at URL to figure out how to import it
-	 * @param url
+	 * looks at URL to figure out how to import it.
+	 *
+	 * @param url the url
+	 * @throws Exception the exception
 	 */
 	public void importTemplates(String url) throws Exception {
 		// is this a known SlideTutor ontology?
@@ -112,8 +132,10 @@ public class TemplateFactory {
 	}
 	
 	/**
-	 * create a template from terminology where each root is a template item
-	 * @param url
+	 * create a template from terminology where each root is a template item.
+	 *
+	 * @param url the url
+	 * @throws Exception the exception
 	 */
 	private void addTerminologyTemplate(String url) throws Exception {
 		Template template = importTerminologyTemplate(url);
@@ -121,8 +143,11 @@ public class TemplateFactory {
 	}
 	
 	/**
-	 * create a template from terminology where each root is a template item
-	 * @param url
+	 * create a template from terminology where each root is a template item.
+	 *
+	 * @param url the url
+	 * @return the template
+	 * @throws Exception the exception
 	 */
 	public static Template importTerminologyTemplate(String url) throws Exception {
 		Terminology terminology = new NobleCoderTerminology(url);
@@ -166,7 +191,16 @@ public class TemplateFactory {
 	}
 
 
+	/**
+	 * The Class SlideTutorConcept.
+	 */
 	public static class SlideTutorConcept extends Concept {
+		
+		/**
+		 * Instantiates a new slide tutor concept.
+		 *
+		 * @param cls the cls
+		 */
 		public SlideTutorConcept(IClass cls) {
 			super(cls);
 			if(isWorksheet(cls))
@@ -175,9 +209,10 @@ public class TemplateFactory {
 	}
 	
 	/**
-	 * create a template object from SlideTutor ontology
-	 * @param url
-	 * @return
+	 * create a template object from SlideTutor ontology.
+	 *
+	 * @param url the url
+	 * @throws Exception the exception
 	 */
 	private void addSlideTutorTemplates(String url) throws Exception {
 		for(Template template: importSlideTutorTemplates(url)){
@@ -186,9 +221,11 @@ public class TemplateFactory {
 	}
 	
 	/**
-	 * create a template object from SlideTutor ontology
-	 * @param url
-	 * @return
+	 * create a template object from SlideTutor ontology.
+	 *
+	 * @param url the url
+	 * @return the list
+	 * @throws Exception the exception
 	 */
 	public static List<Template> importSlideTutorTemplates(String url) throws Exception {
 		List<Template> templates = new ArrayList<Template>();
@@ -257,6 +294,13 @@ public class TemplateFactory {
 		return templates;
 	}
 
+	/**
+	 * Gets the code.
+	 *
+	 * @param uri the uri
+	 * @param truncate the truncate
+	 * @return the code
+	 */
 	private static String getCode(String uri, boolean truncate){
 		if(truncate){
 			int x = uri.lastIndexOf('/');
@@ -264,10 +308,13 @@ public class TemplateFactory {
 		}
 		return uri;
 	}
+	
 	/**
-	 * create a template item from a given class
-	 * @param c
-	 * @return
+	 * create a template item from a given class.
+	 *
+	 * @param c the c
+	 * @param template the template
+	 * @return the template item
 	 */
 	private static TemplateItem convertSlideTutorClass(IClass c, Template template) {
 		IOntology ont = c.getOntology();
@@ -378,8 +425,11 @@ public class TemplateFactory {
 	}
 	
 	/**
-	 * check if this entry is a feature
-	 * @return
+	 * check if this entry is a feature.
+	 *
+	 * @param cls the cls
+	 * @param parent the parent
+	 * @return true, if is of parent
 	 */
 	public static boolean isOfParent(IClass cls,String parent){
 		if(cls == null)
@@ -391,12 +441,11 @@ public class TemplateFactory {
 	
 	
 	/**
-	 * export template
-	 * @param t
-	 * @param out
-	 * @throws IOException
-	 * @throws ParserConfigurationException 
-	 * @throws TransformerException 
+	 * export template.
+	 *
+	 * @param t the t
+	 * @param out the out
+	 * @throws Exception the exception
 	 */
 	public void exportTemplate(Template t, OutputStream out) throws Exception{
 		// initialize document and root
@@ -412,10 +461,11 @@ public class TemplateFactory {
 	
 
 	/**
-	 * export template
-	 * @param t
-	 * @param out
-	 * @throws IOException
+	 * export template.
+	 *
+	 * @param in the in
+	 * @return the template
+	 * @throws Exception the exception
 	 */
 	public Template importTemplate(InputStream in) throws Exception{
 		Document document = XMLUtils.parseXML(in);
@@ -436,12 +486,12 @@ public class TemplateFactory {
 	 * import template from specially crafted Ontology. This terminology is assumed to have 3 top-level classes:
 	 * Slot, Template and Terminology
 	 * It also suppose to have two object properties hasMentionOf and hasSlot as well as one data property hasDocumentRange 
-	 * @param url
-	 * @return
-	 * @throws IOntologyException 
-	 * @throws TerminologyException 
-	 * @throws IOException 
-	 * @throws Exception
+	 *
+	 * @param url the url
+	 * @return the list
+	 * @throws IOntologyException the i ontology exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws TerminologyException the terminology exception
 	 */
 	public static List<Template> importOntologyTemplate(String url) throws IOntologyException, IOException, TerminologyException {
 		List<Template> templates = new ArrayList<Template>();
@@ -474,10 +524,12 @@ public class TemplateFactory {
 	}
 	
 	/**
-	 * convert slot class 
-	 * @param parameter
-	 * @return
-	 * @throws TerminologyException 
+	 * convert slot class .
+	 *
+	 * @param template the template
+	 * @param parameter the parameter
+	 * @return the template item
+	 * @throws TerminologyException the terminology exception
 	 */
 	private static TemplateItem convertSlotClass(Template template, ILogicExpression parameter) throws TerminologyException {
 		if(!(parameter.getOperand() instanceof IClass))
@@ -538,16 +590,33 @@ public class TemplateFactory {
 		return item;
 	}
 	
+	/**
+	 * The Class TemplateContainer.
+	 */
 	private static class TemplateContainer {
 		public Concept feature, numericValue;
 		public List<Concept> modifiers = new ArrayList<Concept>();
 		public Map<Concept,List<Concept>> attributes = new LinkedHashMap<Concept, List<Concept>>();
 		public List<String> filter = new ArrayList<String>();
+		
+		/**
+		 * Checks if is fav.
+		 *
+		 * @return true, if is fav
+		 */
 		public boolean isFAV(){
 			return !(attributes.isEmpty() && modifiers.isEmpty() && numericValue == null);
 		}
 	}
 	
+	/**
+	 * Gets the template container.
+	 *
+	 * @param term the term
+	 * @param cls the cls
+	 * @return the template container
+	 * @throws TerminologyException the terminology exception
+	 */
 	private static TemplateContainer getTemplateContainer(Terminology term, IClass cls) throws TerminologyException{
 		IOntology ont = cls.getOntology();
 		IProperty hasMentionOf = ont.getProperty(PROP_HAS_MENTION);
@@ -585,7 +654,10 @@ public class TemplateFactory {
 	}
 	
 	/**
-	 * @param args
+	 * The main method.
+	 *
+	 * @param args the arguments
+	 * @throws Exception the exception
 	 */
 	public static void main(String[] args) throws Exception {
 		String ontologyFile  = "/home/tseytlin/Data/OrganTransplantExtraction.owl";

@@ -33,9 +33,9 @@ import edu.pitt.dbmi.nlp.noble.util.Sender;
 
 /**
  * This class provides several convinience methods
- * for text processing
- * @author tseytlin
+ * for text processing.
  *
+ * @author tseytlin
  */
 public class TextTools {
 	public static final String DEFAULT_TEXT_TOOLS_URL = "http://slidetutor.upmc.edu/term/servlet/TextToolsServlet";
@@ -47,9 +47,17 @@ public class TextTools {
 	private static Map<String,String> stopWords,prepostionWords,commonWords;
 	private static Map<String,String> timePatterns;
 	private Sender sender;
+	
+	/**
+	 * The Class StringStats.
+	 */
 	public static class StringStats {
 		public int upperCase,lowerCase,digits,length,whiteSpace,alphabetic;
 		public boolean isCapitalized,isLowercase,isUppercase;
+		
+		/* (non-Javadoc)
+		 * @see java.lang.Object#toString()
+		 */
 		public String toString(){
 			return "upperCase="+upperCase+",lowerCase="+lowerCase+",digits="+digits+",length="+length+
 					",whiteSpace="+whiteSpace+",alphabetic="+alphabetic+",isCapitalized="+isCapitalized+
@@ -67,8 +75,9 @@ public class TextTools {
 	*/
 	
 	/**
-	 * get plural table
-	 * @return
+	 * get plural table.
+	 *
+	 * @return the plural table
 	 */
 	private static Map<String,String> getPluralTable(){
 		if(plurals == null)
@@ -77,8 +86,9 @@ public class TextTools {
 	}
 	
 	/**
-	 * get list of stop words
-	 * @return
+	 * get list of stop words.
+	 *
+	 * @return the stop words
 	 */
 	public static Set<String> getStopWords(){
 		if(stopWords == null){
@@ -89,8 +99,9 @@ public class TextTools {
 	
 	
 	/**
-	 * get stop words table
-	 * @return
+	 * get stop words table.
+	 *
+	 * @return the prepostition words
 	 */
 	public static Set<String> getPrepostitionWords(){
 		if(prepostionWords == null)
@@ -99,8 +110,9 @@ public class TextTools {
 	}
 	
 	/**
-	 * get a list of common words
-	 * @return
+	 * get a list of common words.
+	 *
+	 * @return the common words
 	 */
 	public static Set<String> getCommonWords(){
 		if(commonWords == null){
@@ -116,7 +128,11 @@ public class TextTools {
 	
 	
 	/**
-	 * Read a list with this name and put its content into a list object
+	 * Read a list with this name and put its content into a list object.
+	 *
+	 * @param name the name
+	 * @param sep the sep
+	 * @return the map
 	 */	
 	public static Map<String,String> loadResourceAsMap(String name,String sep){
 		Map<String,String> list = new LinkedHashMap<String,String>();
@@ -156,7 +172,10 @@ public class TextTools {
 	
 	/**
 	 * Read a list with this name and put its content into a Map object
-	 * use tab (\t) as a default seperator
+	 * use tab (\t) as a default seperator.
+	 *
+	 * @param name the name
+	 * @return the map
 	 */	
 	public static Map<String,String> loadResource(String name){
 		return loadResourceAsMap(name,separator);
@@ -164,7 +183,10 @@ public class TextTools {
 	
 	
 	/**
-	 * Read a list with this name and put its content into a list object
+	 * Read a list with this name and put its content into a list object.
+	 *
+	 * @param name the name
+	 * @return the list
 	 */	
 	public static List<String> loadResourceAsList(String name){
 		List<String> list = new ArrayList<String>();
@@ -200,16 +222,16 @@ public class TextTools {
 	
 	
 	/**
-	 * TextTools located on a server (forward to some implementation)
-	 * @param remote servlet
+	 * TextTools located on a server (forward to some implementation).
+	 *
+	 * @param servlet the servlet
 	 */
 	public TextTools(URL servlet){
 		sender = new Sender(servlet);
 	}
 	
 	/**
-	 * TextTools located on a server (forward to some implementation)
-	 * @param remote servlet
+	 * TextTools located on a server (forward to some implementation).
 	 */
 	public TextTools(){
 		try{
@@ -221,7 +243,10 @@ public class TextTools {
 	
 	
 	/**
-	 * Determine if word is plural
+	 * Determine if word is plural.
+	 *
+	 * @param word the word
+	 * @return true, if is plural
 	 */
 	public static boolean isPlural(String word){
 		//iterate over keys
@@ -235,7 +260,10 @@ public class TextTools {
 	}
 	
 	/**
-	 * Determine if word is a stop word
+	 * Determine if word is a stop word.
+	 *
+	 * @param word the word
+	 * @return true, if is stop word
 	 */
 	public static boolean isStopWord(String word){
 		//check table
@@ -246,7 +274,10 @@ public class TextTools {
 	}
 	
 	/**
-	 * Determine if word is a stop word
+	 * Determine if word is a stop word.
+	 *
+	 * @param word the word
+	 * @return true, if is preposition word
 	 */
 	public static boolean isPrepositionWord(String word){
 		//check table
@@ -258,7 +289,10 @@ public class TextTools {
 	
 
 	/**
-	 * Determine if word is in the top 1000 common english words
+	 * Determine if word is in the top 1000 common english words.
+	 *
+	 * @param word the word
+	 * @return true, if is common word
 	 */
 	public static boolean isCommonWord(String word){
 		//check table
@@ -269,7 +303,10 @@ public class TextTools {
 	}
 	
 	/**
-	 * Given a word tries to extract its singular form and returns it
+	 * Given a word tries to extract its singular form and returns it.
+	 *
+	 * @param word the word
+	 * @return the string
 	 */	
 	public static String convertToSingularForm(String word){
 		// strip posessive
@@ -291,8 +328,9 @@ public class TextTools {
 	
 	/**
 	 * stem input word (find root)
-	 * Uses Porter stemmer algorithm
-	 * @param input word 
+	 * Uses Porter stemmer algorithm.
+	 *
+	 * @param word the word
 	 * @return word root (lowercase)
 	 * NOTE: this method doesn't check that input string is a single word.
 	 */
@@ -309,8 +347,9 @@ public class TextTools {
 	 * split text into words.
 	 * replace all non-word characters and possesives from query w/ single space
 	 * tokenize words by space and add non-empty ones
-	 * @param query
-	 * @return
+	 *
+	 * @param query the query
+	 * @return the words
 	 */
 	public static List<String> getWords(String query){
 		// replace all non-word characters and possesives from query w/ single space
@@ -338,10 +377,11 @@ public class TextTools {
 	 * break a given text into a set of ngrams
 	 * Ex: input: "quick brown fox jumped" w/ n = 3 will return
 	 *  quick brown fox, brown fox jumped, quick brown, brown fox, fox jumped
-	 *  quick, brown, fox, jumped
-	 * @param input text
-	 * @param ngram limit 
-	 * @return
+	 *  quick, brown, fox, jumped.
+	 *
+	 * @param text the text
+	 * @param n the n
+	 * @return the n grams
 	 */
 	public static String [] getNGrams(String text, int n){
 		List<String> result = new ArrayList<String>();
@@ -365,8 +405,9 @@ public class TextTools {
 	
 	/**
 	 * This method gets a text file (HTML too) from input stream 
-	 * from given map
-	 * @param InputStream text input
+	 * from given map.
+	 *
+	 * @param in the in
 	 * @return String that was produced
 	 * @throws IOException if something is wrong
 	 * WARNING!!! if you use this to read HTML text and want to put it somewhere
@@ -378,9 +419,10 @@ public class TextTools {
 	
 	/**
 	 * This method gets a text file (HTML too) from input stream 
-	 * from given map
-	 * @param InputStream text input
-	 * @param lineSeperator to use "\n" or \r\n or System.getProperty("line.separator")
+	 * from given map.
+	 *
+	 * @param in the in
+	 * @param lineSeparator the line separator
 	 * @return String that was produced
 	 * @throws IOException if something is wrong
 	 * WARNING!!! if you use this to read HTML text and want to put it somewhere
@@ -392,10 +434,13 @@ public class TextTools {
 	
 	
 	/**
-	 * strip diacritics from the string Ex; Protégé -> Protege
+	 * strip diacritics from the string Ex; Protégé to Protege
 	 * a faster solution, that avoids weird non-ascii chars in your code
 	 * shamelessly copy/pasted from
 	 * http://www.rgagnon.com/javadetails/java-0456.html
+	 *
+	 * @param s the s
+	 * @return the string
 	 */
 	public static String stripDiacritics(String s) {
 		final String PLAIN_ASCII =
@@ -439,21 +484,22 @@ public class TextTools {
 	 * and symbols to ASCII, mapping Unicode to ASCII, stripping diacritics, spliting ligatures, 
 	 * and stripping non-ASCII Unicode characrters.
 	 * 1. q0: map Uniocde symbols and punctuation to ASCII
-   	 * 2. g: remove genitives,
-   	 * 3. rs: then remove parenthetc pluralforms of (s), (es), (ies), (S), (ES), and (IES),
-   	 * 4. o: then replace punctuation with spaces,
-   	 * 5. t: then remove stop words,
-   	 * 6. l: then lowercase,
-   	 * 7. B: then uninflect each word,
-   	 * 8. Ct: then get citation form for each base form,
-   	 * 9. q7: then Unicode Core Norm
-     *     * map Uniocde symbols and punctuation to ASCII
-     *     * map Unicode to ASCII
-     *     * split ligatures
-     *     * strip diacritics 
-     * 10. q8: then strip or map non-ASCII Unicode characters,
-     * 11. w: and finally sort the words in alphabetic order. 
-	 * @param original text
+	 * 2. g: remove genitives,
+	 * 3. rs: then remove parenthetc pluralforms of (s), (es), (ies), (S), (ES), and (IES),
+	 * 4. o: then replace punctuation with spaces,
+	 * 5. t: then remove stop words,
+	 * 6. l: then lowercase,
+	 * 7. B: then uninflect each word,
+	 * 8. Ct: then get citation form for each base form,
+	 * 9. q7: then Unicode Core Norm
+	 *     * map Uniocde symbols and punctuation to ASCII
+	 *     * map Unicode to ASCII
+	 *     * split ligatures
+	 *     * strip diacritics 
+	 * 10. q8: then strip or map non-ASCII Unicode characters,
+	 * 11. w: and finally sort the words in alphabetic order. 
+	 *
+	 * @param text the text
 	 * @return normalized string
 	 */
 	public static String normalize(String text){
@@ -468,21 +514,24 @@ public class TextTools {
 	 * and symbols to ASCII, mapping Unicode to ASCII, stripping diacritics, spliting ligatures, 
 	 * and stripping non-ASCII Unicode characrters.
 	 * 1. q0: map Uniocde symbols and punctuation to ASCII
-   	 * 2. g: remove genitives,
-   	 * 3. rs: then remove parenthetc pluralforms of (s), (es), (ies), (S), (ES), and (IES),
-   	 * 4. o: then replace punctuation with spaces,
-   	 * 5. t: then remove stop words,
-   	 * 6. l: then lowercase,
-   	 * 7. B: then uninflect each word,
-   	 * 8. Ct: then get citation form for each base form,
-   	 * 9. q7: then Unicode Core Norm
-     *     * map Uniocde symbols and punctuation to ASCII
-     *     * map Unicode to ASCII
-     *     * split ligatures
-     *     * strip diacritics 
-     * 10. q8: then strip or map non-ASCII Unicode characters,
-     * 11. w: and finally sort the words in alphabetic order. 
-	 * @param original text
+	 * 2. g: remove genitives,
+	 * 3. rs: then remove parenthetc pluralforms of (s), (es), (ies), (S), (ES), and (IES),
+	 * 4. o: then replace punctuation with spaces,
+	 * 5. t: then remove stop words,
+	 * 6. l: then lowercase,
+	 * 7. B: then uninflect each word,
+	 * 8. Ct: then get citation form for each base form,
+	 * 9. q7: then Unicode Core Norm
+	 *     * map Uniocde symbols and punctuation to ASCII
+	 *     * map Unicode to ASCII
+	 *     * split ligatures
+	 *     * strip diacritics 
+	 * 10. q8: then strip or map non-ASCII Unicode characters,
+	 * 11. w: and finally sort the words in alphabetic order. 
+	 *
+	 * @param text the text
+	 * @param stem the stem
+	 * @param digits the digits
 	 * @return normalized string
 	 */
 	public static String normalize(String text, boolean stem, boolean digits){
@@ -498,21 +547,25 @@ public class TextTools {
 	 * and symbols to ASCII, mapping Unicode to ASCII, stripping diacritics, spliting ligatures, 
 	 * and stripping non-ASCII Unicode characrters.
 	 * 1. q0: map Uniocde symbols and punctuation to ASCII
-   	 * 2. g: remove genitives,
-   	 * 3. rs: then remove parenthetc pluralforms of (s), (es), (ies), (S), (ES), and (IES),
-   	 * 4. o: then replace punctuation with spaces,
-   	 * 5. t: then remove stop words,
-   	 * 6. l: then lowercase,
-   	 * 7. B: then uninflect each word,
-   	 * 8. Ct: then get citation form for each base form,
-   	 * 9. q7: then Unicode Core Norm
-     *     * map Uniocde symbols and punctuation to ASCII
-     *     * map Unicode to ASCII
-     *     * split ligatures
-     *     * strip diacritics 
-     * 10. q8: then strip or map non-ASCII Unicode characters,
-     * 11. w: and finally sort the words in alphabetic order. 
-	 * @param original text
+	 * 2. g: remove genitives,
+	 * 3. rs: then remove parenthetc pluralforms of (s), (es), (ies), (S), (ES), and (IES),
+	 * 4. o: then replace punctuation with spaces,
+	 * 5. t: then remove stop words,
+	 * 6. l: then lowercase,
+	 * 7. B: then uninflect each word,
+	 * 8. Ct: then get citation form for each base form,
+	 * 9. q7: then Unicode Core Norm
+	 *     * map Uniocde symbols and punctuation to ASCII
+	 *     * map Unicode to ASCII
+	 *     * split ligatures
+	 *     * strip diacritics 
+	 * 10. q8: then strip or map non-ASCII Unicode characters,
+	 * 11. w: and finally sort the words in alphabetic order. 
+	 *
+	 * @param text the text
+	 * @param stem the stem
+	 * @param digits the digits
+	 * @param stopWords the stop words
 	 * @return normalized string
 	 */
 	public static String normalize(String text, boolean stem, boolean digits,boolean stopWords){
@@ -527,27 +580,33 @@ public class TextTools {
 	 * and symbols to ASCII, mapping Unicode to ASCII, stripping diacritics, spliting ligatures, 
 	 * and stripping non-ASCII Unicode characrters.
 	 * 1. q0: map Uniocde symbols and punctuation to ASCII
-   	 * 2. g: remove genitives,
-   	 * 3. rs: then remove parenthetc pluralforms of (s), (es), (ies), (S), (ES), and (IES),
-   	 * 4. o: then replace punctuation with spaces,
-   	 * 5. t: then remove stop words,
-   	 * 6. l: then lowercase,
-   	 * 7. B: then uninflect each word,
-   	 * 8. Ct: then get citation form for each base form,
-   	 * 9. q7: then Unicode Core Norm
-     *     * map Uniocde symbols and punctuation to ASCII
-     *     * map Unicode to ASCII
-     *     * split ligatures
-     *     * strip diacritics 
-     * 10. q8: then strip or map non-ASCII Unicode characters,
-     * 11. w: and finally sort the words in alphabetic order. 
-	 * @param original text
-	 * @return normalized string
+	 * 2. g: remove genitives,
+	 * 3. rs: then remove parenthetc pluralforms of (s), (es), (ies), (S), (ES), and (IES),
+	 * 4. o: then replace punctuation with spaces,
+	 * 5. t: then remove stop words,
+	 * 6. l: then lowercase,
+	 * 7. B: then uninflect each word,
+	 * 8. Ct: then get citation form for each base form,
+	 * 9. q7: then Unicode Core Norm
+	 *     * map Uniocde symbols and punctuation to ASCII
+	 *     * map Unicode to ASCII
+	 *     * split ligatures
+	 *     * strip diacritics 
+	 * 10. q8: then strip or map non-ASCII Unicode characters,
+	 * 11. w: and finally sort the words in alphabetic order. 
 	 *
-	public static String normalize(String text, boolean stem, boolean digits,boolean stopWords, boolean skipAbbriv){
-		return normalize(text, stem, digits, stopWords, skipAbbriv, false);
-	}
-	*/
+	 * @param text the text
+	 * @param stem the stem
+	 * @param digits the digits
+	 * @param stopWords the stop words
+	 * @param uniqueWords the unique words
+	 * @param sort the sort
+	 * @return normalized string
+	 * 
+	 * 	public static String normalize(String text, boolean stem, boolean digits,boolean stopWords, boolean skipAbbriv){
+	 * 		return normalize(text, stem, digits, stopWords, skipAbbriv, false);
+	 * 	}
+	 */
 	
 	/**
 	 * The normalized string is a version of the original string in lower case, 
@@ -557,21 +616,27 @@ public class TextTools {
 	 * and symbols to ASCII, mapping Unicode to ASCII, stripping diacritics, spliting ligatures, 
 	 * and stripping non-ASCII Unicode characrters.
 	 * 1. q0: map Uniocde symbols and punctuation to ASCII
-   	 * 2. g: remove genitives,
-   	 * 3. rs: then remove parenthetc pluralforms of (s), (es), (ies), (S), (ES), and (IES),
-   	 * 4. o: then replace punctuation with spaces,
-   	 * 5. t: then remove stop words,
-   	 * 6. l: then lowercase,
-   	 * 7. B: then uninflect each word,
-   	 * 8. Ct: then get citation form for each base form,
-   	 * 9. q7: then Unicode Core Norm
-     *     * map Uniocde symbols and punctuation to ASCII
-     *     * map Unicode to ASCII
-     *     * split ligatures
-     *     * strip diacritics 
-     * 10. q8: then strip or map non-ASCII Unicode characters,
-     * 11. w: and finally sort the words in alphabetic order. 
-	 * @param original text
+	 * 2. g: remove genitives,
+	 * 3. rs: then remove parenthetc pluralforms of (s), (es), (ies), (S), (ES), and (IES),
+	 * 4. o: then replace punctuation with spaces,
+	 * 5. t: then remove stop words,
+	 * 6. l: then lowercase,
+	 * 7. B: then uninflect each word,
+	 * 8. Ct: then get citation form for each base form,
+	 * 9. q7: then Unicode Core Norm
+	 *     * map Uniocde symbols and punctuation to ASCII
+	 *     * map Unicode to ASCII
+	 *     * split ligatures
+	 *     * strip diacritics 
+	 * 10. q8: then strip or map non-ASCII Unicode characters,
+	 * 11. w: and finally sort the words in alphabetic order. 
+	 *
+	 * @param text the text
+	 * @param stem the stem
+	 * @param digits the digits
+	 * @param stopWords the stop words
+	 * @param uniqueWords the unique words
+	 * @param sort the sort
 	 * @return normalized string
 	 */
 	public static String normalize(String text, boolean stem, boolean digits,boolean stopWords, boolean uniqueWords, boolean sort){ 
@@ -598,21 +663,26 @@ public class TextTools {
 	 * and symbols to ASCII, mapping Unicode to ASCII, stripping diacritics, spliting ligatures, 
 	 * and stripping non-ASCII Unicode characrters.
 	 * 1. q0: map Uniocde symbols and punctuation to ASCII
-   	 * 2. g: remove genitives,
-   	 * 3. rs: then remove parenthetc pluralforms of (s), (es), (ies), (S), (ES), and (IES),
-   	 * 4. o: then replace punctuation with spaces,
-   	 * 5. t: then remove stop words,
-   	 * 6. l: then lowercase,
-   	 * 7. B: then uninflect each word,
-   	 * 8. Ct: then get citation form for each base form,
-   	 * 9. q7: then Unicode Core Norm
-     *     * map Uniocde symbols and punctuation to ASCII
-     *     * map Unicode to ASCII
-     *     * split ligatures
-     *     * strip diacritics 
-     * 10. q8: then strip or map non-ASCII Unicode characters,
-     * 11. w: and finally sort the words in alphabetic order. 
-	 * @param original text
+	 * 2. g: remove genitives,
+	 * 3. rs: then remove parenthetc pluralforms of (s), (es), (ies), (S), (ES), and (IES),
+	 * 4. o: then replace punctuation with spaces,
+	 * 5. t: then remove stop words,
+	 * 6. l: then lowercase,
+	 * 7. B: then uninflect each word,
+	 * 8. Ct: then get citation form for each base form,
+	 * 9. q7: then Unicode Core Norm
+	 *     * map Uniocde symbols and punctuation to ASCII
+	 *     * map Unicode to ASCII
+	 *     * split ligatures
+	 *     * strip diacritics 
+	 * 10. q8: then strip or map non-ASCII Unicode characters,
+	 * 11. w: and finally sort the words in alphabetic order. 
+	 *
+	 * @param text the text
+	 * @param stem the stem
+	 * @param digits the digits
+	 * @param stopWords the stop words
+	 * @param uniqueWords the unique words
 	 * @return normalized string
 	 */
 	public static String normalize(String text, boolean stem, boolean digits,boolean stopWords, boolean uniqueWords){ 
@@ -627,27 +697,23 @@ public class TextTools {
 	 * and symbols to ASCII, mapping Unicode to ASCII, stripping diacritics, spliting ligatures, 
 	 * and stripping non-ASCII Unicode characrters.
 	 * 1. q0: map Uniocde symbols and punctuation to ASCII
-   	 * 2. g: remove genitives,
-   	 * 3. rs: then remove parenthetc pluralforms of (s), (es), (ies), (S), (ES), and (IES),
-   	 * 4. o: then replace punctuation with spaces,
-   	 * 5. t: then remove stop words,
-   	 * 6. l: then lowercase,
-   	 * 7. B: then uninflect each word,
-   	 * 8. Ct: then get citation form for each base form,
-   	 * 9. q7: then Unicode Core Norm
-     *     * map Uniocde symbols and punctuation to ASCII
-     *     * map Unicode to ASCII
-     *     * split ligatures
-     *     * strip diacritics 
-     * 10. q8: then strip or map non-ASCII Unicode characters,
-     * 11. w: and finally sort the words in alphabetic order. 
-     * 
-     *
+	 * 2. g: remove genitives,
+	 * 3. rs: then remove parenthetc pluralforms of (s), (es), (ies), (S), (ES), and (IES),
+	 * 4. o: then replace punctuation with spaces,
+	 * 5. t: then remove stop words,
+	 * 6. l: then lowercase,
+	 * 7. B: then uninflect each word,
+	 * 8. Ct: then get citation form for each base form,
+	 * 9. q7: then Unicode Core Norm
+	 *     * map Uniocde symbols and punctuation to ASCII
+	 *     * map Unicode to ASCII
+	 *     * split ligatures
+	 *     * strip diacritics 
+	 * 10. q8: then strip or map non-ASCII Unicode characters,
+	 * 11. w: and finally sort the words in alphabetic order. 
+	 *
 	 * @param text 			- input text
 	 * @param stem 			- stem words using porder stemmer
-	 * @param stripDigits 	- strip single digits from the string
-	 * @param stripStopWord	- strip known stop words from the string
-	 * @param skipAbbriv	- if word looks like an abbreviation, do not normalize it
 	 * @return normalized string
 	 */
 	public static String normalize(String text, boolean stem){
@@ -656,10 +722,11 @@ public class TextTools {
 	
 	
 	/**
-	 * perform normalization of a string @see normalize, but return unsorted list of words 
-	 * @param text
-	 * @param stem
-	 * @return
+	 * perform normalization of a string @see normalize, but return unsorted list of words .
+	 *
+	 * @param text the text
+	 * @param stem the stem
+	 * @return the list
 	 */
 	public static List<String> normalizeWords(String text, boolean stem){
 		return normalizeWords(text, stem,true);
@@ -667,11 +734,12 @@ public class TextTools {
 	
 	
 	/**
-	 * perform normalization of a string @see normalize, but return unsorted list of words 
-	 * @param text
+	 * perform normalization of a string @see normalize, but return unsorted list of words .
+	 *
+	 * @param text the text
 	 * @param stem -stem words
-	 * @param strip - strip digits
-	 * @return
+	 * @param stripDigits the strip digits
+	 * @return the list
 	 */
 	public static List<String> normalizeWords(String text, boolean stem, boolean stripDigits){
 		return normalizeWords(text, stem, stripDigits,true);
@@ -679,23 +747,11 @@ public class TextTools {
 	
 	/**
 	 * perform normalization of a string @see normalize, but return unsorted list of words 
-	 * @param text
-	 * @param stem -stem words
-	 * @param strip - strip digits
-	 * @return
-	 
-	public static List<String> normalizeWords(String text, boolean stem, boolean stripDigits, boolean stripStopWords){
-		return normalizeWords(text, stem, stripDigits,stripStopWords,false);
-	}
-	*/
-	/**
-	 * perform normalization of a string @see normalize, but return unsorted list of words 
 	 * @param text 			- input text
 	 * @param stem 			- stem words using porder stemmer
 	 * @param stripDigits 	- strip single digits from the string
-	 * @param stripStopWord	- strip known stop words from the string
-	 * @param skipAbbriv	- if word looks like an abbreviation, do not normalize it
-	 * @return
+	 * @param stripStopWords - strip known stop words from the string
+	 * @return list of normalized words
 	 */
 	public static List<String> normalizeWords(String text, boolean stem, boolean stripDigits, boolean stripStopWords){
 		text = text.trim();
@@ -767,9 +823,10 @@ public class TextTools {
 
 	/**
 	 * is this text an abbreviation of sorts, used in normalized method
-	 * if abbreviation then no normalization is required
-	 * @param text
-	 * @return
+	 * if abbreviation then no normalization is required.
+	 *
+	 * @param text the text
+	 * @return true, if is likely abbreviation
 	 */
 	public static boolean isLikelyAbbreviation(String text) {
 		// if string contains junk s.a. +()-/ or digit, it might be some protein or whatever
@@ -791,9 +848,10 @@ public class TextTools {
 	/**
 	 * compute levenshtein (edit) distance between two strings
 	 * http://en.wikibooks.org/wiki/Algorithm_Implementation/Strings/Levenshtein_distance#Java
-	 * @param str1
-	 * @param str2
-	 * @return
+	 *
+	 * @param str1 the str 1
+	 * @param str2 the str 2
+	 * @return the levenshtein distance
 	 */
 	public static int getLevenshteinDistance(CharSequence str1, CharSequence str2) {
 		int[][] distance = new int[str1.length() + 1][str2.length() + 1];
@@ -819,9 +877,10 @@ public class TextTools {
 	 * regular equals, makes sure that the first letters of each word are the
 	 * same. Only then it attempts to compute the distance and compares it to 
 	 * a threshold that is relative to string size
-	 * @param s1
-	 * @param s2
-	 * @return
+	 *
+	 * @param s1 the s 1
+	 * @param s2 the s 2
+	 * @return true, if successful
 	 */
 	public static boolean similar(String s1, String s2){
 		// check for null
@@ -867,6 +926,11 @@ public class TextTools {
 	}
 	
 	
+	/**
+	 * Gets the URL escape code.
+	 *
+	 * @return the URL escape code
+	 */
 	public static Map<Character,String> getURLEscapeCode(){
 		if(urlEscapeCodeMap == null){
 			urlEscapeCodeMap = new HashMap<Character, String>();
@@ -896,6 +960,11 @@ public class TextTools {
 		return urlEscapeCodeMap;
 	}
 	
+	/**
+	 * Gets the HTML escape code.
+	 *
+	 * @return the HTML escape code
+	 */
 	public static Map<Character,String> getHTMLEscapeCode(){
 		if(xmlEscapeCodeMap == null){
 			xmlEscapeCodeMap = new HashMap<Character, String>();
@@ -909,9 +978,10 @@ public class TextTools {
 	}
 	
 	/**
-	 * URL escape filter
-	 * @param s
-	 * @return
+	 * URL escape filter.
+	 *
+	 * @param s the s
+	 * @return the string
 	 */
 	public static String escapeURL(String s){
 		StringBuffer str = new StringBuffer();
@@ -926,9 +996,10 @@ public class TextTools {
 	}
 	
 	/**
-	 * URL escape filter
-	 * @param s
-	 * @return
+	 * URL escape filter.
+	 *
+	 * @param s the s
+	 * @return the string
 	 */
 	public static String escapeHTML(String s){
 		StringBuffer str = new StringBuffer();
@@ -943,9 +1014,11 @@ public class TextTools {
 	}
 	
 	/**
-	 * add a value to an array and return a new array
-	 * @param old array
-	 * @param val value to add
+	 * add a value to an array and return a new array.
+	 *
+	 * @param <T> the generic type
+	 * @param a the a
+	 * @param b the b
 	 * @return concatanated arrays
 	 */
 	public static <T> T[] addAll(T[] a, T b){
@@ -963,9 +1036,11 @@ public class TextTools {
 	}
 	
 	/**
-	 * add a value to an array and return a new array
-	 * @param old array
-	 * @param val value to add
+	 * add a value to an array and return a new array.
+	 *
+	 * @param <T> the generic type
+	 * @param a the a
+	 * @param b the b
 	 * @return concatanated arrays
 	 */
 	public static <T> T[] addAll(T[] a, T[] b){
@@ -983,10 +1058,11 @@ public class TextTools {
 	}
 	
 	/**
-	 * get character count for a given string
-	 * @param text
-	 * @param test
-	 * @return
+	 * get character count for a given string.
+	 *
+	 * @param text the text
+	 * @param test the test
+	 * @return the int
 	 */
 	public static int charCount(String text, char test ){
 		int count = 0;
@@ -999,7 +1075,8 @@ public class TextTools {
 	
 	
 	/**
-	 * for each character in the target strings sets case in the source string
+	 * for each character in the target strings sets case in the source string.
+	 *
 	 * @param source - string to change case
 	 * @param target - example string to take character case info from
 	 * @return result string that has case that resembles target string
@@ -1031,7 +1108,10 @@ public class TextTools {
 	
 	/**
 	 * This function attempts to convert vaires types of input into numerical
-	 * equivalent
+	 * equivalent.
+	 *
+	 * @param text the text
+	 * @return the double
 	 */
 	public static double parseDecimalValue(String text) {
 		double value = 0;
@@ -1054,7 +1134,10 @@ public class TextTools {
 
 	/**
 	 * This function attempts to convert vaires types of input into numerical
-	 * equivalent
+	 * equivalent.
+	 *
+	 * @param text the text
+	 * @return the int
 	 */
 	public static int parseIntegerValue(String text) {
 		int value = 0;
@@ -1131,10 +1214,10 @@ public class TextTools {
 	
 	
 	/**
-	 * is string a number
-	 * 
-	 * @param text
-	 * @return
+	 * is string a number.
+	 *
+	 * @param text the text
+	 * @return true, if is number
 	 */
 	public static boolean isNumber(String text) {
 		return text.matches("\\d+(\\.\\d+)?");
@@ -1142,9 +1225,10 @@ public class TextTools {
 
 	/**
 	 * pretty print number as integer or 2 precision float format numeric value
-	 * as string
-	 * 
-	 * @return
+	 * as string.
+	 *
+	 * @param numericValue the numeric value
+	 * @return the string
 	 */
 	public static String toString(double numericValue) {
 		Formatter f = new Formatter();
@@ -1156,9 +1240,10 @@ public class TextTools {
 	}
 
 	/**
-	 * get a string with each word being capitalized
-	 * @param text
-	 * @return
+	 * get a string with each word being capitalized.
+	 *
+	 * @param text the text
+	 * @return the capitalized words
 	 */
 	public static String getCapitalizedWords(String text){
 		StringBuffer b = new StringBuffer();
@@ -1173,20 +1258,21 @@ public class TextTools {
 	
 	
 	/**
-	 * parse CSV line (take care of double quotes)
-	 * @param line
-	 * @param delimeter
-	 * @return
+	 * parse CSV line (take care of double quotes).
+	 *
+	 * @param line the line
+	 * @return the list
 	 */
 	public static List<String> parseCSVline(String line){
 		return parseCSVline(line, ',');
 	}
 	
 	/**
-	 * parse CSV line (take care of double quotes)
-	 * @param line
-	 * @param delimeter
-	 * @return
+	 * parse CSV line (take care of double quotes).
+	 *
+	 * @param line the line
+	 * @param delim the delim
+	 * @return the list
 	 */
 	public static List<String> parseCSVline(String line,char delim){
 		List<String> fields = new ArrayList<String>();
@@ -1221,25 +1307,28 @@ public class TextTools {
 	 * Parse English sentences from a blurb of text. 
 	 * Each sentence should be terminated by .! or ?
 	 * Periods in digits and some acronyms should be skipped
-	 * @param txt
-	 * @return
+	 *
+	 * @param txt the txt
+	 * @return the sentences
 	 */
 	public static List<String> getSentences(String txt) {
 		return SentenceDetector.getSentences(txt);
 	}
 	
 	/**
-	 * determine if input line is a recognizable report section?
-	 * @param line
-	 * @return
+	 * determine if input line is a recognizable report section?.
+	 *
+	 * @param line the line
+	 * @return true, if is report section
 	 */
 	public static boolean isReportSection(String line){
 		return line.matches("^\\[[A-Za-z \\-]*\\]$") || line.matches("^[A-Z \\-]*:$");
 	}
 	
 	/**
-	 * 
-	 * @param line
+	 * Gets the string stats.
+	 *
+	 * @param line the line
 	 * @return int [3] number of upper case chars,
 	 */
 	public static StringStats getStringStats(String line){
@@ -1267,9 +1356,10 @@ public class TextTools {
 	
 	/**
 	 * parse Date represented as a string if it matches some 
-	 * common date pattern
-	 * @param text
-	 * @return
+	 * common date pattern.
+	 *
+	 * @param text the text
+	 * @return the date
 	 */
 	public static Date parseDate(String text){
 		if(timePatterns == null){
@@ -1356,6 +1446,12 @@ public class TextTools {
 	
 	
 	
+	/**
+	 * The main method.
+	 *
+	 * @param s the arguments
+	 * @throws Exception the exception
+	 */
 	public static void main(String [] s) throws Exception{
 		// test plurality
 		/*System.out.println("testing plurality ..");

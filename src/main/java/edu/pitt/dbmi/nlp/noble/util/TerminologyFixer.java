@@ -11,14 +11,18 @@ import edu.pitt.dbmi.nlp.noble.terminology.TerminologyException;
 import edu.pitt.dbmi.nlp.noble.terminology.impl.NobleCoderTerminology;
 
 /**
- * this class is a collection of little fixer methods for "fixing" existing terminology footprints
- * @author tseytlin
+ * this class is a collection of little fixer methods for "fixing" existing terminology footprints.
  *
+ * @author tseytlin
  */
 public class TerminologyFixer {
 
 	/**
-	 * Prune Terminology Roots that are empty
+	 * Prune Terminology Roots that are empty.
+	 *
+	 * @param name the name
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws TerminologyException the terminology exception
 	 */
 	public static void pruneTerminologyRoots(String name) throws IOException, TerminologyException{
 		NobleCoderTerminology term = new NobleCoderTerminology();
@@ -55,10 +59,11 @@ public class TerminologyFixer {
 	}
 	
 	/**
-	 * add other concept codes to the table
-	 * @param args
-	 * @throws IOException 
-	 * @throws TerminologyException 
+	 * add other concept codes to the table.
+	 *
+	 * @param name the name
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws TerminologyException the terminology exception
 	 */
 	public static void addOtherConceptCodes(String name) throws IOException, TerminologyException{
 		NobleCoderTerminology term = new NobleCoderTerminology();
@@ -82,6 +87,13 @@ public class TerminologyFixer {
 		System.out.println("done");
 	}
 	
+	/**
+	 * The main method.
+	 *
+	 * @param args the arguments
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws TerminologyException the terminology exception
+	 */
 	public static void main(String[] args) throws IOException, TerminologyException {
 		//addOtherConceptCodes("NCI_Metathesaurus");
 	}

@@ -10,9 +10,9 @@ import edu.pitt.dbmi.nlp.noble.ontology.owl.OOntology;
 
 
 /**
- * a registry map of all available concept handlers
- * @author tseytlin
+ * a registry map of all available concept handlers.
  *
+ * @author tseytlin
  */
 public class ConceptRegistry {
 	public static final Map<String,String> REGISTRY = new LinkedHashMap<String,String>();
@@ -24,6 +24,12 @@ public class ConceptRegistry {
 		REGISTRY.put("/"+BioPortalHelper.BIOPORTAL_URL.replaceAll("\\.","\\.")+".*/",BioPortalConcept.class.getName());
 	}
 	
+	/**
+	 * The main method.
+	 *
+	 * @param args the arguments
+	 * @throws Exception the exception
+	 */
 	public static void main(String [] args) throws Exception {
 		IOntology ont = OOntology.loadOntology("/home/tseytlin/Data/Ontologies/fma_4.2.0.owl");
 		System.out.println(ont.getURI());

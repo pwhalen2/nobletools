@@ -17,7 +17,16 @@ import edu.pitt.dbmi.nlp.noble.terminology.SemanticType;
 import edu.pitt.dbmi.nlp.noble.terminology.Source;
 import edu.pitt.dbmi.nlp.noble.terminology.Term;
 
+/**
+ * The Class ThesaurusConcept.
+ */
 public class ThesaurusConcept extends Concept {
+	
+	/**
+	 * Instantiates a new thesaurus concept.
+	 *
+	 * @param cls the cls
+	 */
 	public ThesaurusConcept(IClass cls){
 		super(cls);
 		

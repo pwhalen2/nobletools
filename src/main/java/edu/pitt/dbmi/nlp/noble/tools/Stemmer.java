@@ -53,6 +53,9 @@ public class Stemmer {
 	j, k;
 	private static final int INC = 50;
 
+	/**
+	 * Instantiates a new stemmer.
+	 */
 	/* unit of size whereby b is increased */
 	public Stemmer() {
 		b = new char[INC];
@@ -63,8 +66,9 @@ public class Stemmer {
 	
 	/**
 	 * add a string
-	 * (Added by Eugene Tseytlin (University of Pittsburgh)
-	 * @param string
+	 * (Added by Eugene Tseytlin (University of Pittsburgh).
+	 *
+	 * @param str the str
 	 */
 	public void add(String str){
 		add(str.toCharArray(),str.length());
@@ -72,8 +76,9 @@ public class Stemmer {
 	
 	
 	/**
-	 * get result as a string
-	 * @return
+	 * get result as a string.
+	 *
+	 * @return the result string
 	 */
 	public String getResultString(){
 		return toString();
@@ -82,6 +87,8 @@ public class Stemmer {
 	/**
 	 * Add a character to the word being stemmed.  When you are finished
 	 * adding characters, you can call stem(void) to stem the word.
+	 *
+	 * @param ch the ch
 	 */
 
 	public void add(char ch) {
@@ -94,9 +101,13 @@ public class Stemmer {
 		b[i++] = ch;
 	}
 
-	/** Adds wLen characters to the word being stemmed contained in a portion
+	/**
+	 *  Adds wLen characters to the word being stemmed contained in a portion
 	 * of a char[] array. This is like repeated calls of add(char ch), but
 	 * faster.
+	 *
+	 * @param w the w
+	 * @param wLen the w len
 	 */
 
 	public void add(char[] w, int wLen) {
@@ -114,6 +125,8 @@ public class Stemmer {
 	 * After a word has been stemmed, it can be retrieved by toString(),
 	 * or a reference to the internal buffer can be retrieved by getResultBuffer
 	 * and getResultLength (which is generally more efficient.)
+	 *
+	 * @return the string
 	 */
 	public String toString() {
 		return new String(b, 0, i_end);
@@ -121,6 +134,8 @@ public class Stemmer {
 
 	/**
 	 * Returns the length of the word resulting from the stemming process.
+	 *
+	 * @return the result length
 	 */
 	public int getResultLength() {
 		return i_end;
@@ -130,6 +145,8 @@ public class Stemmer {
 	 * Returns a reference to a character buffer containing the results of
 	 * the stemming process.  You also need to consult getResultLength()
 	 * to determine the length of the result.
+	 *
+	 * @return the result buffer
 	 */
 	public char[] getResultBuffer() {
 		return b;
@@ -137,6 +154,12 @@ public class Stemmer {
 
 	/* cons(i) is true <=> b[i] is a consonant. */
 
+	/**
+	 * Cons.
+	 *
+	 * @param i the i
+	 * @return true, if successful
+	 */
 	private final boolean cons(int i) {
 		switch (b[i]) {
 			case 'a':
@@ -163,6 +186,11 @@ public class Stemmer {
 	 ....
 	 */
 
+	/**
+	 * M.
+	 *
+	 * @return the int
+	 */
 	private final int m() {
 		int n = 0;
 		int i = 0;
@@ -197,6 +225,11 @@ public class Stemmer {
 
 	/* vowelinstem() is true <=> 0,...j contains a vowel */
 
+	/**
+	 * Vowelinstem.
+	 *
+	 * @return true, if successful
+	 */
 	private final boolean vowelinstem() {
 		int i;
 		for (i = 0; i <= j; i++)
@@ -207,6 +240,12 @@ public class Stemmer {
 
 	/* doublec(j) is true <=> j,(j-1) contain a double consonant. */
 
+	/**
+	 * Doublec.
+	 *
+	 * @param j the j
+	 * @return true, if successful
+	 */
 	private final boolean doublec(int j) {
 		if (j < 1)
 			return false;
@@ -224,6 +263,12 @@ public class Stemmer {
 
 	 */
 
+	/**
+	 * Cvc.
+	 *
+	 * @param i the i
+	 * @return true, if successful
+	 */
 	private final boolean cvc(int i) {
 		if (i < 2 || !cons(i) || cons(i - 1) || !cons(i - 2))
 			return false;
@@ -235,6 +280,12 @@ public class Stemmer {
 		return true;
 	}
 
+	/**
+	 * Ends.
+	 *
+	 * @param s the s
+	 * @return true, if successful
+	 */
 	private final boolean ends(String s) {
 		int l = s.length();
 		int o = k - l + 1;
@@ -250,6 +301,11 @@ public class Stemmer {
 	/* setto(s) sets (j+1),...k to the characters in the string s, readjusting
 	 k. */
 
+	/**
+	 * Sets the to.
+	 *
+	 * @param s the new to
+	 */
 	private final void setto(String s) {
 		int l = s.length();
 		int o = j + 1;
@@ -260,6 +316,11 @@ public class Stemmer {
 
 	/* r(s) is used further down. */
 
+	/**
+	 * R.
+	 *
+	 * @param s the s
+	 */
 	private final void r(String s) {
 		if (m() > 0)
 			setto(s);
@@ -287,6 +348,9 @@ public class Stemmer {
 
 	 */
 
+	/**
+	 * Step 1.
+	 */
 	private final void step1() {
 		if (b[k] == 's') {
 			if (ends("sses"))
@@ -321,6 +385,9 @@ public class Stemmer {
 
 	/* step2() turns terminal y to i when there is another vowel in the stem. */
 
+	/**
+	 * Step 2.
+	 */
 	private final void step2() {
 		if (ends("y") && vowelinstem())
 			b[k] = 'i';
@@ -330,6 +397,9 @@ public class Stemmer {
 	 -ation) maps to -ize etc. note that the string before the suffix must give
 	 m() > 0. */
 
+	/**
+	 * Step 3.
+	 */
 	private final void step3() {
 		if (k == 0)
 			return; /* For Bug 1 */
@@ -438,6 +508,9 @@ public class Stemmer {
 
 	/* step4() deals with -ic-, -full, -ness etc. similar strategy to step3. */
 
+	/**
+	 * Step 4.
+	 */
 	private final void step4() {
 		switch (b[k]) {
 			case 'e':
@@ -481,6 +554,9 @@ public class Stemmer {
 
 	/* step5() takes off -ant, -ence etc., in context <c>vcvc<v>. */
 
+	/**
+	 * Step 5.
+	 */
 	private final void step5() {
 		if (k == 0)
 			return; /* for Bug 1 */
@@ -559,6 +635,9 @@ public class Stemmer {
 
 	/* step6() removes a final -e if m() > 1. */
 
+	/**
+	 * Step 6.
+	 */
 	private final void step6() {
 		j = k;
 		if (b[k] == 'e') {
@@ -589,11 +668,14 @@ public class Stemmer {
 		i = 0;
 	}
 
-	/** Test program for demonstrating the Stemmer.  It reads text from a
+	/**
+	 *  Test program for demonstrating the Stemmer.  It reads text from a
 	 * a list of files, stems each word, and writes the result to standard
 	 * output. Note that the word stemmed is expected to be in lower case:
 	 * forcing lower case must be done outside the Stemmer class.
 	 * Usage: Stemmer file-name file-name ...
+	 *
+	 * @param args the arguments
 	 */
 	public static void main(String[] args) {
 		char[] w = new char[501];

@@ -74,7 +74,8 @@ import edu.pitt.dbmi.nlp.noble.ui.widgets.DynamicList;
 import edu.pitt.dbmi.nlp.noble.ui.widgets.ResourceCellRenderer;
 
 /**
- * this class is responsible for copying one ontology into the other
+ * this class is responsible for copying one ontology into the other.
+ *
  * @author tseytlin
  */
 
@@ -116,13 +117,21 @@ public class TerminologyExporter implements ActionListener {
 	private JCheckBox useParent;
 	private JTextField useParentText;
 
+	/**
+	 * Instantiates a new terminology exporter.
+	 *
+	 * @param r the r
+	 */
 	public TerminologyExporter(IRepository r){
 		repository = r;
 	}
 
 
 	/**
-	 * create an import wizzard
+	 * create an import wizzard.
+	 *
+	 * @param owner the owner
+	 * @return the j dialog
 	 */
 	public JDialog showExportWizard(Component owner){
 		//main = new JOptionPane(createWizardPanel(),
@@ -146,7 +155,7 @@ public class TerminologyExporter implements ActionListener {
 
 	
 	/**
-	 * load ontologies
+	 * load ontologies.
 	 */
 	public void loadTerminologies(){
 		(new Thread(new Runnable(){
@@ -174,6 +183,9 @@ public class TerminologyExporter implements ActionListener {
 		})).start();
 	}
 	
+	/**
+	 * Select default meta.
+	 */
 	private void selectDefaultMeta(){
 		for(Terminology t: repository.getTerminologies()){
 			if(t.getName().contains("UMLS") || t.getName().contains("Metathesaurus")){
@@ -184,8 +196,9 @@ public class TerminologyExporter implements ActionListener {
 	}
 	
 	/**
-	 * display busy
-	 * @param b
+	 * display busy.
+	 *
+	 * @param busy the new busy
 	 */
 	public void setBusy(boolean busy){
 		if(busy){
@@ -202,11 +215,12 @@ public class TerminologyExporter implements ActionListener {
 	
 	
 	/**
-	 * create filter panel
-	 * @param label
-	 * @param command
-	 * @param list
-	 * @return
+	 * create filter panel.
+	 *
+	 * @param label the label
+	 * @param command the command
+	 * @param list the list
+	 * @return the j panel
 	 */
 	private JPanel createFilterPanel(String label, String command, JList list){
 		list.setCellRenderer(new ResourceCellRenderer(){
@@ -252,8 +266,9 @@ public class TerminologyExporter implements ActionListener {
 	
 	
 	/**
-	 * create ontology selector panel
-	 * @return
+	 * create ontology selector panel.
+	 *
+	 * @return the j panel
 	 */
 	private JPanel createWizardPanel(){
 		final JPanel panel = new JPanel();
@@ -417,6 +432,11 @@ public class TerminologyExporter implements ActionListener {
 	}
 
 
+	/**
+	 * Gets the property mapping panel.
+	 *
+	 * @return the property mapping panel
+	 */
 	private JPanel getPropertyMappingPanel() {
 		if(mappingPanel == null){
 			mappingPanel = new JPanel();
@@ -453,8 +473,9 @@ public class TerminologyExporter implements ActionListener {
 	}
 	
 	/**
-	 * get property mapping
-	 * @return
+	 * get property mapping.
+	 *
+	 * @return the property mapping
 	 */
 	private Map<String,String> getPropertyMapping(){
 		if(propertyMap == null){
@@ -486,6 +507,9 @@ public class TerminologyExporter implements ActionListener {
 	}
 
 	
+	/* (non-Javadoc)
+	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+	 */
 	// actions
 	public void actionPerformed(ActionEvent e) {
 		String cmd = e.getActionCommand().toLowerCase();
@@ -507,6 +531,9 @@ public class TerminologyExporter implements ActionListener {
 	}
 	
 
+	/**
+	 * Do browse.
+	 */
 	private void doBrowse() {
 		JFileChooser fc = new JFileChooser(outputFile.getText());
 		fc.setFileFilter(new FileFilter() {
@@ -527,6 +554,9 @@ public class TerminologyExporter implements ActionListener {
 		}
 	}
 
+	/**
+	 * Do add sem type.
+	 */
 	private void doAddSemType() {
 		if(semanticTypePanel == null){
 			semanticTypePanel = createSemanticTypeSelector();
@@ -540,6 +570,11 @@ public class TerminologyExporter implements ActionListener {
 		
 	}
 
+	/**
+	 * Creates the semantic type selector.
+	 *
+	 * @return the j panel
+	 */
 	private JPanel createSemanticTypeSelector() {
 		JPanel panel = new JPanel();
 		panel.setPreferredSize(new Dimension(350,300));
@@ -554,8 +589,9 @@ public class TerminologyExporter implements ActionListener {
 	}
 
 	/**
-	 * get a list of all emantic types
-	 * @return
+	 * get a list of all emantic types.
+	 *
+	 * @return the all semantic types
 	 */
 	private List<String> getAllSemanticTypes(){
 		List list = new ArrayList();
@@ -567,6 +603,11 @@ public class TerminologyExporter implements ActionListener {
 	}
 	
 	
+	/**
+	 * Do remove.
+	 *
+	 * @param list the list
+	 */
 	private void doRemove(JList list){
 		int [] sel = list.getSelectedIndices();
 		List objs = new ArrayList();
@@ -580,6 +621,9 @@ public class TerminologyExporter implements ActionListener {
 	
 	
 	
+	/**
+	 * Do add root.
+	 */
 	private void doAddRoot(){
 		if(browser == null){
 			browser = new TerminologyBrowser();
@@ -595,8 +639,10 @@ public class TerminologyExporter implements ActionListener {
 	}
 	
 	/**
-	 * add root class
-	 * @param obj
+	 * add root class.
+	 *
+	 * @param list the list
+	 * @param obj the obj
 	 */
 	private void addObject(JList list, Object obj){
 		final JList llist = list;
@@ -611,13 +657,13 @@ public class TerminologyExporter implements ActionListener {
 	}
 	
 	/**
-	 * get selected ontology
-	 * @return
+	 * get selected ontology.
 	 *
-	public Terminology getSelectedTerminology(){
-		Object obj = terminologyList.getSelectedItem();
-		return (obj != null && obj instanceof Terminology)?(Terminology)obj:null;
-	}*/
+	 * @return 	public Terminology getSelectedTerminology(){
+	 * 		Object obj = terminologyList.getSelectedItem();
+	 * 		return (obj != null && obj instanceof Terminology)?(Terminology)obj:null;
+	 * 	}
+	 */
 	
 	/**
 	 * get selected classes
@@ -712,7 +758,7 @@ public class TerminologyExporter implements ActionListener {
 	}
 	
 	/**
-	 * do export
+	 * do export.
 	 */
 
 	private void doPreview() {
@@ -756,24 +802,29 @@ public class TerminologyExporter implements ActionListener {
 	}
 	
 	/**
-	 * export terminology to ontology
-	 * @param term
-	 * @param rootFilter
-	 * @param semanticTypeFilter
-	 * @param ont
-	 * @throws Exception 
+	 * export terminology to ontology.
+	 *
+	 * @param term the term
+	 * @param umls the umls
+	 * @param rootFilter the root filter
+	 * @param semanticTypeFilter the semantic type filter
+	 * @param root the root
+	 * @throws Exception the exception
 	 */
 	public void export(Terminology term, Terminology umls,List<Concept> rootFilter, List<SemanticType> semanticTypeFilter,IClass root) throws Exception {
 		export(term,umls,rootFilter,semanticTypeFilter,root, Integer.MAX_VALUE);
 	}
 	
 	/**
-	 * export terminology to ontology
-	 * @param term
-	 * @param rootFilter
-	 * @param semanticTypeFilter
-	 * @param ont
-	 * @throws Exception 
+	 * export terminology to ontology.
+	 *
+	 * @param term the term
+	 * @param umls the umls
+	 * @param rootFilter the root filter
+	 * @param semanticTypeFilter the semantic type filter
+	 * @param root the root
+	 * @param depth the depth
+	 * @throws Exception the exception
 	 */
 	public void export(Terminology term, Terminology umls,List<Concept> rootFilter, List<SemanticType> semanticTypeFilter,IClass root,int depth) throws Exception {
 		IOntology ont = root.getOntology();
@@ -789,24 +840,25 @@ public class TerminologyExporter implements ActionListener {
 		}
 		exporting = false;
 	}
+	
 	/**
-	 * export terminology to ontology
-	 * @param term
-	 * @param rootFilter
-	 * @param semanticTypeFilter
-	 * @param ont
-	 * @throws Exception 
+	 * export terminology to ontology.
+	 *
+	 * @param rootFilter the root filter
+	 * @param semanticTypeFilter the semantic type filter
+	 * @throws Exception the exception
 	 */
 	public void preview(List<Concept> rootFilter, List<SemanticType> semanticTypeFilter) throws Exception {
 		preview(rootFilter,semanticTypeFilter,Integer.MAX_VALUE);
 	}
+	
 	/**
-	 * export terminology to ontology
-	 * @param term
-	 * @param rootFilter
-	 * @param semanticTypeFilter
-	 * @param ont
-	 * @throws Exception 
+	 * export terminology to ontology.
+	 *
+	 * @param rootFilter the root filter
+	 * @param semanticTypeFilter the semantic type filter
+	 * @param depth the depth
+	 * @throws Exception the exception
 	 */
 	public void preview(List<Concept> rootFilter, List<SemanticType> semanticTypeFilter,int depth) throws Exception {
 		for(Concept c: rootFilter){
@@ -816,12 +868,12 @@ public class TerminologyExporter implements ActionListener {
 	
 	
 	/**
-	 * export terminology to ontology
-	 * @param term
-	 * @param rootFilter
-	 * @param semanticTypeFilter
-	 * @param ont
-	 * @throws Exception 
+	 * export terminology to ontology.
+	 *
+	 * @param term the term
+	 * @param rootFilter the root filter
+	 * @param root the root
+	 * @throws Exception the exception
 	 */
 	public void export(Terminology term, List<Concept> rootFilter,IClass root) throws Exception {
 		export(term,null, rootFilter,Collections.EMPTY_LIST, root);
@@ -829,11 +881,15 @@ public class TerminologyExporter implements ActionListener {
 	
 	
 	/**
-	 * export single concept as class
-	 * @param c
-	 * @param hashSet
-	 * @param semanticTypeFilter
-	 * @param root
+	 * export single concept as class.
+	 *
+	 * @param c the c
+	 * @param umls the umls
+	 * @param semanticTypeFilter the semantic type filter
+	 * @param prefix the prefix
+	 * @param parent the parent
+	 * @param depth the depth
+	 * @throws Exception the exception
 	 */
 	private void exportConcept(Concept c,Terminology umls, List<SemanticType> semanticTypeFilter,String prefix, IClass parent, int depth) throws Exception {
 		// first make sure that it fits the filter
@@ -872,11 +928,14 @@ public class TerminologyExporter implements ActionListener {
 	}
 	
 	/**
-	 * export single concept as class
-	 * @param c
-	 * @param hashSet
-	 * @param semanticTypeFilter
-	 * @param root
+	 * export single concept as class.
+	 *
+	 * @param c the c
+	 * @param semanticTypeFilter the semantic type filter
+	 * @param prefix the prefix
+	 * @param parents the parents
+	 * @param depth the depth
+	 * @throws Exception the exception
 	 */
 	private void previewConcept(Concept c,List<SemanticType> semanticTypeFilter,String prefix,Set<Concept> parents, int depth) throws Exception {
 		// first make sure that it fits the filter
@@ -899,6 +958,13 @@ public class TerminologyExporter implements ActionListener {
 	
 	
 	
+	/**
+	 * Adds the conept info from UMLS.
+	 *
+	 * @param cls the cls
+	 * @param umls the umls
+	 * @throws TerminologyException the terminology exception
+	 */
 	private void addConeptInfoFromUMLS(IClass cls, Terminology umls) throws TerminologyException{
 		String name = cls.getLabels()[0];
 		if(umls != null){
@@ -911,9 +977,10 @@ public class TerminologyExporter implements ActionListener {
 	}
 	
 	/**
-	 * add concept info from concept object to class
-	 * @param c
-	 * @param cls
+	 * add concept info from concept object to class.
+	 *
+	 * @param c the c
+	 * @param cls the cls
 	 */
 	private void addConceptInfo(Concept c, IClass cls) {
 		IOntology ont = cls.getOntology();
@@ -975,10 +1042,11 @@ public class TerminologyExporter implements ActionListener {
 
 
 	/**
-	 * get or create property
-	 * @param ont
-	 * @param name
-	 * @return
+	 * get or create property.
+	 *
+	 * @param ont the ont
+	 * @param name the name
+	 * @return the property
 	 */
 	private IProperty getProperty(IOntology ont, String name){
 		IProperty code = ont.getProperty(name);
@@ -991,10 +1059,11 @@ public class TerminologyExporter implements ActionListener {
 	
 	
 	/**
-	 * is concept filtered out by sem
-	 * @param c
-	 * @param semanticTypeFilter
-	 * @return
+	 * is concept filtered out by sem.
+	 *
+	 * @param c the c
+	 * @param semanticTypeFilter the semantic type filter
+	 * @return true, if is filtered out
 	 */
 	private boolean isFilteredOut(Concept c, List<SemanticType> semanticTypeFilter){
 		if(semanticTypeFilter.isEmpty())
@@ -1008,7 +1077,10 @@ public class TerminologyExporter implements ActionListener {
 	
 	
 	/**
-	 * @param args
+	 * The main method.
+	 *
+	 * @param args the arguments
+	 * @throws Exception the exception
 	 */
 	public static void main(String[] args) throws Exception {
 		TerminologyExporter importer = new TerminologyExporter(new DefaultRepository());

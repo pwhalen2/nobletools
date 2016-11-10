@@ -22,9 +22,9 @@ import edu.pitt.dbmi.nlp.noble.terminology.Terminology;
 import edu.pitt.dbmi.nlp.noble.tools.TextTools;
 
 /**
- * export a set of concept object to RRF files
- * @author tseytlin
+ * export a set of concept object to RRF files.
  *
+ * @author tseytlin
  */
 public class ConceptExporter {
 	private static ConceptExporter instance;
@@ -37,8 +37,9 @@ public class ConceptExporter {
 	private int atomCount;
 	
 	/**
-	 * get instance of this class
-	 * @return
+	 * get instance of this class.
+	 *
+	 * @return the instances
 	 */
 	public static ConceptExporter getInstances(){
 		if(instance == null){
@@ -51,7 +52,7 @@ public class ConceptExporter {
 	}
 	
 	/**
-	 * reset export, to overwrite files and reset LUE and SUI counts
+	 * reset export, to overwrite files and reset LUE and SUI counts.
 	 */
 	public void reset(){
 		instance = null;
@@ -59,9 +60,10 @@ public class ConceptExporter {
 	
 	/**
 	 * export a set of concepts to RRF files.
-	 * @param concepts
-	 * @param dir
-	 * @throws IOException
+	 *
+	 * @param concepts the concepts
+	 * @param dir the dir
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public void exportORF(Collection<Concept> concepts, File dir) throws IOException {
 		if(!dir.exists())
@@ -231,9 +233,10 @@ public class ConceptExporter {
 	
 	/**
 	 * export a set of concepts to RRF files.
-	 * @param concepts
-	 * @param dir
-	 * @throws IOException
+	 *
+	 * @param concepts the concepts
+	 * @param dir the dir
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public void exportRRF(Collection<Concept> concepts, File dir) throws IOException {
 		if(!dir.exists())
@@ -402,6 +405,12 @@ public class ConceptExporter {
 		codes.close();
 	}
 	
+	/**
+	 * Gets the sui.
+	 *
+	 * @param text the text
+	 * @return the sui
+	 */
 	private String getSUI(String text) {
 		if(suiMap.containsKey(text))
 			return String.format("S%07d",suiMap.get(text));
@@ -410,6 +419,12 @@ public class ConceptExporter {
 		return String.format("S%07d",id);
 	}
 
+	/**
+	 * Gets the lui.
+	 *
+	 * @param text the text
+	 * @return the lui
+	 */
 	private String getLUI(String text) {
 		text = TextTools.normalize(text,true);
 		if(luiMap.containsKey(text))
@@ -419,6 +434,12 @@ public class ConceptExporter {
 		return String.format("L%07d",id);
 	}
 	
+	/**
+	 * Gets the cui.
+	 *
+	 * @param code the code
+	 * @return the cui
+	 */
 	private String getCUI(String code) {
 		if(code.matches("[A-Z]\\d{7}"))
 			return code;
@@ -429,6 +450,12 @@ public class ConceptExporter {
 		return String.format("C%07d",id);
 	}
 	
+	/**
+	 * Gets the tui.
+	 *
+	 * @param st the st
+	 * @return the tui
+	 */
 	private String getTUI(SemanticType st) {
 		if(st.getCode() != null && st.getCode().matches("T\\d{3}"))
 			return st.getCode();

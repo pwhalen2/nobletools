@@ -12,9 +12,9 @@ import edu.pitt.dbmi.nlp.noble.tools.TextTools;
 
 /**
  * a regex filter that can mask a portion of the documents that either fits regex
- * or does not fit regex
- * @author tseytlin
+ * or does not fit regex.
  *
+ * @author tseytlin
  */
 public class DocumentFilter {
 	public static final String TYPE_SECTION = "section";
@@ -23,7 +23,8 @@ public class DocumentFilter {
 	protected boolean invertMatch;
 	
 	/**
-	 * init new filter using a RegEx filter
+	 * init new filter using a RegEx filter.
+	 *
 	 * @param filter - only include text matching filter
 	 * @param invert - invert match, exclude matched text
 	 */
@@ -33,31 +34,44 @@ public class DocumentFilter {
 	}
 	
 	/**
-	 * init new filter using a RegEx filter
-	 * @param filter
+	 * init new filter using a RegEx filter.
+	 *
+	 * @param filter the filter
 	 */
 	public DocumentFilter(String filter) {
 		this(filter,false);
 	}
 
 	/**
-	 * init empty filter
+	 * init empty filter.
 	 */
 	public DocumentFilter() {
 		this(null,false);
 	}
+	
 	/**
-	 * get RegEx filter being used by this filter
-	 * @return
+	 * get RegEx filter being used by this filter.
+	 *
+	 * @return the filter
 	 */
 	public String getFilter() {
 		return filter;
 	}
 
+	/**
+	 * Gets the type.
+	 *
+	 * @return the type
+	 */
 	public String getType() {
 		return type;
 	}
 
+	/**
+	 * Sets the type.
+	 *
+	 * @param type the new type
+	 */
 	public void setType(String type) {
 		this.type = type;
 	}
@@ -65,8 +79,9 @@ public class DocumentFilter {
 
 	
 	/**
-	 * set a RegEx filter used by this filter
-	 * @param filter
+	 * set a RegEx filter used by this filter.
+	 *
+	 * @param filter the new filter
 	 */
 	public void setFilter(String filter) {
 		this.filter = filter;
@@ -74,16 +89,18 @@ public class DocumentFilter {
 
 
 	/**
-	 * is match inverted
-	 * @return
+	 * is match inverted.
+	 *
+	 * @return true, if is invert match
 	 */
 	public boolean isInvertMatch() {
 		return invertMatch;
 	}
 
 	/**
-	 * set invert match
-	 * @param invertMatch
+	 * set invert match.
+	 *
+	 * @param invertMatch the new invert match
 	 */
 	public void setInvertMatch(boolean invertMatch) {
 		this.invertMatch = invertMatch;
@@ -91,8 +108,11 @@ public class DocumentFilter {
 
 	
 	/**
-	 * convert Template to XML DOM object representation
-	 * @return
+	 * convert Template to XML DOM object representation.
+	 *
+	 * @param doc the doc
+	 * @return the element
+	 * @throws Exception the exception
 	 */
 	public Element toElement(Document doc) throws Exception {
 		Element e = doc.createElement("Filter");
@@ -105,8 +125,10 @@ public class DocumentFilter {
 	}
 	
 	/**
-	 * initialize template from XML DOM object representation
-	 * @param element
+	 * initialize template from XML DOM object representation.
+	 *
+	 * @param element the element
+	 * @throws Exception the exception
 	 */
 	public void fromElement(Element element) throws Exception{
 		if("Filter".equals(element.getTagName())){
@@ -119,8 +141,9 @@ public class DocumentFilter {
 	}
 	
 	/**
-	 * get De-ID filters, to mask out De-ID junk
-	 * @return
+	 * get De-ID filters, to mask out De-ID junk.
+	 *
+	 * @return the de ID filters
 	 */
 	public static List<DocumentFilter> getDeIDFilters(){
 		List<DocumentFilter> list = new ArrayList<DocumentFilter>();
@@ -130,9 +153,10 @@ public class DocumentFilter {
 	}
 	
 	/**
-	 * filter input
-	 * @param text
-	 * @return
+	 * filter input.
+	 *
+	 * @param text the text
+	 * @return the string
 	 */
 	public String filter(String text){
 		if(filter == null)
@@ -156,6 +180,12 @@ public class DocumentFilter {
 		return b.toString();
 	}
 
+	/**
+	 * Gets the mask.
+	 *
+	 * @param n the n
+	 * @return the mask
+	 */
 	private String getMask(int n) {
 		StringBuffer b = new StringBuffer("");
 		for(int i=0;i<n;i++)

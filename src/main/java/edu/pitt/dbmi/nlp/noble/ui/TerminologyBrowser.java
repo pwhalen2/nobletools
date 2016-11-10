@@ -30,6 +30,9 @@ import edu.pitt.dbmi.nlp.noble.terminology.TerminologyException;
 import edu.pitt.dbmi.nlp.noble.terminology.impl.NobleCoderTerminology;
 
 
+/**
+ * The Class TerminologyBrowser.
+ */
 /*
  * Terminology Browser dialog
  */
@@ -43,8 +46,9 @@ public class TerminologyBrowser {
 	private JEditorPane infoText;
 	
 	/**
-	 * create panel
-	 * @return
+	 * create panel.
+	 *
+	 * @return the j panel
 	 */
 	public JPanel createPanel(){
 		JPanel panel = new JPanel();
@@ -103,8 +107,9 @@ public class TerminologyBrowser {
 	}
 	
 	/**
-	 * get panel
-	 * @return
+	 * get panel.
+	 *
+	 * @return the panel
 	 */
 	public JPanel getPanel(){
 		if(browserPanel == null)
@@ -113,8 +118,9 @@ public class TerminologyBrowser {
 	}
 	
 	/**
-	 * set terminology 
-	 * @param term
+	 * set terminology .
+	 *
+	 * @param term the new selected terminology
 	 */
 	public void setSelectedTerminology(Terminology term){
 		getPanel();
@@ -129,6 +135,11 @@ public class TerminologyBrowser {
 		setTerminologyInfo(term);
 	}
 	
+	/**
+	 * Sets the terminology info.
+	 *
+	 * @param t the new terminology info
+	 */
 	private void setTerminologyInfo(Terminology t){
 		StringBuffer desc = new StringBuffer();
 		desc.append("<h2>"+t.getName()+" ("+t.getVersion()+")</h2><hr>");
@@ -165,6 +176,11 @@ public class TerminologyBrowser {
 	
 	
 
+	/**
+	 * Sets the terminologies.
+	 *
+	 * @param terms the new terminologies
+	 */
 	public void setTerminologies(Terminology [] terms){
 		getPanel();
 		Arrays.sort(terms, new Comparator<Terminology>() {
@@ -184,6 +200,12 @@ public class TerminologyBrowser {
 	}
 	
 
+	/**
+	 * Show dialog.
+	 *
+	 * @param parent the parent
+	 * @param title the title
+	 */
 	public void showDialog(Component parent, String title){
 		int r = JOptionPane.showConfirmDialog(parent,getPanel(),title,JOptionPane.OK_CANCEL_OPTION,JOptionPane.PLAIN_MESSAGE);		
 		if(r == JOptionPane.OK_OPTION){
@@ -200,11 +222,22 @@ public class TerminologyBrowser {
 		}
 	}
 	
+	/**
+	 * Gets the selected concepts.
+	 *
+	 * @return the selected concepts
+	 */
 	public List<Concept> getSelectedConcepts(){
 		return selectedConcepts != null? selectedConcepts:Collections.EMPTY_LIST;
 	}
 	
 	
+	/**
+	 * The main method.
+	 *
+	 * @param args the arguments
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	public static void main(String[] args) throws IOException {
 		IRepository r = new DefaultRepository();
 		TerminologyBrowser browser = new TerminologyBrowser();

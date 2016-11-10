@@ -17,9 +17,9 @@ import edu.pitt.dbmi.nlp.noble.terminology.impl.NobleCoderTerminology;
 
 
 /**
- * Reads in tab-indented seed terminology and outputs an owl file
- * @author tseytlin
+ * Reads in tab-indented seed terminology and outputs an owl file.
  *
+ * @author tseytlin
  */
 public class OntologyCreator {
 	private static final String DEFAULT_UMLS = "NCI_Metathesaurus";
@@ -44,8 +44,9 @@ public class OntologyCreator {
 	private boolean importChildren = true, lookupCodes = true;
 	
 	/**
-	 * setup global processing options
-	 * @param line
+	 * setup global processing options.
+	 *
+	 * @param line the line
 	 */
 	private void processOptions(String line){
 		//includ children
@@ -58,9 +59,10 @@ public class OntologyCreator {
 	}
 	
 	/**
-	 * get some terminology in a map
-	 * @param type
-	 * @return
+	 * get some terminology in a map.
+	 *
+	 * @param name the name
+	 * @return the terminology
 	 */
 	private Terminology getTerminology(String name){
 		if(terminologies == null)
@@ -78,9 +80,10 @@ public class OntologyCreator {
 	}
 	
 	/**
-	 * get number of tabs that are prefixed in a string
-	 * @param s
-	 * @return
+	 * get number of tabs that are prefixed in a string.
+	 *
+	 * @param str the str
+	 * @return the tab offset
 	 */
 	public static int getTabOffset(String str){
 		int count = 0;
@@ -94,13 +97,14 @@ public class OntologyCreator {
 	}
 	
 	/**
-	 * create ontology from seed terminology represented as a text file
-	 * @param seedTerminology
-	 * @return
-	 * @throws IOntologyException 
-	 * @throws IOException 
-	 * @throws FileNotFoundException 
-	 * @throws TerminologyException 
+	 * create ontology from seed terminology represented as a text file.
+	 *
+	 * @param seedTerminology the seed terminology
+	 * @return the i ontology
+	 * @throws IOntologyException the i ontology exception
+	 * @throws FileNotFoundException the file not found exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws TerminologyException the terminology exception
 	 */
 	public IOntology createOntology(File seedTerminology) throws IOntologyException, FileNotFoundException, IOException, TerminologyException {
 		URI uri = URI.create(DEFAULT_URI_BASE+changeSuffix(seedTerminology.getName(),".owl"));
@@ -158,11 +162,12 @@ public class OntologyCreator {
 	
 	
 	/**
-	 * create class from a line of text in a seed terminology
-	 * @param line
-	 * @param parent
-	 * @return
-	 * @throws TerminologyException 
+	 * create class from a line of text in a seed terminology.
+	 *
+	 * @param line the line
+	 * @param parent the parent
+	 * @return the i class
+	 * @throws TerminologyException the terminology exception
 	 */
 	private IClass createClass(String line, IClass parent) throws TerminologyException {
 		System.out.println("\tprocessing "+line+" ..");
@@ -246,9 +251,10 @@ public class OntologyCreator {
 	}
 
 	/**
-	 * filter concepts to only the ones that cover the term completly
-	 * @param result
-	 * @return
+	 * filter concepts to only the ones that cover the term completly.
+	 *
+	 * @param result the result
+	 * @return the concept[]
 	 */
 	private Concept [] filterConcepts(Concept [] result){
 		List<Concept> list = new ArrayList<Concept>();
@@ -262,10 +268,13 @@ public class OntologyCreator {
 	
 	
 	/**
-	 * pull concept branch to ontology from a given terminology
-	 * @param cls
-	 * @param c
-	 * @throws TerminologyException 
+	 * pull concept branch to ontology from a given terminology.
+	 *
+	 * @param cls the cls
+	 * @param cc the cc
+	 * @param parents the parents
+	 * @param useUMLS the use UMLS
+	 * @throws TerminologyException the terminology exception
 	 */
 	private void addConceptBranch(IClass cls, Concept [] cc, Set<String> parents,boolean useUMLS) throws TerminologyException {
 		for(Concept c: cc){
@@ -287,6 +296,12 @@ public class OntologyCreator {
 		}
 	}
 
+	/**
+	 * Adds the conept info from UMLS.
+	 *
+	 * @param cls the cls
+	 * @throws TerminologyException the terminology exception
+	 */
 	private void addConeptInfoFromUMLS(IClass cls) throws TerminologyException{
 		String name = cls.getLabels()[0];
 		Terminology term = getTerminology(DEFAULT_UMLS);
@@ -301,9 +316,10 @@ public class OntologyCreator {
 	
 	
 	/**
-	 * add concept infor to class
-	 * @param c
-	 * @param cls
+	 * add concept infor to class.
+	 *
+	 * @param c the c
+	 * @param cls the cls
 	 */
 	private void addConceptInfo(Concept c, IClass cls ){
 		cls.setPropertyValue(code,c.getCode());
@@ -324,6 +340,13 @@ public class OntologyCreator {
 	}
 	
 	
+	/**
+	 * Change suffix.
+	 *
+	 * @param name the name
+	 * @param suffix the suffix
+	 * @return the string
+	 */
 	private String changeSuffix(String name, String suffix) {
 		int x = name.lastIndexOf('.');
 		if(x > -1)
@@ -333,8 +356,10 @@ public class OntologyCreator {
 	
 	
 	/**
-	 * @param args
-	 * @throws Exception 
+	 * The main method.
+	 *
+	 * @param args the arguments
+	 * @throws Exception the exception
 	 */
 	public static void main(String[] args) throws Exception {
 		File dataDirectory = new File("/home/tseytlin/Data/Terminologies");

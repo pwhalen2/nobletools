@@ -20,38 +20,18 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+/**
+ * The Class XMLUtils.
+ */
 public class XMLUtils {
 	
 	/**
-	 * format XML into human readable form
-	 * @param document
-	 * @param root
-	 * @param tab
+	 * format XML into human readable form.
 	 *
-	private static void formatXML(Document document, Element root, String tab) {
-		NodeList children = root.getChildNodes();
-		// save the nodes in the array first
-		Node[] nodes = new Node[children.getLength()];
-		for (int i = 0; i < children.getLength(); i++)
-			nodes[i] = children.item(i);
-		// insert identations
-		for (int i = 0; i < nodes.length; i++) {
-			root.insertBefore(document.createTextNode("\n" + tab), nodes[i]);
-			if (nodes[i] instanceof Element)
-				formatXML(document, (Element) nodes[i], "  " + tab);
-		}
-		root.appendChild(document.createTextNode("\n"
-				+ tab.substring(0, tab.length() - 2)));
-	}
-	*/
-	
-	/**
-	 * write out an XML file
-	 * 
-	 * @param doc
-	 * @param os
-	 * @throws TransformerException 
-	 * @throws IOException 
+	 * @param doc the doc
+	 * @param os the os
+	 * @throws TransformerException the transformer exception
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public static void writeXML(Document doc, OutputStream os) 
 		throws TransformerException, IOException{
@@ -76,10 +56,11 @@ public class XMLUtils {
 	}
 	
 	/**
-	 * parse XML document
-	 * @param in
-	 * @return
-	 * @throws IOException
+	 * parse XML document.
+	 *
+	 * @param in the in
+	 * @return the document
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public static Document parseXML(InputStream in) throws IOException {
 		Document document = null;
@@ -102,10 +83,11 @@ public class XMLUtils {
 	}
 	
 	/**
-	 * get single element by tag name
-	 * @param element
-	 * @param tag
-	 * @return
+	 * get single element by tag name.
+	 *
+	 * @param element the element
+	 * @param tag the tag
+	 * @return the element by tag name
 	 */
 	public static Element getElementByTagName(Element element, String tag){
 		NodeList list = element.getChildNodes();
@@ -119,10 +101,11 @@ public class XMLUtils {
 	}
 	
 	/**
-	 * get single element by tag name
-	 * @param element
-	 * @param tag
-	 * @return
+	 * get single element by tag name.
+	 *
+	 * @param element the element
+	 * @param tag the tag
+	 * @return the elements by tag name
 	 */
 	public static List<Element> getElementsByTagName(Element element, String tag){
 		List<Element> elems = new ArrayList<Element>();
@@ -140,29 +123,43 @@ public class XMLUtils {
 	}
 	
 	/**
-	 * get single element by tag name
-	 * @param element
-	 * @param tag
-	 * @return
+	 * get single element by tag name.
+	 *
+	 * @param element the element
+	 * @return the child elements
 	 */
 	public static List<Element> getChildElements(Element element){
 		return toElements(element.getChildNodes());
 	}
 	
 	/**
-	 * get single element by tag name
-	 * @param element
-	 * @param tag
-	 * @return
+	 * get single element by tag name.
+	 *
+	 * @param element the element
+	 * @param tag the tag
+	 * @return the child elements
 	 */
 	public static List<Element> getChildElements(Element element, String tag){
 		return toElements(element.getChildNodes(),tag);
 	}
 	
+	/**
+	 * To elements.
+	 *
+	 * @param nodes the nodes
+	 * @return the list
+	 */
 	public static List<Element> toElements(NodeList nodes){
 		return toElements(nodes,null);
 	}
 	
+	/**
+	 * To elements.
+	 *
+	 * @param nodes the nodes
+	 * @param filter the filter
+	 * @return the list
+	 */
 	private static List<Element> toElements(NodeList nodes, String filter){
 		List<Element> list = new ArrayList<Element>();
 		for(int i=0;i<nodes.getLength();i++)

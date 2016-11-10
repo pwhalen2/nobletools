@@ -35,8 +35,10 @@ public class MemoryManager {
 
 	/**
 	 * When memory reaches a given threshold say 90% of available
-	 * execute a given action right away
-	 * @param run
+	 * execute a given action right away.
+	 *
+	 * @param run the run
+	 * @param threshold the threshold
 	 */
 	public static void setMemoryThreshold(Runnable run, double threshold) {
 		// setting the threshold to 80% usage of the memory

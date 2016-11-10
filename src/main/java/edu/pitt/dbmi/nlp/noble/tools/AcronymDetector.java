@@ -21,14 +21,18 @@ import edu.pitt.dbmi.nlp.noble.terminology.Terminology;
 import edu.pitt.dbmi.nlp.noble.terminology.TerminologyException;
 import edu.pitt.dbmi.nlp.noble.terminology.impl.NobleCoderTerminology;
 
+/**
+ * The Class AcronymDetector.
+ */
 public class AcronymDetector implements Processor<Sentence>{
 	private long time;
 	private Map<String,String> acronymList;
 	
 
 	/**
-	 * get a map of acronyms that were identified during parsing
-	 * @return
+	 * get a map of acronyms that were identified during parsing.
+	 *
+	 * @return the acronyms
 	 */
 	public Map<String,String> getAcronyms(){
 		if(acronymList == null){
@@ -46,10 +50,11 @@ public class AcronymDetector implements Processor<Sentence>{
 	
 	
 	/**
-	 * is matched concept matches a string
-	 * @param c
-	 * @param expanded
-	 * @return
+	 * is matched concept matches a string.
+	 *
+	 * @param c the c
+	 * @param expanded the expanded
+	 * @return true, if successful
 	 */
 	private boolean matches(Concept c, String expanded) {
 		List<String> a = new ArrayList<String>(); 
@@ -66,9 +71,10 @@ public class AcronymDetector implements Processor<Sentence>{
 
 	
 	/**
-	 * get expanded form acronym from 
-	 * @param a proposed expanded form of the acronym
-	 * @param a proposed acronym for the expanded form
+	 * get expanded form acronym from .
+	 *
+	 * @param expanded the expanded
+	 * @param acronym the acronym
 	 * @return expanded form or null, if false matched
 	 */
 	private String getAcronymExapndedForm(String expanded, String acronym) {
@@ -113,7 +119,11 @@ public class AcronymDetector implements Processor<Sentence>{
 
 	
 	/**
-	 * process sentence
+	 * process sentence.
+	 *
+	 * @param sentence the sentence
+	 * @return the sentence
+	 * @throws TerminologyException the terminology exception
 	 */
 	public Sentence process(Sentence sentence) throws TerminologyException {
 		time = System.currentTimeMillis();
@@ -195,11 +205,21 @@ public class AcronymDetector implements Processor<Sentence>{
 		return sentence;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.coder.model.Processor#getProcessTime()
+	 */
 	public long getProcessTime() {
 		return time;
 	}
 	
 	
+	/**
+	 * The main method.
+	 *
+	 * @param args the arguments
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws TerminologyException the terminology exception
+	 */
 	public static void main(String [] args) throws IOException, TerminologyException{
 		String text = "There was a case when World Health Organization (WHO) was operating here. WHO was there.";
 		NobleCoderTerminology t = new NobleCoderTerminology("NCI_Thesaurus");

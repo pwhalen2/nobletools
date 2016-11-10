@@ -7,11 +7,11 @@ import java.util.Map;
 /**
  * This class represents a hash map that can be capped at a given
  * limit, and periodically cleaned based on frequency of use or 
- * recency of use
- * @author tseytlin
+ * recency of use.
  *
- * @param <K>
- * @param <V>
+ * @author tseytlin
+ * @param <K> the key type
+ * @param <V> the value type
  */
 public class CacheMap<K,V> extends HashMap<K, V> {
 	public static final int FREQUENCY = 0, TIME = 1;
@@ -22,14 +22,16 @@ public class CacheMap<K,V> extends HashMap<K, V> {
 
 	
 	/**
-	 * create a new cache map
+	 * create a new cache map.
 	 */
 	public CacheMap(){
 		this(FREQUENCY);
 	}
 	
 	/**
-	 * create a new cache map
+	 * create a new cache map.
+	 *
+	 * @param type the type
 	 */
 	public CacheMap(int type){
 		mode = type;
@@ -41,32 +43,36 @@ public class CacheMap<K,V> extends HashMap<K, V> {
 	}
 	
 	/**
-	 * get the limit in size that the cache is not allowed to exceed
-	 * @return
+	 * get the limit in size that the cache is not allowed to exceed.
+	 *
+	 * @return the size limit
 	 */
 	public int getSizeLimit() {
 		return sizeLimit;
 	}
 
 	/**
-	 * set the limit in size that the cache is not allowed to exceed
-	 * @return
+	 * set the limit in size that the cache is not allowed to exceed.
+	 *
+	 * @param sizeLimit the new size limit
 	 */
 	public void setSizeLimit(int sizeLimit) {
 		this.sizeLimit = sizeLimit;
 	}
 	
 	/**
-	 * get the expiration time in ms
-	 * @return
+	 * get the expiration time in ms.
+	 *
+	 * @return the expiration time
 	 */
 	public long getExpirationTime() {
 		return expirationTime;
 	}
 
 	/**
-	 * set the expiration time in ms
-	 * @return
+	 * set the expiration time in ms.
+	 *
+	 * @param expirationTime the new expiration time
 	 */	
 	public void setExpirationTime(long expirationTime) {
 		this.expirationTime = expirationTime;
@@ -74,8 +80,9 @@ public class CacheMap<K,V> extends HashMap<K, V> {
 
 		
 	/**
-	 * touch an entry to update its counter
-	 * @param key
+	 * touch an entry to update its counter.
+	 *
+	 * @param key the key
 	 */
 	private synchronized void touch(K key){
 		if(frequencyCount != null){
@@ -89,7 +96,10 @@ public class CacheMap<K,V> extends HashMap<K, V> {
 	
 	
 	/**
-	 * get an item and update its counter
+	 * get an item and update its counter.
+	 *
+	 * @param key the key
+	 * @return the v
 	 */
 	public synchronized V get(Object key) {
 		V v = super.get(key);
@@ -99,7 +109,11 @@ public class CacheMap<K,V> extends HashMap<K, V> {
 	}
 	
 	/**
-	 * overwrite the touch
+	 * overwrite the touch.
+	 *
+	 * @param key the key
+	 * @param value the value
+	 * @return the v
 	 */
 	public synchronized V put(K key, V value) {
 		// if exceed size limit, compact
@@ -110,7 +124,10 @@ public class CacheMap<K,V> extends HashMap<K, V> {
 	}
 	
 	/**
-	 * remove object
+	 * remove object.
+	 *
+	 * @param key the key
+	 * @return the v
 	 */
 	public synchronized V remove(Object key) {
 		if(frequencyCount != null){
@@ -122,7 +139,7 @@ public class CacheMap<K,V> extends HashMap<K, V> {
 	}
 
 	/**
-	 * clear cache
+	 * clear cache.
 	 */
 	public synchronized void clear(){
 		super.clear();
@@ -133,7 +150,7 @@ public class CacheMap<K,V> extends HashMap<K, V> {
 	}
 	
 	/**
-	 * compact cache by discarding stale items
+	 * compact cache by discarding stale items.
 	 */
 	public synchronized void compact(){
 		if(frequencyCount != null){

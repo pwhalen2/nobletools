@@ -40,7 +40,8 @@ import edu.pitt.dbmi.nlp.noble.util.HTMLExporter;
 import edu.pitt.dbmi.nlp.noble.util.Parcel;
 
 /**
- * Servlet that handles all service requests
+ * Servlet that handles all service requests.
+ *
  * @author tseytlin
  */
 public class TerminologyServlet extends HttpServlet {
@@ -49,7 +50,10 @@ public class TerminologyServlet extends HttpServlet {
 	private String defaultTerminology;
 	
 	/**
-	 * init servlet
+	 * init servlet.
+	 *
+	 * @param config the config
+	 * @throws ServletException the servlet exception
 	 */
 	public void init(ServletConfig config) throws ServletException {
 		String location = config.getInitParameter("terminology.location");
@@ -62,16 +66,17 @@ public class TerminologyServlet extends HttpServlet {
 	}
 	
 	/**
-	 * cleanup after
+	 * cleanup after.
 	 */
 	public void destroy(){
 		
 	}
 	
 	/**
-	 * get terminology
-	 * @param type of terminology, null to get default
-	 * @return
+	 * get terminology.
+	 *
+	 * @param t the t
+	 * @return the terminology
 	 */
 	private Terminology getTerminology(String t){
 		Terminology term = null;
@@ -83,10 +88,12 @@ public class TerminologyServlet extends HttpServlet {
 	}
 
 	/**
-	 * Get requests are text requests
-	 * @param req
-	 * @param res
-	 * @throws IOException
+	 * Get requests are text requests.
+	 *
+	 * @param req the req
+	 * @param res the res
+	 * @throws ServletException the servlet exception
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public void doGet(HttpServletRequest req, HttpServletResponse res)
 		throws ServletException, IOException {
@@ -201,7 +208,12 @@ public class TerminologyServlet extends HttpServlet {
 	
 	/**
 	 * Process post requests
-	 * POST requests are object requests
+	 * POST requests are object requests.
+	 *
+	 * @param req the req
+	 * @param res the res
+	 * @throws ServletException the servlet exception
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public void doPost(HttpServletRequest req, HttpServletResponse res) 
 		throws ServletException, IOException {
@@ -221,9 +233,10 @@ public class TerminologyServlet extends HttpServlet {
 	}
 	
 	/**
-	 * Process output in HTML format
-	 * @param obj
-	 * @return
+	 * Process output in HTML format.
+	 *
+	 * @param obj the obj
+	 * @return the string
 	 */
 	private String processOutput(Object obj){
 		//if(obj == null)
@@ -343,6 +356,12 @@ public class TerminologyServlet extends HttpServlet {
 	
 	/**
 	 * This is used for normal get requests s.a.  answer submits and authentication.
+	 *
+	 * @param req the req
+	 * @param res the res
+	 * @param parcel the parcel
+	 * @throws ServletException the servlet exception
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	private void processRequest( HttpServletRequest req, HttpServletResponse res , Parcel parcel )
 		throws ServletException, IOException {

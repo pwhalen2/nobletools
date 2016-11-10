@@ -51,7 +51,8 @@ import static edu.pitt.dbmi.nlp.noble.terminology.impl.NobleCoderUtils.*;
 import static edu.pitt.dbmi.nlp.noble.terminology.impl.NobleCoderTerminology.*;
 
 /**
- * import an OBO file to a collection of concept objects
+ * import an OBO file to a collection of concept objects.
+ *
  * @author tseytlin
  */
 public class ConceptImporter {
@@ -67,8 +68,9 @@ public class ConceptImporter {
 	
 	
 	/**
-	 * get instance
-	 * @return
+	 * get instance.
+	 *
+	 * @return single instance of ConceptImporter
 	 */
 	public static ConceptImporter getInstance(){
 		if(instance == null)
@@ -76,35 +78,67 @@ public class ConceptImporter {
 		return instance;
 	}
 	
+	/**
+	 * Adds the property change listener.
+	 *
+	 * @param l the l
+	 */
 	public void addPropertyChangeListener(PropertyChangeListener l){
 		pcs.addPropertyChangeListener(l);
 	}
+	
+	/**
+	 * Removes the property change listener.
+	 *
+	 * @param l the l
+	 */
 	public void removePropertyChangeListener(PropertyChangeListener l){
 		pcs.removePropertyChangeListener(l);
 	}
 	
 	
+	/**
+	 * Checks if is in memory.
+	 *
+	 * @return true, if is in memory
+	 */
 	public boolean isInMemory() {
 		return inMemory;
 	}
 
+	/**
+	 * Sets the in memory.
+	 *
+	 * @param inMemory the new in memory
+	 */
 	public void setInMemory(boolean inMemory) {
 		this.inMemory = inMemory;
 	}
 
+	/**
+	 * Checks if is compact.
+	 *
+	 * @return true, if is compact
+	 */
 	public boolean isCompact() {
 		return compact;
 	}
 
+	/**
+	 * Sets the compact.
+	 *
+	 * @param compact the new compact
+	 */
 	public void setCompact(boolean compact) {
 		this.compact = compact;
 	}
 
 	/**
-	 * add concept
-	 * @param term
-	 * @param c
-	 * @throws TerminologyException
+	 * add concept.
+	 *
+	 * @param term the term
+	 * @param c the c
+	 * @throws TerminologyException the terminology exception
 	 */
 	private void addConceptAndRoot(NobleCoderTerminology term, Concept c) throws TerminologyException{
 		if(term == null || c == null)
@@ -119,9 +153,12 @@ public class ConceptImporter {
 
 	
 	/**
-	 * load OBO file into terminology
-	 * @param file
-	 * @throws IOException
+	 * load OBO file into terminology.
+	 *
+	 * @param term the term
+	 * @param file the file
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws TerminologyException the terminology exception
 	 */
 	public void loadOBO(NobleCoderTerminology term, File  file) throws IOException, TerminologyException {
 		loadOBO(term,Arrays.asList(file), null);
@@ -129,9 +166,13 @@ public class ConceptImporter {
 	
 	
 	/**
-	 * load OBO file into terminology
-	 * @param file
-	 * @throws IOException
+	 * load OBO file into terminology.
+	 *
+	 * @param terminology the terminology
+	 * @param files the files
+	 * @param name the name
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws TerminologyException the terminology exception
 	 */
 	public void loadOBO(NobleCoderTerminology terminology, List<File> files, String name) throws IOException, TerminologyException {
 		if(files == null || files.isEmpty())
@@ -181,9 +222,12 @@ public class ConceptImporter {
 	}
 	
 	/**
-	 * load OBO file into terminology
-	 * @param file
-	 * @throws IOException
+	 * load OBO file into terminology.
+	 *
+	 * @param file the file
+	 * @return the map
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws TerminologyException the terminology exception
 	 */
 	public Map<String,Concept> loadOBO(File file) throws IOException, TerminologyException {
 		Map<String,Concept> list = new LinkedHashMap<String,Concept>();
@@ -285,6 +329,13 @@ public class ConceptImporter {
 		return list;
 	}
 	
+	/**
+	 * Gets the OBO term count.
+	 *
+	 * @param file the file
+	 * @return the OBO term count
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	private int getOBOTermCount(File file) throws IOException {
 		int count = 0;
 		BufferedReader r = new BufferedReader(new FileReader(file));
@@ -298,10 +349,13 @@ public class ConceptImporter {
 	}
 
 	/**
-	 * load index finder tables from an IOntology object
-	 * @param ontology
-	 * @throws IOException
-	 * @throws TerminologyException 
+	 * load index finder tables from an IOntology object.
+	 *
+	 * @param term the term
+	 * @param ontology the ontology
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws TerminologyException the terminology exception
+	 * @throws IOntologyException the i ontology exception
 	 */
 	public void loadOntology(NobleCoderTerminology term, IOntology ontology) throws IOException, TerminologyException, IOntologyException {
 		loadOntology(term,ontology,null);
@@ -310,10 +364,14 @@ public class ConceptImporter {
 
 	
 	/**
-	 * load index finder tables from an IOntology object
-	 * @param ontology
-	 * @throws IOException
-	 * @throws TerminologyException 
+	 * load index finder tables from an IOntology object.
+	 *
+	 * @param term the term
+	 * @param ontology the ontology
+	 * @param name the name
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws TerminologyException the terminology exception
+	 * @throws IOntologyException the i ontology exception
 	 */
 	public void loadOntology(NobleCoderTerminology term, IOntology ontology, String name) throws IOException, TerminologyException, IOntologyException {
 		boolean inmemory = isInMemory();
@@ -434,10 +492,24 @@ public class ConceptImporter {
 		}*/
 	}
 
+	/**
+	 * Gets the code.
+	 *
+	 * @param cls the cls
+	 * @param truncateURI the truncate URI
+	 * @return the code
+	 */
 	private String getCode(IClass cls, boolean truncateURI){
 		return getCode(cls.getConcept().getCode(),truncateURI);
 	}
 	
+	/**
+	 * Gets the code.
+	 *
+	 * @param uri the uri
+	 * @param truncateURI the truncate URI
+	 * @return the code
+	 */
 	private String getCode(String uri, boolean truncateURI){
 		if(truncateURI){
 			return StringUtils.getAbbreviatedURI(uri);
@@ -447,9 +519,12 @@ public class ConceptImporter {
 	
 	
 	/**
-	 * load terms file
-	 * @param file
-	 * @throws Exception
+	 * load terms file.
+	 *
+	 * @param term the term
+	 * @param file the file
+	 * @param name the name
+	 * @throws Exception the exception
 	 */
 	public void loadText(NobleCoderTerminology term, File file,String name) throws Exception {
 		loadText(term, file, name,null);
@@ -457,9 +532,13 @@ public class ConceptImporter {
 	
 	
 	/**
-	 * load terms file
-	 * @param file
-	 * @throws Exception
+	 * load terms file.
+	 *
+	 * @param term the term
+	 * @param file the file
+	 * @param name the name
+	 * @param meta the meta
+	 * @throws Exception the exception
 	 */
 	public void loadText(NobleCoderTerminology term, File file,String name, Terminology meta) throws Exception {
 		// get the file name 
@@ -524,12 +603,13 @@ public class ConceptImporter {
 	
 	
 	/**
-	 * create a class from a given line of text
+	 * create a class from a given line of text.
+	 *
 	 * @param line - String that has a sperated list of synonyms
-	 * @param parent
-	 * @param meta
-	 * @return
-	 * @throws TerminologyException 
+	 * @param parent the parent
+	 * @param umls the umls
+	 * @return the i class
+	 * @throws TerminologyException the terminology exception
 	 */
 	private IClass createClass(String line, IClass parent, Terminology umls) throws TerminologyException {
 		// split line into synonyms
@@ -577,9 +657,13 @@ public class ConceptImporter {
 
 	/**
 	 * load from RRF files (Rich Release Files)
-	 * This is a common distribution method for UMLS and NCI Meta
-	 * @param directory that contains MRCONSO.RRF, MRDEF.RRF, MRSTY.RRF etc...
-	 * by default uses ALL sources, but only for English language
+	 * This is a common distribution method for UMLS and NCI Meta.
+	 *
+	 * @param term the term
+	 * @param dir the dir
+	 * @throws FileNotFoundException the file not found exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws TerminologyException the terminology exception
 	 */
 	public void loadRRF(NobleCoderTerminology term,File dir) throws FileNotFoundException, IOException, TerminologyException {
 		Map<String,List<String>> params = new HashMap<String, List<String>>();
@@ -590,14 +674,14 @@ public class ConceptImporter {
 	
 	/**
 	 * load from RRF files (Rich Release Files)
-	 * This is a common distribution method for UMLS and NCI Meta
-	 * @param directory that contains MRCONSO.RRF, MRDEF.RRF, MRSTY.RRF etc...
-	 * @param Map<String,List<String>> filter property object, where some properties are:
-	 * name - change ontology name
-	 * languages - only include languages in a given list languages
-	 * sources - only include concepts from a given list of sources
-	 * semanticTypes - filter result by a list of semantic types attached
-	 * hierarchySources - only include hierarhy information from a list of sources
+	 * This is a common distribution method for UMLS and NCI Meta.
+	 *
+	 * @param terminology the terminology
+	 * @param dir the dir
+	 * @param params the params
+	 * @throws FileNotFoundException the file not found exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws TerminologyException the terminology exception
 	 */
 	public void loadRRF(NobleCoderTerminology terminology,File dir,Map<String,List<String>> params) throws FileNotFoundException, IOException, TerminologyException {
 		boolean inmemory = isInMemory();
@@ -1224,9 +1308,25 @@ public class ConceptImporter {
 	
 	
 	
+	/**
+	 * Checks if is included.
+	 *
+	 * @param list the list
+	 * @param src the src
+	 * @return true, if is included
+	 */
 	private boolean isIncluded(List<String> list, String src){
 		return isIncluded(list,src,true);
 	}
+	
+	/**
+	 * Checks if is included.
+	 *
+	 * @param list the list
+	 * @param src the src
+	 * @param strict the strict
+	 * @return true, if is included
+	 */
 	private boolean isIncluded(List<String> list, String src,boolean strict){
 		if(list == null)
 			return true;
@@ -1245,14 +1345,25 @@ public class ConceptImporter {
 	}
 
 	/**
-	 * add concept to terminology
+	 * add concept to terminology.
+	 *
+	 * @param terminology the terminology
+	 * @param c the c
+	 * @return true, if successful
+	 * @throws TerminologyException the terminology exception
 	 */
 	public boolean addConcept(NobleCoderTerminology terminology,Concept c ) throws TerminologyException {
 		return addConcept(terminology, c,false);
 	}
 	
 	/**
-	 * add concept to terminology
+	 * add concept to terminology.
+	 *
+	 * @param terminology the terminology
+	 * @param c the c
+	 * @param saveTermsAsFiles the save terms as files
+	 * @return true, if successful
+	 * @throws TerminologyException the terminology exception
 	 */
 	public boolean addConcept(NobleCoderTerminology terminology,Concept c, boolean saveTermsAsFiles ) throws TerminologyException {
 		NobleCoderTerminology.Storage storage = terminology.getStorage();
@@ -1330,8 +1441,10 @@ public class ConceptImporter {
 		
 	
 	/**
-	 * compact terminology 
-	 * @param term
+	 * compact terminology .
+	 *
+	 * @param terminology the terminology
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public void compact(NobleCoderTerminology terminology) throws IOException{
 		NobleCoderTerminology.Storage storage = terminology.getStorage();
@@ -1389,7 +1502,10 @@ public class ConceptImporter {
 	}
 	
 	/**
-	 * @param args
+	 * The main method.
+	 *
+	 * @param args the arguments
+	 * @throws Exception the exception
 	 */
 	public static void main(String[] args) throws Exception {
 		/*File dir = new File("/home/tseytlin/Data/Coropora/craft-1.0/ontologies");

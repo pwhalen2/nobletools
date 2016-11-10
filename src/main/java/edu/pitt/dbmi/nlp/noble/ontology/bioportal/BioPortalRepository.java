@@ -35,9 +35,9 @@ import edu.pitt.dbmi.nlp.noble.terminology.Terminology;
 import edu.pitt.dbmi.nlp.noble.ui.RepositoryManager;
 
 /**
- * provides view into BioPortal Repository
- * @author Eugene Tseytlin
+ * provides view into BioPortal Repository.
  *
+ * @author Eugene Tseytlin
  */
 public class BioPortalRepository implements IRepository {
 	public static final String DEFAULT_BIOPORTAL_URL = "http://data.bioontology.org"; // "http://rest.bioontology.org/bioportal/";
@@ -51,7 +51,9 @@ public class BioPortalRepository implements IRepository {
 	private PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 	
 	/**
-	 * @param args
+	 * The main method.
+	 *
+	 * @param args the arguments
 	 */
 	public static void main(String[] args) {
 		BioPortalRepository repository = new BioPortalRepository();
@@ -61,7 +63,9 @@ public class BioPortalRepository implements IRepository {
 	
 	
 	/**
-	 * creat new bioportal repository
+	 * creat new bioportal repository.
+	 *
+	 * @param url the url
 	 */
 	public BioPortalRepository(URL url){
 		bioPortalURL = url;
@@ -69,7 +73,10 @@ public class BioPortalRepository implements IRepository {
 	}
 	
 	/**
-	 * creat new bioportal repository
+	 * creat new bioportal repository.
+	 *
+	 * @param url the url
+	 * @param apiKey the api key
 	 */
 	public BioPortalRepository(URL url, String apiKey){
 		bioPortalURL = url;
@@ -78,7 +85,7 @@ public class BioPortalRepository implements IRepository {
 	
 	
 	/**
-	 * creat new bioportal repository
+	 * creat new bioportal repository.
 	 */
 	public BioPortalRepository(){
 		try{
@@ -89,16 +96,28 @@ public class BioPortalRepository implements IRepository {
 		bioPortalAPIKey = "apikey="+DEFAULT_BIOPORTAL_API_KEY;
 	}
 	
+	/**
+	 * Gets the url.
+	 *
+	 * @return the url
+	 */
 	public URL getURL(){
 		return bioPortalURL;
 	}
 	
+	/**
+	 * Gets the API key.
+	 *
+	 * @return the API key
+	 */
 	public String getAPIKey(){
 		return bioPortalAPIKey;
 	}
 	
 	/**
-	 * fetch all ontologies from URL
+	 * fetch all ontologies from URL.
+	 *
+	 * @return the map
 	 */
 	private Map<String,BOntology> fetchOntologies(){
 		// init map
@@ -119,27 +138,45 @@ public class BioPortalRepository implements IRepository {
 		return ontologyMap;
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IRepository#addOntology(edu.pitt.dbmi.nlp.noble.ontology.IOntology)
+	 */
 	public void addOntology(IOntology ontology) {
 		throw new IOntologyError("BioPortal Repository is read-only");
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IRepository#addPropertyChangeListener(java.beans.PropertyChangeListener)
+	 */
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
 		pcs.addPropertyChangeListener(listener);
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IRepository#addTerminology(edu.pitt.dbmi.nlp.noble.terminology.Terminology)
+	 */
 	public void addTerminology(Terminology terminology) {
 		throw new IOntologyError("BioPortal Repository is read-only");
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IRepository#createOntology(java.net.URI)
+	 */
 	public IOntology createOntology(URI path) throws IOntologyException {
 		throw new IOntologyError("BioPortal Repository is read-only");
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IRepository#exportOntology(edu.pitt.dbmi.nlp.noble.ontology.IOntology, int, java.io.OutputStream)
+	 */
 	public void exportOntology(IOntology ontology, int format, OutputStream out) throws IOntologyException {
 		// TODO Auto-generated method stub
 
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IRepository#getOntologies()
+	 */
 	public IOntology[] getOntologies() {
 		if(ontologyMap == null)
 			ontologyMap = fetchOntologies();
@@ -156,8 +193,10 @@ public class BioPortalRepository implements IRepository {
 	}
 	
 	/**
-	 * get ontologies that are loaded in repository
-	 * @return
+	 * get ontologies that are loaded in repository.
+	 *
+	 * @param name the name
+	 * @return the ontologies
 	 */
 	public IOntology [] getOntologies(String name){
 		if(ontologyMap == null)
@@ -172,12 +211,18 @@ public class BioPortalRepository implements IRepository {
 	}
 	
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IRepository#getOntology(java.net.URI)
+	 */
 	public IOntology getOntology(URI u) {
 		if(ontologyMap == null)
 			ontologyMap = fetchOntologies();
 		return ontologyMap.get(""+u);
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IRepository#getResource(java.net.URI)
+	 */
 	public IResource getResource(URI path) {
 		String uri = path.toASCIIString();
 		int i = uri.lastIndexOf("#");
@@ -196,40 +241,64 @@ public class BioPortalRepository implements IRepository {
 		return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IRepository#getTerminologies()
+	 */
 	public Terminology[] getTerminologies() {
 		SortedSet<BOntology> set = new TreeSet<BOntology>();
 		set.addAll(ontologyMap.values());
 		return set.toArray(new Terminology [0]);
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IRepository#getTerminology(java.lang.String)
+	 */
 	public Terminology getTerminology(String path) {
 		if(ontologyMap == null)
 			ontologyMap = fetchOntologies();
 		return ontologyMap.get(path);
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IRepository#hasOntology(java.lang.String)
+	 */
 	public boolean hasOntology(String name) {
 		if(ontologyMap == null)
 			ontologyMap = fetchOntologies();
 		return ontologyMap.containsKey(name) || getOntologies(name).length > 0;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IRepository#importOntology(java.net.URI)
+	 */
 	public IOntology importOntology(URI path) throws IOntologyException {
 		throw new IOntologyError("BioPortal Repository is read-only");
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IRepository#importOntology(edu.pitt.dbmi.nlp.noble.ontology.IOntology)
+	 */
 	public void importOntology(IOntology ont) throws IOntologyException {
 		throw new IOntologyError("BioPortal Repository is read-only");
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IRepository#removeOntology(edu.pitt.dbmi.nlp.noble.ontology.IOntology)
+	 */
 	public void removeOntology(IOntology ontology) {
 		throw new IOntologyError("BioPortal Repository is read-only");
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IRepository#removePropertyChangeListener(java.beans.PropertyChangeListener)
+	 */
 	public void removePropertyChangeListener(PropertyChangeListener listener) {
 		pcs.removePropertyChangeListener(listener);
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IRepository#removeTerminology(edu.pitt.dbmi.nlp.noble.terminology.Terminology)
+	 */
 	public void removeTerminology(Terminology terminology) {
 		throw new IOntologyError("BioPortal Repository is read-only");
 	}
@@ -240,6 +309,8 @@ public class BioPortalRepository implements IRepository {
 	 * specifying reasoner class and optional URL
 	 * in System.getProperties()
 	 * reasoner.class and reasoner.url
+	 *
+	 * @param ont the ont
 	 * @return null if no reasoner is available
 	 */
 	public IReasoner getReasoner(IOntology ont){
@@ -247,8 +318,9 @@ public class BioPortalRepository implements IRepository {
 	}
 		
 	/**
-	 * get name of this repository
-	 * @return
+	 * get name of this repository.
+	 *
+	 * @return the name
 	 */
 	public String getName(){
 		return "BioPortal Repository";
@@ -256,8 +328,9 @@ public class BioPortalRepository implements IRepository {
 	
 	
 	/**
-	 * get description of repository
-	 * @return
+	 * get description of repository.
+	 *
+	 * @return the description
 	 */
 	public String getDescription(){
 		return "Use BioPortal to access and share ontologies that are actively used in biomedical communities.";
@@ -265,7 +338,11 @@ public class BioPortalRepository implements IRepository {
 	
 
 	/**
-	 * get specific ontology version
+	 * get specific ontology version.
+	 *
+	 * @param name the name
+	 * @param version the version
+	 * @return the ontology
 	 */
 	public IOntology getOntology(URI name, String version) {
 		BOntology ont = (BOntology) getOntology(name);
@@ -274,7 +351,10 @@ public class BioPortalRepository implements IRepository {
 
 	
 	/**
-	 * get versions available for an ontology
+	 * get versions available for an ontology.
+	 *
+	 * @param ont the ont
+	 * @return the versions
 	 */
 	public String[] getVersions(IOntology ont) {
 		if(ont instanceof BOntology){

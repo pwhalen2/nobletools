@@ -59,7 +59,7 @@ public class NegEx implements Processor<Sentence>{
 	
 	
 	/**
-	 * create negex instance
+	 * create negex instance.
 	 */
 	public NegEx(){
 		negatedConcepts = new ArrayList<Concept>();
@@ -69,40 +69,45 @@ public class NegEx implements Processor<Sentence>{
 	}
 	
 	/**
-	 * get negated concepts (call after process operation
-	 * @return
+	 * get negated concepts (call after process operation.
+	 *
+	 * @return the negated concepts
 	 */
 	public List<Concept> getNegatedConcepts(){
 		return negatedConcepts;
 	}
 	
 	/**
-	 * get negated concepts (call after process operation
-	 * @return
+	 * get negated concepts (call after process operation.
+	 *
+	 * @return the indeterminate concepts
 	 */
 	public List<Concept> getIndeterminateConcepts(){
 		return indeterminateConcepts;
 	}
 	
 	/**
-	 * get negated concepts (call after process operation
-	 * @return
+	 * get negated concepts (call after process operation.
+	 *
+	 * @return the negations
 	 */
 	public List<Concept> getNegations(){
 		return negations;
 	}
 	
 	/**
-	 * get negated concepts (call after process operation
-	 * @return
+	 * get negated concepts (call after process operation.
+	 *
+	 * @return the indeterminates
 	 */
 	public List<Concept> getIndeterminates(){
 		return indeterminates;
 	}
 	
 	/**
-	 * Was NegEx triggered (negations were found)
-	 * @return
+	 * Was NegEx triggered (negations were found).
+	 *
+	 * @return true, if is triggered
 	 */
 	public boolean isTriggered(){
 		return !negatedConcepts.isEmpty() || !indeterminates.isEmpty();
@@ -110,7 +115,7 @@ public class NegEx implements Processor<Sentence>{
 	
 
 	/**
-	 * clear lists
+	 * clear lists.
 	 */
 	public void clear(){
 		negatedConcepts.clear();
@@ -121,7 +126,11 @@ public class NegEx implements Processor<Sentence>{
 
 	
 	/**
-	 * scan list and see if it matches a string
+	 * scan list and see if it matches a string.
+	 *
+	 * @param origtext the origtext
+	 * @param list the list
+	 * @return the string
 	 */
 	private String findMatch(String origtext,List list){
 		String text = origtext.toLowerCase().trim();
@@ -142,7 +151,11 @@ public class NegEx implements Processor<Sentence>{
 	
 	
 	/**
-	 * scan list and see if it matches a string
+	 * scan list and see if it matches a string.
+	 *
+	 * @param origtext the origtext
+	 * @param list the list
+	 * @return the object
 	 */
 	private Object findConceptMatch(String origtext,List list){
 		String text = origtext.toLowerCase();
@@ -174,20 +187,49 @@ public class NegEx implements Processor<Sentence>{
 	}
 	
 	
+	/**
+	 * The Class LexicalElement.
+	 */
 	private static class LexicalElement {
 		private String text;
 		private int start,end;
+		
+		/**
+		 * Instantiates a new lexical element.
+		 *
+		 * @param text the text
+		 * @param st the st
+		 * @param en the en
+		 */
 		public LexicalElement(String text,int st, int en){
 			this.text = text;
 			this.start = st;
 			this.end = en;
 		}
+		
+		/**
+		 * Gets the char offset.
+		 *
+		 * @return the char offset
+		 */
 		public int getCharOffset() {
 			return start;
 		}
+		
+		/**
+		 * Gets the trimmed string.
+		 *
+		 * @return the trimmed string
+		 */
 		public String getTrimmedString() {
 			return text;
 		}
+		
+		/**
+		 * Gets the end character.
+		 *
+		 * @return the end character
+		 */
 		public int getEndCharacter() {
 			return end;
 		}
@@ -195,7 +237,11 @@ public class NegEx implements Processor<Sentence>{
 	
 	/**
 	 * Given a sentence, build a list of Elements that has negations, elements and negatable
-	 * concepts
+	 * concepts.
+	 *
+	 * @param sentence the sentence
+	 * @param conceptKeys the concept keys
+	 * @return the list
 	 */
 	private List<SentenceElement> parse(String sentence, List conceptKeys){
 		List<SentenceElement> tokens = new ArrayList<SentenceElement>();	 
@@ -325,7 +371,7 @@ public class NegEx implements Processor<Sentence>{
 	 
 	
 	/**
-	 * This class represents a negation phrase
+	 * This class represents a negation phrase.
 	 */	
 	private class SentenceElement implements Comparable {
 		private String text;
@@ -335,16 +381,47 @@ public class NegEx implements Processor<Sentence>{
 		private Mention mention;
 		private boolean is_pseudo,is_pre,is_post,is_maybe,is_stop,is_concept,is_indeterminate;
 		
+		/**
+		 * Instantiates a new sentence element.
+		 *
+		 * @param o the o
+		 * @param str the str
+		 */
 		// constructors
 		public SentenceElement(int o, String str){
 			this(o,str,PLAIN,null);	
 		}
+		
+		/**
+		 * Instantiates a new sentence element.
+		 *
+		 * @param o the o
+		 * @param str the str
+		 * @param e the e
+		 */
 		public SentenceElement(int o,String str, Concept e){
 			this(o,str,CONCEPT,e);
 		}
+		
+		/**
+		 * Instantiates a new sentence element.
+		 *
+		 * @param o the o
+		 * @param str the str
+		 * @param type the type
+		 */
 		public SentenceElement(int o,String str, int type){
 			this(o,str,type,null);	
 		}
+		
+		/**
+		 * Instantiates a new sentence element.
+		 *
+		 * @param o the o
+		 * @param str the str
+		 * @param type the type
+		 * @param e the e
+		 */
 		public SentenceElement(int o,String str, int type,Concept e){
 			text = str;
 			offset = o;
@@ -354,14 +431,31 @@ public class NegEx implements Processor<Sentence>{
 			
 			key = e;
 		}
+		
+		/**
+		 * Gets the mention.
+		 *
+		 * @return the mention
+		 */
 		public Mention getMention() {
 			return mention;
 		}
+		
+		/**
+		 * Sets the mention.
+		 *
+		 * @param mention the new mention
+		 */
 		public void setMention(Mention mention) {
 			this.mention = mention;
 		}
 	
 		
+		/**
+		 * Sets the type.
+		 *
+		 * @param type the new type
+		 */
 		public void setType(int type){
 			this.type = type;
 			is_pseudo = (type == PSEUDO);
@@ -373,44 +467,117 @@ public class NegEx implements Processor<Sentence>{
 			is_indeterminate = (type == INDETERMINATE);
 		}
 		
+		/**
+		 * Checks if is negation.
+		 *
+		 * @return true, if is negation
+		 */
 		public boolean isNegation(){
 			return is_pre ||is_post|| is_maybe || is_indeterminate;	
 		}
 		
+		/**
+		 * Checks if is pseudo negation.
+		 *
+		 * @return true, if is pseudo negation
+		 */
 		public boolean isPseudoNegation(){
 			return is_pseudo;	
 		}
+		
+		/**
+		 * Checks if is pre negation.
+		 *
+		 * @return true, if is pre negation
+		 */
 		public boolean isPreNegation(){
 			return is_pre;	
 		}
+		
+		/**
+		 * Checks if is post negation.
+		 *
+		 * @return true, if is post negation
+		 */
 		public boolean isPostNegation(){
 			return is_post;	
 		}
+		
+		/**
+		 * Checks if is possible.
+		 *
+		 * @return true, if is possible
+		 */
 		public boolean isPossible(){
 			return is_maybe;	
 		}
+		
+		/**
+		 * Checks if is stop word.
+		 *
+		 * @return true, if is stop word
+		 */
 		public boolean isStopWord(){
 			return is_stop;	
 		}
+		
+		/**
+		 * Checks if is indeterminate.
+		 *
+		 * @return true, if is indeterminate
+		 */
 		public boolean isIndeterminate(){
 			return is_indeterminate;
 		}		
+		
+		/**
+		 * Checks if is concept.
+		 *
+		 * @return true, if is concept
+		 */
 		public boolean isConcept(){
 			return is_concept;	
 		}
+		
+		/**
+		 * Gets the text.
+		 *
+		 * @return the text
+		 */
 		public String getText(){
 			return text;	
 		}
+		
+		/**
+		 * Gets the offset.
+		 *
+		 * @return the offset
+		 */
 		public int getOffset(){
 			return offset;	
 		}
+		
+		/**
+		 * Gets the length.
+		 *
+		 * @return the length
+		 */
 		public int getLength(){
 			return text.length();	
 		}
+		
+		/**
+		 * Gets the concept.
+		 *
+		 * @return the concept
+		 */
 		public Concept getConcept(){
 			return key;
 		}
 		
+		/* (non-Javadoc)
+		 * @see java.lang.Comparable#compareTo(java.lang.Object)
+		 */
 		public int compareTo(Object obj){
 			// should be always true
 			if(obj instanceof SentenceElement){
@@ -419,16 +586,26 @@ public class NegEx implements Processor<Sentence>{
 			}
 			return 0;
 		}
+		
+		/* (non-Javadoc)
+		 * @see java.lang.Object#toString()
+		 */
 		public String toString(){
 			return text+"("+type+")";	
 		}
+		
 		/**
+		 * Sets the post negation.
+		 *
 		 * @param is_post the is_post to set
 		 */
 		public void setPostNegation(boolean is_post) {
 			this.is_post = is_post;
 		}
+		
 		/**
+		 * Sets the pre negation.
+		 *
 		 * @param is_pre the is_pre to set
 		 */
 		public void setPreNegation(boolean is_pre) {
@@ -437,7 +614,11 @@ public class NegEx implements Processor<Sentence>{
 	}
 
 	/**
-	 * process sentence for negations and uncertain mentions
+	 * process sentence for negations and uncertain mentions.
+	 *
+	 * @param sent the sent
+	 * @return the sentence
+	 * @throws TerminologyException the terminology exception
 	 */
 	public Sentence process(Sentence sent) throws TerminologyException {
 		time = System.currentTimeMillis();
@@ -544,6 +725,12 @@ public class NegEx implements Processor<Sentence>{
 		return sent;
 	}
 	
+	/**
+	 * Gets the negative mention.
+	 *
+	 * @param a the a
+	 * @return the negative mention
+	 */
 	private Modifier getNegativeMention(Annotation a){
 		Concept c = new Concept(ConText.MODIFIER_VALUE_NEGATIVE);
 		c.addSemanticType(SemanticType.getSemanticType(ConText.MODIFIER_TYPE_POLARITY));
@@ -556,6 +743,12 @@ public class NegEx implements Processor<Sentence>{
 		return Modifier.getModifier(ConText.MODIFIER_TYPE_POLARITY,ConText.MODIFIER_VALUE_NEGATIVE,m);
 	}
 	
+	/**
+	 * Gets the hedged mention.
+	 *
+	 * @param a the a
+	 * @return the hedged mention
+	 */
 	private Modifier getHedgedMention(Annotation a){
 		Concept c = new Concept(ConText.MODIFIER_VALUE_HEDGED);
 		c.addSemanticType(SemanticType.getSemanticType(ConText.MODIFIER_TYPE_MODALITY));
@@ -569,6 +762,9 @@ public class NegEx implements Processor<Sentence>{
 	}
 	
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.coder.model.Processor#getProcessTime()
+	 */
 	public long getProcessTime() {
 		return time;
 	}

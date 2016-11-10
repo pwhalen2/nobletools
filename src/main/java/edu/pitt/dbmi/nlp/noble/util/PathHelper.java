@@ -24,6 +24,9 @@ import edu.pitt.dbmi.nlp.noble.terminology.TerminologyException;
 import edu.pitt.dbmi.nlp.noble.terminology.impl.NobleCoderTerminology;
 
 
+/**
+ * The Class PathHelper.
+ */
 public class PathHelper {
 	private int pathDepthLimit = 7, maxNumberOfPaths = 10;
 	private boolean readOnly = true, debug;
@@ -33,13 +36,17 @@ public class PathHelper {
 	private Terminology terminology;
 	
 	/**
-	 * initialize new path helper for a given terminology
-	 * @param t
+	 * initialize new path helper for a given terminology.
+	 *
+	 * @param t the t
 	 */
 	public PathHelper(Terminology t){
 		this.terminology = t;
 	}
 	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#finalize()
+	 */
 	protected void finalize() throws Throwable {
 		if(ancestryMap != null && ancestryMap instanceof JDBMMap){
 			((JDBMMap) ancestryMap).dispose();
@@ -52,25 +59,46 @@ public class PathHelper {
 	
 
 
+	/**
+	 * Gets the path depth limit.
+	 *
+	 * @return the path depth limit
+	 */
 	public int getPathDepthLimit() {
 		return pathDepthLimit;
 	}
 
+	/**
+	 * Sets the path depth limit.
+	 *
+	 * @param pathDepthLimit the new path depth limit
+	 */
 	public void setPathDepthLimit(int pathDepthLimit) {
 		this.pathDepthLimit = pathDepthLimit;
 	}
 
+	/**
+	 * Gets the max number of paths.
+	 *
+	 * @return the max number of paths
+	 */
 	public int getMaxNumberOfPaths() {
 		return maxNumberOfPaths;
 	}
 
+	/**
+	 * Sets the max number of paths.
+	 *
+	 * @param maxNumberOfPaths the new max number of paths
+	 */
 	public void setMaxNumberOfPaths(int maxNumberOfPaths) {
 		this.maxNumberOfPaths = maxNumberOfPaths;
 	}
 
 	/**
-	 * get all paths to root for a given concept
-	 * @param name  - name of the concept in question
+	 * get all paths to root for a given concept.
+	 *
+	 * @param c the c
 	 * @return list of paths (path is list of concepts)
 	 * WARNING: for messy terminology traversing a graph can take FOREVER!!!!
 	 */
@@ -94,9 +122,11 @@ public class PathHelper {
 	}
 	
 	/**
-	 * conver to paths
-	 * @param paths
-	 * @return
+	 * conver to paths.
+	 *
+	 * @param t the t
+	 * @param paths the paths
+	 * @return the list
 	 */
 	private List<ConceptPath> toPaths(Terminology t, List<List<String>> paths) {
 		List<ConceptPath> n = new ArrayList<ConceptPath>();
@@ -113,9 +143,10 @@ public class PathHelper {
 	}
 
 	/**
-	 * conver to paths
-	 * @param paths
-	 * @return
+	 * conver to paths.
+	 *
+	 * @param paths the paths
+	 * @return the list
 	 */
 	private List<List<String>> toList(List<ConceptPath> paths) {
 		List<List<String>> n = new ArrayList<List<String>>();
@@ -132,10 +163,10 @@ public class PathHelper {
 	
 
 	/**
-	 * get appropriate map for given resource
-	 * @param c
-	 * @return
-	 * @throws IOException 
+	 * get appropriate map for given resource.
+	 *
+	 * @return the path map
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	private Map<String,List<List<String>>> getPathMap() throws IOException{
 		if(pathMap == null){
@@ -155,10 +186,10 @@ public class PathHelper {
 	
 
 	/**
-	 * get appropriate map for given resource
-	 * @param c
-	 * @return
-	 * @throws IOException 
+	 * get appropriate map for given resource.
+	 *
+	 * @return the ancestery map
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	private Map<String,Map<String,Integer>> getAncesteryMap() throws IOException{
 		if(ancestryMap == null){
@@ -177,9 +208,11 @@ public class PathHelper {
 	}
 	
 	/**
-	 * given a list of concept paths, it returns a map of parent concepts and their minimum levels
-	 * @param list
-	 * @return
+	 * given a list of concept paths, it returns a map of parent concepts and their minimum levels.
+	 *
+	 * @param terminology the terminology
+	 * @param stringMap the string map
+	 * @return the map
 	 */
 	private Map<Concept,Integer> toAncestors(Terminology terminology,Map<String,Integer> stringMap){
 		Map<Concept,Integer> map = new LinkedHashMap<Concept, Integer>();
@@ -193,9 +226,10 @@ public class PathHelper {
 	
 	
 	/**
-	 * convert a map of ancestors to a string representation
-	 * @param map
-	 * @return
+	 * convert a map of ancestors to a string representation.
+	 *
+	 * @param map the map
+	 * @return the string
 	 */
 	public String toString(Map<Concept,Integer> map){
 		if(map == null)
@@ -224,9 +258,10 @@ public class PathHelper {
 	
 
 	/**
-	 * given a list of concept paths, it returns a map of parent concepts and their minimum levels
-	 * @param list
-	 * @return
+	 * given a list of concept paths, it returns a map of parent concepts and their minimum levels.
+	 *
+	 * @param c the c
+	 * @return the ancestors
 	 */
 	public Map<Concept,Integer> getAncestors(Concept c){
 		//return getAncestors(getPaths(c));
@@ -245,6 +280,12 @@ public class PathHelper {
 		return Collections.EMPTY_MAP;
 	}
 	
+	/**
+	 * To map.
+	 *
+	 * @param map the map
+	 * @return the map
+	 */
 	private Map<String, Integer> toMap(Map<Concept, Integer> map) {
 		Map<String,Integer> n = new LinkedHashMap<String, Integer>();
  		for(Concept c: map.keySet()){
@@ -254,8 +295,9 @@ public class PathHelper {
 	}
 
 	/**
-	 * pre-build ancestory cache for a given terminology for faster ancestory access 
-	 * @param t
+	 * pre-build ancestory cache for a given terminology for faster ancestory access .
+	 *
+	 * @throws Exception the exception
 	 */
 	public void createPathCache() throws Exception {
 		if(terminology instanceof NobleCoderTerminology){
@@ -281,8 +323,9 @@ public class PathHelper {
 	}
 	
 	/**
-	 * pre-build ancestory cache for a given terminology for faster ancestory access 
-	 * @param t
+	 * pre-build ancestory cache for a given terminology for faster ancestory access .
+	 *
+	 * @throws Exception the exception
 	 */
 	public void createAncestryCache() throws Exception {
 		if(terminology instanceof NobleCoderTerminology){
@@ -308,10 +351,11 @@ public class PathHelper {
 	}
 
 	/**
-	 * Does A have an ancestor B
-	 * @param a
-	 * @param b
-	 * @return
+	 * Does A have an ancestor B.
+	 *
+	 * @param a the a
+	 * @param b the b
+	 * @return true, if successful
 	 */
 	public boolean hasAncestor(Concept a, Concept b){
 		try {
@@ -324,9 +368,11 @@ public class PathHelper {
 	
 	/**
 	 * get all parents of the node
-	 * TODO:
-	 * @param c
-	 * @return
+	 * TODO:.
+	 *
+	 * @param c the c
+	 * @return the list
+	 * @throws Exception the exception
 	 */
 	 public List<ConceptPath> findPaths(Concept c) throws Exception {
 		 return findPaths(c,getPathDepthLimit(),getMaxNumberOfPaths());
@@ -334,9 +380,11 @@ public class PathHelper {
 	
 	/**
 	 * get all parents of the node
-	 * TODO:
-	 * @param c
-	 * @return
+	 * TODO:.
+	 *
+	 * @param c the c
+	 * @return the map
+	 * @throws Exception the exception
 	 */
 	 public Map<Concept,Integer> findAncestors(Concept c) throws Exception {
 		 return findAncestors(c,getPathDepthLimit());
@@ -345,9 +393,13 @@ public class PathHelper {
 	 
 	/**
 	 * get all parents of the node
-	 * TODO:
-	 * @param c
-	 * @return
+	 * TODO:.
+	 *
+	 * @param c the c
+	 * @param depthLimit the depth limit
+	 * @param maxPaths the max paths
+	 * @return the list
+	 * @throws Exception the exception
 	 */
 	 public List<ConceptPath> findPaths(Concept c, int depthLimit, int maxPaths) throws Exception {
 		List<ConceptPath> paths = new ArrayList<ConceptPath>();
@@ -381,6 +433,14 @@ public class PathHelper {
 		return paths;
 	}
 	
+	/**
+	 * Find ancestors.
+	 *
+	 * @param c the c
+	 * @param depthLimit the depth limit
+	 * @return the map
+	 * @throws Exception the exception
+	 */
 	public Map<Concept,Integer> findAncestors(Concept c, int depthLimit) throws Exception { 
 		Map<Concept,Integer> map = new LinkedHashMap<Concept, Integer>();
 		
@@ -412,10 +472,25 @@ public class PathHelper {
 		return map;
 	}
 	
+	/**
+	 * The Class ConceptNode.
+	 */
 	private class ConceptNode {
+		
+		/**
+		 * Instantiates a new concept node.
+		 *
+		 * @param c the c
+		 */
 		public ConceptNode(Concept c) {
 			concept = c;
 		}
+		
+		/**
+		 * Gets the path.
+		 *
+		 * @return the path
+		 */
 		public ConceptPath getPath() {
 			ConceptPath path = new ConceptPath();
 			path.add(concept);
@@ -426,6 +501,12 @@ public class PathHelper {
 			}
 			return path;
 		}
+		
+		/**
+		 * Gets the path length.
+		 *
+		 * @return the path length
+		 */
 		public int getPathLength() {
 			int n = 1;
 			ConceptNode l = link;
@@ -435,6 +516,12 @@ public class PathHelper {
 			}
 			return n;
 		}
+		
+		/**
+		 * Checks if is goal.
+		 *
+		 * @return true, if is goal
+		 */
 		public boolean isGoal() {
 			try {
 				return concept.getParentConcepts().length == 0 || Arrays.asList(terminology.getRootConcepts()).contains(concept);
@@ -450,7 +537,10 @@ public class PathHelper {
 	
 	
 	/**
-	 * @param args
+	 * The main method.
+	 *
+	 * @param args the arguments
+	 * @throws Exception the exception
 	 */
 	public static void main(String[] args) throws Exception {
 		//NobleCoderTerminology.setPersistenceDirectory(new File("/home/tseytlin/Data/Terminologies/IndexFinder"));

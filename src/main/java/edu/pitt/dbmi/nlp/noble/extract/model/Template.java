@@ -17,7 +17,8 @@ import edu.pitt.dbmi.nlp.noble.util.XMLUtils;
 
 /**
  * this class represents a set of pieces of information that need to be 
- * extracted from free text
+ * extracted from free text.
+ *
  * @author tseytlin
  */
 public class Template {
@@ -31,7 +32,8 @@ public class Template {
 	
 	/**
 	 * get template name.
-	 * @return
+	 *
+	 * @return the name
 	 */
 	public String getName() {
 		return name;
@@ -39,23 +41,26 @@ public class Template {
 
 	/**
 	 * set template name.
-	 * @return
+	 *
+	 * @param name the new name
 	 */
 	public void setName(String name) {
 		this.name = name;
 	}
 
 	/**
-	 * get template desciption
-	 * @return
+	 * get template desciption.
+	 *
+	 * @return the description
 	 */
 	public String getDescription() {
 		return description;
 	}
 
 	/**
-	 * set template description
-	 * @param description
+	 * set template description.
+	 *
+	 * @param description the new description
 	 */
 	public void setDescription(String description) {
 		this.description = description;
@@ -63,18 +68,33 @@ public class Template {
 
 
 
+	/**
+	 * Gets the version.
+	 *
+	 * @return the version
+	 */
 	public String getVersion() {
 		return version;
 	}
 
 
 
+	/**
+	 * Sets the version.
+	 *
+	 * @param version the new version
+	 */
 	public void setVersion(String version) {
 		this.version = version;
 	}
 
 
 
+	/**
+	 * Gets the properties.
+	 *
+	 * @return the properties
+	 */
 	public Properties getProperties() {
 		if(properties == null)
 			properties = new Properties();
@@ -82,8 +102,9 @@ public class Template {
 	}
 
 	/**
-	 * get a list  of template items that need to be extracted
-	 * @return
+	 * get a list  of template items that need to be extracted.
+	 *
+	 * @return the template items
 	 */
 	public List<TemplateItem> getTemplateItems(){
 		if(templateItems == null)
@@ -93,16 +114,18 @@ public class Template {
 
 	
 	/**
-	 * get terminology that covers this template
-	 * @return
+	 * get terminology that covers this template.
+	 *
+	 * @return the terminology
 	 */
 	public Terminology getTerminology() {
 		return terminology;
 	}
 	
 	/**
-	 * set terminology that covers template
-	 * @param terminology
+	 * set terminology that covers template.
+	 *
+	 * @param terminology the new terminology
 	 */
 	public void setTerminology(Terminology terminology) {
 		this.terminology = terminology;
@@ -110,8 +133,9 @@ public class Template {
 
 	
 	/**
-	 * get path helper to determine the hiearchy between concepts
-	 * @return
+	 * get path helper to determine the hiearchy between concepts.
+	 *
+	 * @return the path helper
 	 */
 	public PathHelper getPathHelper() {
 		if(pathHelper == null){
@@ -122,9 +146,10 @@ public class Template {
 	}
 
 	/**
-	 * Check if this template is appropriate for this document
-	 * @param doc
-	 * @return
+	 * Check if this template is appropriate for this document.
+	 *
+	 * @param doc the doc
+	 * @return true, if is appropriate
 	 */
 	public boolean isAppropriate(TemplateDocument doc){
 		//TODO: 
@@ -135,8 +160,10 @@ public class Template {
 	/**
 	 * process this template against annotated document. 
 	 * If template is not appropriate, it will not be evaluated
-	 * @param annotated document
+	 *
+	 * @param doc the doc
 	 * @return list if ItemInstance object that are instances of TemplateItems in order
+	 * @throws TerminologyException the terminology exception
 	 */
 	public List<ItemInstance> process(TemplateDocument doc) throws TerminologyException{
 		List<ItemInstance> list = new ArrayList<ItemInstance>();
@@ -150,15 +177,18 @@ public class Template {
 	}
 	
 	/**
-	 * convert to string
+	 * convert to string.
+	 *
+	 * @return the string
 	 */
 	public String toString(){
 		return getName();
 	}
 	
 	/**
-	 * get document filters
-	 * @return
+	 * get document filters.
+	 *
+	 * @return the filters
 	 */
 	public List<DocumentFilter> getFilters() {
 		if(filters == null)
@@ -167,8 +197,11 @@ public class Template {
 	}
 
 	/**
-	 * convert Template to XML DOM object representation
-	 * @return
+	 * convert Template to XML DOM object representation.
+	 *
+	 * @param doc the doc
+	 * @return the element
+	 * @throws Exception the exception
 	 */
 	public Element toElement(Document doc) throws Exception {
 		Element root = doc.createElement("Template");
@@ -222,8 +255,10 @@ public class Template {
 	}
 	
 	/**
-	 * initialize template from XML DOM object representation
-	 * @param element
+	 * initialize template from XML DOM object representation.
+	 *
+	 * @param element the element
+	 * @throws Exception the exception
 	 */
 	public void fromElement(Element element) throws Exception {
 		setName(element.getAttribute("name"));

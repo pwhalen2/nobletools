@@ -40,9 +40,9 @@ import edu.pitt.dbmi.nlp.noble.ui.widgets.ResourceCellRenderer;
 import edu.pitt.dbmi.nlp.noble.util.PathHelper;
 
 /**
- * displays a query 
- * @author tseytlin
+ * displays a query .
  *
+ * @author tseytlin
  */
 public class QueryTool extends JPanel implements ActionListener, ListSelectionListener {
 	private JTextField search;
@@ -55,7 +55,7 @@ public class QueryTool extends JPanel implements ActionListener, ListSelectionLi
 	private JLabel status;
 	
 	/**
-	 * create new query tool
+	 * create new query tool.
 	 */
 	public QueryTool(){
 		super();
@@ -112,6 +112,11 @@ public class QueryTool extends JPanel implements ActionListener, ListSelectionLi
 		add(status,BorderLayout.SOUTH);
 	}
 	
+	/**
+	 * Gets the path helper.
+	 *
+	 * @return the path helper
+	 */
 	private PathHelper getPathHelper(){
 		if(pathHelper == null && terminology != null){
 			pathHelper = new PathHelper(terminology);
@@ -119,6 +124,11 @@ public class QueryTool extends JPanel implements ActionListener, ListSelectionLi
 		return pathHelper;
 	}
 	
+	/**
+	 * Do view relationships.
+	 *
+	 * @param code the code
+	 */
 	protected void doViewRelationships(String code) {
 		try {
 			Concept c = terminology.lookupConcept(code);
@@ -199,7 +209,9 @@ public class QueryTool extends JPanel implements ActionListener, ListSelectionLi
 	}
 
 	/**
-	 * perform search
+	 * perform search.
+	 *
+	 * @param text the text
 	 */
 	private void doTerminologySearch(String text){
 		try{
@@ -218,6 +230,13 @@ public class QueryTool extends JPanel implements ActionListener, ListSelectionLi
 		}
 	}
 	
+	/**
+	 * Do lookup.
+	 *
+	 * @param text the text
+	 * @return the concept[]
+	 * @throws Exception the exception
+	 */
 	private Concept[] doLookup(String text) throws Exception{
 		// do lookup first
 		if(text.matches(".*[\\d#:]+.*")){
@@ -230,12 +249,20 @@ public class QueryTool extends JPanel implements ActionListener, ListSelectionLi
 		return terminology.search(text);
 	}
 
+	/**
+	 * Checks if is code.
+	 *
+	 * @param text the text
+	 * @return true, if is code
+	 */
 	private boolean isCode(String text) {
 		return text != null && (text.matches("CL?\\d{3,8}") || text.matches("http://.*"));
 	}
 
 	/**
-	 * perform search
+	 * perform search.
+	 *
+	 * @param text the text
 	 */
 	private void doOntologySearch(String text){
 		IResourceIterator it = ontology.getMatchingResources(text);
@@ -246,8 +273,9 @@ public class QueryTool extends JPanel implements ActionListener, ListSelectionLi
 	}
 	
 	/**
-	 * display busy
-	 * @param b
+	 * display busy.
+	 *
+	 * @param busy the new busy
 	 */
 	public void setBusy(boolean busy){
 		if(busy){
@@ -262,20 +290,28 @@ public class QueryTool extends JPanel implements ActionListener, ListSelectionLi
 	}
 	
 	/**
-	 * handle actions
+	 * handle actions.
+	 *
+	 * @param e the e
 	 */
 	public void actionPerformed(ActionEvent e){
 		doSearch();
 	}
 	
 	/**
-	 * preset search term
-	 * @param text
+	 * preset search term.
+	 *
+	 * @param text the new search term
 	 */
 	public void setSearchTerm(String text){
 		search.setText(text);
 	}
 	
+	/**
+	 * Sets the selected concept.
+	 *
+	 * @param c the new selected concept
+	 */
 	public void setSelectedConcept(Concept c){
 		search.setText(c.getCode());
 		doSearch();
@@ -283,8 +319,7 @@ public class QueryTool extends JPanel implements ActionListener, ListSelectionLi
 	}
 	
 	/**
-	 * perform search
-	 *
+	 * perform search.
 	 */
 	public void doSearch(){
 		info.setText("");
@@ -296,8 +331,9 @@ public class QueryTool extends JPanel implements ActionListener, ListSelectionLi
 	}
 	
 	/**
-	 * get selected concepts
-	 * @return
+	 * get selected concepts.
+	 *
+	 * @return the selected concepts
 	 */
 	public Concept [] getSelectedConcepts(){
 		return (Concept []) results.getSelectedValuesList().toArray(new Concept [0]);
@@ -305,15 +341,18 @@ public class QueryTool extends JPanel implements ActionListener, ListSelectionLi
 	
 	
 	/**
-	 * get selected concept
-	 * @return
+	 * get selected concept.
+	 *
+	 * @return the selected concept
 	 */
 	public Concept getSelectedConcept(){
 		return (Concept) results.getSelectedValue();
 	}
 	
 	/**
-	 * keep track of browsing of result set
+	 * keep track of browsing of result set.
+	 *
+	 * @param e the e
 	 */
 	public void valueChanged(ListSelectionEvent e){
 		if(!e.getValueIsAdjusting()){
@@ -327,7 +366,9 @@ public class QueryTool extends JPanel implements ActionListener, ListSelectionLi
 	}
 
 	/**
-	 * show lexical entry in info panel
+	 * show lexical entry in info panel.
+	 *
+	 * @param e the e
 	 */ 
 	private void show(Concept e){
 		StringBuffer buffer = new StringBuffer();
@@ -354,7 +395,9 @@ public class QueryTool extends JPanel implements ActionListener, ListSelectionLi
 	}
 	
 	/**
-	 * show lexical entry in info panel
+	 * show lexical entry in info panel.
+	 *
+	 * @param e the e
 	 */ 
 	private void show(IResource e){
 		StringBuffer buffer = new StringBuffer();
@@ -391,6 +434,8 @@ public class QueryTool extends JPanel implements ActionListener, ListSelectionLi
 	
 	
 	/**
+	 * Sets the ontology.
+	 *
 	 * @param ontology the ontology to set
 	 */
 	public void setOntology(IOntology ontology) {
@@ -398,6 +443,8 @@ public class QueryTool extends JPanel implements ActionListener, ListSelectionLi
 	}
 
 	/**
+	 * Sets the terminology.
+	 *
 	 * @param terminology the terminology to set
 	 */
 	public void setTerminology(Terminology terminology) {

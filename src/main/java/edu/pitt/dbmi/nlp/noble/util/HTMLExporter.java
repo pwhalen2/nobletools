@@ -30,6 +30,9 @@ import edu.pitt.dbmi.nlp.noble.terminology.Concept;
 import edu.pitt.dbmi.nlp.noble.tools.ConText;
 import edu.pitt.dbmi.nlp.noble.tools.TextTools;
 
+/**
+ * The Class HTMLExporter.
+ */
 public class HTMLExporter {
 	public final String TERM_SERVLET = "http://slidetutor.upmc.edu/term/servlet/TerminologyServlet";
 	public final String HTML_REPORT_LOCATION = "reports";
@@ -44,8 +47,9 @@ public class HTMLExporter {
 	
 	/**
 	 * create HTML Exporter that writes out a set of HTML files
-	 * to a given output directory
-	 * @param outputDirectory
+	 * to a given output directory.
+	 *
+	 * @param outputDirectory the output directory
 	 */
 	public HTMLExporter(File outputDirectory){
 		setOutputDirectory(outputDirectory);
@@ -56,55 +60,98 @@ public class HTMLExporter {
 	
 	/**
 	 * create HTML Exporter that writes out a set of HTML files
-	 * to a given output directory
-	 * @param outputDirectory
+	 * to a given output directory.
 	 */
 	public HTMLExporter(){
 		resultFileName = CSVExporter.DEFAULT_RESULT_FILE;
 		createIndex = false;
 	}
 	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#finalize()
+	 */
 	protected void finalize() throws Throwable {
 		super.finalize();
 		flush();
 	}
 
+	/**
+	 * Checks if is show footer.
+	 *
+	 * @return true, if is show footer
+	 */
 	public boolean isShowFooter() {
 		return showFooter;
 	}
 
+	/**
+	 * Sets the show footer.
+	 *
+	 * @param showFooter the new show footer
+	 */
 	public void setShowFooter(boolean showFooter) {
 		this.showFooter = showFooter;
 	}
 
 
+	/**
+	 * Checks if is show report.
+	 *
+	 * @return true, if is show report
+	 */
 	public boolean isShowReport() {
 		return showReport;
 	}
 
+	/**
+	 * Sets the show report.
+	 *
+	 * @param showReport the new show report
+	 */
 	public void setShowReport(boolean showReport) {
 		this.showReport = showReport;
 	}
 
+	/**
+	 * Checks if is show concept list.
+	 *
+	 * @return true, if is show concept list
+	 */
 	public boolean isShowConceptList() {
 		return showConceptList;
 	}
 
+	/**
+	 * Sets the show concept list.
+	 *
+	 * @param showConceptList the new show concept list
+	 */
 	public void setShowConceptList(boolean showConceptList) {
 		this.showConceptList = showConceptList;
 	}
 
+	/**
+	 * Gets the terminology serlvet.
+	 *
+	 * @return the terminology serlvet
+	 */
 	public String getTerminologySerlvet() {
 		return terminologySerlvet;
 	}
 
+	/**
+	 * Sets the terminology serlvet.
+	 *
+	 * @param terminologySerlvet the new terminology serlvet
+	 */
 	public void setTerminologySerlvet(String terminologySerlvet) {
 		this.terminologySerlvet = terminologySerlvet;
 	}
 
 	/**
-	 * get the result file name that is being used
-	 * @return
+	 * get the result file name that is being used.
+	 *
+	 * @return the result file name
 	 */
 	
 	public String getResultFileName() {
@@ -113,8 +160,9 @@ public class HTMLExporter {
 
 
 	/**
-	 *sget the result file name that is being used
-	 * @return
+	 * sget the result file name that is being used.
+	 *
+	 * @param resultFileName the new result file name
 	 */
 	public void setResultFileName(String resultFileName) {
 		this.resultFileName = resultFileName;
@@ -122,8 +170,9 @@ public class HTMLExporter {
 
 
 	/**
-	 * should HTML index file be created
-	 * @return
+	 * should HTML index file be created.
+	 *
+	 * @return true, if is creates the index
 	 */
 	public boolean isCreateIndex() {
 		return createIndex;
@@ -131,8 +180,9 @@ public class HTMLExporter {
 
 
 	/**
-	 * cretae an HTML index file
-	 * @param createIndex
+	 * cretae an HTML index file.
+	 *
+	 * @param createIndex the new creates the index
 	 */
 	public void setCreateIndex(boolean createIndex) {
 		this.createIndex = createIndex;
@@ -140,8 +190,9 @@ public class HTMLExporter {
 
 
 	/**
-	 * get output directory
-	 * @return
+	 * get output directory.
+	 *
+	 * @return the output directory
 	 */
 
 	public File getOutputDirectory() {
@@ -149,8 +200,9 @@ public class HTMLExporter {
 	}
 
 	/**
-	 * set output directory
-	 * @param outputDirectory
+	 * set output directory.
+	 *
+	 * @param outputDirectory the new output directory
 	 */
 	public void setOutputDirectory(File outputDirectory) {
 		this.outputDirectory = outputDirectory;
@@ -161,9 +213,10 @@ public class HTMLExporter {
 
 
 	/**
-	 * create pretty CAP template
-	 * @param concepts
-	 * @return
+	 * create pretty CAP template.
+	 *
+	 * @param doc the doc
+	 * @return the string
 	 */
 	private String createTemplate(TemplateDocument doc){
 		StringBuffer cap = new StringBuffer();
@@ -208,9 +261,11 @@ public class HTMLExporter {
 	
 
 	/**
-	 * code label
-	 * @param l
-	 * @return
+	 * code label.
+	 *
+	 * @param l the l
+	 * @param mentions the mentions
+	 * @return the string
 	 */
 	private String codeLabel(Annotation l, List<Mention> mentions){
 		String lid = ""+l.getOffset();
@@ -236,6 +291,12 @@ public class HTMLExporter {
 				");\" title=\""+TextTools.escapeHTML(tip.toString())+"\">"+word+"</label>";
 	}
 	
+	/**
+	 * Checks if is default modifiers.
+	 *
+	 * @param m the m
+	 * @return true, if is default modifiers
+	 */
 	private boolean isDefaultModifiers(Mention m) {
 		for(Modifier mod: m.getModifiers().values()){
 			if(!mod.isDefaultValue()){
@@ -245,6 +306,12 @@ public class HTMLExporter {
 		return true;
 	}
 
+	/**
+	 * Gets the modifiers.
+	 *
+	 * @param m the m
+	 * @return the modifiers
+	 */
 	private String getModifiers(Mention m){
 		StringBuffer st = new StringBuffer();
 		for(String type: Arrays.asList(
@@ -258,11 +325,12 @@ public class HTMLExporter {
 	
 	
 	/**
-	 * code individual concept
-	 * @param c
-	 * @param color
-	 * @param ids
-	 * @return
+	 * code individual concept.
+	 *
+	 * @param c the c
+	 * @param color the color
+	 * @param aa the aa
+	 * @return the string
 	 */
 	private String codeConcept(Concept c, String color,List<Annotation> aa){
 		String p = "";
@@ -285,9 +353,10 @@ public class HTMLExporter {
 	}
 	
 	/**
-	 * group annotations in a sentence
-	 * @param s
-	 * @return
+	 * group annotations in a sentence.
+	 *
+	 * @param s the s
+	 * @return the map
 	 */
 	private Map<Annotation,List<Mention>> groupAnnotations(Sentence s) {
 		Map<Annotation,List<Mention>> map = new TreeMap<Annotation, List<Mention>>();
@@ -306,6 +375,13 @@ public class HTMLExporter {
 		return map;
 	}
 
+	/**
+	 * Intersects.
+	 *
+	 * @param an the an
+	 * @param aa the aa
+	 * @return true, if successful
+	 */
 	private boolean intersects(Annotation an, Set<Annotation> aa) {
 		for(Annotation a: aa){
 			if(!a.equals(an) && (a.contains(an) || an.contains(a)))
@@ -315,9 +391,10 @@ public class HTMLExporter {
 	}
 
 	/**
-	 * create an HTML representation of Sentence
-	 * @param s
-	 * @return
+	 * create an HTML representation of Sentence.
+	 *
+	 * @param s the s
+	 * @return the string
 	 */
 	private String codeSentence(Sentence s) {
 		StringBuffer str = new StringBuffer();
@@ -346,10 +423,10 @@ public class HTMLExporter {
 	}
 
 	/**
-	 * code a list of mentions of a given modality
-	 * @param m
-	 * @param modality
-	 * @return
+	 * code a list of mentions of a given modality.
+	 *
+	 * @param mentions the mentions
+	 * @return the string
 	 */
 	
 	private String codeMentions(List<Mention> mentions){
@@ -382,9 +459,10 @@ public class HTMLExporter {
 	
 
 	/**
-	 * get index buffer
-	 * @return
-	 * @throws Exception
+	 * get index buffer.
+	 *
+	 * @return the index
+	 * @throws Exception the exception
 	 */
 	private BufferedWriter getIndex() throws Exception {
 		if(htmlIndexWriter == null){
@@ -406,7 +484,9 @@ public class HTMLExporter {
 	}
 	
 	/**
-	 * flush all writers
+	 * flush all writers.
+	 *
+	 * @throws Exception the exception
 	 */
 	public void flush() throws Exception {
 		if(htmlIndexWriter != null){
@@ -419,7 +499,10 @@ public class HTMLExporter {
 	}
 	
 	/**
-	 * create a coded html report
+	 * create a coded html report.
+	 *
+	 * @param doc the doc
+	 * @throws Exception the exception
 	 */
 	public void export(Document doc) throws Exception {
 		String name = doc.getTitle();
@@ -431,7 +514,11 @@ public class HTMLExporter {
 	}
 
 	/**
-	 * create a coded html report
+	 * create a coded html report.
+	 *
+	 * @param doc the doc
+	 * @param htmlWriter the html writer
+	 * @throws Exception the exception
 	 */
 	public void export(Document doc, Writer htmlWriter) throws Exception {
 		title = "Noble Coder";
@@ -514,7 +601,10 @@ public class HTMLExporter {
 	
 
 	/**
-	 * create a coded html report
+	 * create a coded html report.
+	 *
+	 * @param doc the doc
+	 * @throws Exception the exception
 	 */
 	public void export(TemplateDocument doc) throws Exception {
 		title = "Information Extraction";
@@ -592,9 +682,11 @@ public class HTMLExporter {
 	
 	/**
 	 * is this a valid annotation belonging to found items.
-	 * @param l
-	 * @param map
-	 * @return
+	 *
+	 * @param previous the previous
+	 * @param l the l
+	 * @param map the map
+	 * @return true, if successful
 	 */
 	private boolean checkAnnotation(List<Annotation> previous, Annotation l, Map<Template, List<ItemInstance>> map) {
 		// if span is with previous one, don't include
@@ -617,10 +709,12 @@ public class HTMLExporter {
 		
 		return include;
 	}
+	
 	/**
-	 * code label
-	 * @param l
-	 * @return
+	 * code label.
+	 *
+	 * @param e the e
+	 * @return the string
 	 */
 	private String codeConcept(ItemInstance e){
 		String lid = e.getName();
@@ -636,9 +730,10 @@ public class HTMLExporter {
 	}
 
 	/**
-	 * code label
-	 * @param l
-	 * @return
+	 * code label.
+	 *
+	 * @param e the e
+	 * @return the string
 	 */
 	private String codeTemplateItem(ItemInstance e){
 		String lid = e.getName();

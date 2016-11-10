@@ -7,20 +7,30 @@ import java.util.List;
 import edu.pitt.dbmi.nlp.noble.terminology.Annotation;
 import edu.pitt.dbmi.nlp.noble.tools.ConText;
 
+/**
+ * The Class Modifier.
+ */
 public class Modifier {
 	private String type,value;
 	private Mention mention;
 	private boolean defaultValue;
 	
+	/**
+	 * Instantiates a new modifier.
+	 *
+	 * @param type the type
+	 * @param value the value
+	 */
 	public Modifier(String type, String value){
 		this.type = type;
 		this.value = value;
 	}
 	
 	/**
-	 * get a list of modifiers from a given ConText mention
-	 * @param m
-	 * @return
+	 * get a list of modifiers from a given ConText mention.
+	 *
+	 * @param m the m
+	 * @return the modifiers
 	 */
 	public static List<Modifier> getModifiers(Mention m){
 		List<Modifier> list = new ArrayList<Modifier>();
@@ -34,9 +44,12 @@ public class Modifier {
 	}
 	
 	/**
-	 * get a list of modifiers from a given ConText mention
-	 * @param m
-	 * @return
+	 * get a list of modifiers from a given ConText mention.
+	 *
+	 * @param type the type
+	 * @param value the value
+	 * @param m the m
+	 * @return the modifier
 	 */
 	public static Modifier getModifier(String type, String value, Mention m){
 		Modifier mod = new Modifier(type,value);
@@ -45,50 +58,100 @@ public class Modifier {
 	}
 	
 	
+	/**
+	 * Checks if is default value.
+	 *
+	 * @return true, if is default value
+	 */
 	public boolean isDefaultValue(){
 		return defaultValue; 
 	}
 	
+	/**
+	 * Sets the default value.
+	 *
+	 * @param defaultValue the new default value
+	 */
 	public void setDefaultValue(boolean defaultValue) {
 		this.defaultValue = defaultValue;
 	}
 
 	/**
-	 * get modifier with type/value
-	 * @param type
-	 * @param value
-	 * @return
+	 * get modifier with type/value.
+	 *
+	 * @param type the type
+	 * @param value the value
+	 * @return the modifier
 	 */
 	public static Modifier getModifier(String type, String value){
 		return new Modifier(type,value);
 	}
 	
+	/**
+	 * Gets the type.
+	 *
+	 * @return the type
+	 */
 	public String getType() {
 		return type;
 	}
+	
+	/**
+	 * Sets the type.
+	 *
+	 * @param type the new type
+	 */
 	public void setType(String type) {
 		this.type = type;
 	}
+	
+	/**
+	 * Gets the value.
+	 *
+	 * @return the value
+	 */
 	public String getValue() {
 		return value;
 	}
+	
+	/**
+	 * Sets the value.
+	 *
+	 * @param value the new value
+	 */
 	public void setValue(String value) {
 		this.value = value;
 	}
+	
+	/**
+	 * Gets the mention.
+	 *
+	 * @return the mention
+	 */
 	public Mention getMention() {
 		return mention;
 	}
+	
+	/**
+	 * Sets the mention.
+	 *
+	 * @param mention the new mention
+	 */
 	public void setMention(Mention mention) {
 		this.mention = mention;
 	}
 	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	public String toString(){
 		return value;
 	}
 	
 	/**
-	 * get annotations for this modifier
-	 * @return
+	 * get annotations for this modifier.
+	 *
+	 * @return the annotations
 	 */
 	public List<Annotation> getAnnotations(){
 		if(mention != null)

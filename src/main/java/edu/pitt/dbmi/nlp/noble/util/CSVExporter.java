@@ -20,12 +20,20 @@ import edu.pitt.dbmi.nlp.noble.terminology.Annotation;
 import edu.pitt.dbmi.nlp.noble.terminology.Concept;
 import edu.pitt.dbmi.nlp.noble.tools.TextTools;
 
+/**
+ * The Class CSVExporter.
+ */
 public class CSVExporter {
 	public static final String DEFAULT_RESULT_FILE = "RESULTS.tsv";
 	private File outputFile;
 	private BufferedWriter csvWriter;
 	private String S = "\t";
 	
+	/**
+	 * Instantiates a new CSV exporter.
+	 *
+	 * @param file the file
+	 */
 	public CSVExporter(File file){
 		if(file.isFile())
 			outputFile = file;
@@ -33,31 +41,50 @@ public class CSVExporter {
 			outputFile = new File(file,DEFAULT_RESULT_FILE);
 	}
 	
+	/**
+	 * Gets the output file.
+	 *
+	 * @return the output file
+	 */
 	public File getOutputFile() {
 		return outputFile;
 	}
 
+	/**
+	 * Sets the output file.
+	 *
+	 * @param outputFile the new output file
+	 */
 	public void setOutputFile(File outputFile) {
 		this.outputFile = outputFile;
 	}
 
 
 
+	/**
+	 * Gets the delimeter.
+	 *
+	 * @return the delimeter
+	 */
 	public String getDelimeter() {
 		return S;
 	}
 
+	/**
+	 * Sets the delimeter.
+	 *
+	 * @param s the new delimeter
+	 */
 	public void setDelimeter(String s) {
 		S = s;
 	}
 
 
 	/**
-	 * create codes csv report
-	 * @param file
-	 * @param name
-	 * @param resultMap
-	 * @throws Exception
+	 * create codes csv report.
+	 *
+	 * @param doc the doc
+	 * @throws Exception the exception
 	 */
 	public void export(TemplateDocument doc )  throws Exception{
 		String name = doc.getTitle();
@@ -83,11 +110,10 @@ public class CSVExporter {
 	
 	
 	/**
-	 * create codes csv report
-	 * @param file
-	 * @param name
-	 * @param resultMap
-	 * @throws Exception
+	 * create codes csv report.
+	 *
+	 * @param doc the doc
+	 * @throws Exception the exception
 	 */
 	public void export(Document doc)  throws Exception{
 		NumberFormat nf = NumberFormat.getInstance();
@@ -112,7 +138,9 @@ public class CSVExporter {
 	
 	
 	/**
-	 * flush all writers
+	 * flush all writers.
+	 *
+	 * @throws Exception the exception
 	 */
 	public void flush() throws Exception {
 		if(csvWriter != null){
@@ -121,6 +149,11 @@ public class CSVExporter {
 		csvWriter = null;
 	}
 	
+	/**
+	 * Gets the modifier types.
+	 *
+	 * @return the modifier types
+	 */
 	private String getModifierTypes(){
 		StringBuffer st = new StringBuffer();
 		for(String s: Mention.getModifierTypes()){
@@ -129,6 +162,12 @@ public class CSVExporter {
 		return st.toString();
 	}
 	
+	/**
+	 * Gets the modifier values.
+	 *
+	 * @param m the m
+	 * @return the modifier values
+	 */
 	private String getModifierValues(Mention m){
 		StringBuffer st = new StringBuffer();
 		for(String s: Mention.getModifierTypes()){
@@ -138,6 +177,13 @@ public class CSVExporter {
 		return st.toString();
 	}
 	
+	/**
+	 * Gets the CSV writer.
+	 *
+	 * @param out the out
+	 * @return the CSV writer
+	 * @throws Exception the exception
+	 */
 	private BufferedWriter getCSVWriter(File out) throws Exception {
 		if(csvWriter == null){
 			csvWriter = new BufferedWriter(new FileWriter(out));
@@ -147,6 +193,14 @@ public class CSVExporter {
 	}
 	
 	
+	/**
+	 * Gets the CSV writer.
+	 *
+	 * @param out the out
+	 * @param templates the templates
+	 * @return the CSV writer
+	 * @throws Exception the exception
+	 */
 	private BufferedWriter getCSVWriter(File out,Set<Template> templates) throws Exception {
 		if(csvWriter == null){
 			csvWriter = new BufferedWriter(new FileWriter(out));

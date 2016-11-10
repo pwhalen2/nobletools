@@ -31,7 +31,7 @@ import edu.pitt.dbmi.nlp.noble.util.DeIDUtils;
 
 /**
  * NobleCoder
- * TODO: implement abbreviation whitelist/blacklist issues
+ * TODO: implement abbreviation whitelist/blacklist issues.
  */
 public class NobleCoder implements Processor<Document>{
 	public static int FILTER_DEID = 1;
@@ -51,7 +51,10 @@ public class NobleCoder implements Processor<Document>{
 	
 	
 	/**
-	 * @param args
+	 * The main method.
+	 *
+	 * @param args the arguments
+	 * @throws Exception the exception
 	 */
 	public static void main(String[] args) throws Exception {
 		String domain = "Melanoma";
@@ -92,7 +95,9 @@ public class NobleCoder implements Processor<Document>{
 	/**
 	 * invoke NobleCoderTool pointing to a terminology .term direcotry
 	 * all of the relevant settings should be set in .term/search.properties
-	 * @param location
+	 *
+	 * @param location the location
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public NobleCoder(File location) throws IOException {
 		NobleCoderTerminology.setPersistenceDirectory(location.getParentFile());
@@ -102,7 +107,9 @@ public class NobleCoder implements Processor<Document>{
 	/**
 	 * invoke NobleCoderTool pointing to a terminology .term direcotry
 	 * all of the relevant settings should be set in .term/search.properties
-	 * @param location
+	 *
+	 * @param name the name
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public NobleCoder(String name) throws IOException {
 		setTerminology(new NobleCoderTerminology(name));
@@ -112,7 +119,8 @@ public class NobleCoder implements Processor<Document>{
 	/**
 	 * invoke NobleCoderTool pointing to a terminology .term direcotry
 	 * all of the relevant settings should be set in .term/search.properties
-	 * @param location
+	 *
+	 * @param term the term
 	 */
 	public NobleCoder(Terminology term) {
 		setTerminology(term);
@@ -120,14 +128,15 @@ public class NobleCoder implements Processor<Document>{
 	
 	/**
 	 * empty NobleCoder instance, need to use setTerminology() to specify
-	 * terminology to use
+	 * terminology to use.
 	 */
 	public NobleCoder(){}
 	
 	
 	/**
-	 * get document processor for parsing documents
-	 * @return
+	 * get document processor for parsing documents.
+	 *
+	 * @return the document processor
 	 */
 	public Processor<Document> getDocumentProcessor() {
 		if(documentProcessor == null)
@@ -136,8 +145,9 @@ public class NobleCoder implements Processor<Document>{
 	}
 	
 	/**
-	 * set document processor 
-	 * @param documentProcessor
+	 * set document processor .
+	 *
+	 * @param documentProcessor the new document processor
 	 */
 
 	public void setDocumentProcessor(Processor<Document> documentProcessor) {
@@ -152,6 +162,8 @@ public class NobleCoder implements Processor<Document>{
 	 * FILTER_HEADER - filter out section headers Ex: FINAL DIAGNOSIS, COMMENT etc.
 	 * FILTER_WORKSHEET - do not process sentences that are marked as Sentence.TYPE_WORKSHEET
 	 * return processFilter - a conjunction (OR) of filters
+	 *
+	 * @return the process filter
 	 */
 	public int getProcessFilter() {
 		return processFilter;
@@ -170,8 +182,9 @@ public class NobleCoder implements Processor<Document>{
 	}
 
 	/**
-	 * set custom terminology
-	 * @param terminology
+	 * set custom terminology.
+	 *
+	 * @param term the new terminology
 	 */
 	public void setTerminology(Terminology term) {
 		terminology = term;
@@ -183,8 +196,9 @@ public class NobleCoder implements Processor<Document>{
 	}
 
 	/**
-	 * get an instance of acronym detector that 
-	 * @return
+	 * get an instance of acronym detector that .
+	 *
+	 * @return the acronym detector
 	 */
 	
 	public AcronymDetector getAcronymDetector() {
@@ -195,9 +209,10 @@ public class NobleCoder implements Processor<Document>{
 
 	
 	/**
-	 * setup acronyms
-	 * @param name
-	 * @throws IOException
+	 * setup acronyms.
+	 *
+	 * @param location the new up acronyms
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	private void setupAcronyms(File location) throws IOException{
 		// load abbreviation information
@@ -222,6 +237,11 @@ public class NobleCoder implements Processor<Document>{
 		*/
 	}
 	
+	/**
+	 * Gets the terminology.
+	 *
+	 * @return the terminology
+	 */
 	public Terminology getTerminology() {
 		return terminology;
 	}
@@ -229,71 +249,18 @@ public class NobleCoder implements Processor<Document>{
 
 	
 	/**
-	 * process abbreviations and acronyms
-	 * @param phrase
-	 * @param foundConcepts
-	 * @return
-	 * @throws TerminologyException
+	 * process abbreviations and acronyms.
 	 *
-	private Concept [] processAcronyms(String phrase, Concept [] foundConcepts) throws TerminologyException {
-		Concept [] r = foundConcepts;
-		
-		// handle acronyms that are mentioned in a document
-		if(handleAcronyms){
-			r = getAcronymDetector().processAcronyms(phrase, foundConcepts);
-		}
-		
-		if(skipAbbrreviationLogic)
-			return r;
-		
-		// look at abbreviations
-		Set<String> acronyms = new HashSet<String>();
-		for(Concept a: getAbbreviations().search(phrase)){
-			acronyms.add(a.getName());
-		}
-	
-		// don't do anything if nothing found
-		if(acronyms.isEmpty())
-			return r;
-		
-		// if abbreviations found
-		Set<Concept> list = new LinkedHashSet<Concept>();
-		for(Concept c: r){
-			// add only what is not in the list
-			if(!acronyms.contains(c.getMatchedTerm().toLowerCase())){
-				list.add(c);
-			}
-		}
-		// add abbreviations that are in whitelist
-		for(String txt: acronyms){
-			if(getAbbreviationWhitelist().containsKey(txt)){
-				String cui = getAbbreviationWhitelist().get(txt);
-				Concept c1 = getTerminology().lookupConcept(cui);
-				if(c1 == null)
-					c1 = getAbbreviations().lookupConcept(cui);
-				if(c1 != null){
-					c1.setSearchString(phrase);
-					c1.setMatchedTerm(txt);
-					list.add(c1);
-				}
-			}
-		}
-		
-		return list.toArray(new Concept [0]);
-	}
-	*/
-	
-	/**
-	 * is acronym expansion enabled
-	 * @return
+	 * @return true, if is acronym expansion
 	 */
 	public boolean isAcronymExpansion() {
 		return handleAcronyms;
 	}
 
 	/**
-	 * handle acronym expansion
-	 * @param handleAcronyms
+	 * handle acronym expansion.
+	 *
+	 * @param handleAcronyms the new acronym expansion
 	 */
 	public void setAcronymExpansion(boolean handleAcronyms) {
 		this.handleAcronyms = handleAcronyms;
@@ -301,22 +268,33 @@ public class NobleCoder implements Processor<Document>{
 
 	
 	
+	/**
+	 * Checks if is context detection.
+	 *
+	 * @return true, if is context detection
+	 */
 	public boolean isContextDetection() {
 		return handleNegation;
 	}
 
+	/**
+	 * Sets the context detection.
+	 *
+	 * @param handleNegation the new context detection
+	 */
 	public void setContextDetection(boolean handleNegation) {
 		this.handleNegation = handleNegation;
 	}
 
 	
 	/**
-	 * process document represented as a string
-	 * @param document
-	 * @return
-	 * @throws IOException 
-	 * @throws FileNotFoundException 
-	 * @throws TerminologyException 
+	 * process document represented as a string.
+	 *
+	 * @param document the document
+	 * @return the document
+	 * @throws FileNotFoundException the file not found exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws TerminologyException the terminology exception
 	 */
 	public Document process(File document) throws FileNotFoundException, IOException, TerminologyException {
 		Document doc = new Document(TextTools.getText(new FileInputStream(document)));
@@ -326,8 +304,11 @@ public class NobleCoder implements Processor<Document>{
 	}
 	
 	/**
-	 * process a document represented as a document object
-	 * @throws TerminologyException 
+	 * process a document represented as a document object.
+	 *
+	 * @param doc the doc
+	 * @return the document
+	 * @throws TerminologyException the terminology exception
 	 */
 	public Document process(Document doc) throws TerminologyException {
 		time = System.currentTimeMillis();
@@ -352,10 +333,11 @@ public class NobleCoder implements Processor<Document>{
 	}
 	
 	/**
-	 * process text string to get a list of mentions
-	 * @param document
-	 * @return
-	 * @throws TerminologyException 
+	 * process text string to get a list of mentions.
+	 *
+	 * @param text the text
+	 * @return the list
+	 * @throws TerminologyException the terminology exception
 	 */
 	public List<Mention> process(String text) throws TerminologyException {
 		return process(new Sentence(text)).getMentions();
@@ -363,10 +345,11 @@ public class NobleCoder implements Processor<Document>{
 	
 	
 	/**
-	 * 
-	 * @param text
-	 * @return
-	 * @throws TerminologyException 
+	 * Process.
+	 *
+	 * @param sentence the sentence
+	 * @return the sentence
+	 * @throws TerminologyException the terminology exception
 	 */
 	public Sentence process(Sentence  sentence) throws TerminologyException {
 		long time = System.currentTimeMillis();
@@ -396,12 +379,22 @@ public class NobleCoder implements Processor<Document>{
 	
 	
 	
+	/**
+	 * Gets the con text.
+	 *
+	 * @return the con text
+	 */
 	public ConText getConText() {
 		if(conText == null)
 			conText = new ConText();
 		return conText;
 	}
 	
+	/**
+	 * Sets the con text.
+	 *
+	 * @param ct the new con text
+	 */
 	public void setConText(ConText ct){
 		conText = ct;
 	}
@@ -409,8 +402,9 @@ public class NobleCoder implements Processor<Document>{
 	/**
 	 * return true if sentence should not be parsed
 	 * Ex: blank, section heading, de-id string etc..
-	 * @param line
-	 * @return
+	 *
+	 * @param line the line
+	 * @return true, if successful
 	 */
 	private boolean filterSentence(Sentence line){
 		// skip blank lines
@@ -436,9 +430,10 @@ public class NobleCoder implements Processor<Document>{
 	
 	
 	/**
-	 * filter junk out
-	 * @param line
-	 * @return
+	 * filter junk out.
+	 *
+	 * @param line the line
+	 * @return the string
 	 */
 	private String filterText(String line){
 		if((getProcessFilter()&FILTER_DEID) > 0)
@@ -446,6 +441,9 @@ public class NobleCoder implements Processor<Document>{
 		return line;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.coder.model.Processor#getProcessTime()
+	 */
 	public long getProcessTime() {
 		return time;
 	}

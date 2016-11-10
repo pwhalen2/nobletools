@@ -63,9 +63,9 @@ import edu.pitt.dbmi.nlp.noble.util.HTMLExporter;
 
 
 /**
- * process a set of reports and generate an HTML to get
- * @author tseytlin
+ * process a set of reports and generate an HTML to get.
  *
+ * @author tseytlin
  */
 public class InformationExtractor implements ActionListener, Processor<TemplateDocument> {
 	private JFrame frame;
@@ -86,8 +86,10 @@ public class InformationExtractor implements ActionListener, Processor<TemplateD
 	
 	
 	/**
-	 * What 
-	 * @param args
+	 * What .
+	 *
+	 * @param args the arguments
+	 * @throws Exception the exception
 	 */
 	public static void main(String[] args) throws Exception {
 		statandlone = true;
@@ -104,8 +106,7 @@ public class InformationExtractor implements ActionListener, Processor<TemplateD
 
 	
 	/**
-	 * int report processor for a given ontology
-	 * @param ont
+	 * int report processor for a given ontology.
 	 */
 	public InformationExtractor(){
 		templateFactory = TemplateFactory.getInstance();
@@ -115,7 +116,7 @@ public class InformationExtractor implements ActionListener, Processor<TemplateD
 		
 	
 	/**
-	 * create dialog for noble coder
+	 * create dialog for noble coder.
 	 */
 	public void showDialog(){
 		if(frame == null){
@@ -216,8 +217,7 @@ public class InformationExtractor implements ActionListener, Processor<TemplateD
 	}	
 	
 	/**
-	 * 
-	 * @return
+	 * Load deafaults.
 	 */
 	private void loadDeafaults(){
 		(new Thread(new Runnable(){
@@ -250,6 +250,9 @@ public class InformationExtractor implements ActionListener, Processor<TemplateD
 		})).start();
 	}
 	
+	/**
+	 * Refresh template list.
+	 */
 	private void refreshTemplateList(){
 		SwingUtilities.invokeLater(new Runnable(){
 			public void run(){
@@ -264,8 +267,9 @@ public class InformationExtractor implements ActionListener, Processor<TemplateD
 	
 	
 	/**
-	 * set busy 
-	 * @param b
+	 * set busy .
+	 *
+	 * @param b the new busy
 	 */
 	private void setBusy(boolean b){
 		final boolean busy = b;
@@ -289,6 +293,11 @@ public class InformationExtractor implements ActionListener, Processor<TemplateD
 	}
 	
 
+	/**
+	 * Gets the menu bar.
+	 *
+	 * @return the menu bar
+	 */
 	private JMenuBar getMenuBar() {
 		JMenuBar menu = new JMenuBar();
 		JMenu file = new JMenu("File");
@@ -299,6 +308,9 @@ public class InformationExtractor implements ActionListener, Processor<TemplateD
 		return menu;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+	 */
 	public void actionPerformed(ActionEvent e) {
 		String cmd = e.getActionCommand();
 		if("run".equals(cmd)){
@@ -321,7 +333,7 @@ public class InformationExtractor implements ActionListener, Processor<TemplateD
 	}
 	
 	/**
-	 * do preview
+	 * do preview.
 	 */
 	private void doPreview() {
 		Template t = templateList.getSelectedValue();
@@ -351,7 +363,7 @@ public class InformationExtractor implements ActionListener, Processor<TemplateD
 
 
 	/**
-	 * do export of highlighted template
+	 * do export of highlighted template.
 	 */
 	private void doExport() {
 		Template template = templateList.getSelectedValue();
@@ -383,7 +395,7 @@ public class InformationExtractor implements ActionListener, Processor<TemplateD
 	}
 	
 	/**
-	 * do export of highlighted template
+	 * do export of highlighted template.
 	 */
 	private void doImport() {
 		JFileChooser chooser = new JFileChooser(file);
@@ -410,6 +422,13 @@ public class InformationExtractor implements ActionListener, Processor<TemplateD
 		
 	}
 
+	/**
+	 * Import templates.
+	 *
+	 * @param url the url
+	 * @return the template
+	 * @throws Exception the exception
+	 */
 	public Template importTemplates(String url) throws Exception{
 		InputStream is = null;
 		if(url.startsWith("http://"))
@@ -448,8 +467,9 @@ public class InformationExtractor implements ActionListener, Processor<TemplateD
 	
 	
      /**
-      * check UI inputs
-      * @return
+      * check UI inputs.
+      *
+      * @return true, if successful
       */
     private boolean checkInputs(){
  		if(templateList.getSelectedValuesList().isEmpty()){
@@ -464,7 +484,7 @@ public class InformationExtractor implements ActionListener, Processor<TemplateD
     }
      
     /**
-     * run the damn thing
+     * run the damn thing.
      */
 	private void doRun() {
 		(new Thread(new Runnable(){
@@ -490,6 +510,11 @@ public class InformationExtractor implements ActionListener, Processor<TemplateD
 		})).start();
 	}
 
+	/**
+	 * Gets the selected values list.
+	 *
+	 * @return the selected values list
+	 */
 	private List<Template> getSelectedValuesList(){
 		List<Template> list = new ArrayList<Template>();
 		for(Object o: templateList.getSelectedValues()){
@@ -499,6 +524,11 @@ public class InformationExtractor implements ActionListener, Processor<TemplateD
 	}
 	
 	
+	/**
+	 * Do browse.
+	 *
+	 * @param text the text
+	 */
 	private void doBrowse(JTextField text){
 		//if(text == domain){
 		//	
@@ -519,8 +549,11 @@ public class InformationExtractor implements ActionListener, Processor<TemplateD
 	}
 
 	/**
-	 * process  documents
-	 * @param args
+	 * process  documents.
+	 *
+	 * @param templates the templates
+	 * @param in the in
+	 * @param out the out
 	 */
 	public void process(List<Template> templates,String in, String out){	
 		// process file
@@ -582,6 +615,13 @@ public class InformationExtractor implements ActionListener, Processor<TemplateD
 		progress("Average process time per report:\t"+(totalTime/processCount)+" ms\n");
 	}
 
+	/**
+	 * Gets the files.
+	 *
+	 * @param in the in
+	 * @param list the list
+	 * @return the files
+	 */
 	private List<File> getFiles(File in,List<File> list) {
 		if(in.isDirectory()){
 			for(File f: in.listFiles()){
@@ -594,9 +634,10 @@ public class InformationExtractor implements ActionListener, Processor<TemplateD
 	}
 
 	/**
-	 * get NobleCoder for a given set of templates
-	 * @param templates
-	 * @return
+	 * get NobleCoder for a given set of templates.
+	 *
+	 * @param templates the templates
+	 * @return the coder
 	 */
 	private NobleCoder getCoder(Set<Template> templates){
 		if(coders == null)
@@ -616,8 +657,11 @@ public class InformationExtractor implements ActionListener, Processor<TemplateD
 	
 	
 	/**
-	 * processed coded document
-	 * 
+	 * processed coded document.
+	 *
+	 * @param doc the doc
+	 * @return the template document
+	 * @throws TerminologyException the terminology exception
 	 */
 	public TemplateDocument process(TemplateDocument doc) throws TerminologyException {
 		processTime = System.currentTimeMillis();
@@ -651,9 +695,11 @@ public class InformationExtractor implements ActionListener, Processor<TemplateD
 	
 
 	/**
-	 * process report
-	 * @param text
-	 * @param out
+	 * process report.
+	 *
+	 * @param templates the templates
+	 * @param reportFile the report file
+	 * @throws Exception the exception
 	 */
 	private void process(List<Template> templates,File reportFile) throws Exception {
 		progress("processing report ("+(processCount+1)+") "+reportFile.getName()+" ... ");
@@ -681,6 +727,11 @@ public class InformationExtractor implements ActionListener, Processor<TemplateD
 		progress(getProcessTime()+" ms\n");
 	}
 	
+	/**
+	 * Progress.
+	 *
+	 * @param str the str
+	 */
 	private void progress(String str){
 		System.out.print(str);
 		if(console != null){
@@ -694,6 +745,9 @@ public class InformationExtractor implements ActionListener, Processor<TemplateD
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.coder.model.Processor#getProcessTime()
+	 */
 	public long getProcessTime() {
 		return processTime;
 	}

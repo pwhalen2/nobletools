@@ -27,7 +27,8 @@ import edu.pitt.dbmi.nlp.noble.ontology.LogicExpression;
 import edu.pitt.dbmi.nlp.noble.tools.TextTools;
 
 /**
- * varies ontology related methods
+ * varies ontology related methods.
+ *
  * @author tseytlin
  */
 public class SlideTutorOntologyHelper {
@@ -137,9 +138,11 @@ public class SlideTutorOntologyHelper {
 	
 	/**
 	 * Get instance with given name, if it doesn't exist
-	 * create it
-	 * @param name
-	 * @return
+	 * create it.
+	 *
+	 * @param cls the cls
+	 * @param name the name
+	 * @return single instance of SlideTutorOntologyHelper
 	 */
 	public static IInstance getInstance(IClass cls, String name){
 		IInstance inst = cls.getOntology().getInstance(name);
@@ -150,18 +153,20 @@ public class SlideTutorOntologyHelper {
 	
 	/**
 	 * Get instance with given name, if it doesn't exist
-	 * create it
-	 * @param name
-	 * @return
+	 * create it.
+	 *
+	 * @param cls the cls
+	 * @return single instance of SlideTutorOntologyHelper
 	 */
 	public static IInstance getInstance(IClass cls){
 		return getInstance(cls,cls.getName().toLowerCase());
 	}
 	
 	/**
-	 * get case base ontology from knowledge base
-	 * @param ont
-	 * @return
+	 * get case base ontology from knowledge base.
+	 *
+	 * @param u the u
+	 * @return the case base
 	 */
 	public static String getCaseBase(String u){
 		if(u.endsWith(".owl"))
@@ -170,8 +175,9 @@ public class SlideTutorOntologyHelper {
 	}
 	
 	/**
-	 * get concept categories
-	 * @return
+	 * get concept categories.
+	 *
+	 * @return the concept categories
 	 */
 	public static String [] getConceptCategories(){
 		return new String [] {DIAGNOSTIC_FEATURES,PROGNOSTIC_FEATURES,
@@ -180,10 +186,11 @@ public class SlideTutorOntologyHelper {
 	
 	
 	/**
-	 * get matching property for category
-	 * @param category
-	 * @param absent
-	 * @return
+	 * get matching property for category.
+	 *
+	 * @param category the category
+	 * @param absent the absent
+	 * @return the property for category
 	 */
 	public static String getPropertyForCategory(String category,boolean absent){
 		if(DIAGNOSTIC_FEATURES.equals(category)){
@@ -200,10 +207,11 @@ public class SlideTutorOntologyHelper {
 
 	
 	/**
-	 * find a subtree in the root node and return it, based on exact match
-	 * @param root
-	 * @param name
-	 * @return
+	 * find a subtree in the root node and return it, based on exact match.
+	 *
+	 * @param root the root
+	 * @param name the name
+	 * @return the sub tree
 	 */
 	public static TreeNode getSubTree(TreeNode root, String name){
 		// if root is what we are looking for, get it
@@ -220,17 +228,21 @@ public class SlideTutorOntologyHelper {
 	}
 	
 	/**
-	 * constract tree from list of paths
-	 * @param paths
-	 * @return
+	 * constract tree from list of paths.
+	 *
+	 * @param paths the paths
+	 * @return the tree
 	 */
 	public static TreeNode getTree(List<TreePath> paths){
 		return getTree(paths,null);
 	}
+	
 	/**
-	 * constract tree from list of paths
-	 * @param paths
-	 * @return
+	 * constract tree from list of paths.
+	 *
+	 * @param paths the paths
+	 * @param root the root
+	 * @return the tree
 	 */
 	public static TreeNode getTree(List<TreePath> paths, String root){
 		// check for empty list
@@ -259,8 +271,10 @@ public class SlideTutorOntologyHelper {
 	
 	
 	/**
-	 * get default image folder for domain builder
-	 * @return
+	 * get default image folder for domain builder.
+	 *
+	 * @param problem the problem
+	 * @return the domain from case
 	 */
 	public static String getDomainFromCase(String problem){
 		String domain = problem;
@@ -274,8 +288,10 @@ public class SlideTutorOntologyHelper {
 	
 	
 	/**
-	 * get default image folder for domain builder
-	 * @return
+	 * get default image folder for domain builder.
+	 *
+	 * @param uri the uri
+	 * @return the case path
 	 */
 	public static String getCasePath(URI uri){
 		String path = uri.getPath();
@@ -295,16 +311,20 @@ public class SlideTutorOntologyHelper {
 	
 	
 	/**
-	 * get default image folder for domain builder
-	 * @return
+	 * get default image folder for domain builder.
+	 *
+	 * @param ont the ont
+	 * @return the case path
 	 */
 	public static String getCasePath(IOntology ont){
 		return getCasePath(ont.getURI());
 	}
 	
 	/**
-	 * get default image folder for domain builder
-	 * @return
+	 * get default image folder for domain builder.
+	 *
+	 * @param ont the ont
+	 * @return the spreadsheet path
 	 */
 	public static String getSpreadsheetPath(IOntology ont){
 		String path = ont.getURI().getPath();
@@ -323,8 +343,10 @@ public class SlideTutorOntologyHelper {
 	}
 	
 	/**
-	 * get default image folder for domain builder
-	 * @return
+	 * get default image folder for domain builder.
+	 *
+	 * @param ont the ont
+	 * @return the example path
 	 */
 	public static String getExamplePath(IOntology ont){
 		String path = ont.getURI().getPath();
@@ -347,10 +369,11 @@ public class SlideTutorOntologyHelper {
 	 * get relational distance between two classes
 	 * if c1 is a direct parent of c2 then distance is 1
 	 * if c1 == c2 distance is 0
-	 * if c1 is not related to c2, then answer is max int
-	 * @param c1
-	 * @param c2
-	 * @return
+	 * if c1 is not related to c2, then answer is max int.
+	 *
+	 * @param c1 the c 1
+	 * @param c2 the c 2
+	 * @return the distance
 	 */
 	public static int getDistance(IClass c1, IClass c2){
 		if(c1.equals(c2))
@@ -375,9 +398,10 @@ public class SlideTutorOntologyHelper {
 	
 	
 	/**
-	 * convert power to integer
-	 * @param pow
-	 * @return
+	 * convert power to integer.
+	 *
+	 * @param pow the pow
+	 * @return the int
 	 */
 	public static int powerToInteger(String pow){
 		if(POWER_LOW.equalsIgnoreCase(pow)){
@@ -393,9 +417,10 @@ public class SlideTutorOntologyHelper {
 	
 	
 	/**
-	 * is something a knowledge base class
-	 * @param cls
-	 * @return
+	 * is something a knowledge base class.
+	 *
+	 * @param cls the cls
+	 * @return true, if is system class
 	 */
 	public static boolean isSystemClass(IClass cls){
 		return cls != null && cls.getNameSpace().contains(KNOWLEDGE_BASE);
@@ -403,9 +428,10 @@ public class SlideTutorOntologyHelper {
 	
 	
 	/**
-	 * is something an attribute?
-	 * @param c
-	 * @return
+	 * is something an attribute?.
+	 *
+	 * @param c the c
+	 * @return true, if is attribute
 	 */
 	public static boolean isAttribute(IClass c){
 		return isOfParent(c,ATTRIBUTES);
@@ -415,27 +441,30 @@ public class SlideTutorOntologyHelper {
 	
 	
 	/**
-	 * is something an attribute?
-	 * @param c
-	 * @return
+	 * is something an attribute?.
+	 *
+	 * @param c the c
+	 * @return true, if is modifier
 	 */
 	public static boolean isModifier(IClass c){
 		return isOfParent(c,MODIFIERS);
 	}
 	
 	/**
-	 * is something an attribute?
-	 * @param c
-	 * @return
+	 * is something an attribute?.
+	 *
+	 * @param c the c
+	 * @return true, if is value
 	 */
 	public static boolean isValue(IClass c){
 		return (isOfParent(c,VALUES) && !NUMERIC.equals(c.getName())) && !isFeature(c);
 	}
 	
 	/**
-	 * is something an attribute?
-	 * @param c
-	 * @return
+	 * is something an attribute?.
+	 *
+	 * @param c the c
+	 * @return true, if is number
 	 */
 	public static boolean isNumber(IClass c){
 		return (NUMERIC.equals(c.getName()) || isOfParent(c,NUMERIC)) && !isFeature(c);
@@ -443,45 +472,50 @@ public class SlideTutorOntologyHelper {
 	
 
 	/**
-	 * is something an attribute?
-	 * @param c
-	 * @return
+	 * is something an attribute?.
+	 *
+	 * @param c the c
+	 * @return true, if is anatomic location
 	 */
 	public static boolean isAnatomicLocation(IClass c){
 		return ANATOMIC_LOCATION.equals(c.getName()) || isOfParent(c,ANATOMIC_LOCATION);
 	}
 	
 	/**
-	 * is something an attribute?
-	 * @param c
-	 * @return
+	 * is something an attribute?.
+	 *
+	 * @param c the c
+	 * @return true, if is worksheet
 	 */
 	public static boolean isWorksheet(IClass c){
 		return isOfParent(c,WORKSHEET);
 	}
 	
 	/**
-	 * is something an attribute?
-	 * @param c
-	 * @return
+	 * is something an attribute?.
+	 *
+	 * @param c the c
+	 * @return true, if is header
 	 */
 	public static boolean isHeader(IClass c){
 		return c != null && c.hasDirectSuperClass(c.getOntology().getClass(PROGNOSTIC_FEATURES)) && isSystemClass(c);
 	}
 	
 	/**
-	 * is something a location
-	 * @param c
-	 * @return
+	 * is something a location.
+	 *
+	 * @param c the c
+	 * @return true, if is location
 	 */
 	public static boolean isLocation(IClass c){
 		return isOfParent(c,LOCATIONS);
 	}
 	
 	/**
-	 * is something a location
-	 * @param c
-	 * @return
+	 * is something a location.
+	 *
+	 * @param c the c
+	 * @return true, if is direct location
 	 */
 	public static boolean isDirectLocation(IClass c){
 		return c.hasDirectSuperClass(c.getOntology().getClass(LOCATIONS));
@@ -489,8 +523,10 @@ public class SlideTutorOntologyHelper {
 	
 	
 	/**
-	 * check if this entry is a feature NOTE that FAVs are also features
-	 * @return
+	 * check if this entry is a feature NOTE that FAVs are also features.
+	 *
+	 * @param c the c
+	 * @return true, if is feature
 	 */
 	public static boolean isFeature(IClass c){
 		return isOfParent(c,FEATURES);
@@ -499,48 +535,60 @@ public class SlideTutorOntologyHelper {
 	
 	
 	/**
-	 * check if this entry is a feature
-	 * @return
+	 * check if this entry is a feature.
+	 *
+	 * @param c the c
+	 * @return true, if is disease
 	 */
 	public static boolean isDisease(IClass c){
 		return isOfParent(c,DIAGNOSES);
 	}
 	
 	/**
-	 * check if this entry is a feature
-	 * @return
+	 * check if this entry is a feature.
+	 *
+	 * @param cls the cls
+	 * @return true, if is diagnostic feature
 	 */
 	public static boolean isDiagnosticFeature(IClass cls){
 		return isOfParent(cls,DIAGNOSTIC_FEATURES);
 	}
 	
 	/**
-	 * check if this entry is a feature
-	 * @return
+	 * check if this entry is a feature.
+	 *
+	 * @param cls the cls
+	 * @return true, if is architectural feature
 	 */
 	public static boolean isArchitecturalFeature(IClass cls){
 		return isOfParent(cls,ARCHITECTURAL_FEATURES);
 	}
 	
 	/**
-	 * check if this entry is a feature
-	 * @return
+	 * check if this entry is a feature.
+	 *
+	 * @param cls the cls
+	 * @return true, if is cytologic feature
 	 */
 	public static boolean isCytologicFeature(IClass cls){
 		return isOfParent(cls,CYTOLOGIC_FEATURES);
 	}
 	
 	/**
-	 * check if this entry is a feature
-	 * @return
+	 * check if this entry is a feature.
+	 *
+	 * @param cls the cls
+	 * @return true, if is prognostic feature
 	 */
 	public static boolean isPrognosticFeature(IClass cls){
 		return isOfParent(cls,PROGNOSTIC_FEATURES);
 	}
 	
 	/**
-	 * check if this entry is a feature
-	 * @return
+	 * check if this entry is a feature.
+	 *
+	 * @param cls the cls
+	 * @return true, if is clinical feature
 	 */
 	public static boolean isClinicalFeature(IClass cls){
 		return isOfParent(cls,CLINICAL_FEATURES);
@@ -548,8 +596,10 @@ public class SlideTutorOntologyHelper {
 	
 	
 	/**
-	 * check if this entry is a feature
-	 * @return
+	 * check if this entry is a feature.
+	 *
+	 * @param cls the cls
+	 * @return true, if is ancillary study
 	 */
 	public static boolean isAncillaryStudy(IClass cls){
 		return isOfParent(cls,ANCILLARY_STUDIES);
@@ -558,17 +608,21 @@ public class SlideTutorOntologyHelper {
 	
 	
 	/**
-	 * is this class an attribute category
-	 * @param cls
-	 * @return
+	 * is this class an attribute category.
+	 *
+	 * @param cls the cls
+	 * @return true, if is attribute category
 	 */
 	public static boolean isAttributeCategory(IClass cls){
 		return isAttribute(cls) && !isDisease(cls) && cls.getName().matches("[A-Z_]+");
 	}
 	
 	/**
-	 * check if this entry is a feature
-	 * @return
+	 * check if this entry is a feature.
+	 *
+	 * @param cls the cls
+	 * @param parent the parent
+	 * @return true, if is of parent
 	 */
 	public static boolean isOfParent(IClass cls,String parent){
 		if(cls == null)
@@ -580,18 +634,20 @@ public class SlideTutorOntologyHelper {
 	
 	
 	/**
-	 * is given class a feature or diagnoses, but not an attribute
-	 * @param c
-	 * @return
+	 * is given class a feature or diagnoses, but not an attribute.
+	 *
+	 * @param c the c
+	 * @return true, if is named feature
 	 */
 	public static boolean isNamedFeature(IClass c){
 		return (isFeature(c) || isDisease(c)) && !isSystemClass(c) && (!isAttribute(c) || isLocation(c));
 	}
 	
 	/**
-	 * is given class a attribute, but not finding
-	 * @param c
-	 * @return
+	 * is given class a attribute, but not finding.
+	 *
+	 * @param parent the parent
+	 * @return true, if is named attribute
 	 */
 	public static boolean isNamedAttribute(IClass parent){
 		return (isAttribute(parent) && (!isSystemClass(parent) || isValue(parent)) && !isAttributeCategory(parent) &&
@@ -601,9 +657,10 @@ public class SlideTutorOntologyHelper {
 	
 		
 	/**
-	 * find a feature/disease inside a potential finding
-	 * @param cls
-	 * @return
+	 * find a feature/disease inside a potential finding.
+	 *
+	 * @param cls the cls
+	 * @return the feature
 	 */
 	public static IClass getFeature(IClass cls){
 		if(cls == null)
@@ -642,9 +699,10 @@ public class SlideTutorOntologyHelper {
 	}
 	
 	/**
-	 * get a list of attributes/modifiers belong to this finding
-	 * @param cls
-	 * @return
+	 * get a list of attributes/modifiers belong to this finding.
+	 *
+	 * @param cls the cls
+	 * @return the attributes
 	 */
 	public static List<IClass> getAttributes(IClass cls){
 		List<IClass> list = new ArrayList<IClass>();
@@ -681,9 +739,10 @@ public class SlideTutorOntologyHelper {
 
 	
 	/**
-	 * get a list of available attributes/modifiers for a given finding
-	 * @param cls
-	 * @return
+	 * get a list of available attributes/modifiers for a given finding.
+	 *
+	 * @param cls the cls
+	 * @return the potential attributes
 	 */
 	public static List<IClass> getPotentialAttributes(IClass cls){
 		Set<IClass> list = new LinkedHashSet<IClass>();
@@ -696,9 +755,10 @@ public class SlideTutorOntologyHelper {
 	}
 	
 	/**
-	 * get a list of available attributes/modifiers for a given finding
-	 * @param cls
-	 * @return
+	 * get a list of available attributes/modifiers for a given finding.
+	 *
+	 * @param cls the cls
+	 * @return the potential template attributes
 	 */
 	public static List<IClass> getPotentialTemplateAttributes(IClass cls){
 		Set<IClass> list = new LinkedHashSet<IClass>();
@@ -715,20 +775,22 @@ public class SlideTutorOntologyHelper {
 	
 	
 	/**
-	 * is parent a more general version of child?
-	 * @param parent
-	 * @param child
-	 * @return
+	 * is parent a more general version of child?.
+	 *
+	 * @param parent the parent
+	 * @param child the child
+	 * @return true, if is general form
 	 */
 	public static boolean isGeneralForm(IClass parent, IClass child){
 		return isGeneralForm(parent, child,true);
 	}
 	
 	/**
-	 * get character count from string
-	 * 
-	 * @param str
-	 * @return
+	 * get character count from string.
+	 *
+	 * @param text the text
+	 * @param str the str
+	 * @return the sequence count
 	 */
 	public static int getSequenceCount(String text, String str) {
 		int count = 0;
@@ -739,10 +801,10 @@ public class SlideTutorOntologyHelper {
 	}
 	
 	/**
-	 * Derive prettier version of a class name
-	 * 
-	 * @param name
-	 * @return
+	 * Derive prettier version of a class name.
+	 *
+	 * @param name the name
+	 * @return the text from name
 	 */
 	public static String getTextFromName(String name) {
 		// strip prefix (if available)
@@ -765,10 +827,12 @@ public class SlideTutorOntologyHelper {
 	}
 	
 	/**
-	 * is parent a more general version of child?
-	 * @param parent
-	 * @param child
-	 * @return
+	 * is parent a more general version of child?.
+	 *
+	 * @param parent the parent
+	 * @param child the child
+	 * @param filterPrepositionalFeature the filter prepositional feature
+	 * @return true, if is general form
 	 */
 	public static boolean isGeneralForm(IClass parent, IClass child, boolean filterPrepositionalFeature){
 		// shortcut to save time
@@ -825,9 +889,10 @@ public class SlideTutorOntologyHelper {
 	
 	
 	/**
-	 * is class described (aka has glossary description, examples, etc
-	 * @param cls
-	 * @return
+	 * is class described (aka has glossary description, examples, etc.
+	 *
+	 * @param cls the cls
+	 * @return true, if is described
 	 */
 	public static boolean isDescribed(IClass cls){
 		if(cls == null)
@@ -838,10 +903,11 @@ public class SlideTutorOntologyHelper {
 	
 			
 	/**
-	 * find out which pattern does this case match
-	 * @param evidence
-	 * @param dpatterns
-	 * @return
+	 * find out which pattern does this case match.
+	 *
+	 * @param dx the dx
+	 * @param inst the inst
+	 * @return the matching patterns
 	 */
 	public static ILogicExpression getMatchingPatterns(IClass dx, IInstance inst){
 		// check for multi-pattern
@@ -863,9 +929,10 @@ public class SlideTutorOntologyHelper {
 	
 	
 	/**
-	 * get direct parent
-	 * @param c
-	 * @return
+	 * get direct parent.
+	 *
+	 * @param c the c
+	 * @return the direct parent
 	 */
 	private static IClass getDirectParent(IClass c){
 		// check if direct parent is already part of the rule
@@ -882,7 +949,10 @@ public class SlideTutorOntologyHelper {
 	
 	/**
 	 * process a list of simple concepts and attempts to merge
-	 * them into a meaningful compunt concepts
+	 * them into a meaningful compunt concepts.
+	 *
+	 * @param concepts the concepts
+	 * @return the common concepts
 	 */
 	public static List<IClass> getCommonConcepts(List<IClass> concepts){
 		// compact concept list until it stops changing size
@@ -918,10 +988,12 @@ public class SlideTutorOntologyHelper {
 		
 	
 	/**
-	 * attempt to merge two concepts
-	 * @param previous
-	 * @param entry
-	 * @return
+	 * attempt to merge two concepts.
+	 *
+	 * @param pc the pc
+	 * @param ec the ec
+	 * @param concepts the concepts
+	 * @return the i class
 	 */
 	private static IClass mergeConcepts(IClass pc, IClass ec, Collection<IClass> concepts){
 		IClass common = getDirectCommonChild(pc,ec);
@@ -937,10 +1009,11 @@ public class SlideTutorOntologyHelper {
 	
 	
 	/**
-	 * get common parent of two classes
-	 * @param c1
-	 * @param c2
-	 * @return
+	 * get common parent of two classes.
+	 *
+	 * @param c1 the c 1
+	 * @param c2 the c 2
+	 * @return the direct common child
 	 */
 	public static IClass getDirectCommonChild(IClass c1, IClass c2){
 		// take care of base conditions
@@ -962,10 +1035,11 @@ public class SlideTutorOntologyHelper {
 	}
 	
 	/**
-	 * get common parent of two classes
-	 * @param c1
-	 * @param c2
-	 * @return
+	 * get common parent of two classes.
+	 *
+	 * @param c1 the c 1
+	 * @param c2 the c 2
+	 * @return the direct common children
 	 */
 	public static List<IClass> getDirectCommonChildren(IClass c1, IClass c2){
 		// take care of base conditions
@@ -989,10 +1063,11 @@ public class SlideTutorOntologyHelper {
 	
 	
 	/**
-	 * get direct common parent class
-	 * @param c1
-	 * @param c2
-	 * @return
+	 * get direct common parent class.
+	 *
+	 * @param c1 the c 1
+	 * @param c2 the c 2
+	 * @return the direct common parent
 	 */
 	public static IClass getDirectCommonParent(IClass c1, IClass c2){
 		for(IClass p: c1.getDirectSuperClasses()){
@@ -1003,10 +1078,11 @@ public class SlideTutorOntologyHelper {
 	}
 	
 	/**
-	 * get common child of two classes
-	 * @param c1
-	 * @param c2
-	 * @return
+	 * get common child of two classes.
+	 *
+	 * @param c1 the c 1
+	 * @param c2 the c 2
+	 * @return the common child
 	 */
 	public static IClass getCommonChild(IClass c1, IClass c2){
 		// take care of base conditions
@@ -1045,21 +1121,25 @@ public class SlideTutorOntologyHelper {
 		}
 		return null;
 	}
+	
 	/**
-	 * get the most specific common parent of two classes
-	 * @param c1
-	 * @param c2
-	 * @return
+	 * get the most specific common parent of two classes.
+	 *
+	 * @param c1 the c 1
+	 * @param c2 the c 2
+	 * @return the common parent
 	 */
 	public static IClass getCommonParent(IClass c1, IClass c2){
 		return getCommonParent(c1, c2,null);
 	}
 	
 	/**
-	 * get the most specific common parent of two classes
-	 * @param c1
-	 * @param c2
-	 * @return
+	 * get the most specific common parent of two classes.
+	 *
+	 * @param c1 the c 1
+	 * @param c2 the c 2
+	 * @param branch the branch
+	 * @return the common parent
 	 */
 	public static IClass getCommonParent(IClass c1, IClass c2,IClass branch){
 		// take care of base conditions
@@ -1085,9 +1165,10 @@ public class SlideTutorOntologyHelper {
 	
 	
 	/**
-	 * get case name query component
-	 * @param name
-	 * @return
+	 * get case name query component.
+	 *
+	 * @param name the name
+	 * @return the URL query
 	 */
 	public static Properties getURLQuery(String name){
 		Properties p = new Properties();
@@ -1106,9 +1187,10 @@ public class SlideTutorOntologyHelper {
 	}
 	
 	/**
-	 * strip the query part if available
-	 * @param name
-	 * @return
+	 * strip the query part if available.
+	 *
+	 * @param name the name
+	 * @return the string
 	 */
 	public static String stripURLQuery(String name){
 		if(name != null){
@@ -1122,8 +1204,11 @@ public class SlideTutorOntologyHelper {
 			
 		
 	/**
-	 * get ancesstors of a class
-	 * @return
+	 * get ancesstors of a class.
+	 *
+	 * @param cls the cls
+	 * @param list the list
+	 * @return the finding ancesstors
 	 */
 	public static List<IClass> getFindingAncesstors(IClass cls, List<IClass> list){
 		if(isFeature(cls)){

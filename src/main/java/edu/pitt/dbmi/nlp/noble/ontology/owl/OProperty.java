@@ -13,25 +13,53 @@ import edu.pitt.dbmi.nlp.noble.ontology.IProperty;
 import edu.pitt.dbmi.nlp.noble.ontology.IResource;
 import edu.pitt.dbmi.nlp.noble.ontology.LogicExpression;
 
+/**
+ * The Class OProperty.
+ */
 public class OProperty extends OResource implements IProperty {
 	private OWLPropertyExpression property;
 	
+	/**
+	 * Instantiates a new o property.
+	 *
+	 * @param obj the obj
+	 * @param ont the ont
+	 */
 	protected OProperty(OWLPropertyExpression obj,OOntology ont) {
 		super(obj,ont);
 		property = obj;
 	}
 
+	/**
+	 * Gets the OWL property.
+	 *
+	 * @return the OWL property
+	 */
 	public OWLProperty getOWLProperty(){
 		return (OWLProperty) property;
 	}
 	
+	/**
+	 * As OWL data property.
+	 *
+	 * @return the OWL data property
+	 */
 	OWLDataProperty asOWLDataProperty(){
 		return (OWLDataProperty)property;
 	}
+	
+	/**
+	 * As OWL object property.
+	 *
+	 * @return the OWL object property
+	 */
 	OWLObjectProperty asOWLObjectProperty(){
 		return (OWLObjectProperty)property;
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IProperty#createSubProperty(java.lang.String)
+	 */
 	public IProperty createSubProperty(String name) {
 		OWLDataFactory dataFactory = getOWLDataFactory();
 		if(isDatatypeProperty()){
@@ -46,22 +74,37 @@ public class OProperty extends OResource implements IProperty {
 		
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IProperty#getPropertyType()
+	 */
 	public int getPropertyType() {
 		return isDatatypeProperty()?IProperty.DATATYPE:IProperty.OBJECT;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IProperty#isDatatypeProperty()
+	 */
 	public boolean isDatatypeProperty() {
 		return getOWLProperty().isOWLDataProperty();
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IProperty#isObjectProperty()
+	 */
 	public boolean isObjectProperty() {
 		return getOWLProperty().isOWLObjectProperty();
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IProperty#isAnnotationProperty()
+	 */
 	public boolean isAnnotationProperty() {
 		return false;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IProperty#getDomain()
+	 */
 	public IClass[] getDomain() {
 		if(isObjectProperty()){
 			NodeSet<OWLClass> sub = getOWLReasoner().getObjectPropertyDomains(asOWLObjectProperty(),true);
@@ -72,6 +115,9 @@ public class OProperty extends OResource implements IProperty {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IProperty#getRange()
+	 */
 	public Object[] getRange() {
 		if(isObjectProperty()){
 			NodeSet<OWLClass> sub = getOWLReasoner().getObjectPropertyRanges(asOWLObjectProperty(),true);
@@ -85,6 +131,9 @@ public class OProperty extends OResource implements IProperty {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IProperty#setDomain(edu.pitt.dbmi.nlp.noble.ontology.IResource[])
+	 */
 	public void setDomain(IResource[] domain) {
 		if(isObjectProperty()){
 			for(OWLClass c: getOWLReasoner().getObjectPropertyDomains(asOWLObjectProperty(),false).getFlattened())
@@ -100,6 +149,9 @@ public class OProperty extends OResource implements IProperty {
 
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IProperty#setRange(java.lang.Object[])
+	 */
 	public void setRange(Object[] range) {
 		if(isObjectProperty()){
 			for(OWLClass c: getOWLReasoner().getObjectPropertyRanges(asOWLObjectProperty(),false).getFlattened())
@@ -114,17 +166,26 @@ public class OProperty extends OResource implements IProperty {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IProperty#isInverseOf(edu.pitt.dbmi.nlp.noble.ontology.IProperty)
+	 */
 	public boolean isInverseOf(IProperty p) {
 		IProperty i = getInverseProperty();
 		return (i != null)?i.equals(p):false;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IProperty#isTransitive()
+	 */
 	public boolean isTransitive() {
 		if(isObjectProperty())
 			return asOWLObjectProperty().isTransitive(getDefiningOntologies());
 		return false;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IProperty#isFunctional()
+	 */
 	public boolean isFunctional() {
 		//return property.isFunctional(getDefiningOntology());
 		for(OWLOntology ont: getOWLOntologyManager().getOntologies()){
@@ -134,12 +195,18 @@ public class OProperty extends OResource implements IProperty {
 		return false;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IProperty#isSymmetric()
+	 */
 	public boolean isSymmetric() {
 		if(isObjectProperty())
 			return asOWLObjectProperty().isSymmetric(getDefiningOntologies());
 		return false;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IProperty#getSubProperties()
+	 */
 	public IProperty[] getSubProperties() {
 		if(isDatatypeProperty()){
 			return getProperties(getOWLReasoner().
@@ -150,6 +217,9 @@ public class OProperty extends OResource implements IProperty {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IProperty#getSuperProperties()
+	 */
 	public IProperty[] getSuperProperties() {
 		if(isDatatypeProperty()){
 			return getProperties(getOWLReasoner().
@@ -160,6 +230,9 @@ public class OProperty extends OResource implements IProperty {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IProperty#getDirectSubProperties()
+	 */
 	public IProperty[] getDirectSubProperties() {
 		if(isDatatypeProperty()){
 			return getProperties(getOWLReasoner().
@@ -170,6 +243,9 @@ public class OProperty extends OResource implements IProperty {
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IProperty#getDirectSuperProperties()
+	 */
 	public IProperty[] getDirectSuperProperties() {
 		if(isDatatypeProperty()){
 			return getProperties(getOWLReasoner().
@@ -180,14 +256,23 @@ public class OProperty extends OResource implements IProperty {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IProperty#hasSuperProperty(edu.pitt.dbmi.nlp.noble.ontology.IProperty)
+	 */
 	public boolean hasSuperProperty(IProperty o){
 		return  Arrays.asList(getSuperProperties()).contains(o);
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IProperty#hasSubProperty(edu.pitt.dbmi.nlp.noble.ontology.IProperty)
+	 */
 	public boolean hasSubProperty(IProperty o){
 		return  Arrays.asList(getSubProperties()).contains(o);
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IProperty#getInverseProperty()
+	 */
 	public IProperty getInverseProperty() {
 		if(isObjectProperty()){
 			// this just returns an anonymous inverse property expression
@@ -200,6 +285,9 @@ public class OProperty extends OResource implements IProperty {
 		return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IProperty#setInverseProperty(edu.pitt.dbmi.nlp.noble.ontology.IProperty)
+	 */
 	public void setInverseProperty(IProperty p) {
 		if(isObjectProperty() && p.isObjectProperty()){
 			addAxiom(getOWLDataFactory().
@@ -210,6 +298,9 @@ public class OProperty extends OResource implements IProperty {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IProperty#addSuperProperty(edu.pitt.dbmi.nlp.noble.ontology.IProperty)
+	 */
 	public void addSuperProperty(IProperty p) {
 		if(p.getPropertyType() != getPropertyType())
 			throw new IOntologyError("Can't add super property of different type");
@@ -222,6 +313,9 @@ public class OProperty extends OResource implements IProperty {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IProperty#addSubProperty(edu.pitt.dbmi.nlp.noble.ontology.IProperty)
+	 */
 	public void addSubProperty(IProperty p) {
 		if(p.getPropertyType() != getPropertyType())
 			throw new IOntologyError("Can't add sub property of different type");
@@ -234,6 +328,9 @@ public class OProperty extends OResource implements IProperty {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IProperty#removeSuperProperty(edu.pitt.dbmi.nlp.noble.ontology.IProperty)
+	 */
 	public void removeSuperProperty(IProperty p) {
 		if(p.getPropertyType() != getPropertyType())
 			throw new IOntologyError("Can't add super property of different type");
@@ -246,6 +343,9 @@ public class OProperty extends OResource implements IProperty {
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IProperty#removeSubProperty(edu.pitt.dbmi.nlp.noble.ontology.IProperty)
+	 */
 	public void removeSubProperty(IProperty p) {
 		if(p.getPropertyType() != getPropertyType())
 			throw new IOntologyError("Can't add sub property of different type");
@@ -259,6 +359,9 @@ public class OProperty extends OResource implements IProperty {
 
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IProperty#setTransitive(boolean)
+	 */
 	public void setTransitive(boolean b) {
 		if(isObjectProperty()){
 			OWLAxiom a = getOWLDataFactory().getOWLTransitiveObjectPropertyAxiom(asOWLObjectProperty()); 
@@ -271,6 +374,9 @@ public class OProperty extends OResource implements IProperty {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IProperty#setFunctional(boolean)
+	 */
 	public void setFunctional(boolean b) {
 		if(isObjectProperty()){
 			OWLAxiom a = getOWLDataFactory().getOWLFunctionalObjectPropertyAxiom(asOWLObjectProperty());
@@ -287,6 +393,9 @@ public class OProperty extends OResource implements IProperty {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IProperty#setSymmetric(boolean)
+	 */
 	public void setSymmetric(boolean b) {
 		if(isObjectProperty()){
 			OWLAxiom a = getOWLDataFactory().getOWLSymmetricObjectPropertyAxiom(asOWLObjectProperty());

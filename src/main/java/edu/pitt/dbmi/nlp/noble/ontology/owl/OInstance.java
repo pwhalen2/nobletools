@@ -22,15 +22,27 @@ import edu.pitt.dbmi.nlp.noble.ontology.IInstance;
 import edu.pitt.dbmi.nlp.noble.ontology.IProperty;
 import edu.pitt.dbmi.nlp.noble.ontology.LogicExpression;
 
+/**
+ * The Class OInstance.
+ */
 public class OInstance extends OResource implements IInstance {
 	private OWLIndividual individual;
 	
+	/**
+	 * Instantiates a new o instance.
+	 *
+	 * @param obj the obj
+	 * @param ont the ont
+	 */
 	protected OInstance(OWLObject obj, OOntology ont) {
 		super(obj,ont);
 		individual = (OWLIndividual) obj;
 	}
 
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.owl.OResource#getProperties()
+	 */
 	public IProperty[] getProperties() {
 		List<IProperty> props = new ArrayList<IProperty>();
 		Collections.addAll(props,super.getProperties());
@@ -45,11 +57,17 @@ public class OInstance extends OResource implements IInstance {
 		return props.toArray(new IProperty [0]);
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.owl.OResource#getPropertyValue(edu.pitt.dbmi.nlp.noble.ontology.IProperty)
+	 */
 	public Object getPropertyValue(IProperty prop) {
 		Object [] o = getPropertyValues(prop);
 		return o.length > 0?o[0]:null;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.owl.OResource#getPropertyValues(edu.pitt.dbmi.nlp.noble.ontology.IProperty)
+	 */
 	public Object[] getPropertyValues(IProperty prop) {
 		if(prop.isAnnotationProperty())
 			return super.getPropertyValues(prop);
@@ -76,6 +94,9 @@ public class OInstance extends OResource implements IInstance {
 
 
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.owl.OResource#addPropertyValue(edu.pitt.dbmi.nlp.noble.ontology.IProperty, java.lang.Object)
+	 */
 	public void addPropertyValue(IProperty prop, Object value) {
 		OWLDataFactory df = getOWLDataFactory();
 		OWLIndividual subj = getOWLIndividual();
@@ -91,23 +112,36 @@ public class OInstance extends OResource implements IInstance {
 			addAxiom(df.getOWLObjectPropertyAssertionAxiom(op,subj,oo));
 		}
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.owl.OResource#setPropertyValue(edu.pitt.dbmi.nlp.noble.ontology.IProperty, java.lang.Object)
+	 */
 	public void setPropertyValue(IProperty prop, Object value) {
 		removePropertyValues(prop);
 		addPropertyValue(prop, value);
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.owl.OResource#setPropertyValues(edu.pitt.dbmi.nlp.noble.ontology.IProperty, java.lang.Object[])
+	 */
 	public void setPropertyValues(IProperty prop, Object[] values) {
 		removePropertyValues(prop);
 		for(Object o: values)
 			addPropertyValue(prop, o);
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.owl.OResource#removePropertyValues(edu.pitt.dbmi.nlp.noble.ontology.IProperty)
+	 */
 	public void removePropertyValues(IProperty prop) {
 		for(Object o: getPropertyValues(prop)){
 			removePropertyValue(prop,o);
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.owl.OResource#removePropertyValue(edu.pitt.dbmi.nlp.noble.ontology.IProperty, java.lang.Object)
+	 */
 	public void removePropertyValue(IProperty prop, Object value) {
 		OWLDataFactory df = getOWLDataFactory();
 		OWLIndividual subj = getOWLIndividual();
@@ -124,12 +158,18 @@ public class OInstance extends OResource implements IInstance {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.owl.OResource#removePropertyValues()
+	 */
 	public void removePropertyValues() {
 		for(IProperty p: getProperties()){
 			removePropertyValues(p);
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.owl.OResource#hasPropetyValue(edu.pitt.dbmi.nlp.noble.ontology.IProperty, java.lang.Object)
+	 */
 	public boolean hasPropetyValue(IProperty p, Object value) {
 		if(p.isAnnotationProperty())
 			return super.hasPropetyValue(p, value);
@@ -153,31 +193,51 @@ public class OInstance extends OResource implements IInstance {
 		return false;
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IInstance#addType(edu.pitt.dbmi.nlp.noble.ontology.IClass)
+	 */
 	public void addType(IClass cls) {
 		OWLClass pr = (OWLClass) convertOntologyObject(cls);
 		addAxiom(getOWLDataFactory().getOWLClassAssertionAxiom(pr,individual));
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IInstance#removeType(edu.pitt.dbmi.nlp.noble.ontology.IClass)
+	 */
 	public void removeType(IClass cls) {
 		OWLClass pr = (OWLClass) convertOntologyObject(cls);
 		removeAxiom(getOWLDataFactory().getOWLClassAssertionAxiom(pr,individual));
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IInstance#getTypes()
+	 */
 	public IClass[] getTypes() {
 		NodeSet<OWLClass> sub = getOWLReasoner().getTypes((OWLNamedIndividual)individual,false);
 		return getClasses(sub.getFlattened());
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IInstance#getDirectTypes()
+	 */
 	public IClass[] getDirectTypes() {
 		NodeSet<OWLClass> sub = getOWLReasoner().getTypes((OWLNamedIndividual)individual,true);
 		return getClasses(sub.getFlattened());
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IInstance#hasType(edu.pitt.dbmi.nlp.noble.ontology.IClass)
+	 */
 	public boolean hasType(IClass cls) {
 		NodeSet<OWLClass> sub = getOWLReasoner().getTypes((OWLNamedIndividual)individual,false);
 		return sub.containsEntity((OWLClass)convertOntologyObject(cls));
 	}
 
+	/**
+	 * Gets the OWL individual.
+	 *
+	 * @return the OWL individual
+	 */
 	public OWLIndividual getOWLIndividual() {
 		return individual;
 	}

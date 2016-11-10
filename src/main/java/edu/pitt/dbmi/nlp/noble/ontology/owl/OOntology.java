@@ -79,9 +79,9 @@ import edu.pitt.dbmi.nlp.noble.terminology.Concept;
 import edu.pitt.dbmi.nlp.noble.util.StringUtils;
 
 /**
- * OWL Ontology implementation
- * @author tseytlin
+ * OWL Ontology implementation.
  *
+ * @author tseytlin
  */
 public class OOntology extends OResource implements IOntology{
 	private PropertyChangeSupport pcs = new PropertyChangeSupport(this);
@@ -100,8 +100,9 @@ public class OOntology extends OResource implements IOntology{
 	private List<String> languageFilter;
 	
 	/**
-	 * create new ow
-	 * @param ont
+	 * create new ow.
+	 *
+	 * @param ont the ont
 	 */
 	private OOntology(OWLOntology ont){
 		super(ont);
@@ -115,6 +116,11 @@ public class OOntology extends OResource implements IOntology{
 	}
 	
 	
+	/**
+	 * Instantiates a new o ontology.
+	 *
+	 * @param location the location
+	 */
 	public OOntology(String location){
 		super(null);
 		this.location = location;
@@ -122,13 +128,17 @@ public class OOntology extends OResource implements IOntology{
 	
 	
 	/**
-	 * get prefix manager 
-	 * @return
+	 * get prefix manager .
+	 *
+	 * @return the prefix manager
 	 */
 	PrefixManager getPrefixManager(){
 		return prefixManager;
 	}
 	
+	/**
+	 * Lazy load.
+	 */
 	private void lazyLoad(){
 		try {
 			load();
@@ -138,6 +148,9 @@ public class OOntology extends OResource implements IOntology{
 	}
 	
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#load()
+	 */
 	public void load() throws IOntologyException {
 		if(!isLoaded() && location != null){
 			try{
@@ -162,6 +175,12 @@ public class OOntology extends OResource implements IOntology{
 	}
 	
 
+	/**
+	 * Infer IRI.
+	 *
+	 * @param loc the loc
+	 * @return the iri
+	 */
 	private IRI inferIRI(String loc) {
 		if(loc.matches("[a-zA-Z]+://(.*)"))
 			return IRI.create(loc);
@@ -191,10 +210,11 @@ public class OOntology extends OResource implements IOntology{
 	}
 
 	/**
-	 * load ontology from file
-	 * 
-	 * @param file
-	 * @throws Exception
+	 * load ontology from file.
+	 *
+	 * @param file the file
+	 * @return the o ontology
+	 * @throws IOntologyException the i ontology exception
 	 */
 	public static OOntology loadOntology(File file) throws IOntologyException {
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
@@ -219,10 +239,11 @@ public class OOntology extends OResource implements IOntology{
 	
 	
 	/**
-	 * load ontology from file
-	 * 
-	 * @param file
-	 * @throws Exception
+	 * load ontology from file.
+	 *
+	 * @param url the url
+	 * @return the o ontology
+	 * @throws IOntologyException the i ontology exception
 	 */
 	public static OOntology loadOntology(String url) throws IOntologyException {
 		File f = new File(url);
@@ -240,10 +261,11 @@ public class OOntology extends OResource implements IOntology{
 	
 	
 	/**
-	 * create new ontology with this URI
-	 * @param uri
-	 * @return
-	 * @throws Exception
+	 * create new ontology with this URI.
+	 *
+	 * @param uri the uri
+	 * @return the o ontology
+	 * @throws IOntologyException the i ontology exception
 	 */
 	public static OOntology createOntology(URI uri) throws IOntologyException {
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
@@ -256,10 +278,11 @@ public class OOntology extends OResource implements IOntology{
 	}
 	
 	/**
-	 * load ontology from uri
-	 * 
-	 * @param file
-	 * @throws Exception
+	 * load ontology from uri.
+	 *
+	 * @param file the file
+	 * @return the o ontology
+	 * @throws IOntologyException the i ontology exception
 	 */
 	public static OOntology loadOntology(URL file) throws IOntologyException {
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
@@ -272,13 +295,23 @@ public class OOntology extends OResource implements IOntology{
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#addPropertyChangeListener(java.beans.PropertyChangeListener)
+	 */
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
 		pcs.addPropertyChangeListener(listener);
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#removePropertyChangeListener(java.beans.PropertyChangeListener)
+	 */
 	public void removePropertyChangeListener(PropertyChangeListener listener) {
 		pcs.removePropertyChangeListener(listener);
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#addImportedOntology(edu.pitt.dbmi.nlp.noble.ontology.IOntology)
+	 */
 	public void addImportedOntology(IOntology o) throws IOntologyException {
 		lazyLoad();
 		IRI toImport=IRI.create(o.getURI());
@@ -290,12 +323,20 @@ public class OOntology extends OResource implements IOntology{
 			throw new IOntologyError("Unable to load ontology "+o.getURI(),e);
 		}
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#removeImportedOntology(edu.pitt.dbmi.nlp.noble.ontology.IOntology)
+	 */
 	public void removeImportedOntology(IOntology o) {
 		lazyLoad();
 		IRI toImport=IRI.create(o.getURI());
 		OWLImportsDeclaration importDeclaraton = getOWLDataFactory().getOWLImportsDeclaration(toImport);
 		getOWLOntologyManager().applyChange(new RemoveImport(getOWLOntology(),importDeclaraton));
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#getImportedOntologies()
+	 */
 	public IOntology[] getImportedOntologies() {
 		lazyLoad();
 		List<IOntology> io = new ArrayList<IOntology>();
@@ -304,19 +345,38 @@ public class OOntology extends OResource implements IOntology{
 		}
 		return io.toArray(new IOntology [0]);
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#getRepository()
+	 */
 	public IRepository getRepository() {
 		return repository;
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#setRepository(edu.pitt.dbmi.nlp.noble.ontology.IRepository)
+	 */
 	public void setRepository(IRepository r) {
 		repository = r;
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#createClass(java.lang.String)
+	 */
 	public IClass createClass(String name) {
 		return getRoot().createSubClass(name);
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#createClass(edu.pitt.dbmi.nlp.noble.ontology.ILogicExpression)
+	 */
 	public IClass createClass(ILogicExpression exp) {
 		return (IClass)convertOWLObject((OWLClass)convertOntologyObject(exp));
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#createProperty(java.lang.String, int)
+	 */
 	public IProperty createProperty(String name, int type) {
 		IRI iri = getIRI(name);
 		switch(type){
@@ -331,6 +391,10 @@ public class OOntology extends OResource implements IOntology{
 		}
 		return null;
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#createLogicExpression(int, java.lang.Object)
+	 */
 	public ILogicExpression createLogicExpression(int type, Object param) {
 		if(param instanceof Collection)
 			return new LogicExpression(type,(Collection) param);
@@ -339,21 +403,38 @@ public class OOntology extends OResource implements IOntology{
 		else
 			return new LogicExpression(type,param);
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#createLogicExpression()
+	 */
 	public ILogicExpression createLogicExpression() {
 		return new LogicExpression(ILogicExpression.EMPTY);
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#createRestriction(int)
+	 */
 	public IRestriction createRestriction(int type) {
 		return new ORestriction(type, getOntology());
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#executeQuery(edu.pitt.dbmi.nlp.noble.ontology.IQuery)
+	 */
 	public IQueryResults executeQuery(IQuery iQuery) {
 		throw new IOntologyError("Not implemented yet");
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#getMatchingResources(edu.pitt.dbmi.nlp.noble.ontology.IProperty, java.lang.Object)
+	 */
 	public IResourceIterator getMatchingResources(IProperty p, Object value) {
 		throw new IOntologyError("Not implemented yet");
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#getMatchingResources(java.lang.String)
+	 */
 	public IResourceIterator getMatchingResources(String regex) {
 		lazyLoad();
 		List<OWLEntity> list = new ArrayList<OWLEntity>();
@@ -375,6 +456,9 @@ public class OOntology extends OResource implements IOntology{
 	}
 	
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#getResource(java.lang.String)
+	 */
 	public IResource getResource(String name) {
 		IRI iri = getIRI(name);
 		if(ontology.containsClassInSignature(iri,true)){
@@ -390,18 +474,30 @@ public class OOntology extends OResource implements IOntology{
 		}
 		return null;
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#getClass(java.lang.String)
+	 */
 	public IClass getClass(String name) {
 		IRI iri = getIRI(name);
 		if(ontology.containsClassInSignature(iri,true))
 			return (IClass) convertOWLObject(data.getOWLClass(iri));
 		return null;
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#getInstance(java.lang.String)
+	 */
 	public IInstance getInstance(String name) {
 		IRI iri = getIRI(name);
 		if(ontology.containsIndividualInSignature(iri,true))
 			return (IInstance) convertOWLObject(data.getOWLNamedIndividual(iri));
 		return null;
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#getProperty(java.lang.String)
+	 */
 	public IProperty getProperty(String name) {
 		IRI iri = getIRI(name);
 		if(ontology.containsAnnotationPropertyInSignature(iri,true)){
@@ -413,30 +509,74 @@ public class OOntology extends OResource implements IOntology{
 		}
 		return null;
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#hasResource(java.lang.String)
+	 */
 	public boolean hasResource(String path) {
 		return ontology.containsEntityInSignature(getIRI(path),true);
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#getRootClasses()
+	 */
 	public IClass[] getRootClasses() {
 		return getRoot().getDirectSubClasses();
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#getRoot()
+	 */
 	public IClass getRoot() {
 		return (IClass) convertOWLObject(data.getOWLThing());
 	}
+	
+	/**
+	 * Gets the thing.
+	 *
+	 * @return the thing
+	 */
 	public IClass getThing() {
 		return (IClass) convertOWLObject(data.getOWLThing());
 	}
+	
+	/**
+	 * Gets the nothing.
+	 *
+	 * @return the nothing
+	 */
 	public IClass getNothing() {
 		return (IClass) convertOWLObject(data.getOWLNothing());
 	}
+	
+	/**
+	 * Gets the top object property.
+	 *
+	 * @return the top object property
+	 */
 	public IProperty getTopObjectProperty() {
 		return (IProperty) convertOWLObject(data.getOWLTopObjectProperty());
 	}
+	
+	/**
+	 * Gets the top data property.
+	 *
+	 * @return the top data property
+	 */
 	public IProperty getTopDataProperty() {
 		return (IProperty) convertOWLObject(data.getOWLTopDataProperty());
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#getAllResources()
+	 */
 	public IResourceIterator getAllResources() {
 		return  new OResourceIterator(ontology.getSignature(true),this);
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#getAllProperties()
+	 */
 	public IResourceIterator getAllProperties() {
 		List list = new ArrayList();
 		list.addAll(ontology.getDataPropertiesInSignature(true));
@@ -445,23 +585,45 @@ public class OOntology extends OResource implements IOntology{
 		return new OResourceIterator(list,this);
 		
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#getAllClasses()
+	 */
 	public IResourceIterator getAllClasses() {
 		return new OResourceIterator(ontology.getClassesInSignature(true),this);
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#isLoaded()
+	 */
 	public boolean isLoaded() {
 		return ontology != null;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#reload()
+	 */
 	public void reload() throws IOntologyException {
 		dispose();
 		load();
 		
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#flush()
+	 */
 	public void flush() {}
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.owl.OResource#getNameSpace()
+	 */
 	public String getNameSpace(){
 		return getIRI().toString()+"#";
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#save()
+	 */
 	public void save() throws IOntologyException {
 		modified = false;
 		try {
@@ -473,6 +635,9 @@ public class OOntology extends OResource implements IOntology{
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#write(java.io.OutputStream, int)
+	 */
 	public void write(OutputStream out, int format) throws IOntologyException {
 		OWLOntologyFormat ontologyFormat = manager.getOntologyFormat(ontology);
 		switch(format){
@@ -498,10 +663,17 @@ public class OOntology extends OResource implements IOntology{
 		}
 		
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#isModified()
+	 */
 	public boolean isModified() {
 		return modified;
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.owl.OResource#getOWLEntityRemover()
+	 */
 	protected OWLEntityRemover getOWLEntityRemover(){
 		if(remover == null){ 
 			remover = new OWLEntityRemover(manager,Collections.singleton(ontology));
@@ -509,6 +681,9 @@ public class OOntology extends OResource implements IOntology{
 		return remover;
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.owl.OResource#getOWLEntityRenamer()
+	 */
 	protected OWLEntityRenamer getOWLEntityRenamer(){
 		if(renamer == null){ 
 			renamer = new OWLEntityRenamer(manager,Collections.singleton(ontology));
@@ -516,20 +691,32 @@ public class OOntology extends OResource implements IOntology{
 		return renamer;
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.owl.OResource#getOWLOntology()
+	 */
 	protected OWLOntology getOWLOntology(){
 		return ontology;
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.owl.OResource#getOWLDataFactory()
+	 */
 	protected OWLDataFactory getOWLDataFactory(){
 		lazyLoad();
 		return data;
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.owl.OResource#getOWLOntologyManager()
+	 */
 	protected OWLOntologyManager getOWLOntologyManager(){
 		lazyLoad();
 		return manager;
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.owl.OResource#getOWLReasoner()
+	 */
 	protected OWLReasoner getOWLReasoner(){
 		if(reasoner == null)
 			reasoner = new StructuralReasonerFactory().createReasoner(ontology);
@@ -538,9 +725,10 @@ public class OOntology extends OResource implements IOntology{
 	
 	
 	/**
-	 * get appropriate concept for a given class
-	 * @param cls
-	 * @return
+	 * get appropriate concept for a given class.
+	 *
+	 * @param cls the cls
+	 * @return the concept
 	 */
 	public Concept getConcept(IResource cls){
 		// lets see if we have any special concept handlers defined
@@ -560,6 +748,9 @@ public class OOntology extends OResource implements IOntology{
 		return new Concept(cls);
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.owl.OResource#getIRI()
+	 */
 	protected IRI getIRI(){
 		if(!isLoaded()){
 			if(locationIRI == null)
@@ -572,9 +763,10 @@ public class OOntology extends OResource implements IOntology{
 	
 
 	/**
-	 * convert name of resource to IRI
-	 * @param name
-	 * @return
+	 * convert name of resource to IRI.
+	 *
+	 * @param name the name
+	 * @return the iri
 	 */
 	protected IRI getIRI(String name){
 		if(name == null)
@@ -613,6 +805,12 @@ public class OOntology extends OResource implements IOntology{
 		return IRI.create(getNameSpace()+name);
 	}
 	
+	/**
+	 * Lookup IRI.
+	 *
+	 * @param val the val
+	 * @return true, if successful
+	 */
 	private boolean lookupIRI(String val){
 		final String [] generic = new String [] {"w3.org","protege.stanford.edu","purl.org","xsp.owl"};
 		for(String s: generic){
@@ -622,6 +820,9 @@ public class OOntology extends OResource implements IOntology{
 		return true;
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.owl.OResource#getDescription()
+	 */
 	public String getDescription() {
 		String dsc = "";
 		IProperty p = getProperty(IProperty.DC_DESCRIPTION);
@@ -632,10 +833,16 @@ public class OOntology extends OResource implements IOntology{
 		return dsc;
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.owl.OResource#getName()
+	 */
 	public String getName() {
 		return StringUtils.getOntologyName(getURI(),true);
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.owl.OResource#getPropertyValues(edu.pitt.dbmi.nlp.noble.ontology.IProperty)
+	 */
 	public Object[] getPropertyValues(IProperty prop) {
 		OWLOntology e = getOWLOntology();
 		if(e != null){
@@ -653,6 +860,9 @@ public class OOntology extends OResource implements IOntology{
 		return new Object [0];
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.owl.OResource#getProperties()
+	 */
 	public IProperty[] getProperties() {
 		OWLOntology e = getOWLOntology();
 		if(e != null){
@@ -666,22 +876,38 @@ public class OOntology extends OResource implements IOntology{
 	}
 	
 	
+	/**
+	 * Gets the language filter.
+	 *
+	 * @return the language filter
+	 */
 	public List<String> getLanguageFilter() {
 		return languageFilter;
 	}
 
 
+	/**
+	 * Sets the language filter.
+	 *
+	 * @param languageFilter the new language filter
+	 */
 	public void setLanguageFilter(List<String> languageFilter) {
 		this.languageFilter = languageFilter;
 	}
 
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.owl.OResource#addAnnotation(org.semanticweb.owlapi.model.OWLAnnotationProperty, java.lang.String)
+	 */
 	protected void addAnnotation(OWLAnnotationProperty prop,String str){
 		OWLDataFactory df = getOWLDataFactory();
 		OWLAnnotation commentAnno = df.getOWLAnnotation(prop,df.getOWLLiteral(str));
 		getOWLOntologyManager().applyChange(new AddOntologyAnnotation(ontology, commentAnno));
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.owl.OResource#removeAnnotation(org.semanticweb.owlapi.model.OWLAnnotationProperty, java.lang.String)
+	 */
 	protected void removeAnnotation(OWLAnnotationProperty prop,String str){
 		OWLDataFactory df = getOWLDataFactory();
 		OWLAnnotation commentAnno = df.getOWLAnnotation(prop,df.getOWLLiteral(str));

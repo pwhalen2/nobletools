@@ -3,7 +3,8 @@ package edu.pitt.dbmi.nlp.noble.ontology;
 import java.util.Arrays;
 
 /**
- * This class describes propery construct
+ * This class describes propery construct.
+ *
  * @author tseytlin
  */
 public interface IProperty extends IResource {
@@ -51,175 +52,212 @@ public interface IProperty extends IResource {
 	
 
 	/**
-	 * create sub property of this property
-	 * @param name
-	 * @return
+	 * create sub property of this property.
+	 *
+	 * @param name the name
+	 * @return the i property
 	 */
 	public IProperty createSubProperty(String name);
 	
 	
 	/**
 	 * get property type
-	 * OBJECT, DATATYPE, ANNOTATION_OBJECT, ANNOTATION_DATATYPE
-	 * @return
+	 * OBJECT, DATATYPE, ANNOTATION_OBJECT, ANNOTATION_DATATYPE.
+	 *
+	 * @return the property type
 	 */
 	public int getPropertyType();
 	
 	
 	/**
-	 * is property a datatype property
-	 * @return
+	 * is property a datatype property.
+	 *
+	 * @return true, if is datatype property
 	 */
 	public boolean isDatatypeProperty();
 	
 	/**
-	 * is property an object property
-	 * @return
+	 * is property an object property.
+	 *
+	 * @return true, if is object property
 	 */
 	public boolean isObjectProperty();
 	
 	/**
-	 * is property an annotation property
-	 * @return
+	 * is property an annotation property.
+	 *
+	 * @return true, if is annotation property
 	 */
 	public boolean isAnnotationProperty();
 	
 	
 	/**
-	 * get domain of some property
-	 * @param prop
-	 * @return
+	 * get domain of some property.
+	 *
+	 * @return the domain
 	 */
 	public IClass [] getDomain();
 	
 	
 	/**
-	 * get range of some property
-	 * @param prop
-	 * @return
+	 * get range of some property.
+	 *
+	 * @return the range
 	 */
 	public Object [] getRange();
 	
 	
 	/**
-	 * set domain of some property
-	 * @param prop
-	 * @return
+	 * set domain of some property.
+	 *
+	 * @param domain the new domain
 	 */
 	public void setDomain(IResource [] domain);
 	
 	
 	/**
-	 * set range of some property
-	 * @param prop
-	 * @return
+	 * set range of some property.
+	 *
+	 * @param range the new range
 	 */
 	public void setRange(Object [] range);
 	
 	/**
-	 * check if given property is an inverse of this
-	 * @param p
-	 * @return
+	 * check if given property is an inverse of this.
+	 *
+	 * @param p the p
+	 * @return true, if is inverse of
 	 */
 	public boolean isInverseOf(IProperty p);
 	
 	/**
-	 * is property transitive
-	 * @return
+	 * is property transitive.
+	 *
+	 * @return true, if is transitive
 	 */
 	public boolean isTransitive();
 	
 	/**
-	 * is property functional
-	 * @return
+	 * is property functional.
+	 *
+	 * @return true, if is functional
 	 */
 	public boolean isFunctional();
 	
 	/**
-	 * is property symmetrical
-	 * @return
+	 * is property symmetrical.
+	 *
+	 * @return true, if is symmetric
 	 */
 	public boolean isSymmetric();
 	
 	/**
-	 * get sub properties
-	 * @return
+	 * get sub properties.
+	 *
+	 * @return the sub properties
 	 */
 	public IProperty [] getSubProperties();
 	
 	/**
-	 * get super properties
-	 * @return
+	 * get super properties.
+	 *
+	 * @return the super properties
 	 */
 	public IProperty [] getSuperProperties();
 	
 	/**
-	 * get sub properties
-	 * @return
+	 * get sub properties.
+	 *
+	 * @return the direct sub properties
 	 */
 	public IProperty [] getDirectSubProperties();
 	
 	/**
-	 * get super properties
-	 * @return
+	 * get super properties.
+	 *
+	 * @return the direct super properties
 	 */
 	public IProperty [] getDirectSuperProperties();
 	
 	
+	/**
+	 * Checks for super property.
+	 *
+	 * @param o the o
+	 * @return true, if successful
+	 */
 	public boolean hasSuperProperty(IProperty o);
 	
+	/**
+	 * Checks for sub property.
+	 *
+	 * @param o the o
+	 * @return true, if successful
+	 */
 	public boolean hasSubProperty(IProperty o);
 	
 	/**
-	 * get inverse property
-	 * @return
+	 * get inverse property.
+	 *
+	 * @return the inverse property
 	 */
 	public IProperty getInverseProperty();
 	
 	/**
-	 * set inverse property
-	 * @return
+	 * set inverse property.
+	 *
+	 * @param p the new inverse property
 	 */
 	public void setInverseProperty(IProperty p);
 	
 	
 	/**
-	 * add direct super property
-	 * @param p
+	 * add direct super property.
+	 *
+	 * @param p the p
 	 */
 	public void addSuperProperty(IProperty p);
 	
 	/**
-	 * add direct super property
-	 * @param p
+	 * add direct super property.
+	 *
+	 * @param p the p
 	 */
 	public void addSubProperty(IProperty p);
 	
 	/**
-	 * remove super property
-	 * @param p
+	 * remove super property.
+	 *
+	 * @param p the p
 	 */
 	public void removeSuperProperty(IProperty p);
 	
 	/**
-	 * remove super property
-	 * @param p
+	 * remove super property.
+	 *
+	 * @param p the p
 	 */
 	public void removeSubProperty(IProperty p);
 	
 	
 	/**
-	 * set property transitive flag
+	 * set property transitive flag.
+	 *
+	 * @param b the new transitive
 	 */
 	public void setTransitive(boolean b);
 	
 	/**
-	 * set property functional flag
+	 * set property functional flag.
+	 *
+	 * @param b the new functional
 	 */
 	public void  setFunctional(boolean b);
 	
 	/**
-	 * set property symmetrical flag
+	 * set property symmetrical flag.
+	 *
+	 * @param b the new symmetric
 	 */
 	public void setSymmetric(boolean b);
 	

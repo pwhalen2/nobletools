@@ -7,7 +7,16 @@ import edu.pitt.dbmi.nlp.noble.terminology.Concept;
 import edu.pitt.dbmi.nlp.noble.terminology.Source;
 
 
+/**
+ * The Class FMAConcept.
+ */
 public class FMAConcept extends Concept {
+	
+	/**
+	 * Instantiates a new FMA concept.
+	 *
+	 * @param cls the cls
+	 */
 	public FMAConcept(IClass cls) {
 		super(cls);
 		

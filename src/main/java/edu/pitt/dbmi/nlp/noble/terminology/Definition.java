@@ -7,7 +7,8 @@ import org.w3c.dom.Element;
 
 
 /**
- * Wrapps definition
+ * Wrapps definition.
+ *
  * @author tseytlin
  */
 public class Definition implements Serializable{
@@ -16,11 +17,15 @@ public class Definition implements Serializable{
 	private String definition,language;
 	private boolean preferred;
 	
+	/**
+	 * Instantiates a new definition.
+	 */
 	public Definition(){};
 	
 	/**
-	 * Create new definition
-	 * @param txt
+	 * Create new definition.
+	 *
+	 * @param txt the txt
 	 */
 	public Definition(String txt){
 		this.definition = txt;
@@ -28,24 +33,35 @@ public class Definition implements Serializable{
 	
 	
 	/**
+	 * Gets the definition.
+	 *
 	 * @return the definition
 	 */
 	public String getDefinition() {
 		return definition;
 	}
+	
 	/**
+	 * Sets the definition.
+	 *
 	 * @param definition the definition to set
 	 */
 	public void setDefinition(String definition) {
 		this.definition = definition;
 	}
+	
 	/**
+	 * Gets the source.
+	 *
 	 * @return the source
 	 */
 	public Source getSource() {
 		return source;
 	}
+	
 	/**
+	 * Sets the source.
+	 *
 	 * @param source the source to set
 	 */
 	public void setSource(Source source) {
@@ -53,13 +69,17 @@ public class Definition implements Serializable{
 	}
 	
 	/**
-	 * Make it readable
+	 * Make it readable.
+	 *
+	 * @return the string
 	 */
 	public String toString(){
 		return definition;
 	}
 
 	/**
+	 * Checks if is preferred.
+	 *
 	 * @return the preferred
 	 */
 	public boolean isPreferred() {
@@ -67,6 +87,8 @@ public class Definition implements Serializable{
 	}
 
 	/**
+	 * Sets the preferred.
+	 *
 	 * @param preferred the preferred to set
 	 */
 	public void setPreferred(boolean preferred) {
@@ -74,6 +96,8 @@ public class Definition implements Serializable{
 	}
 
 	/**
+	 * Gets the language.
+	 *
 	 * @return the language
 	 */
 	public String getLanguage() {
@@ -81,6 +105,8 @@ public class Definition implements Serializable{
 	}
 
 	/**
+	 * Sets the language.
+	 *
 	 * @param language the language to set
 	 */
 	public void setLanguage(String language) {
@@ -88,18 +114,20 @@ public class Definition implements Serializable{
 	}
 	
 	/**
-	 * get instance of definition class
-	 * @param text
-	 * @return
+	 * get instance of definition class.
+	 *
+	 * @param text the text
+	 * @return the definition
 	 */
 	public static Definition getDefinition(String text){
 		return new Definition(text);
 	}
 	
 	/**
-	 * get instance of definition class
-	 * @param text
-	 * @return
+	 * get instance of definition class.
+	 *
+	 * @param text the text
+	 * @return the definitions
 	 */
 	public static Definition [] getDefinitions(String [] text){
 		if(text == null)
@@ -110,18 +138,26 @@ public class Definition implements Serializable{
 		return d;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
 	public int hashCode() {
 		return toString().hashCode();
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
 	public boolean equals(Object obj) {
 		return toString().equals(obj.toString());
 	}
 	
 	/**
-	 * convert to DOM element
-	 * @param doc
-	 * @return
+	 * convert to DOM element.
+	 *
+	 * @param doc the doc
+	 * @return the element
+	 * @throws TerminologyException the terminology exception
 	 */
 	public Element toElement(Document doc) throws TerminologyException {
 		Element root = doc.createElement("Definition");
@@ -134,10 +170,12 @@ public class Definition implements Serializable{
 		root.setTextContent(definition);
 		return root;
 	}
+	
 	/**
-	 * convert from DOM element
-	 * @param element
-	 * @throws TerminologyException
+	 * convert from DOM element.
+	 *
+	 * @param element the element
+	 * @throws TerminologyException the terminology exception
 	 */
 	public void fromElement(Element element) throws TerminologyException{
 		if(element.getTagName().equals("Definition")){

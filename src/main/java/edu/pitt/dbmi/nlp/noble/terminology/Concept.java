@@ -16,7 +16,8 @@ import edu.pitt.dbmi.nlp.noble.tools.TextTools;
 import edu.pitt.dbmi.nlp.noble.util.XMLUtils;
 
 /**
- * This class discribes a concept
+ * This class discribes a concept.
+ *
  * @author Eugene Tseytlin (University of Pittsburgh)
  */
 public class Concept implements  Serializable, Comparable<Concept> {
@@ -45,7 +46,8 @@ public class Concept implements  Serializable, Comparable<Concept> {
 
 	
 	/**
-	 * simple object that represents concept content
+	 * simple object that represents concept content.
+	 *
 	 * @author tseytlin
 	 */
 	public static class Content implements Serializable {
@@ -63,8 +65,9 @@ public class Concept implements  Serializable, Comparable<Concept> {
 	}
 	
 	/**
-	 * get concept from storage object
-	 * @param c
+	 * get concept from storage object.
+	 *
+	 * @param c the c
 	 */
 	public Concept(Content c){
 		code = c.code;
@@ -108,8 +111,9 @@ public class Concept implements  Serializable, Comparable<Concept> {
 	}
 	
 	/**
-	 * get content object
-	 * @return
+	 * get content object.
+	 *
+	 * @return the content
 	 */
 	public Content getContent(){
 		if(content == null){
@@ -153,142 +157,8 @@ public class Concept implements  Serializable, Comparable<Concept> {
 	
 	
 	/**
-	 * simple object that represents concept content
-	 * @author tseytlin
-	 *
-	public static class Content implements Serializable {
-		private static final long serialVersionUID = 1234567890L;
-		public transient Concept concept;
-		public String code, name;
-		public String [] definitions, sources, semanticTypes, synonyms,termForms, termLanguages,termSources,semanticTypeCodes, definitionSources;
-		public Map<String,String> codeMap;
-		public Map<String,Set<String>> relationMap;
-	}*/
-	
-	/**
-	 * get concept from storage object
-	 * @param c
-	 *
-	public Concept(Content c){
-		code = c.code;
-		name = c.name;
-		if(c.definitions != null){
-			definitions = new Definition [c.definitions.length];
-			for(int i=0;i<definitions.length;i++){
-				Definition d = Definition.getDefinition(c.definitions[i]);
-				if(c.definitionSources != null)
-					d.setSource(Source.getSource(c.definitionSources[i]));
-				definitions[i] = d;
-			}
-		}
-		if(c.sources != null){
-			sources = new Source [c.sources.length];
-			for(int i=0;i<sources.length;i++)
-				sources[i] = Source.getSource(c.sources[i]);
-		}
-		if(c.synonyms != null){
-			synonyms = c.synonyms;
-		}
-		if(c.semanticTypes != null){
-			semanticTypes = new SemanticType [c.semanticTypes.length];
-			for(int i=0;i<semanticTypes.length;i++){
-				SemanticType sm = SemanticType.getSemanticType(c.semanticTypes[i]);
-				if(c.semanticTypeCodes != null)
-					sm.setCode(c.semanticTypeCodes[i]);
-				semanticTypes[i] = sm;
-			}
-		}
-		if(c.relationMap != null){
-			relationMap = c.relationMap;
-		}
-		if(c.codeMap != null){
-			for(String key: c.codeMap.keySet()){
-				addCode(c.codeMap.get(key),Source.getSource(key));
-			}
-		}
-		if(c.termForms != null){
-			for(int i=0;i<c.termForms.length;i++){
-				String txt = c.synonyms[i];
-				String fm = c.termForms[i];
-				String sr = c.termSources[i];
-				String ln = c.termLanguages[i];
-				// if we have a valid value, then add term
-				if(fm != null && ln != null && sr != null){
-					Term t = new Term(txt);
-					t.setLanguage(ln);
-					t.setForm(fm);
-					t.setSource(Source.getSource(sr));
-					addTerm(t);
-				}
-			}
-		}
-	}
-	*/
-	/**
-	 * get content object
-	 * @return
-	 *
-	public Content getContent(){
-		if(content == null){
-			Content c = new Content();
-			c.name = name;
-			c.code = code;
-			c.synonyms = synonyms;
-			c.relationMap = relationMap;
-			if(definitions != null){
-				c.definitions = new String [definitions.length];
-				c.definitionSources = new String [definitions.length];
-				for(int i=0;i<c.definitions.length;i++){
-					c.definitions[i] = definitions[i].getDefinition();
-					c.definitionSources[i] = (definitions[i].getSource() != null)?definitions[i].getSource().getName():"";
-				}
-			}
-			if(sources != null){
-				c.sources = new String [sources.length];
-				for(int i=0;i<c.sources.length;i++)
-					c.sources[i] = sources[i].getName();
-			}
-			if(semanticTypes != null){
-				c.semanticTypes = new String [semanticTypes.length];
-				c.semanticTypeCodes = new String [semanticTypes.length];
-				for(int i=0;i<c.semanticTypes.length;i++){
-					c.semanticTypes[i] = semanticTypes[i].getName();
-					c.semanticTypeCodes[i] = ""+semanticTypes[i].getCode();
-				}
-			}
-			if(codes != null){
-				c.codeMap = new HashMap<String, String>();
-				for(Source key: codes.keySet()){
-					c.codeMap.put(key.getName(),codes.get(key));
-				}
-			}
-			if(terms != null){
-				// do best possible job to map terms
-				c.termLanguages = new String [synonyms.length];
-				c.termForms = new String [synonyms.length];
-				c.termSources = new String [synonyms.length];
-				for(int i=0;i<synonyms.length;i++){
-					for(Term t : terms){
-						// if term matches a synonym, then save it
-						if(t.getText().equals(synonyms[i])){
-							c.termLanguages[i] = ""+t.getLanguage();
-							c.termForms[i] = ""+t.getForm();
-							c.termSources[i] = (t.getSource() !=null)?t.getSource().getName():"";
-						}
-					}
-				}
-			}
-			
-			c.concept = this;
-			content = c;
-		}
-		return content;
-	}
-	*/
-	
-	/**
 	 * Constract a concept. CUI being the sole required argument
-	 * @param code
+	 * @param code - the CUI representing this concept
 	 */
 	public Concept(String code){
 		this.code = code;
@@ -297,9 +167,10 @@ public class Concept implements  Serializable, Comparable<Concept> {
 	}
 	
 	/**
-	 * Constract a concept with CUI and preferred name 
-	 * @param code
-	 * @param name
+	 * Constract a concept with CUI and preferred name .
+	 *
+	 * @param code the code
+	 * @param name the name
 	 */
 	public Concept(String code, String name){
 		this.code = code;
@@ -308,8 +179,9 @@ public class Concept implements  Serializable, Comparable<Concept> {
 	}
 
 	/**
-	 * Constract concept from another concept (copy)
-	 * @param c
+	 * Constract concept from another concept (copy).
+	 *
+	 * @param c the c
 	 */
 	public Concept(Concept c){
 		c.copyTo(this);
@@ -319,8 +191,9 @@ public class Concept implements  Serializable, Comparable<Concept> {
 	
 	
 	/**
-	 * create new concept from a class
-	 * @param cls
+	 * create new concept from a class.
+	 *
+	 * @param cls the cls
 	 */
 	public Concept(IResource cls){
 		if(cls instanceof IClass)
@@ -401,8 +274,10 @@ public class Concept implements  Serializable, Comparable<Concept> {
 	
 	
 	/**
-	 * get concept definitions
-	 * @return
+	 * get concept definitions.
+	 *
+	 * @param cls the cls
+	 * @return the definitions
 	 */
 	private Definition [] getDefinitions(IResource cls){
 		String [] com = cls.getComments();
@@ -414,8 +289,9 @@ public class Concept implements  Serializable, Comparable<Concept> {
 	
 	
 	/**
-	 * get concept class
-	 * @return
+	 * get concept class.
+	 *
+	 * @return the concept class
 	 */
 	public IClass getConceptClass(){
 		return cls;
@@ -425,7 +301,9 @@ public class Concept implements  Serializable, Comparable<Concept> {
 	 * Concept object is only required to contain a CUI
 	 * the rest of the information can be requested from the
 	 * server on demand. This method must be invoked to request that
-	 * information 
+	 * information
+	 *
+	 * @throws TerminologyException the terminology exception
 	 */
 	public void initialize() throws TerminologyException{
 		if(terminology != null){
@@ -438,8 +316,9 @@ public class Concept implements  Serializable, Comparable<Concept> {
 	
 	
 	/**
-	 * Copy content of this concept to target concept
-	 * @param c
+	 * Copy content of this concept to target concept.
+	 *
+	 * @param c the c
 	 */
 	private void copyTo(Concept c){
 		c.setCode(getCode());
@@ -466,7 +345,9 @@ public class Concept implements  Serializable, Comparable<Concept> {
 	
 	
 	/**
-	 * get a copy of this dataset
+	 * get a copy of this dataset.
+	 *
+	 * @return the concept
 	 */
 	public Concept clone(){
 		Concept c = new Concept(getContent());
@@ -478,8 +359,9 @@ public class Concept implements  Serializable, Comparable<Concept> {
 	
 	
 	/**
-	 * Pick some definition from the set of definitions (if available)
-	 * @return
+	 * Pick some definition from the set of definitions (if available).
+	 *
+	 * @return the definition
 	 */
 	public String getDefinition(){
 		if(definition == null || definition.length() == 0){
@@ -508,7 +390,8 @@ public class Concept implements  Serializable, Comparable<Concept> {
 	/**
 	 * score is a level of confidence from 0 to 1.0 that a terminology MAY
 	 * assign to a discovered concept, not all terminologies may assigne scores.
-	 * @return
+	 *
+	 * @param score the new score
 	 */
 	public void setScore(double score) {
 		this.score = score;
@@ -516,7 +399,9 @@ public class Concept implements  Serializable, Comparable<Concept> {
 
 	
 	/**
-	 * Name should be returned as a string representation
+	 * Name should be returned as a string representation.
+	 *
+	 * @return the string
 	 */
 	public String toString(){
 		//return name;
@@ -524,7 +409,8 @@ public class Concept implements  Serializable, Comparable<Concept> {
 	}
 	
 	/**
-	 * Get Concept Unique Identifier
+	 * Get Concept Unique Identifier.
+	 *
 	 * @return the code
 	 */
 	public String getCode() {
@@ -532,15 +418,17 @@ public class Concept implements  Serializable, Comparable<Concept> {
 	}
 	
 	/**
-	 * Get Concept Unique Identifier
-	 * @return the code
-	 * @see setCUI()
+	 * Get Concept Unique Identifier.
+	 *
+	 * @param code the new code
 	 */
 	public void setCode(String code) {
 		this.code = code;
 	}
 	
 	/**
+	 * Gets the definitions.
+	 *
 	 * @return the definitions
 	 */
 	public Definition [] getDefinitions() {
@@ -548,6 +436,8 @@ public class Concept implements  Serializable, Comparable<Concept> {
 	}
 
 	/**
+	 * Sets the definitions.
+	 *
 	 * @param definitions the definitions to set
 	 */
 	public void setDefinitions(Definition [] definitions) {
@@ -556,14 +446,17 @@ public class Concept implements  Serializable, Comparable<Concept> {
 	}
 	
 	/**
-	 * add synonym
-	 * @param synonym
+	 * add synonym.
+	 *
+	 * @param def the def
 	 */
 	public void addDefinition(Definition def){
 		setDefinitions(TextTools.addAll(getDefinitions(),def));
 	}
 
 	/**
+	 * Gets the name.
+	 *
 	 * @return the name
 	 */
 	public String getName() {
@@ -571,6 +464,8 @@ public class Concept implements  Serializable, Comparable<Concept> {
 	}
 
 	/**
+	 * Sets the name.
+	 *
 	 * @param name the name to set
 	 */
 	public void setName(String name) {
@@ -578,6 +473,8 @@ public class Concept implements  Serializable, Comparable<Concept> {
 	}
 
 	/**
+	 * Gets the properties.
+	 *
 	 * @return the properties
 	 */
 	public Properties getProperties() {
@@ -586,16 +483,30 @@ public class Concept implements  Serializable, Comparable<Concept> {
 		return properties;
 	}
 
+	/**
+	 * Adds the property.
+	 *
+	 * @param key the key
+	 * @param val the val
+	 */
 	public void addProperty(String key, String val){
 		getProperties().setProperty(key, val);
 	}
 	
+	/**
+	 * Gets the property.
+	 *
+	 * @param key the key
+	 * @return the property
+	 */
 	public String getProperty(String key){
 		return getProperties().getProperty(key);
 	}
 	
 	/**
-	 * @param properties the properties to set
+	 * Sets the properties.
+	 *
+	 * @param p the new properties
 	 */
 	public void setProperties(Properties p) {
 		Properties prop = getProperties();
@@ -610,6 +521,8 @@ public class Concept implements  Serializable, Comparable<Concept> {
 
 
 	/**
+	 * Gets the sources.
+	 *
 	 * @return the sources
 	 */
 	public Source [] getSources() {
@@ -617,6 +530,8 @@ public class Concept implements  Serializable, Comparable<Concept> {
 	}
 
 	/**
+	 * Sets the sources.
+	 *
 	 * @param sources the sources to set
 	 */
 	public void setSources(Source [] sources) {
@@ -624,8 +539,9 @@ public class Concept implements  Serializable, Comparable<Concept> {
 	}
 
 	/**
-	 * add synonym
-	 * @param synonym
+	 * add synonym.
+	 *
+	 * @param src the src
 	 */
 	public void addSource(Source src){
 		// check if it is there already
@@ -636,6 +552,8 @@ public class Concept implements  Serializable, Comparable<Concept> {
 	}
 	
 	/**
+	 * Gets the synonyms.
+	 *
 	 * @return the synonyms
 	 */
 	public String [] getSynonyms() {
@@ -643,6 +561,8 @@ public class Concept implements  Serializable, Comparable<Concept> {
 	}
 
 	/**
+	 * Sets the synonyms.
+	 *
 	 * @param synonyms the synonyms to set
 	 */
 	public void setSynonyms(String [] synonyms) {
@@ -651,8 +571,9 @@ public class Concept implements  Serializable, Comparable<Concept> {
 	}
 
 	/**
-	 * add synonym
-	 * @param synonym
+	 * add synonym.
+	 *
+	 * @param synonym the synonym
 	 */
 	public void addSynonym(String synonym){
 		// check if it is there already
@@ -663,6 +584,8 @@ public class Concept implements  Serializable, Comparable<Concept> {
 	}
 	
 	/**
+	 * Checks if is initialized.
+	 *
 	 * @return the initialized
 	 */
 	public boolean isInitialized() {
@@ -673,7 +596,8 @@ public class Concept implements  Serializable, Comparable<Concept> {
 	/**
 	 * If concept is extracted from some text, then 
 	 * start position is the offset of the exact string 
-	 * that the concept covers in the phrase/sentance/doc
+	 * that the concept covers in the phrase/sentance/doc.
+	 *
 	 * @return the offset
 	 */
 	public int getOffset() {
@@ -681,6 +605,8 @@ public class Concept implements  Serializable, Comparable<Concept> {
 	}
 
 	/**
+	 * Sets the offset.
+	 *
 	 * @param offset the offset to set
 	 */
 	public void setOffset(int offset) {
@@ -705,9 +631,10 @@ public class Concept implements  Serializable, Comparable<Concept> {
 
 	
 	/**
-	 * remove weird chars from string
-	 * @param str
-	 * @return
+	 * remove weird chars from string.
+	 *
+	 * @param str the str
+	 * @return the string
 	 */
 	private String filter(String str){
 		// lowercase
@@ -730,10 +657,11 @@ public class Concept implements  Serializable, Comparable<Concept> {
 	}
 	
 	/**
-	 * get number of chars
-	 * @param str
-	 * @param test
-	 * @return
+	 * get number of chars.
+	 *
+	 * @param str the str
+	 * @param test the test
+	 * @return the int
 	 */
 	private int charCount(String str, char test){
 		int n = 0;
@@ -746,9 +674,9 @@ public class Concept implements  Serializable, Comparable<Concept> {
 	
 	
 	/**
-	 * match text, setup text and offset
-	 * @param query
-	 * @return
+	 * match text, setup text and offset.
+	 *
+	 * @param query the query
 	 */
 	private void matchText(String query){
 		//long time = System.currentTimeMillis();
@@ -873,8 +801,9 @@ public class Concept implements  Serializable, Comparable<Concept> {
 	}
 	
 	/**
-	 * get an array of hit words in matched text (from getText())
-	 * @return
+	 * get an array of hit words in matched text (from getText()).
+	 *
+	 * @return the word map
 	 */
 	public int [] getWordMap(){
 		// try to get word map in the unique case, where we have text, but not map
@@ -898,11 +827,16 @@ public class Concept implements  Serializable, Comparable<Concept> {
 		return (refs != null)?refs:new int [0];
 	}
 	
+	/**
+	 * Reset word map.
+	 */
 	public void resetWordMap(){
 		refs = null;
 	}
 	
 	/**
+	 * Sets the text.
+	 *
 	 * @param text the text to set
 	 */
 	public void setText(String text) {
@@ -910,6 +844,8 @@ public class Concept implements  Serializable, Comparable<Concept> {
 	}
 
 	/**
+	 * Gets the terminology.
+	 *
 	 * @return the terminology
 	 */
 	public Terminology getTerminology() {
@@ -917,6 +853,8 @@ public class Concept implements  Serializable, Comparable<Concept> {
 	}
 
 	/**
+	 * Sets the terminology.
+	 *
 	 * @param terminology the terminology to set
 	 */
 	public void setTerminology(Terminology terminology) {
@@ -925,6 +863,8 @@ public class Concept implements  Serializable, Comparable<Concept> {
 
 
 	/**
+	 * Gets the semantic types.
+	 *
 	 * @return the symanticTypes
 	 */
 	public SemanticType [] getSemanticTypes() {
@@ -932,7 +872,9 @@ public class Concept implements  Serializable, Comparable<Concept> {
 	}
 
 	/**
-	 * @param symanticTypes the symanticTypes to set
+	 * Sets the semantic types.
+	 *
+	 * @param semanticTypes the new semantic types
 	 */
 	public void setSemanticTypes(SemanticType[] semanticTypes) {
 		this.semanticTypes = semanticTypes;
@@ -940,7 +882,9 @@ public class Concept implements  Serializable, Comparable<Concept> {
 	}
 	
 	/**
-	 * @param symanticTypes the symanticTypes to set
+	 * Adds the semantic type.
+	 *
+	 * @param semanticType the semantic type
 	 */
 	public void addSemanticType(SemanticType semanticType) {
 		// check if it is there already
@@ -952,7 +896,8 @@ public class Concept implements  Serializable, Comparable<Concept> {
 	
 	
 	/**
-	 * add related concept
+	 * add related concept.
+	 *
 	 * @param r - relationship in question
 	 * @param code - code of the related concept
 	 */
@@ -969,8 +914,9 @@ public class Concept implements  Serializable, Comparable<Concept> {
 	}
 	
 	/**
-	 * print info
-	 * @param stream
+	 * print info.
+	 *
+	 * @param out the out
 	 */
 	public void printInfo(PrintStream out){
 		out.println(getName()+" ("+getCode()+")\t"+Arrays.toString(getSemanticTypes()));
@@ -982,20 +928,28 @@ public class Concept implements  Serializable, Comparable<Concept> {
 	}
 
 	/**
+	 * Gets the parent concepts.
+	 *
 	 * @return the parentConcepts
+	 * @throws TerminologyException the terminology exception
 	 */
 	public Concept[] getParentConcepts() throws TerminologyException {
 		return getRelatedConcepts(Relation.BROADER);
 	}
 
 	/**
+	 * Gets the children concepts.
+	 *
 	 * @return the parentConcepts
+	 * @throws TerminologyException the terminology exception
 	 */
 	public Concept[] getChildrenConcepts() throws TerminologyException {
 		return getRelatedConcepts(Relation.NARROWER);
 	}
 
 	/**
+	 * Gets the relations.
+	 *
 	 * @return the relations
 	 */
 	public Relation[] getRelations() {
@@ -1009,6 +963,8 @@ public class Concept implements  Serializable, Comparable<Concept> {
 	}
 
 	/**
+	 * Sets the relations.
+	 *
 	 * @param relations the relations to set
 	 */
 	public void setRelations(Relation[] relations) {
@@ -1016,14 +972,21 @@ public class Concept implements  Serializable, Comparable<Concept> {
 	}
 
 	/**
+	 * Gets the related concepts.
+	 *
+	 * @param relation the relation
 	 * @return the relatedConcepts
+	 * @throws TerminologyException the terminology exception
 	 */
 	public Concept [] getRelatedConcepts(Relation relation) throws TerminologyException {
 		return (getRelatedConcepts().containsKey(relation))?getRelatedConcepts().get(relation):new Concept [0];
 	}
 
 	/**
+	 * Gets the related concepts.
+	 *
 	 * @return the relatedConcepts
+	 * @throws TerminologyException the terminology exception
 	 */
 	public Map<Relation,Concept []>  getRelatedConcepts() throws TerminologyException {
 		// if there was a privous request, get cache
@@ -1039,8 +1002,9 @@ public class Concept implements  Serializable, Comparable<Concept> {
 	}
 	
 	/**
-	 * get relation map that is associated with this concept 
-	 * @return
+	 * get relation map that is associated with this concept .
+	 *
+	 * @return the relation map
 	 */
 	
 	public Map<String,Set<String>> getRelationMap(){
@@ -1050,6 +1014,8 @@ public class Concept implements  Serializable, Comparable<Concept> {
 	}
 	
 	/**
+	 * Sets the initialized.
+	 *
 	 * @param initialized the initialized to set
 	 */
 	public void setInitialized(boolean initialized) {
@@ -1058,8 +1024,9 @@ public class Concept implements  Serializable, Comparable<Concept> {
 	
 	
 	/**
-	 * get preferred term
-	 * @return
+	 * get preferred term.
+	 *
+	 * @return the preferred term
 	 */
 	public Term getPreferredTerm(){
 		// get preferred term from terms
@@ -1080,6 +1047,8 @@ public class Concept implements  Serializable, Comparable<Concept> {
 	}
 
 	/**
+	 * Gets the terms.
+	 *
 	 * @return the terms
 	 */
 	public Term[] getTerms() {
@@ -1104,15 +1073,18 @@ public class Concept implements  Serializable, Comparable<Concept> {
 	}
 	
 	/**
-	 * check if string is a regular expression
-	 * @param s
-	 * @return
+	 * check if string is a regular expression.
+	 *
+	 * @param s the s
+	 * @return true, if is reg exp
 	 */
 	protected boolean isRegExp(String s){
 		return s != null && s.startsWith("/") && s.endsWith("/");
 	}
 
 	/**
+	 * Sets the terms.
+	 *
 	 * @param terms the terms to set
 	 */
 	public void setTerms(Term[] terms) {
@@ -1120,8 +1092,9 @@ public class Concept implements  Serializable, Comparable<Concept> {
 	}
 	
 	/**
-	 * add synonym
-	 * @param synonym
+	 * add synonym.
+	 *
+	 * @param term the term
 	 */
 	public void addTerm(Term term){
 		setTerms(TextTools.addAll((terms != null)?terms:new Term [0],term));
@@ -1130,9 +1103,10 @@ public class Concept implements  Serializable, Comparable<Concept> {
 	}
 	
 	/**
-	 * add a code for some source
-	 * @param code
-	 * @param source
+	 * add a code for some source.
+	 *
+	 * @param code the code
+	 * @param source the source
 	 */
 	public void addCode(String code, Source source){
 		if(codes == null)
@@ -1142,9 +1116,10 @@ public class Concept implements  Serializable, Comparable<Concept> {
 	
 	/**
 	 * Return a code for a specific source
-	 * if code is not found, return null
-	 * @param source
-	 * @return
+	 * if code is not found, return null.
+	 *
+	 * @param source the source
+	 * @return the code
 	 */
 	public String getCode(Source source){
 		if(codes != null)
@@ -1153,15 +1128,17 @@ public class Concept implements  Serializable, Comparable<Concept> {
 	}
 	
 	/**
-	 * get mapping of codes from different sources
-	 * @return
+	 * get mapping of codes from different sources.
+	 *
+	 * @return the codes
 	 */
 	public Map getCodes(){
 		return codes == null?Collections.emptyMap():codes;
 	}
 
 	/**
-	 * if concept was searched, what was the original search query
+	 * if concept was searched, what was the original search query.
+	 *
 	 * @return the searchQuery
 	 */
 	public String getSearchString() {
@@ -1169,6 +1146,8 @@ public class Concept implements  Serializable, Comparable<Concept> {
 	}
 
 	/**
+	 * Sets the search string.
+	 *
 	 * @param searchQuery the searchQuery to set
 	 */
 	public void setSearchString(String searchQuery) {
@@ -1176,8 +1155,9 @@ public class Concept implements  Serializable, Comparable<Concept> {
 	}
 	
 	/**
-	 * is concept fully covered by search string
-	 * @return
+	 * is concept fully covered by search string.
+	 *
+	 * @return true, if is fully covered
 	 */
 	public boolean isFullyCovered(){
 		if(searchString != null){
@@ -1193,10 +1173,15 @@ public class Concept implements  Serializable, Comparable<Concept> {
 	
 	/**
 	 * this class is a comparator that sorts Concepts based on length of
-	 * text found in search string
+	 * text found in search string.
+	 *
 	 * @author tseytlin
 	 */
 	public static class TextLengthComparator implements Comparator, Serializable{ 
+		
+		/* (non-Javadoc)
+		 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+		 */
 		public int compare(Object o1, Object o2){
 			if(o1 instanceof Concept && o2 instanceof Concept){
 				String t1 = ((Concept)o1).getText();
@@ -1210,10 +1195,15 @@ public class Concept implements  Serializable, Comparable<Concept> {
 	};
 	
 	/**
-	 * this class is a comparator that sorts Concepts based on name
+	 * this class is a comparator that sorts Concepts based on name.
+	 *
 	 * @author tseytlin
 	 */
 	public static class NameComparator implements Comparator, Serializable{ 
+		
+		/* (non-Javadoc)
+		 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+		 */
 		public int compare(Object o1, Object o2){
 			if(o1 instanceof Concept && o2 instanceof Concept){
 				String t1 = ((Concept)o1).getName();
@@ -1226,28 +1216,56 @@ public class Concept implements  Serializable, Comparable<Concept> {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
 	public boolean equals(Object e) {
 		if(e != null && e instanceof Concept)
 			return getCode().equals(((Concept)e).getCode());
 		return false;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
 	public int hashCode() {
 		return getCode().hashCode();
 	};
 	
 	
+	/**
+	 * Gets the matched term.
+	 *
+	 * @return the matched term
+	 */
 	public String getMatchedTerm() {
 		return (matchedTerm != null && matchedTerm.length > 0)?matchedTerm[0]:null;
 	}
+	
+	/**
+	 * Gets the matched terms.
+	 *
+	 * @return the matched terms
+	 */
 	public String [] getMatchedTerms() {
 		return matchedTerm;
 	}
 
+	/**
+	 * Sets the matched term.
+	 *
+	 * @param matchedTerm the new matched term
+	 */
 	public void setMatchedTerm(String matchedTerm) {
 		if(matchedTerm != null)
 			this.matchedTerm = new String [] {matchedTerm};
 	}
+	
+	/**
+	 * Adds the matched term.
+	 *
+	 * @param matchedTerm the matched term
+	 */
 	public void addMatchedTerm(String matchedTerm) {
 		if(this.matchedTerm == null){
 			setMatchedTerm(matchedTerm);
@@ -1257,16 +1275,18 @@ public class Concept implements  Serializable, Comparable<Concept> {
 	}
 	
 	/**
-	 * set annotations
-	 * @param a
+	 * set annotations.
+	 *
+	 * @param a the new annotations
 	 */
 	public void setAnnotations(Annotation [] a){
 		annotations = a;
 	}
 	
 	/**
-	 * add annotation
-	 * @param a
+	 * add annotation.
+	 *
+	 * @param a the a
 	 */
 	public void addAnnotation(Annotation a){
 		if(annotations == null){
@@ -1282,8 +1302,9 @@ public class Concept implements  Serializable, Comparable<Concept> {
 	}
 	
 	/**
-	 * get annotations
-	 * @return
+	 * get annotations.
+	 *
+	 * @return the annotations
 	 */
 	public Annotation [] getAnnotations(){
 		if(annotations == null){
@@ -1326,14 +1347,19 @@ public class Concept implements  Serializable, Comparable<Concept> {
 		return annotations;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
 	public int compareTo(Concept o) {
 		return getName().compareTo(o.getName());
 	}
 	
 	/**
-	 * convert to DOM element
-	 * @param doc
-	 * @return
+	 * convert to DOM element.
+	 *
+	 * @param doc the doc
+	 * @return the element
+	 * @throws TerminologyException the terminology exception
 	 */
 	public Element toElement(Document doc) throws TerminologyException {
 		Element e = doc.createElement("Concept");
@@ -1380,10 +1406,12 @@ public class Concept implements  Serializable, Comparable<Concept> {
 		
 		return e;
 	}
+	
 	/**
-	 * convert from DOM element
-	 * @param element
-	 * @throws TerminologyException
+	 * convert from DOM element.
+	 *
+	 * @param e the e
+	 * @throws TerminologyException the terminology exception
 	 */
 	public void fromElement(Element e) throws TerminologyException{
 		if(e.getTagName().equals("Concept")){

@@ -1,7 +1,8 @@
 package edu.pitt.dbmi.nlp.noble.ontology;
 
 /**
- * generic interface for defining queries in some query language
+ * generic interface for defining queries in some query language.
+ *
  * @author tseytlin
  */
 public interface IQuery {
@@ -9,15 +10,17 @@ public interface IQuery {
 	public static int SERQL = 1;
 
 	/**
-	 * get the language of this query
-	 * @return
+	 * get the language of this query.
+	 *
+	 * @return the language
 	 */
 	public int getLanguage();
 	
 	
 	/**
-	 * get the text of this query
-	 * @return
+	 * get the text of this query.
+	 *
+	 * @return the query
 	 */
 	public String getQuery();
 
