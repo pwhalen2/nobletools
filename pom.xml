@@ -1,59 +1,158 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-    <groupId>edu.pitt.dbmi.nlp</groupId>
-    <artifactId>NobleTools</artifactId>
-    <version>1.0</version>
-    <dependencies>
-        <dependency>
-            <groupId>net.sourceforge.owlapi</groupId>
-            <artifactId>owlapi-distribution</artifactId>
-            <version>3.5.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.jdbm</groupId>
-            <artifactId>jdbm</artifactId>
-            <version>3.0-alpha5</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>3.1.0</version>
-        </dependency>
-    </dependencies>
-    <build>
-	<plugins>
-		<plugin>
-		  <artifactId>maven-assembly-plugin</artifactId>
-		  <configuration>
-		  <finalName>NobleCoder-${project.version}</finalName>  
-		  <appendAssemblyId>false</appendAssemblyId>    
-		    <descriptorRefs>
-		      <descriptorRef>jar-with-dependencies</descriptorRef>
-		    </descriptorRefs>
-		    <archive>
-		      <manifest>
-		        <mainClass>edu.pitt.dbmi.nlp.noble.ui.NobleCoderTool</mainClass>
-		      </manifest>
-		      <manifestEntries>
-			       <Trusted-Library>true</Trusted-Library>
-			       <Permissions>all-permissions</Permissions>
-			       <Codebase>*</Codebase>
-			   </manifestEntries>	
-		    </archive>
-		  </configuration>
-		  <executions>
-		    <execution>
-		      <phase>package</phase>
-		      <goals>
-		        <goal>single</goal>
-		      </goals>
-		    </execution>
-		  </executions>
-		</plugin>
-	  </plugins>
+	<groupId>edu.pitt.dbmi.nlp</groupId>
+	<artifactId>NobleTools</artifactId>
+	<version>1.0</version>
+	<packaging>jar</packaging>
+
+	<name>NobleTools</name>
+	<description>Noble Tools Suite, is a set of Natural Language Processing (NLP) tools and Application Programming Interfaces (API) written in Java for interfacing with ontologies, auto coding text and extracting information from free test. 	The Noble Tools suite also includes a generic ontology API for interfacing with Web Ontology Language (OWL) files,  OBO and BioPortal ontologies and a number of support utilities and methods useful for NLP (e.g. string normalization, ngram and stemming)</description>
+	<url>http://noble-tools.dbmi.pitt.edu</url>
+
+	<licenses>
+		<license>
+			<name>GNU Lesser General Public License version 3</name>
+			<url>http://www.gnu.org/licenses/lgpl.html</url>
+			<distribution>repo</distribution>
+			<comments>
+	      This library is dual-licensed: 
+	      If you are an individual user or an educational institution, you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License version 3 as published by the Free Software Foundation. 
+	      For the terms of this license, see licenses/gpl_v3.txt or http://www.gnu.org/licenses/lgpl.html.
+	      You are free to use this library under the terms of the GNU Lesser General Public License, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+	      See the GNU Lesser General Public License for more details. For all other users, licensing is decided on a case by case basis. 
+	      If you have any questions about licensing, please contact us at:
+	      Rob Cecchetti, Executive Administrator for the Department of Biomedical Informatics 412-648-9134 | cecchett@pitt.edu 
+	      </comments>
+		</license>
+	</licenses>
+
+	<developers>
+    	<developer>
+    	<id>tseytlin</id>
+    	<name>Eugene Tseytlin</name>
+    	<email>tseytlin@pitt.edu</email>
+    	<organization>Department of Biomedical Informatics, University of Pittsburgh</organization>
+    	<organizationUrl>http://www.dbmi.pitt.edu</organizationUrl>
+    	<timezone>America/New_York</timezone>
+    	</developer>
+	</developers>
+
+	<scm>
+		<url>https://github.com/dbmi-pitt/nobletools.git</url>
+	</scm>
+
+	<dependencies>
+		<dependency>
+			<groupId>net.sourceforge.owlapi</groupId>
+			<artifactId>owlapi-distribution</artifactId>
+			<version>3.5.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.jdbm</groupId>
+			<artifactId>jdbm</artifactId>
+			<version>3.0-alpha5</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>3.1.0</version>
+		</dependency>
+	</dependencies>
+	<build>
+
+		<plugins>
+	
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>2.2.1</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.9.1</version>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<finalName>NobleCoder-${project.version}</finalName>
+					<appendAssemblyId>false</appendAssemblyId>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+					<archive>
+						<manifest>
+							<mainClass>edu.pitt.dbmi.nlp.noble.ui.NobleCoderTool</mainClass>
+						</manifest>
+						<manifestEntries>
+							<!--<Trusted-Library>true</Trusted-Library>-->
+							<Permissions>all-permissions</Permissions>
+							<Codebase>*</Codebase>
+						</manifestEntries>
+					</archive>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			
+			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<version>1.5</version>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.sonatype.plugins</groupId>
+				<artifactId>nexus-staging-maven-plugin</artifactId>
+				<version>1.6.7</version>
+				<extensions>true</extensions>
+				<configuration>
+					<serverId>ossrh</serverId>
+					<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+					<autoReleaseAfterClose>true</autoReleaseAfterClose>
+				</configuration>
+			</plugin>
+			
+		</plugins>
 	</build>
+	<organization>
+		<name>Department of Biomedical Informatics, University of Pittsburgh</name>
+		<url>http://www.dbmi.pitt.edu</url>
+	</organization>
 </project>

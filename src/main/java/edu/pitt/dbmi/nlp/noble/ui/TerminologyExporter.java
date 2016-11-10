@@ -113,6 +113,8 @@ public class TerminologyExporter implements ActionListener {
 	private Map<String,String> propertyMap;
 	private boolean exporting;
 	private JButton export,preview;
+	private JCheckBox useParent;
+	private JTextField useParentText;
 
 	public TerminologyExporter(IRepository r){
 		repository = r;
@@ -327,6 +329,20 @@ public class TerminologyExporter implements ActionListener {
 		depthCheck.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				recursionDepth.setEditable(depthCheck.isSelected());
+			}
+		});
+		c.gridx = 0;
+		c.gridy++;
+		
+		useParent = new JCheckBox("Use parent class");
+		advanced.add(useParent,c);
+		c.gridx++;
+		useParentText = new JTextField("Thing");
+		useParentText.setEditable(false);
+		advanced.add(useParentText,c);
+		useParent.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				useParentText.setEditable(useParent.isSelected());
 			}
 		});
 		
@@ -668,7 +684,14 @@ public class TerminologyExporter implements ActionListener {
 					}else{
 						ont = OOntology.createOntology(URI.create(defaultURI+ontologyFile.getName()));
 					}
-					export(null,umls,rootFilter,semanticTypeFilter,ont,depth);
+					IClass root = ont.getRoot();
+					if(useParent.isSelected()){
+						IClass cls = ont.getClass(useParentText.getText().trim());
+						if(cls != null){
+							root = cls;
+						}
+					}
+					export(null,umls,rootFilter,semanticTypeFilter,root,depth);
 					if(ontologyFile.exists()){
 						ont.save();
 					}else{
@@ -740,8 +763,8 @@ public class TerminologyExporter implements ActionListener {
 	 * @param ont
 	 * @throws Exception 
 	 */
-	public void export(Terminology term, Terminology umls,List<Concept> rootFilter, List<SemanticType> semanticTypeFilter,IOntology ont) throws Exception {
-		export(term,umls,rootFilter,semanticTypeFilter,ont, Integer.MAX_VALUE);
+	public void export(Terminology term, Terminology umls,List<Concept> rootFilter, List<SemanticType> semanticTypeFilter,IClass root) throws Exception {
+		export(term,umls,rootFilter,semanticTypeFilter,root, Integer.MAX_VALUE);
 	}
 	
 	/**
@@ -752,7 +775,9 @@ public class TerminologyExporter implements ActionListener {
 	 * @param ont
 	 * @throws Exception 
 	 */
-	public void export(Terminology term, Terminology umls,List<Concept> rootFilter, List<SemanticType> semanticTypeFilter,IOntology ont,int depth) throws Exception {
+	public void export(Terminology term, Terminology umls,List<Concept> rootFilter, List<SemanticType> semanticTypeFilter,IClass root,int depth) throws Exception {
+		IOntology ont = root.getOntology();
+		
 		// import term if necessary
 		if(getPropertyMapping().get(CODE).startsWith(TERMINOLOGY_CORE)){
 			ont.addImportedOntology(OOntology.loadOntology(new URL(TERMINOLOGY_CORE)));
@@ -760,7 +785,7 @@ public class TerminologyExporter implements ActionListener {
 		exporting = true;
 		List<Concept> roots = (rootFilter.isEmpty())?Arrays.asList(term.getRootConcepts()):rootFilter;
 		for(Concept c: roots){
-			exportConcept(c,umls,semanticTypeFilter,"",ont.getRoot(),depth);
+			exportConcept(c,umls,semanticTypeFilter,"",root,depth);
 		}
 		exporting = false;
 	}
@@ -798,8 +823,8 @@ public class TerminologyExporter implements ActionListener {
 	 * @param ont
 	 * @throws Exception 
 	 */
-	public void export(Terminology term, List<Concept> rootFilter,IOntology ont) throws Exception {
-		export(term,null, rootFilter,Collections.EMPTY_LIST, ont);
+	public void export(Terminology term, List<Concept> rootFilter,IClass root) throws Exception {
+		export(term,null, rootFilter,Collections.EMPTY_LIST, root);
 	}
 	
 	
