@@ -97,6 +97,7 @@
 				<configuration>
 					<finalName>NobleCoder-${project.version}</finalName>
 					<appendAssemblyId>false</appendAssemblyId>
+					<attach>false</attach>
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>
 					</descriptorRefs>
@@ -105,7 +106,7 @@
 							<mainClass>edu.pitt.dbmi.nlp.noble.ui.NobleCoderTool</mainClass>
 						</manifest>
 						<manifestEntries>
-							<!--<Trusted-Library>true</Trusted-Library>-->
+							<Trusted-Library>true</Trusted-Library>
 							<Permissions>all-permissions</Permissions>
 							<Codebase>*</Codebase>
 						</manifestEntries>
