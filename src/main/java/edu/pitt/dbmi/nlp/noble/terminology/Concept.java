@@ -245,7 +245,7 @@ public class Concept implements  Serializable, Comparable<Concept> {
 				}
 			}else if(pname.matches("(?i)pref.*(term|label).*")){
 				setName(""+cls.getPropertyValue(p));
-			}else if(pname.matches("(?i).*(abbr|synonym|term|variant|label|name|regex|misspell).*") && !pname.toLowerCase().startsWith("legacy")){
+			}else if(pname.matches("(?i).*(abbr|synonym|term|variant|label|name|regex|misspell|subjectiveExpression).*") && !pname.toLowerCase().startsWith("legacy")){
 				//((preferred|legacy)_)?
 				for(Object o: cls.getPropertyValues(p)){
 					if(o.toString().trim().length() > 0)
