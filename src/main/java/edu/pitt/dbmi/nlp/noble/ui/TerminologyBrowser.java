@@ -75,12 +75,13 @@ public class TerminologyBrowser {
 		infoText.setEditable(false);
 		infoText.setPreferredSize(new Dimension(400,400));
 		infoText.setBorder(new LineBorder(Color.gray));
-		
+		JScrollPane scroll = new JScrollPane(infoText);
+		scroll.setPreferredSize(infoText.getPreferredSize());
 		
 		tabs = new JTabbedPane();
 		tabs.addTab("Search", query);
 		tabs.addTab("Browse", ontologyExplorer);
-		tabs.addTab("Info",new JScrollPane(infoText));
+		tabs.addTab("Info",scroll);
 		tabs.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
 				JTabbedPane t = (JTabbedPane) e.getSource();

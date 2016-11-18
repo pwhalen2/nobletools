@@ -1432,7 +1432,7 @@ public class ConceptImporter {
 		
 		// now, why can't we insert on other valid codes :) ???? I think we can 
 		for(Object code: c.getCodes().values()){
-			if(!storage.getCodeMap().containsKey(code))
+			if(!storage.getCodeMap().containsKey(code) && !"NOCODE".equals(code))
 				storage.getCodeMap().put(code.toString(),c.getCode());
 		}
 		

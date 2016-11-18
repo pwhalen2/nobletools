@@ -1134,7 +1134,8 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 
 		// now, why can't we insert on other valid codes :) ???? I think we can
 		for (Object code : c.getCodes().values()) {
-			if (!storage.getCodeMap().containsKey(code))
+			//only put stuff that is not there already and that is not complete BS s.a. MTH NOCODE
+			if (!storage.getCodeMap().containsKey(code) && !"NOCODE".equals(code))
 				storage.getCodeMap().put(code.toString(), c.getCode());
 		}
 
