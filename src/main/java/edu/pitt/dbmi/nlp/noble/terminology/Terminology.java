@@ -224,4 +224,9 @@ public interface Terminology extends Describable, Processor<Sentence> {
 	 * @throws TerminologyException the terminology exception
 	 */
 	public Collection<Concept> getConcepts() throws TerminologyException;
+	
+	/**
+	 * Dispose terminology resources
+	 */
+	public void dispose();
 }

@@ -341,5 +341,7 @@ public abstract class AbstractTerminology implements Terminology{
 		return time;
 	}
 	
-	
+	public void dispose(){
+		//nothing to do
+	}
 }

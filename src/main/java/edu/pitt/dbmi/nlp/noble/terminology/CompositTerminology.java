@@ -288,4 +288,10 @@ public class CompositTerminology extends AbstractTerminology {
 		}
 	}
 	
+	public void dispose(){
+		for(Terminology t: getTerminologies()){
+			t.dispose();
+		}
+	}
+	
 }

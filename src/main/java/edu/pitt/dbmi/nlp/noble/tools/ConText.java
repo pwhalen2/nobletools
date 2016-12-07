@@ -87,7 +87,7 @@ public class ConText implements Processor<Sentence> {
 	
 	
 	private long time;
-	private NobleCoderTerminology terminology;
+	private Terminology terminology;
 	private PathHelper paths;
 	private Map<String,String> defaultValues;
 	
@@ -103,7 +103,8 @@ public class ConText implements Processor<Sentence> {
 				terminology = new NobleCoderTerminology(getClass().getSimpleName());
 			}else{
 				load(OOntology.loadOntology(DEFAULT_MODIFIER_ONTOLOGY));
-				terminology.dispose();
+				if(terminology instanceof NobleCoderTerminology)
+					((NobleCoderTerminology)terminology).dispose();
 				terminology = new NobleCoderTerminology(getClass().getSimpleName());
 			}
 		}catch(Exception ex){
@@ -127,6 +128,17 @@ public class ConText implements Processor<Sentence> {
 		paths = new PathHelper(terminology);
 	}
 	
+	
+	/**
+	 * initialize context with existing and initialized modifier terminology
+	 * @param terminology
+	 */
+	public ConText(Terminology terminology){
+		this.terminology = terminology;
+		this.paths = new PathHelper(terminology);
+	}
+	
+	
 	/**
 	 * load ConText ontology from a given ontology object.
 	 *
@@ -136,7 +148,7 @@ public class ConText implements Processor<Sentence> {
 	 */
 	private void load(IOntology ontology) throws TerminologyException, IOException {
 		// setup special interest of noble coder
-		terminology = new NobleCoderTerminology();
+		NobleCoderTerminology terminology = new NobleCoderTerminology();
 		terminology.load(getClass().getSimpleName(),false);
 		terminology.setDefaultSearchMethod(NobleCoderTerminology.CUSTOM_MATCH);
 		terminology.setContiguousMode(true);
@@ -181,6 +193,7 @@ public class ConText implements Processor<Sentence> {
 		
 		// save terminology
 		terminology.save();
+		this.terminology = terminology;
 	}
 
 	/**
@@ -191,6 +204,19 @@ public class ConText implements Processor<Sentence> {
 	 * @throws TerminologyException the terminology exception
 	 */
 	private Concept addConcept(IInstance inst) throws TerminologyException {
+		Concept concept = createConcept(inst);
+		terminology.addConcept(concept);
+		return concept;
+	}
+	
+	/**
+	 * Adds the concept.
+	 *
+	 * @param inst the inst
+	 * @return the concept
+	 * @throws TerminologyException the terminology exception
+	 */
+	public static Concept createConcept(IInstance inst) throws TerminologyException {
 		Concept concept = new Concept(inst);
 		concept.setCode(inst.getName());
 		if(!isRootInstance(inst))
@@ -220,11 +246,7 @@ public class ConText implements Processor<Sentence> {
 				}
 			}
 		}
-		
-		//add to terminology
-		terminology.addConcept(concept);
-		
-		
+			
 		return concept;
 	}
 	
@@ -235,7 +257,7 @@ public class ConText implements Processor<Sentence> {
 	 * @param c the c
 	 * @return the modifier value
 	 */
-	private String getModifierValue(String type, IClass c){
+	private static String getModifierValue(String type, IClass c){
 		IOntology o = c.getOntology();
 		if(c.hasDirectSuperClass(o.getClass(type))){
 			return c.getName();
@@ -256,7 +278,7 @@ public class ConText implements Processor<Sentence> {
 	 * @param inst the inst
 	 * @return true, if is root instance
 	 */
-	private boolean isRootInstance(IInstance inst) {
+	private static boolean isRootInstance(IInstance inst) {
 		for(IClass c: inst.getDirectTypes()){
 			if(CONTEXT_ROOTS.contains(c.getName()))
 				return true;
@@ -272,6 +294,19 @@ public class ConText implements Processor<Sentence> {
 	 * @throws TerminologyException the terminology exception
 	 */
 	private Concept addConcept(IClass cls) throws TerminologyException{
+		Concept concept =  createConcept(cls);
+		terminology.addConcept(concept);
+		return concept;
+	}
+	
+	/**
+	 * Adds the concept.
+	 *
+	 * @param cls the cls
+	 * @return the concept
+	 * @throws TerminologyException the terminology exception
+	 */
+	public static Concept createConcept(IClass cls) throws TerminologyException{
 		Concept concept = cls.getConcept();
 		//overwrite URI, with name
 		concept.setCode(cls.getName());
@@ -336,9 +371,7 @@ public class ConText implements Processor<Sentence> {
 				}
 			}
 		}
-			
-		// add terminology
-		terminology.addConcept(concept);
+	
 		
 		
 		return concept;
@@ -360,7 +393,7 @@ public class ConText implements Processor<Sentence> {
 	 * @param cls the cls
 	 * @return true, if is modifier type
 	 */
-	private boolean isModifierType(IClass cls){
+	private static  boolean isModifierType(IClass cls){
 		return cls.getURI().toString().contains(CONTEXT_OWL) && !cls.getName().contains("_");
 	}
 	
@@ -370,7 +403,7 @@ public class ConText implements Processor<Sentence> {
 	 * @param cls the cls
 	 * @return true, if is default value
 	 */
-	private boolean isDefaultValue(IClass cls){
+	private static boolean isDefaultValue(IClass cls){
 		for(Object o: cls.getDirectNecessaryRestrictions()){
 			if(o instanceof IRestriction){
 				IRestriction r = (IRestriction) o;
@@ -391,7 +424,7 @@ public class ConText implements Processor<Sentence> {
 	 * @param cls the cls
 	 * @return the semantic types
 	 */
-	private Set<SemanticType> getSemanticTypes(IClass cls) {
+	private static Set<SemanticType> getSemanticTypes(IClass cls) {
 		Set<SemanticType> semTypes = new LinkedHashSet<SemanticType>();
 		// if defined in ConText ontology, then class is its own SemType
 		if(isModifierType(cls)){
