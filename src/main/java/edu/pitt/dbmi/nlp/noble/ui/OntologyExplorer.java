@@ -92,7 +92,7 @@ public class OntologyExplorer extends JPanel implements HyperlinkListener, Actio
 	private IOntology ontology;
 	private JPanel panel;
 	private JScrollPane scroll,infoScroll;
-	private ExplorerPanel root; //root panel
+	private ExplorerPanel root,currentPanel; //root panel
 	private JEditorPane info;
 	private SearchComboBox search;
 	private OntologyExplorer explorer;
@@ -579,6 +579,18 @@ public class OntologyExplorer extends JPanel implements HyperlinkListener, Actio
 		 return selected;
 	 }
 	 
+	 /**
+	  * get selecte entries
+	  * @return
+	  */
+	 public List getSelectedEntries(){
+		 if(currentPanel != null){
+			 return currentPanel.getSelectedValues();
+		 }
+		 return Collections.EMPTY_LIST;
+	 }
+	 
+	 
 	/**
 	 * set selected Concept.
 	 *
@@ -846,7 +858,16 @@ public class OntologyExplorer extends JPanel implements HyperlinkListener, Actio
 		public boolean isLoading(){
 			return loading;
 		}
-			
+		
+		/**
+		 * get selected values
+		 * @return
+		 */
+		public List getSelectedValues(){
+			return list.getSelectedValuesList();
+		}
+		
+		
 		/**
 		 * dispose of resources.
 		 */
@@ -1110,6 +1131,7 @@ public class OntologyExplorer extends JPanel implements HyperlinkListener, Actio
 			//System.out.println(e.getValueIsAdjusting()+" "+list.getSelectedValue());
 			if(!e.getValueIsAdjusting()){
 				loadChildren();
+				OntologyExplorer.this.currentPanel = this;
 			}
 		}
 		

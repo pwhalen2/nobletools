@@ -163,7 +163,7 @@ public class OntologyUtils {
 	public static String toResourceName(String name){
 		return name.trim().replaceAll("\\s*\\(.+\\)\\s*","").replaceAll("[^\\w\\-]","_").replaceAll("_+","_");
 	}
-	
+
 	/**
 	 * Derive prettier version of a class name.
 	 *

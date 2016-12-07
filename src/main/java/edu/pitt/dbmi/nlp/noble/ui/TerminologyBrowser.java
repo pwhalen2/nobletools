@@ -212,7 +212,10 @@ public class TerminologyBrowser {
 		if(r == JOptionPane.OK_OPTION){
 			selectedConcepts = new ArrayList<Concept>();
 			if(tabs.getSelectedIndex() != 0){
-				selectedConcepts.add((Concept)ontologyExplorer.getSelectedEntry());
+				//selectedConcepts.add((Concept)ontologyExplorer.getSelectedEntry());
+				for(Object obj: ontologyExplorer.getSelectedEntries()){
+					selectedConcepts.add((Concept)obj);
+				}
 			}else{
 				for(Concept c: query.getSelectedConcepts()){
 					selectedConcepts.add(c);

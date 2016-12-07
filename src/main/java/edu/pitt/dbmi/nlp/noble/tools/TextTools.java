@@ -829,6 +829,10 @@ public class TextTools {
 	 * @return true, if is likely abbreviation
 	 */
 	public static boolean isLikelyAbbreviation(String text) {
+		// check if this is a multi-word term and then give up
+		if(text.contains(" "))
+			return false;
+		
 		// if string contains junk s.a. +()-/ or digit, it might be some protein or whatever
 		if(Pattern.compile("[\\(\\)\\[\\]+,0-9]").matcher(text).find() && Pattern.compile("[A-Za-z]").matcher(text).find())
 			return true;
