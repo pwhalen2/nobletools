@@ -27,6 +27,17 @@ import edu.pitt.dbmi.nlp.noble.terminology.impl.NobleCoderTerminology;
 public class AcronymDetector implements Processor<Sentence>{
 	private long time;
 	private Map<String,String> acronymList;
+	public static class Acronym {
+		public String longForm;
+		public String shortForm;
+		public Acronym(String l,String s){
+			longForm = l;
+			shortForm = s;
+		}
+		public String toString(){
+			return longForm+" ("+shortForm+")";
+		}
+	}
 	
 
 	/**
@@ -77,7 +88,7 @@ public class AcronymDetector implements Processor<Sentence>{
 	 * @param acronym the acronym
 	 * @return expanded form or null, if false matched
 	 */
-	private String getAcronymExapndedForm(String expanded, String acronym) {
+	private static String getAcronymExapndedForm(String expanded, String acronym) {
 		List<String> words = Arrays.asList(expanded.trim().split("[^A-Za-z]+"));
 		
 		//if(acronym.endsWith("s"))
@@ -117,6 +128,38 @@ public class AcronymDetector implements Processor<Sentence>{
 		return expanded.substring(k);
 	}
 
+	
+	/**
+	 * extract acronym and its epxanded form if found in text
+	 * @param phrase
+	 * @return
+	 */
+	public static Acronym extractAcronym(String phrase){
+		// Ex: World Health Organization (WHO)
+		Matcher m = Pattern.compile("(([A-Z]?[a-z-0-9]+ )+)\\(([A-Z-0-9]+s?)\\)").matcher(TextTools.stripDiacritics(phrase));
+		if(m.find()){
+			String expanded = m.group(1);
+			String acronym  = m.group(m.groupCount());
+			expanded = getAcronymExapndedForm(expanded,acronym);
+			// don't match to single words acronyms and don't match digits
+			if(expanded != null && acronym.length() > 1 && !acronym.matches("\\d+")){
+				return new Acronym(expanded,acronym);
+			}
+		}
+		//Ex: MM - Malignant melanoma
+		m = Pattern.compile("([A-Z]{2,4})\\s*-\\s*(([A-Z]?[a-z-0-9]+\\s*)+)").matcher(TextTools.stripDiacritics(phrase));
+		if(m.find()){
+			String expanded = m.group(2);
+			String acronym  = m.group(1);
+			expanded = getAcronymExapndedForm(expanded,acronym);
+			// don't match to single words acronyms and don't match digits
+			if(expanded != null && acronym.length() > 1 && !acronym.matches("\\d+")){
+				return new Acronym(expanded,acronym);
+			}
+		}
+		return null;
+	}
+	
 	
 	/**
 	 * process sentence.

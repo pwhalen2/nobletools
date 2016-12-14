@@ -40,6 +40,14 @@ public class SemanticType implements Serializable, Comparable<SemanticType>{
 	}
 	
 	/**
+	 * is a sementic type defined
+	 * @param group
+	 * @return
+	 */
+	public static boolean isDefinedSemanticType(String semanticType) {
+		return getSemanticTypeMap().containsKey(semanticType);
+	}
+	/**
 	 * get a list of predefined semantic types.
 	 *
 	 * @return the semantic type map
@@ -57,6 +65,7 @@ public class SemanticType implements Serializable, Comparable<SemanticType>{
 						SemanticType st = new SemanticType(sty,tui);
 						semanticTypes.put(tui,st);
 						semanticTypes.put(sty,st);
+						semanticTypes.put(sty.toLowerCase(),st);
 					}
 				}
 			} catch (IOException e) {
@@ -223,4 +232,6 @@ public class SemanticType implements Serializable, Comparable<SemanticType>{
 	public int compareTo(SemanticType o) {
 		return getName().compareTo(o.getName());
 	}
+
+	
 }

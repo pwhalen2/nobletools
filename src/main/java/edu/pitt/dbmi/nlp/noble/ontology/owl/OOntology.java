@@ -38,9 +38,14 @@ import org.semanticweb.owlapi.model.OWLAnnotationProperty;
 import org.semanticweb.owlapi.model.OWLAnnotationValue;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
+import org.semanticweb.owlapi.model.OWLException;
 import org.semanticweb.owlapi.model.OWLImportsDeclaration;
+import org.semanticweb.owlapi.model.OWLNaryAxiom;
+import org.semanticweb.owlapi.model.OWLNaryClassAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyFormat;
@@ -913,4 +918,29 @@ public class OOntology extends OResource implements IOntology{
 		OWLAnnotation commentAnno = df.getOWLAnnotation(prop,df.getOWLLiteral(str));
 		getOWLOntologyManager().applyChange(new RemoveOntologyAnnotation(ontology, commentAnno));
 	}
+	
+	
+	
+	/**
+	 * get usage for a given resource
+	 * @param resource
+	 * @return
+	 *
+	public List<ILogicExpression> getEquivalentReferencesTo(IResource resource ){
+		
+		List<ILogicExpression> list = new ArrayList<ILogicExpression>();
+		OWLEntity owlEntity = (OWLEntity) ((OResource)resource).getOWLObject();
+		Set<OWLAxiom> axioms = getOWLOntology().getReferencingAxioms(owlEntity,true);
+		for (OWLAxiom ax : axioms) {
+			if(ax instanceof OWLEquivalentClassesAxiom){
+				LogicExpression logic = new LogicExpression(ILogicExpression.AND);
+				for(OWLClassExpression exp: ((OWLEquivalentClassesAxiom)ax).getClassExpressions()){
+					logic.add(convertOWLObject(exp));
+				}
+				list.add(logic);
+			}
+		}
+		return list;
+	}
+	*/
 }

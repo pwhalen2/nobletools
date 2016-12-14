@@ -505,6 +505,10 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 	}
 	*/
 
+	public void setName(String name) {
+		this.name = name;
+	}
+
 	// init default persistence directory
 	static{
 		setPersistenceDirectory(DefaultRepository.DEFAULT_TERMINOLOGY_LOCATION);

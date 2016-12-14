@@ -13,7 +13,9 @@ import java.util.Set;
 import edu.pitt.dbmi.nlp.noble.coder.model.Mention;
 import edu.pitt.dbmi.nlp.noble.coder.model.Modifier;
 import edu.pitt.dbmi.nlp.noble.coder.model.Processor;
+import edu.pitt.dbmi.nlp.noble.coder.model.Section;
 import edu.pitt.dbmi.nlp.noble.coder.model.Sentence;
+import edu.pitt.dbmi.nlp.noble.mentions.model.AnnotationVariable;
 import edu.pitt.dbmi.nlp.noble.ontology.IClass;
 import edu.pitt.dbmi.nlp.noble.ontology.IInstance;
 import edu.pitt.dbmi.nlp.noble.ontology.IOntology;
@@ -37,9 +39,11 @@ import edu.pitt.dbmi.nlp.noble.util.PathHelper;
 public class ConText implements Processor<Sentence> {
 	public static final String DEFAULT_MODIFIER_ONTOLOGY = "http://blulab.chpc.utah.edu/ontologies/v2/Modifier.owl";
 	public static final List<String> CONTEXT_ROOTS =  Arrays.asList("Closure","Pseudo","LinguisticModifier");
-	public static final String RELATION_TERMINATION = "hasTermination";
-	public static final String RELATION_PSEUDO = "hasPseudo";
-	public static final String RELATION_ACTION = "hasActionEn";
+	public static final String HAS_TERMINATION = "hasTermination";
+	public static final String HAS_PSEUDO = "hasPseudo";
+	public static final String HAS_SENTENCE_ACTION = "hasActionEn";
+	public static final String HAS_PARAGRAPH_ACTION = "hasParagraphAction";
+	public static final String HAS_SECTION_ACTION = "hasSectionAction";
 	public static final String PROP_WINDOW_SIZE = "windowSize";
 	public static final String PROP_IS_DEFAULT_VALUE = "isDefaultValue";
 	public static final String PROP_HAS_DEFAULT_VALUE = "hasDefaultValue";
@@ -53,7 +57,10 @@ public class ConText implements Processor<Sentence> {
 	public static final String ACTION_BACKWARD = "backward";
 	public static final String ACTION_BIDIRECTIONAL = "bidirectional";
 	public static final String ACTION_DISCONTINUOUS = "discontinuous";
+	public static final String ACTION_FIRST_MENTION = "first_mention";
+	public static final String ACTION_NEAREST_MENTION = "nearest_mention";;
 	public static final String LINGUISTIC_MODIFIER = "LinguisticModifier";
+	public static final String MODIFIER = "Modifier";
 	public static final String PSEUDO = "Pseudo";
 	public static final int DEFAULT_WINDOW_SIZE = 8;
 	
@@ -84,12 +91,30 @@ public class ConText implements Processor<Sentence> {
 			MODIFIER_TYPE_PERMENENCE,
 			MODIFIER_TYPE_POLARITY,
 			MODIFIER_TYPE_TEMPORALITY);
+
+
+
 	
 	
 	private long time;
 	private Terminology terminology;
 	private PathHelper paths;
 	private Map<String,String> defaultValues;
+	
+	/**
+	 * a possible way for an outside code to validate if modifier can be linked to a target
+	 * @author tseytlin
+	 */
+	public static interface ModifierValidator {
+		/**
+		 * is a given modifier applicable for a given target
+		 * @param target
+		 * @param modifier
+		 * @return true if it is applicable
+		 */
+		public boolean isModifierApplicable(Mention modifier,Mention target);
+	}
+	private ModifierValidator modifierValidator;
 	
 	
 	/**
@@ -246,10 +271,42 @@ public class ConText implements Processor<Sentence> {
 				}
 			}
 		}
-			
+		
+		for(IClass cls: inst.getDirectTypes()){
+			// add other relations to a concept
+			for(Object o: cls.getNecessaryRestrictions()){
+				if(o instanceof IRestriction){
+					IRestriction r = (IRestriction) o;
+					for(Object v: r.getParameter()){
+						if(v instanceof IClass){
+							concept.addRelatedConcept(Relation.getRelation(r.getProperty().getName()), ((IClass)v).getName());
+						}
+					}
+				}
+			}
+		}
+		
+		
 		return concept;
 	}
 	
+	
+	/**
+	 * @return
+	 */
+	public ModifierValidator getModifierValidator() {
+		return modifierValidator;
+	}
+
+	/**
+	 * set an outside validator that can check if a modifier can actually map to a target
+	 * @param modifierValidator
+	 */
+	public void setModifierValidator(ModifierValidator modifierValidator) {
+		this.modifierValidator = modifierValidator;
+	}
+
+
 	/**
 	 * get modifier value.
 	 *
@@ -371,8 +428,6 @@ public class ConText implements Processor<Sentence> {
 				}
 			}
 		}
-	
-		
 		
 		return concept;
 	}
@@ -487,17 +542,43 @@ public class ConText implements Processor<Sentence> {
 			}
 		}
 		
-		// go over mentions
-		for(Mention m: getLinguisticModifiers(text)){
+		// go over all modifier mentions
+		List<Mention> relevantModifiers = getRelevantModifiers(text);
+		for(Mention m: relevantModifiers){
+			// add relevant modifiers to target mentions
 			for(Mention target: getTargetMentions(m,sentence,getTerminators(m,text))){
 				target.addModifiers(getModifiers(m));
 			}
+			// add modifiers to modifiers if relevant
+			for(Mention target: getTargetMentions(m,text,getTerminators(m,text))){
+				target.addModifiers(getModifiers(m));
+			}
 		}
+		
+		
+		// add modifiers to anchor sentence mentions if it spans beyound sentence boundaries
+		sentence.getMentions().addAll(getGlobalModifierMentions(relevantModifiers));
 		
 		time = System.currentTimeMillis() - time;
 		return sentence;
 	}
 
+	/**
+	 * get a list of modifier mentions that have actions outside of sentence boundaries
+	 * @param mentions
+	 * @return
+	 */
+	private List<Mention> getGlobalModifierMentions(List<Mention> mentions){
+		List<Mention> list = new ArrayList<Mention>();
+		for(Mention m: mentions){
+			Map map = m.getConcept().getProperties();
+			if(map.containsKey(HAS_PARAGRAPH_ACTION) || map.containsKey(HAS_SECTION_ACTION)){
+				list.add(m);
+			}
+		}
+		return list;
+	}
+	
 	
 	/**
 	 * Gets the modifiers.
@@ -567,6 +648,10 @@ public class ConText implements Processor<Sentence> {
 		for(Mention target: targetText.getMentions()){
 			boolean add = false;
 
+			// skip itself
+			if(target.equals(modifier))
+				continue;
+			
 			// looking forward, if modifier is before target and target is before termination point
 			if(forward && modifier.getStartPosition() <= target.getStartPosition() && target.getStartPosition() <= end){
 				add = true;
@@ -576,13 +661,60 @@ public class ConText implements Processor<Sentence> {
 				add = true;
 			}
 
-			if(add)
+			if(add && isModifierApplicable(modifier, target))
 				list.add(target);
 		}
 
 		return list;
 	}
 
+	
+	/**
+	 * is a given modifier applicable for a given target
+	 * @param target
+	 * @param modifier
+	 * @return true if it is applicable
+	 */
+	private boolean isModifierApplicable(Mention modifier,Mention target){
+		//linguistic modifiers are applicable to everything
+		if(isTypeOf(modifier, LINGUISTIC_MODIFIER) && !isTypeOf(target, MODIFIER))
+			return true;
+		
+		// if we have an outside validator supplied, check with that
+		if(modifierValidator != null){
+			return modifierValidator.isModifierApplicable(modifier, target);
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * is a mention a type of some concept in ontology
+	 * @param m
+	 * @param type
+	 * @return
+	 */
+	private boolean isTypeOf(Mention m, String type){
+		Concept conceptType = null;
+		try {
+			conceptType = terminology.lookupConcept(type);
+		} catch (TerminologyException e) {
+			throw new TerminologyError("Unable to find concept type "+type,e);
+		}
+		return isTypeOf(m,conceptType);
+	}
+	
+	/**
+	 * is a mention a type of some concept in ontology
+	 * @param m
+	 * @param type
+	 * @return
+	 */
+	private boolean isTypeOf(Mention m, Concept conceptType){
+		return paths.hasAncestor(m.getConcept(),conceptType);
+	}
+	
+	
 	/**
 	 * Gets the word window index.
 	 *
@@ -653,12 +785,12 @@ public class ConText implements Processor<Sentence> {
 	 * @return the linguistic modifiers
 	 * @throws TerminologyException the terminology exception
 	 */
-	private List<Mention> getLinguisticModifiers(Sentence text) throws TerminologyException{
+	private List<Mention> getRelevantModifiers(Sentence text) throws TerminologyException{
 		List<Mention> list = new ArrayList<Mention>();
 		List<Mention> pseudo = getPseudoModifiers(text);
-		Concept linguisticModifier = terminology.lookupConcept(LINGUISTIC_MODIFIER);
+		Concept modifierConcept = terminology.lookupConcept(MODIFIER);//LINGUISTIC_MODIFIER
 		for(Mention m: text.getMentions()){
-			if(paths.hasAncestor(m.getConcept(),linguisticModifier) && !isPseudo(m,pseudo)){
+			if(isTypeOf(m,modifierConcept) && !isPseudo(m,pseudo)){
 				list.add(m);
 			}
 		}
@@ -729,8 +861,8 @@ public class ConText implements Processor<Sentence> {
 	 */
 	private static List<String> getAction(Concept c) throws TerminologyException {
 		List<String> list = new ArrayList<String>();
-		list.add(c.getProperty(RELATION_ACTION));
-		/*for(Concept a :	c.getRelatedConcepts(Relation.getRelation(RELATION_ACTION))){
+		list.add(c.getProperty(HAS_SENTENCE_ACTION));
+		/*for(Concept a :	c.getRelatedConcepts(Relation.getRelation(HAS_SENTENCE_ACTION))){
 			list.add(a.getCode());
 		}*/
 		return list;
@@ -790,7 +922,7 @@ public class ConText implements Processor<Sentence> {
 	private List<String> getTermination(Concept c) throws TerminologyException {
 		List<String> list = new ArrayList<String>();
 		for(Concept p: c.getParentConcepts()){
-			for(Concept t: p.getRelatedConcepts(Relation.getRelation(RELATION_TERMINATION))){
+			for(Concept t: p.getRelatedConcepts(Relation.getRelation(HAS_TERMINATION))){
 				list.add(t.getCode());
 			}
 		}
@@ -807,7 +939,7 @@ public class ConText implements Processor<Sentence> {
 	private List<String> getPseudo(Concept c) throws TerminologyException {
 		List<String> list = new ArrayList<String>();
 		for(Concept p: c.getParentConcepts()){
-			for(Concept t: p.getRelatedConcepts(Relation.getRelation(RELATION_PSEUDO))){
+			for(Concept t: p.getRelatedConcepts(Relation.getRelation(HAS_PSEUDO))){
 				list.add(t.getCode());
 			}
 		}
@@ -823,6 +955,82 @@ public class ConText implements Processor<Sentence> {
 		return time;
 	}
 
+	
+	
+	/**
+	 * find semantically matching modifiers from a given list given a target mention
+	 * @param globalModifiers
+	 * @param sentence
+	 * @param var
+	 */
+	public List<Modifier> getMatchingModifiers(List<Mention> globalModifiers, Mention target) {
+		// if modifier validator is not defined, no point in going further
+		if(getModifierValidator() == null || globalModifiers.isEmpty() || target == null)
+			return Collections.EMPTY_LIST;
+		
+		// get the sentence
+		Sentence sentence = target.getSentence();
+		
+		// allocate best modifiers
+		Map<String,Modifier> bestModifiers = new LinkedHashMap<String, Modifier>();
+		
+		// go over all "dangling" modifiers
+		for(Mention modifier: globalModifiers){
+			// lets see if this modifier fits the variable semantically
+			if(getModifierValidator().isModifierApplicable(modifier, target)){
+				// now that we know that it fits semantically, is it at least contained in a section?
+			
+				// is this a paragraph action?
+				String paragraphAction = modifier.getConcept().getProperties().getProperty(ConText.HAS_PARAGRAPH_ACTION);
+				if(paragraphAction != null){
+					//TODO: as proof of concept do section for now
+					Section section = sentence.getSection();
+					// is this modifier contained in a same span? 
+					if(section != null && section.contains(modifier)){
+						for(Modifier m: Modifier.getModifiers(modifier)){
+							// find best one of the same type
+							Modifier best = bestModifiers.get(m.getType());
+							if(isBestModifier(m.getMention(),best,target,paragraphAction)){
+								bestModifiers.put(m.getType(),m);
+							}
+						}
+					}
+				}
+				
+				// is this a section action?
+				String sectionAction = modifier.getConcept().getProperties().getProperty(ConText.HAS_SECTION_ACTION);
+				if(sectionAction != null){
+					//TODO: implement
+				}
+			}
+		}
+		return new ArrayList<Modifier>(bestModifiers.values());
+	}
+
+	/**
+	 * is the candidate modifier the best based on action?
+	 * @param candidate
+	 * @param best
+	 * @param target
+	 * @param paragraphAction
+	 * @return
+	 */
+	private boolean isBestModifier(Mention candidate, Modifier best, Mention target, String action) {
+		if(ConText.ACTION_FIRST_MENTION.equals(action)){
+			return candidate.before(target) && (best == null || candidate.before(best.getMention())); 
+		}else if(ConText.ACTION_NEAREST_MENTION.equals(action)){
+			return candidate.before(target) && (best == null || candidate.after(best.getMention())); 
+		}
+		
+		return false;
+	}
+
+	
+	
+	
+	
+	
+	
 	
 	/**
 	 * The main method.

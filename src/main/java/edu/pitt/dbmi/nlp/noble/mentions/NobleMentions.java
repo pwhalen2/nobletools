@@ -8,7 +8,7 @@ import java.util.*;
 
 import edu.pitt.dbmi.nlp.noble.coder.NobleCoder;
 import edu.pitt.dbmi.nlp.noble.coder.model.*;
-import edu.pitt.dbmi.nlp.noble.mentions.model.Anchor;
+import edu.pitt.dbmi.nlp.noble.mentions.model.Instance;
 import edu.pitt.dbmi.nlp.noble.mentions.model.AnnotationVariable;
 import edu.pitt.dbmi.nlp.noble.mentions.model.Composition;
 import edu.pitt.dbmi.nlp.noble.mentions.model.DomainOntology;
@@ -16,6 +16,7 @@ import edu.pitt.dbmi.nlp.noble.ontology.IOntologyException;
 import edu.pitt.dbmi.nlp.noble.terminology.TerminologyException;
 import edu.pitt.dbmi.nlp.noble.tools.ConText;
 import edu.pitt.dbmi.nlp.noble.tools.TextTools;
+import edu.pitt.dbmi.nlp.noble.ui.TerminologyBrowser;
 
 public class NobleMentions implements Processor<Composition>{
 	private long time;
@@ -32,13 +33,19 @@ public class NobleMentions implements Processor<Composition>{
 	 * @throws IOntologyException 
 	 */
 	public static void main(String[] args) throws FileNotFoundException, IOException, TerminologyException, IOntologyException {
-		File file = new File("/home/tseytlin/Data/BiRADS/pathology/reports/patientX_doc2_SP.txt");
+		File file = new File("/home/tseytlin/Data/BiRADS/pathology/reports/realDCIS.txt");
 		DomainOntology domainOntology = new DomainOntology("/home/tseytlin/Data/BiRADS/ontology/pathologicDx.owl");
 		NobleMentions noble = new NobleMentions(domainOntology);
 		Composition doc = noble.process(file);
 		for(AnnotationVariable var: doc.getAnnotationVariables()){
 			System.out.println(var);
 		}
+		
+		// visualize terminologies
+		TerminologyBrowser browser = new TerminologyBrowser();
+		browser.setTerminologies(domainOntology.getTerminologies());
+		browser.showDialog(null,"NobleMentions");
+		
 	}
 
 	/**
@@ -69,7 +76,9 @@ public class NobleMentions implements Processor<Composition>{
 		coder.setAcronymExpansion(false);
 		coder.setContextDetection(true);
 		
+		// initialize context
 		ConText conText = new ConText(domainOntology.getModifierTerminology());
+		conText.setModifierValidator(domainOntology.getModifierValidator());
 		coder.setConText(conText);
 		//coder.setDocumentProcessor(documentProcessor);
 	}
@@ -97,13 +106,22 @@ public class NobleMentions implements Processor<Composition>{
 		// run coder: sentence parser + dictionary lookup + ConText on the document
 		coder.process(doc);
 		
+		// gether all global modifiers that need to be resolved beyound sentence boundaries
+		List<Mention> globalModifiers = getGlobalModifiers(doc);
+		
 		// now lets construct annotation variables from anchor mentions
 		for(Sentence sentence: doc.getSentences()){
-			for(Anchor anchor: domainOntology.getAnchors(sentence.getMentions())){
+			for(Instance anchor: domainOntology.getAnchors(sentence.getMentions())){
 				for(AnnotationVariable var : domainOntology.getAnnotationVariables(anchor)){
-					// perhaps associate other variables here
-					//TODO: process stuff in paragraphs and such
-					doc.addAnnotationVariable(var);
+					// associate with global modifiers
+					for(Modifier modifier: coder.getConText().getMatchingModifiers(globalModifiers,var.getAnchor().getMention())){
+						var.addModifier(modifier);
+					}
+					
+					//check if property is fully satisfied
+					if(var.isSatisfied()){
+						doc.addAnnotationVariable(var);
+					}
 				}
 			}
 		}
@@ -114,6 +132,22 @@ public class NobleMentions implements Processor<Composition>{
 		return doc;
 	}
 
+	
+	/**
+	 * get all global modifiers that can be associated outside sentence boundaries
+	 * @param doc
+	 * @return
+	 */
+	private List<Mention> getGlobalModifiers(Document doc){
+		List<Mention> globalModifiers = new ArrayList<Mention>();
+		for(Mention m: doc.getMentions()){
+			if(domainOntology.isTypeOf(m,DomainOntology.MODIFIER)){
+				globalModifiers.add(m);
+			}
+		}
+		return globalModifiers;
+	}
+	
 	public long getProcessTime() {
 		return time;
 	}
