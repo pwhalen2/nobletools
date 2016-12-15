@@ -2,8 +2,10 @@ package edu.pitt.dbmi.nlp.noble.mentions.model;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +26,7 @@ import edu.pitt.dbmi.nlp.noble.ontology.LogicExpression;
 import edu.pitt.dbmi.nlp.noble.ontology.OntologyUtils;
 import edu.pitt.dbmi.nlp.noble.ontology.owl.OOntology;
 import edu.pitt.dbmi.nlp.noble.ontology.owl.OResource;
+import edu.pitt.dbmi.nlp.noble.terminology.Annotation;
 import edu.pitt.dbmi.nlp.noble.terminology.Concept;
 import edu.pitt.dbmi.nlp.noble.terminology.Relation;
 import edu.pitt.dbmi.nlp.noble.terminology.SemanticType;
@@ -54,12 +57,15 @@ public class DomainOntology {
 	public static final String IS_ANCHOR_OF = "isAnchorOf";
 	public static final String HAS_ANNOTATION_TYPE = "hasAnnotationType";
 	public static final String ANNOTATION_MENTION = "MentionAnnotation";
+	public static final String LINGUISTIC_MODIFER = ConText.LINGUISTIC_MODIFIER;
+	private static final String HAS_COMPOUND_ARGUMENT = "hasCompoundArgument";
 	
 	
 	private IOntology ontology;
 	private Terminology anchorTerminology, modifierTerminology;
-	private Map<String,SemanticType> semanticTypeMap;
+	//private Map<String,SemanticType> semanticTypeMap;
 	private ConText.ModifierValidator modifierValidator;
+	private Map<IClass,Set<IClass>> compoundAnchorMap;
 	
 	/**
 	 * File or URL location of the domain ontology
@@ -117,7 +123,7 @@ public class DomainOntology {
 					}
 				}
 			}
-			semanticTypeMap = null;
+			//semanticTypeMap = null;
 			anchorTerminology = terminology;
 		}
 		
@@ -414,7 +420,6 @@ public class DomainOntology {
 		for(Instance a: getCompoundAnchors(mentions)){
 			anchors.add(a);
 		}
-		
 		return anchors;
 	}
 
@@ -430,7 +435,16 @@ public class DomainOntology {
 	 * @return
 	 */
 	public boolean isTypeOf(Mention m, String type){
-		IClass cls = getConceptClass(m);
+		return isTypeOf(getConceptClass(m), type);
+	}
+	
+	/**
+	 * is a mention of a given type
+	 * @param m
+	 * @param type
+	 * @return
+	 */
+	public boolean isTypeOf(IClass cls, String type){
 		return cls != null ? cls.hasSuperClass(ontology.getClass(type)):false;
 	}
 	
@@ -440,9 +454,151 @@ public class DomainOntology {
 	 * @return
 	 */
 	private List<Instance> getCompoundAnchors(List<Mention> mentions) {
-		// TODO Auto-generated method stub
-		return Collections.EMPTY_LIST;
+		List<Instance> compound = new ArrayList<Instance>();
+		
+		// fill in mention map
+		//TODO: what if several mentions with same class?
+		Map<IClass,Mention> mentionMap = new HashMap<IClass, Mention>();
+		for(Mention m: mentions){
+			if(isAnchor(m))
+				mentionMap.put(getConceptClass(m),m);
+		}
+		
+		// skip if nothing to do
+		if(mentionMap.isEmpty() || getCompoundAnchorMap().isEmpty())
+			return Collections.EMPTY_LIST;
+		
+		
+		// get property
+		IProperty hasCompoundArgument = ontology.getProperty(HAS_COMPOUND_ARGUMENT);
+		
+		// go over all compounds anchors
+		for(IClass compoundCls: getCompoundAnchorMap().keySet()){
+			// find classes that are possible arguments
+			Set<IClass> possibleArgs = getPossibleCompoundAnchorArguments(compoundCls,mentionMap.keySet());
+			if(possibleArgs.size() >= compoundCls.getRestrictions(hasCompoundArgument).length){
+				
+				// create an instance and see if it is satisfiable
+				IInstance inst = compoundCls.createInstance(createInstanceName(compoundCls));
+				List<IInstance> componentInst = new ArrayList<IInstance>();
+				List<Mention> possibleMentionComponents = new ArrayList<Mention>();
+				for(IClass c: possibleArgs){
+					IInstance i = c.createInstance(createInstanceName(c));
+					inst.addPropertyValue(hasCompoundArgument,i);
+					componentInst.add(i);
+					possibleMentionComponents.add(mentionMap.get(c));
+				}
+				
+				// moment of truth does it work????
+				if(compoundCls.getEquivalentRestrictions().evaluate(inst)){
+					Mention mention = createCompoundAnchorMention(compoundCls, possibleMentionComponents);
+					compound.add( new Instance(this,mention,inst));
+				}else{
+					//clean up
+					for(IInstance i: componentInst){
+						i.delete();
+					}
+					inst.delete();
+				}
+				
+			}
+			
+		}
+		return compound;
 	}
+	
+	/**
+	 * create compound anchor mentions
+	 * @param comound
+	 * @param components
+	 * @return
+	 */
+	public Mention createCompoundAnchorMention(IClass compoundCls, Collection<Mention> components){
+		Concept concept = null;
+		try {
+			concept = getAnchorTerminology().lookupConcept(compoundCls.getName());
+		} catch (TerminologyException e) {
+			throw new TerminologyError("Could not find concept "+compoundCls.getName(),e);
+		}
+		// create new mention
+		Mention mention = new Mention();
+		mention.setConcept(concept);
+		List<Annotation> annotations = new ArrayList<Annotation>();
+		for(Mention m: components){
+			if(mention.getSentence() == null)
+				mention.setSentence(m.getSentence());
+			annotations.addAll(m.getAnnotations());
+		}
+		mention.setAnnotations(annotations);
+		
+		return mention;
+	}
+	
+	
+	
+	private Set<IClass> getPossibleCompoundAnchorArguments(IClass compoundCls,Set<IClass> mentionsClss){
+		Set<IClass> found = new HashSet<IClass>();
+		for(IClass component: getCompoundAnchorMap().get(compoundCls)){
+			if(mentionsClss.contains(component))
+				found.add(component);
+		}
+		return found;
+	}
+	
+	
+	
+	/**
+	 * get the mapping between compound anchors and its components
+	 * @return
+	 */
+	private Map<IClass,Set<IClass>> getCompoundAnchorMap(){
+		if(compoundAnchorMap == null){
+			compoundAnchorMap = new HashMap<IClass, Set<IClass>>();
+			for(IClass cls: ontology.getClass(COMPOUND_ANCHOR).getSubClasses()){
+				// get all possible component classes
+				Set<IClass> possibleComponents = new LinkedHashSet<IClass>(); 
+				for(IRestriction r: cls.getRestrictions(ontology.getProperty(HAS_COMPOUND_ARGUMENT))){
+					possibleComponents.addAll(getContainedClasses(r.getParameter()));
+				}
+				// 
+				compoundAnchorMap.put(cls,possibleComponents);
+			}
+		}
+		return compoundAnchorMap;
+	}
+	
+	
+	
+	/**
+	 * get all classes contained in a given expression
+	 * @param exp
+	 * @return
+	 */
+	public List<IClass> getContainedClasses(ILogicExpression exp){
+		List<IClass> classes = new ArrayList<IClass>();
+		for(Object o: exp){
+			if(o instanceof IClass){
+				classes.add((IClass)o);
+			}else if(o instanceof ILogicExpression){
+				classes.addAll(getContainedClasses((ILogicExpression)o));
+			}
+		}
+		return classes;
+	}
+	/**
+	 * get all classes contained in a given expression
+	 * @param exp
+	 * @return
+	 */
+	public List<IClass> getContainedClasses(IRestriction [] rr){
+		List<IClass> classes = new ArrayList<IClass>();
+		for(IRestriction r: rr){
+			classes.addAll(getContainedClasses(r.getParameter()));
+		}
+		return classes;
+	}
+	
+	
 	
 	/**
 	 * get modifier target validator to check if modifier can be attached to target
@@ -596,12 +752,19 @@ public class DomainOntology {
 	public List<AnnotationVariable> getAnnotationVariables(Instance anchor){
 		List<AnnotationVariable> list = new ArrayList<AnnotationVariable>();
 		// go over all annotation classes and find ones that have this anchor defined
+		/*
 		IProperty hasAnchor = ontology.getProperty(HAS_ANCHOR);
 		IClass cls = anchor.getConceptClass();
 		for(IClass annotation: ontology.getClass(ANNOTATION).getSubClasses()){
 			if(isDefinedInDomain(annotation) && hasDefinedRelation(annotation, hasAnchor, cls)){
 				list.add(new AnnotationVariable(annotation,anchor));
 			}
+		}
+		*/
+		// find annotations that anchor points to
+		IProperty isAnchorOf = ontology.getProperty(IS_ANCHOR_OF);
+		for(IClass annotation: getContainedClasses(anchor.getConceptClass().getRestrictions(isAnchorOf))){
+			list.add(new AnnotationVariable(annotation,anchor));
 		}
 		return list;
 	}

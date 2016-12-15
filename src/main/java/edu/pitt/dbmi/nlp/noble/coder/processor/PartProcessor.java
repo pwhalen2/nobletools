@@ -62,10 +62,10 @@ public class PartProcessor implements Processor<Section> {
 		// reset offsets
 		for(Section p: parts){
 			p.updateOffset(section.getOffset());
-			for(Sentence s: section.getSentences()){
+			/*for(Sentence s: section.getSentences()){
 				if(p.contains(s))
 					p.addSentence(s);
-			}
+			}*/
 		}
 		section.setSections(parts);
 		time = System.currentTimeMillis() - time;

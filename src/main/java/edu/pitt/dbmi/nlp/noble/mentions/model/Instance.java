@@ -7,11 +7,14 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import edu.pitt.dbmi.nlp.noble.coder.model.Mention;
 import edu.pitt.dbmi.nlp.noble.coder.model.Modifier;
 import edu.pitt.dbmi.nlp.noble.ontology.IClass;
 import edu.pitt.dbmi.nlp.noble.ontology.IInstance;
+import edu.pitt.dbmi.nlp.noble.ontology.IProperty;
+import edu.pitt.dbmi.nlp.noble.ontology.IRestriction;
 import edu.pitt.dbmi.nlp.noble.terminology.Annotation;
 
 /**
@@ -27,7 +30,8 @@ public class Instance {
 	protected IInstance instance;
 	protected List<Modifier> modifiers;
 	protected Map<String,Set<Instance>> modifierInstances;
-
+	protected Set<Annotation> annotations;
+	
 	/**
 	 * initilize an instance
 	 * @param ontology
@@ -50,6 +54,19 @@ public class Instance {
 		setModifier(m);
 	}
 	
+	/**
+	 * initilize an instance
+	 * @param ontology
+	 * @param m
+	 */
+	
+	public Instance(DomainOntology ontology,Mention m, IInstance inst){
+		setDomainOntology(ontology);
+		setMention(m);
+		instance = inst;
+	}
+	
+	
 	public DomainOntology getDomainOntology() {
 		return domainOntology;
 	}
@@ -64,6 +81,7 @@ public class Instance {
 		cls = domainOntology.getConceptClass(mention);
 		if(mention != null)
 			getModifiers().addAll(mention.getModifiers().values());
+		reset();
 	}
 
 	
@@ -77,7 +95,18 @@ public class Instance {
 		setMention(modifier.getMention());
 		if(mention == null)
 			cls = domainOntology.getOntology().getClass(modifier.getValue());
+		reset();
 	}
+	
+	/**
+	 * reset instance information
+	 */
+	protected void reset(){
+		instance = null;
+		modifierInstances = null;
+		annotations = null;
+	}
+	
 
 	public Mention getMention() {
 		return mention;
@@ -118,6 +147,24 @@ public class Instance {
 			// check if we have an actual mention or some generic default value w/out a mention
 			if(mention != null){
 				instance = cls.createInstance(domainOntology.createInstanceName(cls));
+				
+				// if instance is modifier, but not linguistic modifier (see if we neet to set some other properties
+				if(domainOntology.isTypeOf(cls,DomainOntology.MODIFIER) && !domainOntology.isTypeOf(cls,DomainOntology.LINGUISTIC_MODIFER)){
+					// instantiate available modifiers
+					List<Instance> modifierInstances = getModifierInstanceList();
+					
+					// go over all restrictions
+					for(IRestriction r: domainOntology.getRestrictions(cls)){
+						IProperty prop = r.getProperty();
+						for(Instance modifierInstance: modifierInstances){
+							IInstance modInstance = modifierInstance.getInstance();
+							if(modInstance != null && domainOntology.isPropertyRangeSatisfied(prop,modInstance)){
+								instance.addPropertyValue(prop, modInstance);
+								addModifierInstance(prop.getName(),modifierInstance);
+							}
+						}
+					}
+				}
 			}else if(modifier != null){
 				instance = domainOntology.getOntology().getInstance(cls.getName()+"_default");
 				if(instance == null)
@@ -128,11 +175,26 @@ public class Instance {
 		return instance;
 	}
 	
+	public String getName(){
+		return getConceptClass().getName();
+	}
+	public String getLabel(){
+		return getConceptClass().getLabel();
+	}
+	
+	
 	/**
 	 * pretty print this name
 	 */
 	public String toString(){
-		return getConceptClass().getName();
+		StringBuffer str = new StringBuffer();
+		str.append(getLabel());
+		for(String type: getModifierInstances().keySet()){
+			for(Instance modifier:getModifierInstances().get(type)){
+				str.append(" "+type+": "+modifier);
+			}
+		}
+		return str.toString();
 	}
 	
 	
@@ -148,6 +210,10 @@ public class Instance {
 		return modifierInstances;
 	}
 	
+	public Set<Instance> getModifierInstances(String prop){
+		return getModifierInstances().get(prop);
+	}
+	
 	/**
 	 * get a list of modifiers associated with this instance
 	 * @return the modifiers
@@ -160,13 +226,26 @@ public class Instance {
 	}
 	
 	/**
+	 * get a list of current modifiers as instance list
+	 * @return
+	 */
+	protected List<Instance> getModifierInstanceList(){
+		// instantiate available modifiers
+		List<Instance> modifierInstances = new ArrayList<Instance>();
+		for(Modifier m: getModifiers()){
+			modifierInstances.add(new Instance(domainOntology, m));
+		}
+		return modifierInstances;
+	}
+	
+	/**
 	 * add linguistic mofifier of this mention.
 	 *
 	 * @param m the m
 	 */
 	public void addModifier(Modifier m) {
 		getModifiers().add(m);
-		instance = null;
+		reset();
 	}
 
 	
@@ -185,8 +264,19 @@ public class Instance {
 	}
 
 
-	public List<Annotation> getAnnotations() {
-		return getMention().getAnnotations();
+	public Set<Annotation> getAnnotations() {
+		if(annotations == null){
+			annotations = new TreeSet<Annotation>();
+			if(getMention() != null)
+				annotations.addAll(getMention().getAnnotations());
+			for(String type: getModifierInstances().keySet()){
+				for(Instance modifier:getModifierInstances().get(type)){
+					annotations.addAll(modifier.getAnnotations());
+				}
+			}
+		}
+		
+		return annotations;
 	}
 	
 }

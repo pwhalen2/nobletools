@@ -21,9 +21,9 @@ public class Document extends Text {
 	
 	private String name,location;
 	private String documentStatus = STATUS_UNPROCESSED,documentType = TYPE_MEDICAL_REPORT;
-	private Map<String,String> properties;
 	private List<Section> sections;
 	private List<Sentence> sentences;
+	private List<Paragraph> paragraphs;
 	
 	/**
 	 * Instantiates a new document.
@@ -87,6 +87,17 @@ public class Document extends Text {
 	}
 	
 	/**
+	 * Gets the sections.
+	 *
+	 * @return the sections
+	 */
+	public List<Paragraph> getParagraphs() {
+		if(paragraphs == null)
+			paragraphs = new ArrayList<Paragraph>();
+		return paragraphs;
+	}
+	
+	/**
 	 * Sets the sections.
 	 *
 	 * @param sections the new sections
@@ -125,6 +136,10 @@ public class Document extends Text {
 	public void addSection(Section s){
 		getSections().add(s);
 		s.setDocument(this);
+	}
+	
+	public void addParagraph(Paragraph p){
+		getParagraphs().add(p);
 	}
 	
 	/**
@@ -237,25 +252,6 @@ public class Document extends Text {
 		this.documentType = documentType;
 	}
 	
-	/**
-	 * Gets the properties.
-	 *
-	 * @return the properties
-	 */
-	public Map<String,String> getProperties() {
-		if(properties == null)
-			properties = new LinkedHashMap<String, String>();
-		return properties;
-	}
-	
-	/**
-	 * Sets the properties.
-	 *
-	 * @param properties the properties
-	 */
-	public void setProperties(Map<String,String> properties) {
-		this.properties = properties;
-	}
 	
 	/**
 	 * get section that this spannable object belongs to.
@@ -269,5 +265,53 @@ public class Document extends Text {
 				return s;
 		}
 		return null;
+	}
+	
+	/**
+	 * get section that this spannable object belongs to.
+	 *
+	 * @param sp the sp
+	 * @return null- if no such section exists
+	 */
+	public Paragraph getParagraph(Spannable sp){
+		for(Paragraph s: getParagraphs()){
+			if(s.contains(sp))
+				return s;
+		}
+		return null;
+	}
+	
+	/**
+	 * get a lost of sentences that are withing a given span
+	 * @param sp
+	 * @return
+	 */
+	public List<Sentence> getSentences(Spannable sp){
+		List<Sentence> list = new ArrayList<Sentence>();
+		for(Sentence s: getSentences()){
+			if(sp.contains(s)){
+				list.add(s);
+			}else if(!list.isEmpty()){
+				break;
+			}
+		}
+		return list;
+	}
+	
+	/**
+	 * get a lost of paragraphs that are withing a given span
+	 * @param sp
+	 * @return
+	 */
+	public List<Paragraph> getParagraphs(Spannable sp){
+		List<Paragraph> list = new ArrayList<Paragraph>();
+		for(Paragraph s: getParagraphs()){
+			if(sp.contains(s)){
+				list.add(s);
+			}else if(!list.isEmpty()){
+				break;
+			}
+		}
+		return list;
 	}
 }

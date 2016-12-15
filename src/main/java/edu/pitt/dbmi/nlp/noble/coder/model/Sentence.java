@@ -13,12 +13,13 @@ public class Sentence extends Text {
 	public static final String TYPE_LINE  = "Line";
 	public static final String TYPE_WORKSHEET = "Worksheet";
 	public static final String TYPE_HEADER = "Header";
+	public static final String TYPE_DIVIDER = "Divider";
+	
 	
 	private String sentenceType = TYPE_PROSE;
 	private List<Mention> mentions;
-	private Document document;
 	private Section section;
-	private Map<String,String> properties;
+	private Paragraph paragraph;
 	
 	/**
 	 * Instantiates a new sentence.
@@ -56,53 +57,7 @@ public class Sentence extends Text {
 		setOffset(offs);
 		this.sentenceType = type;
 	}
-	
-	/**
-	 * Gets the properties.
-	 *
-	 * @return the properties
-	 */
-	public Map<String,String> getProperties() {
-		if(properties == null)
-			properties = new LinkedHashMap<String, String>();
-		return properties;
-	}
-	
-	/**
-	 * Gets the document.
-	 *
-	 * @return the document
-	 */
-	public Document getDocument() {
-		return document;
-	}
-	
-	/**
-	 * Sets the document.
-	 *
-	 * @param document the new document
-	 */
-	public void setDocument(Document document) {
-		this.document = document;
-	}
-	
-	/**
-	 * Gets the section.
-	 *
-	 * @return the section
-	 */
-	public Section getSection() {
-		return section;
-	}
-	
-	/**
-	 * Sets the section.
-	 *
-	 * @param section the new section
-	 */
-	public void setSection(Section section) {
-		this.section = section;
-	}
+
 	
 	/**
 	 * Gets the sentence type.
@@ -145,5 +100,37 @@ public class Sentence extends Text {
 			m.setSentence(this);
 		}
 	}
+
+	/**
+	 * get paragraph that this sentence is part of
+	 * @return
+	 */
+	public Paragraph getParagraph() {
+		if(paragraph == null){
+			paragraph = getDocument().getParagraph(this);
+		}
+		return paragraph;
+	}
+	
+	/**
+	 * Gets the section.
+	 *
+	 * @return the section
+	 */
+	public Section getSection() {
+		if(section == null)
+			section = getDocument().getSection(this);
+		return section;
+	}
+	
+	/**
+	 * Sets the section.
+	 *
+	 * @param section the new section
+	 *
+	public void setSection(Section section) {
+		this.section = section;
+	}
+	*/
 	
 }

@@ -12,9 +12,12 @@ import java.util.Set;
 
 import edu.pitt.dbmi.nlp.noble.coder.model.Mention;
 import edu.pitt.dbmi.nlp.noble.coder.model.Modifier;
+import edu.pitt.dbmi.nlp.noble.coder.model.Paragraph;
 import edu.pitt.dbmi.nlp.noble.coder.model.Processor;
 import edu.pitt.dbmi.nlp.noble.coder.model.Section;
 import edu.pitt.dbmi.nlp.noble.coder.model.Sentence;
+import edu.pitt.dbmi.nlp.noble.coder.model.Spannable;
+import edu.pitt.dbmi.nlp.noble.coder.model.Text;
 import edu.pitt.dbmi.nlp.noble.mentions.model.AnnotationVariable;
 import edu.pitt.dbmi.nlp.noble.ontology.IClass;
 import edu.pitt.dbmi.nlp.noble.ontology.IInstance;
@@ -558,7 +561,6 @@ public class ConText implements Processor<Sentence> {
 		
 		// add modifiers to anchor sentence mentions if it spans beyound sentence boundaries
 		sentence.getMentions().addAll(getGlobalModifierMentions(relevantModifiers));
-		
 		time = System.currentTimeMillis() - time;
 		return sentence;
 	}
@@ -964,48 +966,57 @@ public class ConText implements Processor<Sentence> {
 	 * @param var
 	 */
 	public List<Modifier> getMatchingModifiers(List<Mention> globalModifiers, Mention target) {
+		long t = System.currentTimeMillis();
+		
 		// if modifier validator is not defined, no point in going further
 		if(getModifierValidator() == null || globalModifiers.isEmpty() || target == null)
 			return Collections.EMPTY_LIST;
 		
-		// get the sentence
-		Sentence sentence = target.getSentence();
-		
 		// allocate best modifiers
 		Map<String,Modifier> bestModifiers = new LinkedHashMap<String, Modifier>();
+		
+		// get the sentence
+		Sentence sentence = target.getSentence();
+		Spannable section = sentence.getSection();
+		Spannable paragraph   = sentence.getParagraph();
+		if(paragraph == null)
+			paragraph = section;
+		
 		
 		// go over all "dangling" modifiers
 		for(Mention modifier: globalModifiers){
 			// lets see if this modifier fits the variable semantically
-			if(getModifierValidator().isModifierApplicable(modifier, target)){
-				// now that we know that it fits semantically, is it at least contained in a section?
-			
-				// is this a paragraph action?
-				String paragraphAction = modifier.getConcept().getProperties().getProperty(ConText.HAS_PARAGRAPH_ACTION);
-				if(paragraphAction != null){
-					//TODO: as proof of concept do section for now
-					Section section = sentence.getSection();
-					// is this modifier contained in a same span? 
-					if(section != null && section.contains(modifier)){
-						for(Modifier m: Modifier.getModifiers(modifier)){
-							// find best one of the same type
-							Modifier best = bestModifiers.get(m.getType());
-							if(isBestModifier(m.getMention(),best,target,paragraphAction)){
-								bestModifiers.put(m.getType(),m);
-							}
-						}
-					}
+			if(section.contains(modifier) && getModifierValidator().isModifierApplicable(modifier, target)){
+				String action = modifier.getConcept().getProperties().getProperty(ConText.HAS_PARAGRAPH_ACTION);
+				if(action != null && paragraph != null){
+					addBestModifier(action, modifier, target,paragraph,bestModifiers);
 				}
-				
-				// is this a section action?
-				String sectionAction = modifier.getConcept().getProperties().getProperty(ConText.HAS_SECTION_ACTION);
-				if(sectionAction != null){
-					//TODO: implement
+				action = modifier.getConcept().getProperties().getProperty(ConText.HAS_SECTION_ACTION);
+				if(action != null && section != null){
+					addBestModifier(action, modifier, target,section,bestModifiers);
+				}
+			} 
+		}
+		
+		t= System.currentTimeMillis()-t;
+		System.out.println("add extra modifiers: "+t);
+		return new ArrayList<Modifier>(bestModifiers.values());
+	}
+	
+	
+	private void addBestModifier(String action, Mention modifier,Mention target,Spannable section, Map<String,Modifier> bestModifiers){
+		// is this modifier contained in a same span? 
+		if(section != null && section.contains(modifier)){
+			for(Modifier m: Modifier.getModifiers(modifier)){
+				// find best one of the same type
+				Modifier best = bestModifiers.get(m.getType());
+				if(isBestModifier(m.getMention(),best,target,action)){
+					bestModifiers.put(m.getType(),m);
 				}
 			}
 		}
-		return new ArrayList<Modifier>(bestModifiers.values());
 	}
+	
 
 	/**
 	 * is the candidate modifier the best based on action?
@@ -1024,72 +1035,4 @@ public class ConText implements Processor<Sentence> {
 		
 		return false;
 	}
-
-	
-	
-	
-	
-	
-	
-	
-	/**
-	 * The main method.
-	 *
-	 * @param args the arguments
-	 * @throws IOntologyException the i ontology exception
-	 * @throws IOException Signals that an I/O exception has occurred.
-	 * @throws TerminologyException the terminology exception
-	 */
-	public static void main(String[] args) throws IOntologyException, IOException, TerminologyException {
-		ConText conText = new ConText();
-		
-		NobleCoderTerminology terminology = new NobleCoderTerminology("nlpBreastCancer");
-		terminology.setScoreConcepts(true);
-		terminology.setSelectBestCandidate(true);
-		terminology.setDefaultSearchMethod(NobleCoderTerminology.PRECISE_MATCH);
-		terminology.setSemanticTypeFilter("Neoplastic Process; Sign or Symptom; Finding");
-
-		for(String text: Arrays.asList(
-				"There was no evidence of melanoma for this patient, but there was a family history of breast cancer.",
-				"The patient presents with a 3 day history of cough.",
-				"There is no significant change in lymphacitic infiltrate.",
-				"The patient reports mother has had breast cancer in the past.",
-				"Images show possible dysplastic nevus vs melanoma.",
-				"No lytic or blastic osseous lesions are seen.",
-				"Heart Trouble: No High Blood Pressure: No Integumentary Skin Cancer/Skin Condition: No Skin Lesion/Rash: No Respiratory",
-				"No definite ultrasonographic correlation of the posterior focus of enhancement at 3 o'clock of the left breast."
-			
-				)){
-			Sentence sentence = new Sentence(text);
-			
-			// process with regular dictionary
-			terminology.process(sentence);
-			
-			// process with context
-			conText.process(sentence);
-		
-			// print results
-			System.out.println("sentence: "+text+" | nc: "+terminology.getProcessTime()+" | context: "+conText.getProcessTime());
-			for(Mention m: sentence.getMentions()){
-				Concept c = m.getConcept();
-				System.out.println("\t"+c.getName()+" ("+c.getCode()+") "+Arrays.toString(c.getSemanticTypes())+" \""+
-						m.getText()+"\"");
-				for(String context: m.getModifiers().keySet()){
-					Modifier modifier = m.getModifier(context);
-					String mention = modifier.getMention() != null?"\""+modifier.getMention()+"\"":"(default)";
-					System.out.println("\t\t"+modifier.getType()+" : "+modifier+"\t "+mention);
-				}
-
-			}
-			
-		}
-		
-		
-		/*	// display the ConText browser
-		TerminologyBrowser tb = new TerminologyBrowser();
-		tb.setTerminologies(new Terminology []{terminology,conText.getTerminology()});
-		tb.showDialog(null,"ConText");*/
-		
-	}
-
 }

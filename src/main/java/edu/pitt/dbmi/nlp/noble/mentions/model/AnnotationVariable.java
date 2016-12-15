@@ -102,10 +102,7 @@ public class AnnotationVariable extends Instance {
 			
 			
 			// instantiate available modifiers
-			List<Instance> modifierInstances = new ArrayList<Instance>();
-			for(Modifier m: getModifiers()){
-				modifierInstances.add(new Instance(domainOntology, m));
-			}
+			List<Instance> modifierInstances = getModifierInstanceList();
 			
 			// go over all restrictions
 			for(IRestriction r: domainOntology.getRestrictions(cls)){
@@ -122,7 +119,9 @@ public class AnnotationVariable extends Instance {
 		return instance;
 	}
 	
-
+	
+	
+	
 	/**
 	 * is the current annotation variable satisfied given its linguistic and semantic properties?
 	 * @return
@@ -136,13 +135,10 @@ public class AnnotationVariable extends Instance {
 		str.append(getConceptClass()+"\n");
 		for(String type: getModifierInstances().keySet()){
 			for(Instance modifier:getModifierInstances().get(type)){
-				String mn = "";
-				if(modifier.getMention() != null){
-					mn = "\ttext: "+ modifier.getAnnotations(); //+"\tprops: "+modifier.getMention().getModifiers()
-				}
-				str.append("\t"+type+": "+modifier+mn+"\n");
+				str.append("\t"+type+": "+modifier+"\n");
 			}
 		}
+		str.append("\thasText: "+getAnnotations());
 		return str.toString();
 	}
 }

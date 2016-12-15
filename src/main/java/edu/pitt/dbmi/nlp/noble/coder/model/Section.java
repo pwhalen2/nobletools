@@ -11,8 +11,19 @@ public class Section extends Text{
 	private List<Sentence> sentences;
 	private Section parent;
 	private List<Section> sections;
-	private Document document;
-	private Map<String,String> properties;
+	
+	
+	public Section(){}
+	
+	
+	/**
+	 * initialize section with a document and offsets, but no text
+	 */
+	public Section(Document doc,int start, int bodyOffset, int end){
+		super(doc,start,end);
+		this.bodyOffset = bodyOffset;
+	}
+	
 	
 	/**
 	 * Gets the sentences.
@@ -21,58 +32,43 @@ public class Section extends Text{
 	 */
 	public List<Sentence> getSentences() {
 		if(sentences == null)
-			sentences = new ArrayList<Sentence>();
+			sentences = getDocument().getSentences(this);
 		return sentences;
 	}
 
-	/**
-	 * Gets the document.
-	 *
-	 * @return the document
-	 */
-	public Document getDocument() {
-		return document;
-	}
 
-	/**
-	 * Sets the document.
-	 *
-	 * @param document the new document
-	 */
-	public void setDocument(Document document) {
-		this.document = document;
-	}
 
 	/**
 	 * Adds the sentence.
 	 *
 	 * @param s the s
-	 */
+	 *
 	public void addSentence(Sentence s){
 		getSentences().add(s);
 		s.setSection(this);
 	}
-
+	*/
 	/**
 	 * Adds the sentences.
 	 *
 	 * @param ss the ss
-	 */
+	 *
 	public void addSentences(Collection<Sentence> ss){
 		getSentences().addAll(ss);
 		for(Sentence s: ss)
 			s.setSection(this);
 	}
-
+	*/
 	
 	/**
 	 * Sets the sentences.
 	 *
 	 * @param sentences the new sentences
-	 */
+	 *
 	public void setSentences(List<Sentence> sentences) {
 		this.sentences = sentences;
 	}
+	*/
 
 	/**
 	 * Gets the body.
@@ -80,7 +76,11 @@ public class Section extends Text{
 	 * @return the body
 	 */
 	public String getBody() {
-		return body;
+		if(body != null)
+			return body;
+		if(getDocument() != null && end > -1)
+			return getDocument().getText().substring(bodyOffset,end);
+		return null;
 	}
 
 	/**
@@ -98,7 +98,11 @@ public class Section extends Text{
 	 * @return the title
 	 */
 	public String getTitle() {
-		return title;
+		if(title != null)
+			return title;
+		if(getDocument() != null && end > -1)
+			return getDocument().getText().substring(start,bodyOffset);
+		return null;
 	}
 
 	/**
@@ -108,7 +112,7 @@ public class Section extends Text{
 	 */
 	public Spannable getTitleSpan(){
 		Text t = new Text();
-		t.setText(title);
+		t.setText(getTitle());
 		t.setOffset(getTitleOffset());
 		return t;
 	}
@@ -260,14 +264,5 @@ public class Section extends Text{
 		return mentions;
 	}
 	
-	/**
-	 * Gets the properties.
-	 *
-	 * @return the properties
-	 */
-	public Map<String,String> getProperties() {
-		if(properties == null)
-			properties = new LinkedHashMap<String, String>();
-		return properties;
-	}
+
 }

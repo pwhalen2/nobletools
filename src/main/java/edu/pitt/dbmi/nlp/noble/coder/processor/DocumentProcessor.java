@@ -112,7 +112,7 @@ public class DocumentProcessor implements Processor<Document> {
 		doc.setTitle(file.getName());
 		doc.setLocation(file.getAbsolutePath());
 		doc.setDocumentType(getDocumentType());
-		return process(doc);
+		return doc;
 	}
 	
 	/**
@@ -316,7 +316,7 @@ public class DocumentProcessor implements Processor<Document> {
 						s.setSentenceType(Sentence.TYPE_HEADER);
 					}
 				}
-				sec.addSentences(sentences);
+				//sec.addSentences(sentences);
 			}
 		}
 		

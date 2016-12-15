@@ -7,9 +7,11 @@ import java.util.Map;
  * The Class Text.
  */
 public class Text implements Spannable {
-	private String text;
-	private int offset;
-	private Map<String,Long> processTime;
+	protected String text;
+	protected int start,end = -1;
+	protected Map<String,Long> processTime;
+	protected Document document;
+	protected Map<String,String> properties;
 	
 	/**
 	 * Instantiates a new text.
@@ -33,14 +35,49 @@ public class Text implements Spannable {
 	 */
 	public Text(String text, int offset) {
 		this.text = text;
-		this.offset = offset;
+		this.start = offset;
+	}
+	
+	/**
+	 * initialize text as substring of document
+	 * @param doc
+	 * @param begin
+	 * @param end
+	 */
+	public Text(Document doc, int begin, int end){
+		this.document = doc;
+		this.start = begin;
+		this.end = end;
+	}
+	
+
+	/**
+	 * Gets the document.
+	 *
+	 * @return the document
+	 */
+	public Document getDocument() {
+		return document;
 	}
 
+	/**
+	 * Sets the document.
+	 *
+	 * @param document the new document
+	 */
+	public void setDocument(Document document) {
+		this.document = document;
+	}
+	
 	/* (non-Javadoc)
 	 * @see edu.pitt.dbmi.nlp.noble.coder.model.Spannable#getText()
 	 */
 	public String getText() {
-		return text;
+		if(text != null)
+			return text;
+		if(document != null && end > -1)
+			return document.getText().substring(start,end);
+		return null;
 	}
 	
 	/**
@@ -49,21 +86,41 @@ public class Text implements Spannable {
 	 * @return the trimmed text
 	 */
 	public String getTrimmedText() {
-		return text.trim();
+		return getText().trim();
+	}
+	
+	/**
+	 * Gets the properties.
+	 *
+	 * @return the properties
+	 */
+	public Map<String,String> getProperties() {
+		if(properties == null)
+			properties = new LinkedHashMap<String, String>();
+		return properties;
+	}
+	
+	/**
+	 * Sets the properties.
+	 *
+	 * @param properties the properties
+	 */
+	public void setProperties(Map<String,String> properties) {
+		this.properties = properties;
 	}
 	
 	/* (non-Javadoc)
 	 * @see edu.pitt.dbmi.nlp.noble.coder.model.Spannable#getStartPosition()
 	 */
 	public int getStartPosition() {
-		return offset;
+		return start;
 	}
 	
 	/* (non-Javadoc)
 	 * @see edu.pitt.dbmi.nlp.noble.coder.model.Spannable#getEndPosition()
 	 */
 	public int getEndPosition() {
-		return offset+getLength();
+		return start+getLength();
 	}
 	
 	/**
@@ -72,7 +129,7 @@ public class Text implements Spannable {
 	 * @return the offset
 	 */
 	public int getOffset() {
-		return offset;
+		return start;
 	}
 	
 	/**
@@ -81,7 +138,7 @@ public class Text implements Spannable {
 	 * @param offset the new offset
 	 */
 	public void setOffset(int offset) {
-		this.offset = offset;
+		this.start = offset;
 	}
 	
 	/**
@@ -90,7 +147,9 @@ public class Text implements Spannable {
 	 * @param delta the delta
 	 */
 	public void updateOffset(int delta){
-		this.offset += delta;
+		this.start += delta;
+		if(end > -1)
+			this.end += delta;
 	}
 	
 	/**
@@ -108,7 +167,7 @@ public class Text implements Spannable {
 	 * @return the length
 	 */
 	public int getLength(){
-		return text.length();
+		return (text != null)?text.length():end-start;
 	}
 	
 	/* (non-Javadoc)
