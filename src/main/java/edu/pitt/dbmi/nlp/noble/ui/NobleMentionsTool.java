@@ -49,8 +49,10 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.text.html.HTMLDocument;
 
 import edu.pitt.dbmi.nlp.noble.mentions.NobleMentions;
+import edu.pitt.dbmi.nlp.noble.mentions.model.AnnotationVariable;
 import edu.pitt.dbmi.nlp.noble.mentions.model.Composition;
 import edu.pitt.dbmi.nlp.noble.mentions.model.DomainOntology;
+import edu.pitt.dbmi.nlp.noble.mentions.model.Instance;
 import edu.pitt.dbmi.nlp.noble.ontology.DefaultRepository;
 import edu.pitt.dbmi.nlp.noble.ontology.IOntology;
 import edu.pitt.dbmi.nlp.noble.ontology.IOntologyException;
@@ -593,6 +595,12 @@ public class NobleMentionsTool implements ActionListener{
 		
 		// read in the report, do first level proce
 		Composition doc = noble.process(reportFile);
+		
+		// temp system.out
+		for(AnnotationVariable var: doc.getAnnotationVariables()){
+			System.out.println(var);
+		}
+		
 		
 		processCount ++;
 			
