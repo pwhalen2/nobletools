@@ -4,11 +4,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 
 import edu.pitt.dbmi.nlp.noble.coder.model.Mention;
 import edu.pitt.dbmi.nlp.noble.coder.model.Modifier;
@@ -55,6 +57,7 @@ public class ConText implements Processor<Sentence> {
 	public static final String SEMTYPE_CLASS = "Class";
 	public static final String LANGUAGE = "en";
 	public static final String CONTEXT_OWL = "ConText.owl";
+	public static final String SCHEMA_OWL = "Schema.owl";
 	public static final String ACTION_TERMINATE = "terminate";
 	public static final String ACTION_FORWARD = "forward";
 	public static final String ACTION_BACKWARD = "backward";
@@ -63,6 +66,8 @@ public class ConText implements Processor<Sentence> {
 	public static final String ACTION_FIRST_MENTION = "first_mention";
 	public static final String ACTION_NEAREST_MENTION = "nearest_mention";;
 	public static final String LINGUISTIC_MODIFIER = "LinguisticModifier";
+	public static final String SEMANTIC_MODIFIER = "SemanticModifier";
+	public static final String NUMERIC_MODIFIER = "NumericModifier";
 	public static final String MODIFIER = "Modifier";
 	public static final String PSEUDO = "Pseudo";
 	public static final int DEFAULT_WINDOW_SIZE = 8;
@@ -318,7 +323,7 @@ public class ConText implements Processor<Sentence> {
 	 * @return the modifier value
 	 */
 	private static String getModifierValue(String type, IClass c){
-		IOntology o = c.getOntology();
+		/*IOntology o = c.getOntology();
 		if(c.hasDirectSuperClass(o.getClass(type))){
 			return c.getName();
 		}
@@ -327,7 +332,8 @@ public class ConText implements Processor<Sentence> {
 			if(v != null)
 				return v;
 		}
-		return null;
+		return null;*/
+		return c.getName();
 	}
 	
 	
@@ -385,7 +391,7 @@ public class ConText implements Processor<Sentence> {
 			concept.addRelatedConcept(Relation.NARROWER,c.getName());
 			
 			// get the default value for this type
-			if(isModifierType(cls)){
+			if(isSemanticType(cls)){
 				if(isDefaultValue(c)){
 					concept.addProperty(PROP_HAS_DEFAULT_VALUE,c.getName());
 				}
@@ -451,8 +457,17 @@ public class ConText implements Processor<Sentence> {
 	 * @param cls the cls
 	 * @return true, if is modifier type
 	 */
-	private static  boolean isModifierType(IClass cls){
-		return cls.getURI().toString().contains(CONTEXT_OWL) && !cls.getName().contains("_");
+	private static  boolean isSemanticType(IClass cls){
+		IClass modifier = cls.getOntology().getClass(MODIFIER);
+		if(modifier.hasSubClass(cls)){
+			for(IClass subMod: modifier.getDirectSubClasses()){
+				if(subMod.hasDirectSubClass(cls))
+					return true;
+			}
+			return false;
+		}
+		//return false;
+		return cls.getURI().toString().matches(".*("+CONTEXT_OWL+"|"+SCHEMA_OWL+").*")  && !cls.getName().contains("_");
 	}
 	
 	/**
@@ -485,7 +500,7 @@ public class ConText implements Processor<Sentence> {
 	private static Set<SemanticType> getSemanticTypes(IClass cls) {
 		Set<SemanticType> semTypes = new LinkedHashSet<SemanticType>();
 		// if defined in ConText ontology, then class is its own SemType
-		if(isModifierType(cls)){
+		if(isSemanticType(cls)){
 			semTypes.add(SemanticType.getSemanticType(cls.getName()));
 		}else{
 			// else try the direct parent, the ontology is shallow
@@ -966,14 +981,13 @@ public class ConText implements Processor<Sentence> {
 	 * @param var
 	 */
 	public List<Modifier> getMatchingModifiers(List<Mention> globalModifiers, Mention target) {
-		long t = System.currentTimeMillis();
 		
 		// if modifier validator is not defined, no point in going further
 		if(getModifierValidator() == null || globalModifiers.isEmpty() || target == null)
 			return Collections.EMPTY_LIST;
 		
 		// allocate best modifiers
-		Map<String,Modifier> bestModifiers = new LinkedHashMap<String, Modifier>();
+		//Map<String,Modifier> bestModifiers = new LinkedHashMap<String, Modifier>();
 		
 		// get the sentence
 		Sentence sentence = target.getSentence();
@@ -984,6 +998,7 @@ public class ConText implements Processor<Sentence> {
 		
 		
 		// go over all "dangling" modifiers
+		/*
 		for(Mention modifier: globalModifiers){
 			// lets see if this modifier fits the variable semantically
 			if(section.contains(modifier) && getModifierValidator().isModifierApplicable(modifier, target)){
@@ -997,13 +1012,53 @@ public class ConText implements Processor<Sentence> {
 				}
 			} 
 		}
+		*/
 		
-		t= System.currentTimeMillis()-t;
-		System.out.println("add extra modifiers: "+t);
-		return new ArrayList<Modifier>(bestModifiers.values());
+		
+		
+		// create a mapping of candidate modifiers for each type
+		Map<String,List<Modifier>> candidateModifiers = new HashMap<String, List<Modifier>>();
+		for(Mention modifier: globalModifiers){
+			// lets see if this modifier fits the variable semantically
+			if(section.contains(modifier)){
+				Spannable span = section;
+				String action = modifier.getConcept().getProperties().getProperty(ConText.HAS_PARAGRAPH_ACTION);
+				if(action != null){
+					span = paragraph;
+				}else{
+					action = modifier.getConcept().getProperties().getProperty(ConText.HAS_SECTION_ACTION);
+				}
+				// check if we have a modifier before the target and within a smaller span
+				if(span.contains(modifier) && modifier.before(target)){
+					Modifier mod = Modifier.getModifiers(modifier).get(0);
+					List<Modifier> list = candidateModifiers.get(mod.getType()+"-"+action);
+					if(list == null){
+						if(ConText.ACTION_FIRST_MENTION.equals(action)){
+							list = new ArrayList<Modifier>();
+						}else if(ConText.ACTION_NEAREST_MENTION.equals(action)){
+							list = new Stack<Modifier>();
+						}
+					}
+					list.add(mod);
+					candidateModifiers.put(mod.getType()+"-"+action,list);
+				}
+			}
+		}
+		
+		// add best modifier
+		List<Modifier> modifierList = new ArrayList<Modifier>();
+		for(String type: candidateModifiers.keySet()){
+			for(Modifier modifier: candidateModifiers.get(type)){
+				if(getModifierValidator().isModifierApplicable(modifier.getMention(), target)){
+					modifierList.add(modifier);
+					break;
+				}
+			}
+		}
+		return modifierList;
 	}
 	
-	
+	/*
 	private void addBestModifier(String action, Mention modifier,Mention target,Spannable section, Map<String,Modifier> bestModifiers){
 		// is this modifier contained in a same span? 
 		if(section != null && section.contains(modifier)){
@@ -1016,7 +1071,7 @@ public class ConText implements Processor<Sentence> {
 			}
 		}
 	}
-	
+	*/
 
 	/**
 	 * is the candidate modifier the best based on action?
@@ -1025,7 +1080,7 @@ public class ConText implements Processor<Sentence> {
 	 * @param target
 	 * @param paragraphAction
 	 * @return
-	 */
+	 *
 	private boolean isBestModifier(Mention candidate, Modifier best, Mention target, String action) {
 		if(ConText.ACTION_FIRST_MENTION.equals(action)){
 			return candidate.before(target) && (best == null || candidate.before(best.getMention())); 
@@ -1034,5 +1089,5 @@ public class ConText implements Processor<Sentence> {
 		}
 		
 		return false;
-	}
+	}*/
 }

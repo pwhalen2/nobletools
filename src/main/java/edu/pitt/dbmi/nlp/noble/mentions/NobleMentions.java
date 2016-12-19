@@ -60,7 +60,7 @@ public class NobleMentions implements Processor<Composition>{
 					Composition doc = noble.process(f);
 					for(AnnotationVariable var: doc.getAnnotationVariables()){
 						for(Instance body: var.getModifierInstances("hasBodySite")){
-							System.out.println(f.getName()+I+var.getName()+I+body.getName()+I+toString(body.getModifierInstances("hasBodySide"))+I+toString(body.getModifierInstances("hasClockfacePosition"))); //+I+doc.getProcessTime());
+							System.out.println(f.getName()+I+var.getName()+I+body.getName()+I+toString(body.getModifierInstances("hasBodySide"))+I+toString(body.getModifierInstances("hasClockfacePosition"))+I+var.getAnnotations());
 						}
 					}
 				}

@@ -36,7 +36,7 @@ public class TermFilterTest {
 	
 	public static void main(String[] args) throws IOException, TerminologyException {
 		TermFilterTest test = new TermFilterTest();
-		//test.testTermFilter();
+		test.testTermFilter();
 		test.testWithTerminology();
 
 	}
