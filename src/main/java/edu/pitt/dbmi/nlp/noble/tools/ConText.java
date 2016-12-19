@@ -996,25 +996,9 @@ public class ConText implements Processor<Sentence> {
 		if(paragraph == null)
 			paragraph = section;
 		
-		
-		// go over all "dangling" modifiers
-		/*
-		for(Mention modifier: globalModifiers){
-			// lets see if this modifier fits the variable semantically
-			if(section.contains(modifier) && getModifierValidator().isModifierApplicable(modifier, target)){
-				String action = modifier.getConcept().getProperties().getProperty(ConText.HAS_PARAGRAPH_ACTION);
-				if(action != null && paragraph != null){
-					addBestModifier(action, modifier, target,paragraph,bestModifiers);
-				}
-				action = modifier.getConcept().getProperties().getProperty(ConText.HAS_SECTION_ACTION);
-				if(action != null && section != null){
-					addBestModifier(action, modifier, target,section,bestModifiers);
-				}
-			} 
-		}
-		*/
-		
-		
+		// if no section even, just give up
+		if(section == null)
+			return  Collections.EMPTY_LIST;
 		
 		// create a mapping of candidate modifiers for each type
 		Map<String,List<Modifier>> candidateModifiers = new HashMap<String, List<Modifier>>();
@@ -1058,36 +1042,4 @@ public class ConText implements Processor<Sentence> {
 		return modifierList;
 	}
 	
-	/*
-	private void addBestModifier(String action, Mention modifier,Mention target,Spannable section, Map<String,Modifier> bestModifiers){
-		// is this modifier contained in a same span? 
-		if(section != null && section.contains(modifier)){
-			for(Modifier m: Modifier.getModifiers(modifier)){
-				// find best one of the same type
-				Modifier best = bestModifiers.get(m.getType());
-				if(isBestModifier(m.getMention(),best,target,action)){
-					bestModifiers.put(m.getType(),m);
-				}
-			}
-		}
-	}
-	*/
-
-	/**
-	 * is the candidate modifier the best based on action?
-	 * @param candidate
-	 * @param best
-	 * @param target
-	 * @param paragraphAction
-	 * @return
-	 *
-	private boolean isBestModifier(Mention candidate, Modifier best, Mention target, String action) {
-		if(ConText.ACTION_FIRST_MENTION.equals(action)){
-			return candidate.before(target) && (best == null || candidate.before(best.getMention())); 
-		}else if(ConText.ACTION_NEAREST_MENTION.equals(action)){
-			return candidate.before(target) && (best == null || candidate.after(best.getMention())); 
-		}
-		
-		return false;
-	}*/
 }

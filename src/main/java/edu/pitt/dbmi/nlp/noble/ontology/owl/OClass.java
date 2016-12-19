@@ -247,7 +247,7 @@ public class OClass extends OResource implements IClass{
 		for(Object o: source){
 			if(o instanceof IRestriction){
 				IRestriction r = (IRestriction)o;
-				if(r.getProperty().equals(p))
+				if(r.getProperty().equals(p) || r.getProperty().hasSuperProperty(p))
 					target.add(r);
 			}else if(o instanceof List){
 				addRestriction(p, (List) o, target);

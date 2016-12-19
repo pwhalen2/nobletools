@@ -157,7 +157,7 @@ public class TermFilter {
 			public boolean isApplicable(String term) {
 				String t = term.toLowerCase();
 				for (String affix : Arrays.asList("nos", "not specified", "unspecified", "not otherwise specified")) {
-					if (t.startsWith(affix + " ") || t.endsWith(" " + affix) || term.endsWith("," + affix)) {
+					if (t.startsWith(affix + " ") || t.endsWith(" " + affix) || t.endsWith("," + affix)) {
 						return true;
 					}
 				}
@@ -180,8 +180,7 @@ public class TermFilter {
 		filters.add(new Filter() {
 			public boolean isApplicable(String term) {
 				String t = term.toLowerCase();
-				for (String affix : Arrays.asList("other", "deprecated", "unspecified", "unknown", "miscellaneous",
-						"no")) {
+				for (String affix : Arrays.asList("other", "deprecated", "unspecified", "unknown", "miscellaneous",	"no")) {
 					if (t.startsWith(affix + " ") || t.endsWith(" " + affix) || term.endsWith("," + affix)) {
 						return true;
 					}
@@ -236,7 +235,7 @@ public class TermFilter {
 			public boolean isApplicable(String term) {
 				String t = term.toLowerCase();
 				for (String affix : Arrays.asList("left", "right", "bilateral", "or", "and")) {
-					if (t.matches(".&\\b" + affix + "\\b.*")) {
+					if (t.matches(".*\\b" + affix + "\\b.*")) {
 						return true;
 					}
 				}

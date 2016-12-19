@@ -45,6 +45,11 @@ public class DefaultRepository implements IRepository{
 		ontologyLocation = DEFAULT_ONTOLOGY_LOCATION;
 	}
 	
+	public void reset(){
+		terminologies = null;
+		ontologies = null;
+	}
+	
 	
 	/**
 	 * Gets the terminology location.
@@ -146,7 +151,7 @@ public class DefaultRepository implements IRepository{
 			if(!dir.exists())
 				dir.mkdirs();
 			for(File f: dir.listFiles()){
-				if(f.getName().endsWith("*.owl")){
+				if(f.getName().endsWith(".owl")){
 					addOntology(new OOntology(f.getAbsolutePath()));
 				}
 			}

@@ -73,8 +73,17 @@ public class DomainOntology {
 	 * @throws IOntologyException 
 	 */
 	public DomainOntology(String location) throws IOntologyException{
+		this(OOntology.loadOntology(location)); 
+	}
+	
+	/**
+	 * File or URL location of the domain ontology
+	 * @param location
+	 * @throws IOntologyException 
+	 */
+	public DomainOntology(IOntology ont) throws IOntologyException{
 		//TODO: actually create new ontology based on the one we are importing
-		setOntology(OOntology.loadOntology(location)); 
+		setOntology(ont); 
 	}
 	
 	public IOntology getOntology() {
@@ -538,10 +547,21 @@ public class DomainOntology {
 	
 	private Set<IClass> getPossibleCompoundAnchorArguments(IClass compoundCls,Set<IClass> mentionsClss){
 		Set<IClass> found = new HashSet<IClass>();
+		Set<IClass> components = new LinkedHashSet<IClass>();
 		for(IClass component: getCompoundAnchorMap().get(compoundCls)){
+			if(component.hasSuperClass(ontology.getClass(COMPOUND_ANCHOR))){
+				for(IClass comp: getCompoundAnchorMap().get(component)){
+					components.add(comp);
+				}
+			}else{
+				components.add(component);
+			}
+		}
+		for(IClass component: components){
 			if(mentionsClss.contains(component))
 				found.add(component);
 		}
+		
 		return found;
 	}
 	
@@ -801,5 +821,9 @@ public class DomainOntology {
 	 */
 	public String createInstanceName(IClass cls){
 		return cls.getName()+"-"+System.currentTimeMillis()+"-"+((int)(Math.random()*1000));
+	}
+	
+	public String toString(){
+		return ontology.getName();
 	}
 }

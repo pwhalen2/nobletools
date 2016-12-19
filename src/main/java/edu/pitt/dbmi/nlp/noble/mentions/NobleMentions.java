@@ -34,12 +34,12 @@ public class NobleMentions implements Processor<Composition>{
 	 * @throws IOntologyException 
 	 */
 	public static void main(String[] args) throws FileNotFoundException, IOException, TerminologyException, IOntologyException {
-		File file = new File("/home/tseytlin/Data/BiRADS/pathology/reports/realDCIS.txt");
-		DomainOntology domainOntology = new DomainOntology("/home/tseytlin/Data/BiRADS/ontology/pathologicDx.owl");
-		NobleMentions noble = new NobleMentions(domainOntology);
 		
-		if(args.length == 0){
-			Composition doc = noble.process(file);
+		
+	
+			/*
+			 * File file = new File("/home/tseytlin/Data/BiRADS/pathology/reports/realDCIS.txt");
+			 * Composition doc = noble.process(file);
 			for(AnnotationVariable var: doc.getAnnotationVariables()){
 				System.out.println(var);
 			}
@@ -48,12 +48,16 @@ public class NobleMentions implements Processor<Composition>{
 			// visualize terminologies
 			TerminologyBrowser browser = new TerminologyBrowser();
 			browser.setTerminologies(domainOntology.getTerminologies());
-			browser.showDialog(null,"NobleMentions");
-		}
+			browser.showDialog(null,"NobleMentions");*/
 		
-		if(args.length > 0){
+		
+		if(args.length > 1){
+			DomainOntology domainOntology = new DomainOntology(args[0]);
+			//DomainOntology domainOntology = new DomainOntology("/home/tseytlin/Data/BiRADS/ontology/pathologicDx.owl");
+			NobleMentions noble = new NobleMentions(domainOntology);
+			
 			final String I = "|";
-			File [] files = new File(args[0]).listFiles();
+			File [] files = new File(args[1]).listFiles();
 			Arrays.sort(files);
 			for(File f: files){
 				if(f.getName().endsWith(".txt")){
@@ -65,6 +69,9 @@ public class NobleMentions implements Processor<Composition>{
 					}
 				}
 			}
+		}else{
+			System.err.println("Usage: java NobleMentionsCmd.jar <owl url> <files>");
+			System.exit(1);
 		}
 	}
 
