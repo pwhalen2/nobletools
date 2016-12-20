@@ -147,6 +147,7 @@ public class NobleMentions implements Processor<Composition>{
 		List<Mention> globalModifiers = getGlobalModifiers(doc);
 		
 		// now lets construct annotation variables from anchor mentions
+		Map<String,AnnotationVariable> variables = new LinkedHashMap<String, AnnotationVariable>();
 		for(Sentence sentence: doc.getSentences()){
 			for(Instance anchor: domainOntology.getAnchors(sentence.getMentions())){
 				for(AnnotationVariable var : domainOntology.getAnnotationVariables(anchor)){
@@ -158,10 +159,28 @@ public class NobleMentions implements Processor<Composition>{
 					
 					//check if property is fully satisfied
 					if(var.isSatisfied()){
-						doc.addAnnotationVariable(var);
+						//doc.addAnnotationVariable(var);
+						// check if we have another variable that is mapped to the same spans
+						if(variables.containsKey(""+var.getAnnotations())){
+							AnnotationVariable oldVar = variables.get(""+var.getAnnotations());
+							// if new variable is more specific then the one we currently have,
+							// then replace it
+							if(var.getConceptClass().hasSuperClass(oldVar.getConceptClass())){
+								variables.put(""+var.getAnnotations(),var);
+							}
+							// else don't do anything, as the more specific value is already there
+						}else{
+							variables.put(""+var.getAnnotations(),var);
+						}
+						
 					}
 				}
 			}
+		}
+		
+		// add them to a document
+		for(String key: variables.keySet()){
+			doc.addAnnotationVariable(variables.get(key));
 		}
 		
 		

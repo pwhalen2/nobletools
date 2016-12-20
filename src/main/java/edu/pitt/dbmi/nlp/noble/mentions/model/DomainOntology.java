@@ -4,14 +4,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-
+import java.util.TreeSet;
 
 import edu.pitt.dbmi.nlp.noble.coder.model.Mention;
 import edu.pitt.dbmi.nlp.noble.ontology.ClassPath;
@@ -59,7 +60,7 @@ public class DomainOntology {
 	public static final String ANNOTATION_MENTION = "MentionAnnotation";
 	public static final String LINGUISTIC_MODIFER = ConText.LINGUISTIC_MODIFIER;
 	private static final String HAS_COMPOUND_ARGUMENT = "hasCompoundArgument";
-	
+	private static final int MAX_NUMBER_OF_COMPOUND_ARGUMENTS = 5;
 	
 	private IOntology ontology;
 	private Terminology anchorTerminology, modifierTerminology;
@@ -467,7 +468,7 @@ public class DomainOntology {
 		
 		// fill in mention map
 		//TODO: what if several mentions with same class?
-		Map<IClass,Mention> mentionMap = new HashMap<IClass, Mention>();
+		final Map<IClass,Mention> mentionMap = new LinkedHashMap<IClass, Mention>();
 		for(Mention m: mentions){
 			if(isAnchor(m))
 				mentionMap.put(getConceptClass(m),m);
@@ -480,39 +481,66 @@ public class DomainOntology {
 		
 		// get property
 		IProperty hasCompoundArgument = ontology.getProperty(HAS_COMPOUND_ARGUMENT);
+		Set<IClass> foundCompounds = new HashSet<IClass>();
 		
-		// go over all compounds anchors
-		for(IClass compoundCls: getCompoundAnchorMap().keySet()){
-			// find classes that are possible arguments
-			Set<IClass> possibleArgs = getPossibleCompoundAnchorArguments(compoundCls,mentionMap.keySet());
-			if(possibleArgs.size() >= compoundCls.getRestrictions(hasCompoundArgument).length){
-				
-				// create an instance and see if it is satisfiable
-				IInstance inst = compoundCls.createInstance(createInstanceName(compoundCls));
-				List<IInstance> componentInst = new ArrayList<IInstance>();
-				List<Mention> possibleMentionComponents = new ArrayList<Mention>();
-				for(IClass c: possibleArgs){
-					IInstance i = c.createInstance(createInstanceName(c));
-					inst.addPropertyValue(hasCompoundArgument,i);
-					componentInst.add(i);
-					possibleMentionComponents.add(mentionMap.get(c));
+		
+		boolean change = false;
+		do{
+			// resort the mentions based on their position in text
+			Set<IClass> mentionedClasses = new TreeSet<IClass>(new Comparator<IClass>() {
+				public int compare(IClass o1, IClass o2) {
+					return mentionMap.get(o1).compareTo(mentionMap.get(o2));
 				}
-				
-				// moment of truth does it work????
-				if(compoundCls.getEquivalentRestrictions().evaluate(inst)){
-					Mention mention = createCompoundAnchorMention(compoundCls, possibleMentionComponents);
-					compound.add( new Instance(this,mention,inst));
-				}else{
-					//clean up
-					for(IInstance i: componentInst){
-						i.delete();
-					}
-					inst.delete();
-				}
-				
-			}
+			});
+			mentionedClasses.addAll(mentionMap.keySet());
 			
-		}
+			// go over all compounds anchors
+			change = false;
+			for(IClass compoundCls: getCompoundAnchorMap().keySet()){
+				// skip classes that were already found
+				if(foundCompounds.contains(compoundCls))
+					continue;
+				
+				
+				// find classes that are possible arguments
+				Set<IClass> possibleArgs = getPossibleCompoundAnchorArguments(compoundCls,mentionedClasses);
+				IRestriction [] compoundRestrictions = compoundCls.getRestrictions(hasCompoundArgument);
+				
+				// if number of possible arguments is good, try to see if we can match it for real
+				if(possibleArgs.size() >= compoundRestrictions.length && compoundRestrictions.length > 0){
+					// create an instance and see if it is satisfiable
+					IInstance inst = compoundCls.createInstance(createInstanceName(compoundCls));
+					List<IInstance> componentInst = new ArrayList<IInstance>();
+					List<Mention> possibleMentionComponents = new ArrayList<Mention>();
+					int n = 1;
+					String hasCompoundPrefix = hasCompoundArgument.getName();
+					for(IClass c: possibleArgs){
+						IInstance i = c.createInstance(createInstanceName(c));
+						IProperty argProperty  = (n <= 5)?ontology.getProperty(hasCompoundPrefix+(n++)):hasCompoundArgument;
+						inst.addPropertyValue(argProperty,i);
+						componentInst.add(i);
+						possibleMentionComponents.add(mentionMap.get(c));
+					}
+					
+					// moment of truth does it work????
+					if(compoundCls.getEquivalentRestrictions().evaluate(inst)){
+						Mention mention = createCompoundAnchorMention(compoundCls, possibleMentionComponents);
+						mentionMap.put(compoundCls,mention);
+						compound.add( new Instance(this,mention,inst));
+						foundCompounds.add(compoundCls);
+						change = true;
+					}else{
+						//clean up
+						for(IInstance i: componentInst){
+							i.delete();
+						}
+						inst.delete();
+					}
+					
+				}
+			}
+		}while(change);
+		
 		return compound;
 	}
 	
@@ -546,20 +574,14 @@ public class DomainOntology {
 	
 	
 	private Set<IClass> getPossibleCompoundAnchorArguments(IClass compoundCls,Set<IClass> mentionsClss){
-		Set<IClass> found = new HashSet<IClass>();
-		Set<IClass> components = new LinkedHashSet<IClass>();
-		for(IClass component: getCompoundAnchorMap().get(compoundCls)){
-			if(component.hasSuperClass(ontology.getClass(COMPOUND_ANCHOR))){
-				for(IClass comp: getCompoundAnchorMap().get(component)){
-					components.add(comp);
-				}
-			}else{
-				components.add(component);
-			}
-		}
-		for(IClass component: components){
+		Set<IClass> found = new LinkedHashSet<IClass>();
+		/*for(IClass component: getCompoundAnchorMap().get(compoundCls)){
 			if(mentionsClss.contains(component))
 				found.add(component);
+		}*/
+		for(IClass mention: mentionsClss){
+			if(getCompoundAnchorMap().get(compoundCls).contains(mention))
+				found.add(mention);
 		}
 		
 		return found;

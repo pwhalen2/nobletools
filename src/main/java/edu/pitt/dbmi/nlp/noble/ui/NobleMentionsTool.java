@@ -15,7 +15,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.CopyOption;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -388,7 +390,7 @@ public class NobleMentionsTool implements ActionListener{
 		if(r == JFileChooser.APPROVE_OPTION){
 			try{
 				file = chooser.getSelectedFile();
-				Files.copy(file.toPath(),new File(repository.getOntologyLocation(),file.getName()).toPath());
+				Files.copy(file.toPath(),new File(repository.getOntologyLocation(),file.getName()).toPath(),StandardCopyOption.REPLACE_EXISTING);
 				refreshTemplateList();
 			}catch(Exception ex){
 				JOptionPane.showMessageDialog(frame,ex.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
