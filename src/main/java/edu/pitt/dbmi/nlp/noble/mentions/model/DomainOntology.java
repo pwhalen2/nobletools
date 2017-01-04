@@ -1,5 +1,10 @@
 package edu.pitt.dbmi.nlp.noble.mentions.model;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -26,11 +31,9 @@ import edu.pitt.dbmi.nlp.noble.ontology.IRestriction;
 import edu.pitt.dbmi.nlp.noble.ontology.LogicExpression;
 import edu.pitt.dbmi.nlp.noble.ontology.OntologyUtils;
 import edu.pitt.dbmi.nlp.noble.ontology.owl.OOntology;
-import edu.pitt.dbmi.nlp.noble.ontology.owl.OResource;
 import edu.pitt.dbmi.nlp.noble.terminology.Annotation;
 import edu.pitt.dbmi.nlp.noble.terminology.Concept;
 import edu.pitt.dbmi.nlp.noble.terminology.Relation;
-import edu.pitt.dbmi.nlp.noble.terminology.SemanticType;
 import edu.pitt.dbmi.nlp.noble.terminology.Source;
 import edu.pitt.dbmi.nlp.noble.terminology.Terminology;
 import edu.pitt.dbmi.nlp.noble.terminology.TerminologyError;
@@ -60,7 +63,9 @@ public class DomainOntology {
 	public static final String ANNOTATION_MENTION = "MentionAnnotation";
 	public static final String LINGUISTIC_MODIFER = ConText.LINGUISTIC_MODIFIER;
 	private static final String HAS_COMPOUND_ARGUMENT = "hasCompoundArgument";
-	private static final int MAX_NUMBER_OF_COMPOUND_ARGUMENTS = 5;
+	public static final String COMPOSITION = "Composition";
+	public static final String HAS_TITLE = "hasTitle";
+	public static final String HAS_MENTION_ANNOTATION = "hasMentionAnnotation";
 	
 	private IOntology ontology;
 	private Terminology anchorTerminology, modifierTerminology;
@@ -74,7 +79,29 @@ public class DomainOntology {
 	 * @throws IOntologyException 
 	 */
 	public DomainOntology(String location) throws IOntologyException{
-		this(OOntology.loadOntology(location)); 
+		//	this(OOntology.loadOntology(location));
+		File file = new File(location);
+		if(file.exists()){
+			String ontologyURI = null;
+			try {
+				ontologyURI = ""+OntologyUtils.getOntologyURI(file);
+			} catch (IOException e) {
+				throw new IOntologyException("Unable get parent ontology URL "+location);
+			}
+			if(ontologyURI.endsWith(".owl"))
+				ontologyURI = ontologyURI.substring(0,ontologyURI.length()-4);
+			ontologyURI += "Instances.owl";
+			setOntology(OOntology.createOntology(URI.create(ontologyURI),file));
+		}else if (location.startsWith("http")){
+			String ontologyURI = location;
+			if(ontologyURI.endsWith(".owl"))
+				ontologyURI = ontologyURI.substring(0,ontologyURI.length()-4);
+			ontologyURI += "Instances.owl";
+			setOntology(OOntology.createOntology(URI.create(ontologyURI),URI.create(location)));
+		}else{
+			throw new IOntologyException("Unable to identify ontology schema location "+location);
+		}
+		
 	}
 	
 	/**
@@ -83,7 +110,6 @@ public class DomainOntology {
 	 * @throws IOntologyException 
 	 */
 	public DomainOntology(IOntology ont) throws IOntologyException{
-		//TODO: actually create new ontology based on the one we are importing
 		setOntology(ont); 
 	}
 	
@@ -95,9 +121,10 @@ public class DomainOntology {
 	/**
 	 * set domain ontology based on http://blulab.chpc.utah.edu/ontologies/v2/Schema.owl
 	 * @param ontology - an ontology object representing domain ontology
+	 * @throws IOntologyException 
 	 */
 
-	public void setOntology(IOntology ontology) {
+	public void setOntology(IOntology ontology) throws IOntologyException {
 		this.ontology = ontology;
 		if(anchorTerminology != null)
 			anchorTerminology.dispose();
@@ -107,6 +134,26 @@ public class DomainOntology {
 		modifierTerminology = null;
 	}
 
+	
+	/**
+	 * check if ontology is complient with Schema.owl ontology
+	 * @return
+	 */
+	public boolean isOntologyValid(){
+		// make sure it derives from schema
+		boolean fromSchema = false;
+		for(IOntology ont: getOntology().getImportedOntologies()){
+			if(ont.getURI().toString().contains(SCHEMA_OWL)){
+				fromSchema = true;
+				break;
+			}
+		}
+		/*if(!fromSchema){
+			throw new IOntologyException("Ontology "+ontology.getName()+" does not derive from "+SCHEMA_OWL+" ontology");
+		}*/
+		
+		return fromSchema;
+	}
 
 
 	/**
@@ -848,4 +895,20 @@ public class DomainOntology {
 	public String toString(){
 		return ontology.getName();
 	}
+	
+	
+	/**
+	 * output file to write the ontology as
+	 * @param outputDirectory
+	 * @throws IOntologyException 
+	 * @throws FileNotFoundException 
+	 */
+	public void write(File outputFile) throws FileNotFoundException, IOntologyException{
+		ontology.write(new FileOutputStream(outputFile),IOntology.OWL_FORMAT);
+	}
+
+	public String getName() {
+		return ontology.getName();
+	}
+	
 }

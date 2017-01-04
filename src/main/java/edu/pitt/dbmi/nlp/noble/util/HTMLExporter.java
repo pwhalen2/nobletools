@@ -25,6 +25,10 @@ import edu.pitt.dbmi.nlp.noble.extract.model.ItemInstance;
 import edu.pitt.dbmi.nlp.noble.extract.model.Template;
 import edu.pitt.dbmi.nlp.noble.extract.model.TemplateDocument;
 import edu.pitt.dbmi.nlp.noble.extract.model.TemplateItem;
+import edu.pitt.dbmi.nlp.noble.mentions.model.AnnotationVariable;
+import edu.pitt.dbmi.nlp.noble.mentions.model.Composition;
+import edu.pitt.dbmi.nlp.noble.mentions.model.DomainOntology;
+import edu.pitt.dbmi.nlp.noble.mentions.model.Instance;
 import edu.pitt.dbmi.nlp.noble.terminology.Annotation;
 import edu.pitt.dbmi.nlp.noble.terminology.Concept;
 import edu.pitt.dbmi.nlp.noble.tools.ConText;
@@ -352,6 +356,95 @@ public class HTMLExporter {
 		return out.toString();
 	}
 	
+	
+	/**
+	 * code individual concept.
+	 *
+	 * @param c the c
+	 * @param color the color
+	 * @param aa the aa
+	 * @return the string
+	 */
+	private String codeVariable(AnnotationVariable var){
+		String color = "blue";
+		String code = var.getConceptClass().getName();
+		String tip = "";
+		
+		StringBuffer out = new StringBuffer();
+		
+		out.append("<table><tr><th colspan=3 align=left>");
+		out.append(codeEntity(var.getLabel(),code, tip, color,var.getAnnotations()));
+		out.append("</th></tr>");
+		
+		Map<String,Set<Instance>> modifiers = var.getModifierInstances();
+		for(String prop: modifiers.keySet()){
+			Set<Instance> instances = modifiers.get(prop);
+			String val =  codeEntities(instances,!DomainOntology.HAS_ANCHOR.equals(prop));
+			out.append("<tr><td>&nbsp;</td><td>"+prop);
+			out.append("</td><td>"+val+"</td></tr>");
+		}
+		out.append("</table>");
+		
+		return out.toString();
+	}
+	
+	/**
+	 * code multiple entities
+	 * @param instances
+	 * @return
+	 */
+	private String codeEntities(Collection<Instance> instances){
+		return codeEntities(instances,true);
+	}
+	
+	/**
+	 * code multiple entities
+	 * @param instances
+	 * @return
+	 */
+	private String codeEntities(Collection<Instance> instances,boolean includeComponents){
+		StringBuffer out = new StringBuffer();
+		for(Instance inst: instances){
+			String color = inst.getAnnotations().isEmpty()?"black":"blue";
+			out.append(codeEntity(inst.getLabel(),inst.getName(),"",color,inst.getAnnotations()));
+			if(includeComponents){
+				String props = codeEntities(inst.getModifierInstanceList());
+				if(props.length() > 0)
+					out.append(" ("+props+")");
+			}
+			out.append(", ");
+		}
+		// remove the last comma and space
+		if(out.length() > 2)
+			out.replace(out.length()-2, out.length(), "");
+		return out.toString();
+	}
+	
+	
+	/**
+	 * create a coded entity
+	 * @param label
+	 * @param code
+	 * @param tip
+	 * @param color
+	 * @param annnotations
+	 * @return
+	 */
+	private String codeEntity(String label, String code, String tip, String color, Collection<Annotation> annnotations){
+		List<String> ids = new ArrayList<String>();
+		for(Annotation a: annnotations){
+			ids.add("'"+a.getOffset()+"'");
+		}
+		StringBuffer out = new StringBuffer();
+		out.append("<span style=\"color:"+color+";\" onmouseover=\"h("+ids+");t=setTimeout(function(){j("+ids+");},2000);\" ");
+		out.append(	"onmouseout=\"u("+ids+"); clearTimeout(t);\" id=\""+code+"\"");
+		//out.append(" href=\""+terminologySerlvet+"?action=lookup_concept&term="+term+"&code="+code+"\" target=\"_blank\"");
+		out.append(" title=\""+TextTools.escapeHTML(tip)+"\">"+TextTools.escapeHTML(label)+"</span> ");
+		return out.toString();
+	}
+	
+	
+	
 	/**
 	 * group annotations in a sentence.
 	 *
@@ -361,6 +454,7 @@ public class HTMLExporter {
 	private Map<Annotation,List<Mention>> groupAnnotations(Sentence s) {
 		Map<Annotation,List<Mention>> map = new TreeMap<Annotation, List<Mention>>();
 		for(Mention m: s.getMentions()){
+			// this takes care of main mentions
 			for(Annotation a: m.getAnnotations()){
 				if(s.contains(a) && !intersects(a,map.keySet())){
 					List<Mention> mm = map.get(a);
@@ -371,6 +465,20 @@ public class HTMLExporter {
 					mm.add(m);
 				}
 			}
+			// what about modifiers for each mention?
+			for(Modifier mmm: m.getModifiers().values()){
+				for(Annotation a: mmm.getAnnotations()){
+					if(s.contains(a) && !intersects(a,map.keySet())){
+						List<Mention> mm = map.get(a);
+						if(mm == null){
+							mm = new ArrayList<Mention>();
+							map.put(a,mm);
+						}
+						mm.add(m);
+					}
+				}
+			}
+			
 		}
 		return map;
 	}
@@ -457,6 +565,26 @@ public class HTMLExporter {
 		return (str.length() > 0)?"<p><b>Concepts</b><br>"+str+"</p>":"";
 	}
 	
+	
+	/**
+	 * code annotation variable
+	 * @param variables
+	 * @return
+	 */
+	
+	private String codeVariables(List<AnnotationVariable> variables){
+		StringBuffer str = new StringBuffer();
+		
+		for(AnnotationVariable var: variables){
+			str.append("<p>"+codeVariable(var)+"</p>");
+		}
+		
+		
+		return (str.length() > 0)?"<p><b>Annotation Variables</b><br>"+str+"</p>":"";
+	}
+	
+	
+	
 
 	/**
 	 * get index buffer.
@@ -513,6 +641,21 @@ public class HTMLExporter {
 		export(doc,htmlWriter);
 	}
 
+	/**
+	 * create a coded html report.
+	 *
+	 * @param doc the doc
+	 * @throws Exception the exception
+	 */
+	public void export(Composition doc) throws Exception {
+		String name = doc.getTitle();
+		if(name.endsWith(".txt"))
+			name = name.substring(0,name.length()-".txt".length());
+		File out = new File(outputDirectory.getAbsolutePath()+File.separator+HTML_REPORT_LOCATION+File.separator+name+".html");
+		BufferedWriter htmlWriter = new BufferedWriter(new FileWriter(out));
+		export(doc,htmlWriter);
+	}
+	
 	/**
 	 * create a coded html report.
 	 *
@@ -678,6 +821,94 @@ public class HTMLExporter {
 			getIndex().flush();
 		}
 	}
+	
+	
+	/**
+	 * create a coded html report.
+	 *
+	 * @param doc the doc
+	 * @throws Exception the exception
+	 */
+	public void export(Composition doc, Writer htmlWriter) throws Exception {
+		title = "Noble Mentions";
+		// build report
+		String content = doc.getText();
+		StringBuffer text = new StringBuffer();
+		int offs = 0;
+		for(Sentence s: doc.getSentences()){
+			int o = s.getOffset();
+			text.append(content.substring(offs,o).replaceAll("\n","<br>"));
+			text.append(codeSentence(s));
+			offs = o+s.getLength();
+		}
+		if(offs < content.length())
+			text.append(content.substring(offs).replaceAll("\n", "<br>"));
+			
+		// build up results
+		StringBuffer result = new StringBuffer();
+		result.append(codeVariables(doc.getAnnotationVariables()));
+			
+		// get report representation and cap protocol
+		String report = text.toString(); //convertToHTML(text.toString());
+		
+		StringBuffer info = new StringBuffer();
+		Long time = doc.getProcessTime().get(NobleCoder.class.getSimpleName());
+		info.append("report process time: <b>"+((time != null)?time.longValue():-1)+"</b> ms , ");
+		info.append("found items: <b>"+doc.getMentions().size()+"</b>");
+		
+		// write out results
+		String name = null; 
+		if(doc.getTitle() != null){
+			name = doc.getTitle();
+			if(name.endsWith(".txt"))
+				name = name.substring(0,name.length()-".txt".length());
+		}
+		//File out = new File(outputDirectory.getAbsolutePath()+File.separator+HTML_REPORT_LOCATION+File.separator+name+".html");
+		//BufferedWriter htmlWriter = new BufferedWriter(new FileWriter(out));
+		
+		
+		htmlWriter.write("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">");
+		htmlWriter.write("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
+		htmlWriter.write("<head><title>Report Processor Output</title><script type=\"text/javascript\">");
+		htmlWriter.write("function h(id){for(i=0;i<id.length;i++){document.getElementById(id[i]).style.backgroundColor=\"yellow\";}}");
+		htmlWriter.write("function u(id){for(i=0;i<id.length;i++){document.getElementById(id[i]).style.backgroundColor=\"white\";}}"); //</script>
+		htmlWriter.write("function j(id){for(i=0;i<id.length;i++){location.href=\"#\";location.href=\"#\"+id[i];}}");
+		htmlWriter.write("function l(){var h=800;if(!window.innerWidth){\n");
+		htmlWriter.write("if(!(document.documentElement.clientWidth == 0)){\n h = document.documentElement.clientHeight;\n");
+		htmlWriter.write("}else{h = document.body.clientHeight;}}else{ h = window.innerHeight;} var hd = (h-100)+\"px\";\n");
+		htmlWriter.write("document.getElementById(\"d1\").style.maxHeight=hd;document.getElementById(\"d2\").style.maxHeight=hd;}</script>\n");
+		
+		htmlWriter.write("</head><body onload=\"l();\" onresize=\"l();\"><table width=\"100%\" style=\"table-layout:fixed; \" cellspacing=\"5\">\n"); //word-wrap:break-word;
+		if(name != null)
+			htmlWriter.write("<tr><td colspan=2 align=center><h3>"+name+"</h3></td></tr>\n");
+		
+		String sz = "50%";
+		if(showReport ^ showConceptList)
+			sz = "100%";
+		
+		if(showReport)
+			htmlWriter.write("<tr><td width=\""+sz+"\" valign=middle><div id=\"d1\" style=\"overflow: auto; max-height: 800px; \">"+report+"</div></td>");
+		if(showConceptList)
+			htmlWriter.write("<td width=\""+sz+"\" valign=top><div id=\"d2\" style=\"overflow: auto; max-height: 800px;\">"+result+"</div></td></tr>\n");
+		if(showFooter)
+			htmlWriter.write("<tr><td colspan=2 align=center>"+info+"</td></tr>\n");
+		htmlWriter.write("<tr><td colspan=2 align=center></td></tr>\n");
+		htmlWriter.flush();
+		
+		// finish up
+		htmlWriter.write("<tr><td colspan=2></td></tr>\n");
+		htmlWriter.write("</table></body></html>\n");
+		htmlWriter.flush();
+		htmlWriter.close();
+
+		// add link to index
+		if(createIndex){
+			getIndex().write("<span style=\"max-width: 190px; font-size: 90%; overflow: hidden; display:block;\">");
+			getIndex().write("<a href=\""+HTML_REPORT_LOCATION+"/"+name+".html\" target=\"frame\">"+doc.getTitle()+"</a></span>\n");
+			getIndex().flush();
+		}
+	}
+	
 	
 	
 	/**

@@ -4,9 +4,11 @@ import java.io.IOException;
 import java.util.*;
 
 import edu.pitt.dbmi.nlp.noble.terminology.Concept;
+import edu.pitt.dbmi.nlp.noble.terminology.ConceptPath;
 import edu.pitt.dbmi.nlp.noble.terminology.TerminologyException;
 import edu.pitt.dbmi.nlp.noble.terminology.impl.NobleCoderTerminology;
 import edu.pitt.dbmi.nlp.noble.tools.TextTools;
+import edu.pitt.dbmi.nlp.noble.util.PathHelper;
 
 
 public class NobleCoderTerminologyTest {
@@ -114,8 +116,23 @@ public class NobleCoderTerminologyTest {
 		//String termFile = "/home/tseytlin/TestRepository2/NCI_Thesaurus.term";
 		String termFile = "NCI_Thesaurus";
 		NobleCoderTerminology term = new NobleCoderTerminology(termFile);
-		NobleCoderTerminologyTest test = new NobleCoderTerminologyTest(term);
-		test.testTerminologyTerms();
+		term.setSemanticTypeFilter("Neoplastic Process");
+		for(Concept c : term.search("melanoma")){
+			c.printInfo(System.out);
+			System.out.println(Arrays.toString(c.getParentConcepts()));
+			
+			PathHelper helper = new PathHelper(term);
+			System.out.println(helper.getAncestors(c));
+			for(ConceptPath p: 	helper.getPaths(c)){
+				System.out.println(p);
+				for(Concept cc: p){
+					System.out.println(cc.getName());
+				}
+			}
+		}
+		
+		//NobleCoderTerminologyTest test = new NobleCoderTerminologyTest(term);
+		//test.testTerminologyTerms();
 	}
 
 }

@@ -18,9 +18,12 @@ import java.net.URL;
 import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +32,7 @@ import java.util.Set;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
@@ -78,6 +82,7 @@ import edu.pitt.dbmi.nlp.noble.util.HTMLExporter;
  * @author tseytlin
  */
 public class NobleMentionsTool implements ActionListener{
+	private final URL LOGO_ICON = getClass().getResource("/icons/NobleLogo256.png");
 	private JFrame frame;
 	private JTextField input,output;
 	private JList<DomainOntology> templateList;
@@ -121,6 +126,7 @@ public class NobleMentionsTool implements ActionListener{
 			frame = new JFrame("Noble Mentions");
 			frame.setDefaultCloseOperation(statandlone?JFrame.EXIT_ON_CLOSE:JFrame.DISPOSE_ON_CLOSE);
 			frame.setJMenuBar(getMenuBar());
+			frame.setIconImage(new ImageIcon(LOGO_ICON).getImage());
 			
 			JPanel panel = new JPanel();
 			panel.setLayout(new BoxLayout(panel,BoxLayout.Y_AXIS));
@@ -208,10 +214,12 @@ public class NobleMentionsTool implements ActionListener{
 			Dimension s = Toolkit.getDefaultToolkit().getScreenSize();
 			frame.setLocation(new Point((s.width-d.width)/2,(s.height-d.height)/2));
 			
+			frame.setVisible(true);
 			// load defaults
 			loadDeafaults();
+		}else{
+			frame.setVisible(true);
 		}
-		frame.setVisible(true);
 	}	
 	
 	/**
@@ -452,12 +460,28 @@ public class NobleMentionsTool implements ActionListener{
 				}
 				setBusy(true);
 				
+				DomainOntology ontology = templateList.getSelectedValue();
+				
+				// create just-in-time instance file
+				try {
+					ontology = new DomainOntology(ontology.getOntology().getLocation());
+				} catch (IOntologyException e1) {
+					e1.printStackTrace();
+				}
+				
+				// check if it is valid
+				if(!ontology.isOntologyValid()){
+					JOptionPane.showMessageDialog(frame,"Selected ontology "+ontology.getName()+" is not a valid "+DomainOntology.SCHEMA_OWL+" ontology","Error",JOptionPane.ERROR_MESSAGE);
+					setBusy(false);
+					return;
+				}
 				
 				try {
-					process(templateList.getSelectedValue(),input.getText(),output.getText());
+					process(ontology,input.getText(),output.getText());
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
+				
 				
 				setBusy(false);
 				
@@ -480,6 +504,15 @@ public class NobleMentionsTool implements ActionListener{
 		//}else{
 			JFileChooser fc = new JFileChooser(file);
 			fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+			fc.addChoosableFileFilter(new FileFilter() {
+				public String getDescription() {
+					return "Text files (.txt)";
+				}
+				public boolean accept(File f) {
+					return f.isDirectory() || f.getName().endsWith(".txt");
+				}
+			});
+		
 			int r = (output == text)?fc.showSaveDialog(frame):fc.showOpenDialog(frame);
 			if(r == JFileChooser.APPROVE_OPTION){
 				file = fc.getSelectedFile();
@@ -487,7 +520,11 @@ public class NobleMentionsTool implements ActionListener{
 				
 				// if input, change output to default
 				if(text == input){
-					output.setText(new File(file.getParent()+File.separator+"Output"+File.separator+file.getName()).getAbsolutePath());
+					String prefix = file.getName();
+					if(prefix.endsWith(".txt"))
+						prefix = prefix.substring(0,prefix.length()-4);
+					prefix = prefix+File.separator+(new SimpleDateFormat("yyyy-MM-dd HH.mm.ss").format(new Date(System.currentTimeMillis())));
+					output.setText(new File(file.getParent()+File.separator+"Output"+File.separator+prefix).getAbsolutePath());
 				}
 			}
 		//}
@@ -505,7 +542,7 @@ public class NobleMentionsTool implements ActionListener{
 		NobleMentions noble = new NobleMentions(ontology);
 		
 		// process file
-		List<File> files = getFiles(new File(in),new ArrayList<File>());
+		List<File> files = FileTools.getFilesInDirectory(new File(in),".txt");
 		if(progress != null){
 			final int n = files.size();
 			SwingUtilities.invokeLater(new Runnable(){
@@ -515,7 +552,6 @@ public class NobleMentionsTool implements ActionListener{
 				}
 			});
 		}
-		Collections.sort(files);
 		
 		// process report
 		File outputDir = new File(out);
@@ -550,9 +586,9 @@ public class NobleMentionsTool implements ActionListener{
 			}
 		}
 		
-		
 		// wrap up
 		try {
+			ontology.write(new File(outputDir,ontology.getName()+".owl"));
 			htmlExporter.flush();
 			csvExporter.flush();
 		} catch (Exception e) {
@@ -566,23 +602,6 @@ public class NobleMentionsTool implements ActionListener{
 		progress("Average process time per report:\t"+((totalTime+1)/processCount)+" ms\n");
 	}
 
-	/**
-	 * Gets the files.
-	 *
-	 * @param in the in
-	 * @param list the list
-	 * @return the files
-	 */
-	private List<File> getFiles(File in,List<File> list) {
-		if(in.isDirectory()){
-			for(File f: in.listFiles()){
-				getFiles(f,list);
-			}
-		}else if(in.isFile() && in.getName().endsWith(".txt")){
-			list.add(in);
-		}
-		return list;
-	}
 	
 
 	/**
@@ -599,9 +618,9 @@ public class NobleMentionsTool implements ActionListener{
 		Composition doc = noble.process(reportFile);
 		
 		// temp system.out
-		for(AnnotationVariable var: doc.getAnnotationVariables()){
+		/*for(AnnotationVariable var: doc.getAnnotationVariables()){
 			System.out.println(var);
-		}
+		}*/
 		
 		
 		processCount ++;

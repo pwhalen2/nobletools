@@ -1524,13 +1524,11 @@ public class NobleCoderTool implements ActionListener{
 		}
 		
 		// process file
-		List<File> files = getFiles(new File(in),new ArrayList<File>());
+		List<File> files = FileTools.getFilesInDirectory(new File(in));
 		if(files.isEmpty()){
 			JOptionPane.showMessageDialog(frame,"No input files found","Error",JOptionPane.ERROR_MESSAGE);
 			return;
 		}
-		
-		
 		
 		if(progress != null){
 			final int n = files.size();
@@ -1541,7 +1539,7 @@ public class NobleCoderTool implements ActionListener{
 				}
 			});
 		}
-		Collections.sort(files);
+		//Collections.sort(files);
 		
 		// process report
 		File outputDir = new File(out);
@@ -1603,38 +1601,6 @@ public class NobleCoderTool implements ActionListener{
 		progress("\nTotal process time for all reports:\t"+processTime+" ms\n");
 		progress("Average process time per report:\t"+ave+" ms\n");
 	}
-
-	/**
-	 * Gets the files.
-	 *
-	 * @param in the in
-	 * @param list the list
-	 * @return the files
-	 */
-	private List<File> getFiles(File in,List<File> list) {
-		if(in.isDirectory()){
-			for(File f: in.listFiles()){
-				getFiles(f,list);
-			}
-		}else if(in.isFile()){ // && in.getName().endsWith(".txt")
-			list.add(in);
-			
-		/*	try{
-				// add text files
-				String type = Files.probeContentType(in.toPath());
-				if (type.equals("text/plain")) {
-					list.add(in); 
-				}
-			}catch(NoClassDefFoundError ex){
-				// if Files not there then we have Java < 1.7, then add anyway
-				list.add(in);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}*/
-		}
-		return list;
-	}
-
 
 
 	

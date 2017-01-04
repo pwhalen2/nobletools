@@ -7,6 +7,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -124,4 +127,50 @@ public class FileTools {
 		}
 		return strBuf.toString();
 	}
+	
+	/**
+	 * get recursive directory content that is sorted
+	 * @param directory - directory to recurse into
+	 * @param filter - extention filter that valid files can end with
+	 * @return
+	 */
+	
+	public static List<File> getFilesInDirectory(File directory, String filter){
+		List<File> files = getFiles(directory, new ArrayList<File>(), filter);
+		Collections.sort(files);
+		return files;
+	}
+	
+	/**
+	 * get recursive directory content that is sorted
+	 * @param directory- directory to recurse into
+	 * @return
+	 */
+	
+	public static List<File> getFilesInDirectory(File directory){
+		List<File> files = getFiles(directory, new ArrayList<File>(),null);
+		Collections.sort(files);
+		return files;
+	}
+	
+
+	/**
+	 * Gets the files.
+	 *
+	 * @param in the in
+	 * @param list the list
+	 * @return the files
+	 */
+	private static List<File> getFiles(File in,List<File> list, String filter) {
+		if(in.isDirectory()){
+			for(File f: in.listFiles()){
+				getFiles(f,list,filter);
+			}
+		}else if(in.isFile() && (filter == null  || in.getName().endsWith(filter))){
+			list.add(in);
+		}
+		return list;
+	}
+
+	
 }

@@ -132,6 +132,13 @@ public class OOntology extends OResource implements IOntology{
 	}
 	
 	
+	
+	
+	public String getLocation() {
+		return location == null?super.getLocation():location;
+	}
+
+
 	/**
 	 * get prefix manager .
 	 *
@@ -281,6 +288,63 @@ public class OOntology extends OResource implements IOntology{
 			throw new IOntologyException("Unable to create ontology "+uri,e);
 		}
 	}
+	
+	
+	/**
+	 * create new ontology with this URI.
+	 *
+	 * @param ontologyURI the uri of future ontology
+	 * @param parentURI the uri of parent ontology
+	 * @return the o ontology
+	 * @throws IOntologyException the i ontology exception
+	 */
+	public static OOntology createOntology(URI ontologyURI, URI parentURI) throws IOntologyException {
+		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+		//manager.addOntologyStorer(new OWLXMLOntologyStorer());
+		try{
+			
+			OWLOntology ont = manager.createOntology(IRI.create(ontologyURI));
+			OWLImportsDeclaration importDeclaraton = manager.getOWLDataFactory().getOWLImportsDeclaration(IRI.create(parentURI));
+			manager.makeLoadImportRequest(importDeclaraton,new OWLOntologyLoaderConfiguration());
+			manager.applyChange(new AddImport(ont,importDeclaraton));
+			
+			return new OOntology(ont);
+		} catch (OWLOntologyCreationException e) {
+			throw new IOntologyException("Unable to create ontology "+ontologyURI,e);
+		}
+	}
+	
+	
+	
+	/**
+	 * create new ontology with this URI.
+	 *
+	 * @param ontologyURI the uri of future ontology
+	 * @param parentURI the uri of parent ontology
+	 * @return the o ontology
+	 * @throws IOntologyException the i ontology exception
+	 */
+	public static OOntology createOntology(URI ontologyURI, File parentOntology) throws IOntologyException {
+		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+		//manager.addOntologyStorer(new OWLXMLOntologyStorer());
+		try{
+			URI parentURI = OntologyUtils.getOntologyURI(parentOntology);
+			manager.addIRIMapper(new SimpleIRIMapper(IRI.create(parentURI), IRI.create(parentOntology)));
+			//manager.loadOntologyFromOntologyDocument(parentOntology);
+			OWLOntology ont = manager.createOntology(IRI.create(ontologyURI));
+			OWLImportsDeclaration importDeclaraton = manager.getOWLDataFactory().getOWLImportsDeclaration(IRI.create(parentURI));
+			manager.makeLoadImportRequest(importDeclaraton,new OWLOntologyLoaderConfiguration());
+			manager.applyChange(new AddImport(ont,importDeclaraton));
+			
+			return new OOntology(ont);
+		} catch (OWLOntologyCreationException e) {
+			throw new IOntologyException("Unable to create ontology "+ontologyURI,e);
+		} catch (IOException e) {
+			throw new IOntologyException("Unable to create ontology "+ontologyURI,e);
+		}
+	}
+	
+	
 	
 	/**
 	 * load ontology from uri.

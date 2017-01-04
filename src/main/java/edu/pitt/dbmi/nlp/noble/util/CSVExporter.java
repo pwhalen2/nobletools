@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -16,6 +17,10 @@ import edu.pitt.dbmi.nlp.noble.extract.model.ItemInstance;
 import edu.pitt.dbmi.nlp.noble.extract.model.Template;
 import edu.pitt.dbmi.nlp.noble.extract.model.TemplateDocument;
 import edu.pitt.dbmi.nlp.noble.extract.model.TemplateItem;
+import edu.pitt.dbmi.nlp.noble.mentions.model.AnnotationVariable;
+import edu.pitt.dbmi.nlp.noble.mentions.model.Composition;
+import edu.pitt.dbmi.nlp.noble.mentions.model.DomainOntology;
+import edu.pitt.dbmi.nlp.noble.mentions.model.Instance;
 import edu.pitt.dbmi.nlp.noble.terminology.Annotation;
 import edu.pitt.dbmi.nlp.noble.terminology.Concept;
 import edu.pitt.dbmi.nlp.noble.tools.TextTools;
@@ -138,6 +143,51 @@ public class CSVExporter {
 	
 	
 	/**
+	 * save tab delimted document for a Composition object
+	 * @param doc
+	 * @throws Exception
+	 */
+	public void export(Composition doc) throws Exception {
+		BufferedWriter writer = getCSVWriterForComposition(outputFile);
+		for(AnnotationVariable var: doc.getAnnotationVariables()){
+			for(String prop: var.getModifierInstances().keySet()){
+				for(Instance inst: var.getModifierInstances().get(prop)){
+					StringBuffer value = new StringBuffer(inst.getName());
+					StringBuffer valueProp = new StringBuffer();
+					if(!DomainOntology.HAS_ANCHOR.equals(prop)){
+						for(Instance ii: inst.getModifierInstanceList()){
+							valueProp.append(ii.getName()+", ");
+						}
+						if(valueProp.length() > 2){
+							valueProp.delete(valueProp.length()-2,valueProp.length());
+						}
+					}
+					writer.write(doc.getTitle()+S+var.getName()+S+prop+S+value+S+valueProp+S+getAnnotations(inst.getAnnotations())+"\n");
+				}
+			}
+		}
+		
+		writer.flush();
+	}
+	
+	/**
+	 * get a list of annotations
+	 * @param annotations
+	 * @return
+	 */
+	private String getAnnotations(Collection<Annotation> annotations){
+		StringBuffer a = new StringBuffer();
+		for(Annotation an : annotations){
+			a.append(an.getText()+"/"+(+an.getOffset())+", ");
+		}
+		if(a.length()> 0){
+			a = new StringBuffer(a.substring(0,a.length()-2));
+		}
+		return a.toString();
+	}
+	
+	
+	/**
 	 * flush all writers.
 	 *
 	 * @throws Exception the exception
@@ -192,6 +242,20 @@ public class CSVExporter {
 		return csvWriter;
 	}
 	
+	/**
+	 * Gets the CSV writer.
+	 *
+	 * @param out the out
+	 * @return the CSV writer
+	 * @throws Exception the exception
+	 */
+	private BufferedWriter getCSVWriterForComposition(File out) throws Exception {
+		if(csvWriter == null){
+			csvWriter = new BufferedWriter(new FileWriter(out));
+			csvWriter.write("Document"+S+"Annotation Variable"+S+"Property"+S+"Value"+S+"Value Properies"+S+"Annotations\n");
+		}
+		return csvWriter;
+	}
 	
 	/**
 	 * Gets the CSV writer.

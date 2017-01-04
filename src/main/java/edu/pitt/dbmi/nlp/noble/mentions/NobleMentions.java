@@ -69,6 +69,7 @@ public class NobleMentions implements Processor<Composition>{
 					}
 				}
 			}
+			domainOntology.write(new File(System.getProperty("user.home")+File.separator+domainOntology.getName()+".owl"));
 		}else{
 			System.err.println("Usage: java NobleMentionsCmd.jar <owl url> <files>");
 			System.exit(1);

@@ -214,6 +214,7 @@ public class Instance {
 		return getModifierInstances().get(prop);
 	}
 	
+	
 	/**
 	 * get a list of modifiers associated with this instance
 	 * @return the modifiers
@@ -229,7 +230,7 @@ public class Instance {
 	 * get a list of current modifiers as instance list
 	 * @return
 	 */
-	protected List<Instance> getModifierInstanceList(){
+	public List<Instance> getModifierInstanceList(){
 		// instantiate available modifiers
 		List<Instance> modifierInstances = new ArrayList<Instance>();
 		for(Modifier m: getModifiers()){
