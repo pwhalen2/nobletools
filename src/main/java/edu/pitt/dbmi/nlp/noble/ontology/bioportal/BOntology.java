@@ -502,10 +502,12 @@ public class BOntology extends BResource implements IOntology, Terminology {
 		// search if not in caseh, can't rely on lookup
 		// cause class name and location are not always the same things
 		if(c == null){
-			try{
+			
+			return new BClass(ontology,name);
+			/*try{
 				Concept [] result = search(BioPortalHelper.getName(name));
 				return result.length > 0?result[0].getConceptClass():null;
-			}catch(Exception ex){}
+			}catch(Exception ex){}*/
 		}
 		return c;
 	}

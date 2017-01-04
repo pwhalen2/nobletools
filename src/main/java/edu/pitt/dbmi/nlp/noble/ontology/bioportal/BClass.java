@@ -211,7 +211,8 @@ public class BClass extends BResource implements IClass {
 			if(in != null){
 				Document doc = parseXML(in);
 				if(doc != null){
-					load(getElementByTagName(doc.getDocumentElement(),"classBean"));
+					//load(getElementByTagName(doc.getDocumentElement(),"classBean"));
+					load(doc.getDocumentElement());
 					// this is definately loaded
 					loaded = true;
 				}

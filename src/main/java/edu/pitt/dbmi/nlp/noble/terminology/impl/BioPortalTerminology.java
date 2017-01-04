@@ -422,11 +422,11 @@ public class BioPortalTerminology extends AbstractTerminology {
 	 */
 	public static void main(String [] args) throws Exception{
 		BioPortalTerminology term = new BioPortalTerminology();
-		term.setOntology("NCI_Thesaurus");
+		term.setOntology("NCIT");
 		long time = System.currentTimeMillis();
 		// ZFA_0001234 | C0025202
 		System.out.println("--- lookup ---");
-		Concept c = term.lookupConcept("C0025202");
+		Concept c = term.lookupConcept("C3224");
 		if(c != null){
 			c.printInfo(System.out);
 		}
