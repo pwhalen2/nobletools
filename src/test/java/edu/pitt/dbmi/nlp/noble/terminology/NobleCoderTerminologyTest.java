@@ -1,4 +1,4 @@
-package edu.pitt.dbmi.nlp.noble;
+package edu.pitt.dbmi.nlp.noble.terminology;
 
 import java.io.IOException;
 import java.util.*;

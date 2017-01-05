@@ -151,7 +151,6 @@ public class DomainOntology {
 		/*if(!fromSchema){
 			throw new IOntologyException("Ontology "+ontology.getName()+" does not derive from "+SCHEMA_OWL+" ontology");
 		}*/
-		
 		return fromSchema;
 	}
 
@@ -273,7 +272,6 @@ public class DomainOntology {
 				}
 			}
 			modifierTerminology = terminology;
-			
 		}
 		return modifierTerminology;
 	}
@@ -301,6 +299,7 @@ public class DomainOntology {
 			addInverseRelationships(inst.getDirectTypes()[0],ontology.getProperty(HAS_MODIFIER), concept);
 			
 			terminology.addConcept(concept);
+			
 			return concept;
 		}catch(TerminologyException ex){
 			throw new TerminologyError("Unable to add a concept object",ex);
@@ -326,6 +325,7 @@ public class DomainOntology {
 			//	concept.addSemanticType(semanticType);
 			
 			terminology.addConcept(concept);
+			
 			return concept;
 		}catch(TerminologyException ex){
 			throw new TerminologyError("Unable to add a concept object",ex);
@@ -612,6 +612,7 @@ public class DomainOntology {
 			if(mention.getSentence() == null)
 				mention.setSentence(m.getSentence());
 			annotations.addAll(m.getAnnotations());
+			mention.getModifiers().putAll(m.getModifiers());
 		}
 		mention.setAnnotations(annotations);
 		

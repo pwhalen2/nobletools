@@ -7,13 +7,12 @@ import edu.pitt.dbmi.nlp.noble.ontology.IClass;
 import edu.pitt.dbmi.nlp.noble.ontology.IInstance;
 import edu.pitt.dbmi.nlp.noble.ontology.IOntology;
 import edu.pitt.dbmi.nlp.noble.ontology.IProperty;
-import edu.pitt.dbmi.nlp.noble.ontology.IRestriction;
 import edu.pitt.dbmi.nlp.noble.ontology.OntologyUtils;
 
 public class Composition extends Document {
 	protected IClass cls;
 	protected IInstance instance;
-	private List<AnnotationVariable> annotationVariables;
+	private List<AnnotationVariable> annotationVariables,rejectedVariables;
 	private DomainOntology domainOntology;
 	
 	public Composition(String text){
@@ -88,6 +87,16 @@ public class Composition extends Document {
 		return annotationVariables;
 	}
 
+	/**
+	 * get a set of annotation variables extracted from a document
+	 * @return
+	 */
+	public List<AnnotationVariable> getRejectedAnnotationVariables(){
+		if(rejectedVariables == null)
+			rejectedVariables = new ArrayList<AnnotationVariable>();
+		return rejectedVariables;
+	}
+	
 	/**
 	 * add an annotation variable
 	 * @param var

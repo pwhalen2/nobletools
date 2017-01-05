@@ -330,7 +330,7 @@ public class OOntology extends OResource implements IOntology{
 		try{
 			URI parentURI = OntologyUtils.getOntologyURI(parentOntology);
 			manager.addIRIMapper(new SimpleIRIMapper(IRI.create(parentURI), IRI.create(parentOntology)));
-			//manager.loadOntologyFromOntologyDocument(parentOntology);
+			manager.loadOntologyFromOntologyDocument(parentOntology);
 			OWLOntology ont = manager.createOntology(IRI.create(ontologyURI));
 			OWLImportsDeclaration importDeclaraton = manager.getOWLDataFactory().getOWLImportsDeclaration(IRI.create(parentURI));
 			manager.makeLoadImportRequest(importDeclaraton,new OWLOntologyLoaderConfiguration());

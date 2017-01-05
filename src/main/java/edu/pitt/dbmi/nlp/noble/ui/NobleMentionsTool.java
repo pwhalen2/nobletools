@@ -187,7 +187,7 @@ public class NobleMentionsTool implements ActionListener{
 			buttonPanel = new JPanel();
 			buttonPanel.setLayout(new BorderLayout());
 			buttonPanel.setBorder(new EmptyBorder(10,30,10,30));
-			run = new JButton("Run Information Extractor");
+			run = new JButton("Run Noble Mentions");
 			run.addActionListener(this);
 			run.setActionCommand("run");
 			buttonPanel.add(run,BorderLayout.CENTER);
@@ -461,6 +461,17 @@ public class NobleMentionsTool implements ActionListener{
 				setBusy(true);
 				
 				DomainOntology ontology = templateList.getSelectedValue();
+				final String ontName = ontology.getName();
+				
+				// setup progress bar
+				if(progress != null){
+					SwingUtilities.invokeLater(new Runnable(){
+						public void run(){
+							progress.setIndeterminate(true);
+							progress.setString("Loading "+ontName+" ...");
+						}
+					});
+				}
 				
 				// create just-in-time instance file
 				try {
@@ -548,6 +559,7 @@ public class NobleMentionsTool implements ActionListener{
 			SwingUtilities.invokeLater(new Runnable(){
 				public void run(){
 					progress.setIndeterminate(false);
+					progress.setString("Processing Reports ..");
 					progress.setMaximum(n);
 				}
 			});
@@ -598,8 +610,10 @@ public class NobleMentionsTool implements ActionListener{
 		
 		
 		// summary
-		progress("\nTotal process time for all reports:\t"+totalTime+" ms\n");
-		progress("Average process time per report:\t"+((totalTime+1)/processCount)+" ms\n");
+		if(processCount > 0){
+			progress("\nTotal process time for all reports:\t"+totalTime+" ms\n");
+			progress("Average process time per report:\t"+((totalTime)/processCount)+" ms\n");
+		}
 	}
 
 	

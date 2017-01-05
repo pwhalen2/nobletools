@@ -376,6 +376,7 @@ public class ConText implements Processor<Sentence> {
 		Concept concept = cls.getConcept();
 		//overwrite URI, with name
 		concept.setCode(cls.getName());
+	
 		
 		// add semantic type
 		for(SemanticType st: getSemanticTypes(cls))
@@ -458,7 +459,7 @@ public class ConText implements Processor<Sentence> {
 	 * @return true, if is modifier type
 	 */
 	private static  boolean isSemanticType(IClass cls){
-		IClass modifier = cls.getOntology().getClass(MODIFIER);
+		/*IClass modifier = cls.getOntology().getClass(MODIFIER);
 		if(modifier.hasSubClass(cls)){
 			for(IClass subMod: modifier.getDirectSubClasses()){
 				if(subMod.hasDirectSubClass(cls))
@@ -467,7 +468,7 @@ public class ConText implements Processor<Sentence> {
 			return false;
 		}
 		//return false;
-		return cls.getURI().toString().matches(".*("+CONTEXT_OWL+"|"+SCHEMA_OWL+").*")  && !cls.getName().contains("_");
+*/		return cls.getURI().toString().matches(".*("+CONTEXT_OWL+"|"+SCHEMA_OWL+").*")  && !cls.getName().contains("_");
 	}
 	
 	/**
@@ -498,19 +499,35 @@ public class ConText implements Processor<Sentence> {
 	 * @return the semantic types
 	 */
 	private static Set<SemanticType> getSemanticTypes(IClass cls) {
-		Set<SemanticType> semTypes = new LinkedHashSet<SemanticType>();
+		//Set<SemanticType> semTypes = new LinkedHashSet<SemanticType>();
+		
+		IClass semType = null;
+		List<IClass> parents = new ArrayList<IClass>();
+		parents.add(cls);
+		Collections.addAll(parents,cls.getSuperClasses());
+		for(IClass c: parents){
+			if(isSemanticType(c)){
+				if(semType == null || semType.hasSubClass(c))
+					semType = c;
+			}
+		}
+		return semType != null?Collections.singleton(SemanticType.getSemanticType(semType.getName())):Collections.EMPTY_SET;
+		
+		
+		
+		//NOTE: this takes forever
 		// if defined in ConText ontology, then class is its own SemType
-		if(isSemanticType(cls)){
+		/*if(isSemanticType(cls)){
 			semTypes.add(SemanticType.getSemanticType(cls.getName()));
 		}else{
 			// else try the direct parent, the ontology is shallow
 			for(IClass c: cls.getDirectSuperClasses()){
 				semTypes.addAll(getSemanticTypes(c));
 			}
-		}
+		}*/
 		// this should never happen, but just in case here is the defautl
 		//return SemanticType.getSemanticType(SEMTYPE_CLASS);
-		return semTypes;
+		//return semTypes;
 	}
 
 	

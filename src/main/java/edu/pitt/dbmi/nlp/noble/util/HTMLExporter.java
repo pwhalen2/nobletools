@@ -574,13 +574,10 @@ public class HTMLExporter {
 	
 	private String codeVariables(List<AnnotationVariable> variables){
 		StringBuffer str = new StringBuffer();
-		
 		for(AnnotationVariable var: variables){
 			str.append("<p>"+codeVariable(var)+"</p>");
 		}
-		
-		
-		return (str.length() > 0)?"<p><b>Annotation Variables</b><br>"+str+"</p>":"";
+		return str.toString();
 	}
 	
 	
@@ -846,8 +843,18 @@ public class HTMLExporter {
 			
 		// build up results
 		StringBuffer result = new StringBuffer();
+		result.append("<p><b>Annotations</b><p>");
 		result.append(codeVariables(doc.getAnnotationVariables()));
-			
+		result.append("</p>");
+		
+		// create list of rejected variables
+		result.append("<p><b><a href=\"\" onclick=\"showHide('failedVariables'); return false\" >Rejected Annotations</a> ..</b>");
+		result.append("<div id=\"failedVariables\" style=\"visibility: hidden\">");
+		result.append(codeVariables(doc.getRejectedAnnotationVariables()));
+		result.append("</div></p>");
+		
+		
+		
 		// get report representation and cap protocol
 		String report = text.toString(); //convertToHTML(text.toString());
 		
@@ -876,7 +883,10 @@ public class HTMLExporter {
 		htmlWriter.write("function l(){var h=800;if(!window.innerWidth){\n");
 		htmlWriter.write("if(!(document.documentElement.clientWidth == 0)){\n h = document.documentElement.clientHeight;\n");
 		htmlWriter.write("}else{h = document.body.clientHeight;}}else{ h = window.innerHeight;} var hd = (h-100)+\"px\";\n");
-		htmlWriter.write("document.getElementById(\"d1\").style.maxHeight=hd;document.getElementById(\"d2\").style.maxHeight=hd;}</script>\n");
+		htmlWriter.write("document.getElementById(\"d1\").style.maxHeight=hd;document.getElementById(\"d2\").style.maxHeight=hd;}");
+		htmlWriter.write("function showHide(id){ var a = \"hidden\"; if(document.getElementById(id).style.visibility == \"hidden\"){ a = \"visible\";}");
+		htmlWriter.write( "document.getElementById(id).style.visibility = a;}");
+		htmlWriter.write("</script>\n");
 		
 		htmlWriter.write("</head><body onload=\"l();\" onresize=\"l();\"><table width=\"100%\" style=\"table-layout:fixed; \" cellspacing=\"5\">\n"); //word-wrap:break-word;
 		if(name != null)
