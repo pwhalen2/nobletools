@@ -19,17 +19,25 @@ public class Composition extends Document {
 		super(text);
 	}
 	
+	/**
+	 * get domain ontology
+	 * @return domain ontology
+	 */
 	public DomainOntology getDomainOntology() {
 		return domainOntology;
 	}
 
+	/**
+	 * set domain ontology
+	 * @param domainOntology - domain ontology
+	 */
 	public void setDomainOntology(DomainOntology domainOntology) {
 		this.domainOntology = domainOntology;
 	}
 
 	/**
 	 * get concept class representing this mention
-	 * @return
+	 * @return class that represents this document
 	 */
 	
 	public IClass getConceptClass() {
@@ -41,7 +49,7 @@ public class Composition extends Document {
 	
 	/**
 	 * get an instance representing this mention
-	 * @return
+	 * @return instance that represents this document
 	 */
 	public IInstance getInstance() {
 		IOntology ontology = getDomainOntology().getOntology();
@@ -79,7 +87,7 @@ public class Composition extends Document {
 	
 	/**
 	 * get a set of annotation variables extracted from a document
-	 * @return
+	 * @return list of annotation variables
 	 */
 	public List<AnnotationVariable> getAnnotationVariables(){
 		if(annotationVariables == null)
@@ -89,7 +97,7 @@ public class Composition extends Document {
 
 	/**
 	 * get a set of annotation variables extracted from a document
-	 * @return
+	 * @return list of rejected annotation variables
 	 */
 	public List<AnnotationVariable> getRejectedAnnotationVariables(){
 		if(rejectedVariables == null)
@@ -99,7 +107,7 @@ public class Composition extends Document {
 	
 	/**
 	 * add an annotation variable
-	 * @param var
+	 * @param var annotation variable
 	 */
 	public void addAnnotationVariable(AnnotationVariable var) {
 		getAnnotationVariables().add(var);

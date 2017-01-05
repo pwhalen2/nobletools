@@ -42,7 +42,7 @@ public class SemanticType implements Serializable, Comparable<SemanticType>{
 	/**
 	 * is a sementic type defined
 	 * @param group
-	 * @return
+	 * @return is this a defined semantic type
 	 */
 	public static boolean isDefinedSemanticType(String semanticType) {
 		return getSemanticTypeMap().containsKey(semanticType);

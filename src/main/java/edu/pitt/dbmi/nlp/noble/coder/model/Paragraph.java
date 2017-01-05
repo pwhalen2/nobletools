@@ -29,12 +29,25 @@ public class Paragraph extends Text {
 		super(doc,begin,end);
 	}
 	
+	/**
+	 * get part name
+	 * @return part name
+	 */
 	public String getPart() {
 		return part;
 	}
+	/**
+	 * set part name
+	 * @param part name
+	 */
 	public void setPart(String part) {
 		this.part = part;
 	}
+	
+	/**
+	 * is paragraph a part?
+	 * @return true or false
+	 */
 	public boolean isPart(){
 		return part != null;
 	}

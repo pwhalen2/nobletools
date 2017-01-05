@@ -22,7 +22,7 @@ public class TermFilter {
 
 	/**
 	 * get qualifier filters
-	 * @return
+	 * @return list of qualifiers
 	 */
 	private static Set<String> getQualifierFilterSet(){
 		if(qualifierFilter == null){
@@ -361,8 +361,8 @@ public class TermFilter {
 	/**
 	 * filter UMLS terms based on Hettne rules
 	 * 
-	 * @param synonyms
-	 * @return
+	 * @param synonyms - input strings
+	 * @return list of synonyms taht pass the filter
 	 */
 	public static Set<String> filter(String[] synonyms) {
 		Set<String> terms = new LinkedHashSet<String>();
@@ -384,8 +384,8 @@ public class TermFilter {
 	/**
 	 * filter UMLS terms based on Hettne rules
 	 * 
-	 * @param synonym
-	 * @return
+	 * @param synonyms  - input strings
+	 * @return list of synonyms taht pass the filter
 	 */
 	public static Set<String> filter(Collection<String> synonyms) {
 		return filter(synonyms.toArray(new String[0]));

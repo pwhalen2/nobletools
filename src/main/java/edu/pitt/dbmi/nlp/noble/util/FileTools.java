@@ -132,7 +132,7 @@ public class FileTools {
 	 * get recursive directory content that is sorted
 	 * @param directory - directory to recurse into
 	 * @param filter - extention filter that valid files can end with
-	 * @return
+	 * @return sorted list of files taht are contained in a directory
 	 */
 	
 	public static List<File> getFilesInDirectory(File directory, String filter){
@@ -144,7 +144,7 @@ public class FileTools {
 	/**
 	 * get recursive directory content that is sorted
 	 * @param directory- directory to recurse into
-	 * @return
+	 * @return sorted list of files taht are contained in a directory
 	 */
 	
 	public static List<File> getFilesInDirectory(File directory){

@@ -144,8 +144,8 @@ public class CSVExporter {
 	
 	/**
 	 * save tab delimted document for a Composition object
-	 * @param doc
-	 * @throws Exception
+	 * @param doc - the document to be exported
+	 * @throws Exception if something goes wrong
 	 */
 	public void export(Composition doc) throws Exception {
 		BufferedWriter writer = getCSVWriterForComposition(outputFile);

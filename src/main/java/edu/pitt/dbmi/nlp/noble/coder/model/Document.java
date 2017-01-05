@@ -283,8 +283,8 @@ public class Document extends Text {
 	
 	/**
 	 * get a lost of sentences that are withing a given span
-	 * @param sp
-	 * @return
+	 * @param sp - spannable text
+	 * @return list of sentences within that span
 	 */
 	public List<Sentence> getSentences(Spannable sp){
 		List<Sentence> list = new ArrayList<Sentence>();
@@ -300,8 +300,8 @@ public class Document extends Text {
 	
 	/**
 	 * get a lost of paragraphs that are withing a given span
-	 * @param sp
-	 * @return
+	 * @param sp - spannable text
+	 * @return list of paragraphs within that span
 	 */
 	public List<Paragraph> getParagraphs(Spannable sp){
 		List<Paragraph> list = new ArrayList<Paragraph>();

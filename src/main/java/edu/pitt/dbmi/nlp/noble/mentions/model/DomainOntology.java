@@ -75,8 +75,8 @@ public class DomainOntology {
 	
 	/**
 	 * File or URL location of the domain ontology
-	 * @param location
-	 * @throws IOntologyException 
+	 * @param location of ontology
+	 * @throws IOntologyException  if there was something wrong
 	 */
 	public DomainOntology(String location) throws IOntologyException{
 		//	this(OOntology.loadOntology(location));
@@ -106,13 +106,18 @@ public class DomainOntology {
 	
 	/**
 	 * File or URL location of the domain ontology
-	 * @param location
-	 * @throws IOntologyException 
+	 * @param ont - ontology that this domain is based on
+	 * @throws IOntologyException if something went wrong
 	 */
 	public DomainOntology(IOntology ont) throws IOntologyException{
 		setOntology(ont); 
 	}
 	
+	
+	/**
+	 * get ontology object
+	 * @return IOntology object
+	 */
 	public IOntology getOntology() {
 		return ontology;
 	}
@@ -121,7 +126,7 @@ public class DomainOntology {
 	/**
 	 * set domain ontology based on http://blulab.chpc.utah.edu/ontologies/v2/Schema.owl
 	 * @param ontology - an ontology object representing domain ontology
-	 * @throws IOntologyException 
+	 * @throws IOntologyException  in case something went wrong
 	 */
 
 	public void setOntology(IOntology ontology) throws IOntologyException {
@@ -137,7 +142,7 @@ public class DomainOntology {
 	
 	/**
 	 * check if ontology is complient with Schema.owl ontology
-	 * @return
+	 * @return true or false
 	 */
 	public boolean isOntologyValid(){
 		// make sure it derives from schema
@@ -157,7 +162,7 @@ public class DomainOntology {
 
 	/**
 	 * get a terminology of anchors  
-	 * @return
+	 * @return anchor terminology
 	 */
 	public Terminology getAnchorTerminology() {
 		if(anchorTerminology == null){
@@ -186,44 +191,11 @@ public class DomainOntology {
 		return anchorTerminology;
 	}
 
-	/**
-	 * get a mapping of anchors to "semantic types" which are classes in 
-	 * annotation ontology
-	 * @return
-	 *
-	private Map<String,SemanticType> getSemanticTypeMap(){
-		if(semanticTypeMap == null){
-			semanticTypeMap = new HashMap<String, SemanticType>();
-			IProperty hasAnchor = ontology.getProperty(HAS_ANCHOR);
-			for(IClass annotationCls: ontology.getClass(ANNOTATION).getSubClasses()){
-				for(Object o: annotationCls.getEquivalentRestrictions()){
-					// find anchors for this annotation
-					if(o instanceof IRestriction){
-						IRestriction r = (IRestriction) o; 
-						if(hasAnchor.equals(r.getProperty())){
-							for(Object c: r.getParameter()){
-								if(c instanceof IClass){
-									IClass anchorClass = (IClass) c;
-									IClass semType = getSemanticType(annotationCls);
-									semanticTypeMap.put(anchorClass.getName(),SemanticType.getSemanticType(semType.getName()));
-									for(IClass child: anchorClass.getSubClasses()){
-										semanticTypeMap.put(child.getName(),SemanticType.getSemanticType(semType.getName()));
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		return semanticTypeMap;
-	}
 	
-	*/
 
 	/**
 	 * create a modifier terminology for a given domain ontology
-	 * @return
+	 * @return modifier terminology
 	 */
 	public Terminology getModifierTerminology() {
 		if(modifierTerminology == null){
@@ -278,7 +250,7 @@ public class DomainOntology {
 	
 	/**
 	 * get anchor and modifier terminology together
-	 * @return
+	 * @return all terminologies associated with this ontology
 	 */
 	public Terminology [] getTerminologies(){
 		return new Terminology [] {getAnchorTerminology(),getModifierTerminology()};
@@ -320,10 +292,6 @@ public class DomainOntology {
 			// add inverse relationships based on ranges
 			addInverseRelationships(cls,ontology.getProperty(HAS_MODIFIER), concept);
 			
-			// add additional semantic types
-			//for(SemanticType semanticType:getSemanticTypes(cls))
-			//	concept.addSemanticType(semanticType);
-			
 			terminology.addConcept(concept);
 			
 			return concept;
@@ -334,9 +302,9 @@ public class DomainOntology {
 	
 	/**
 	 * add inverse relationships for a class from top property to a concept
-	 * @param cls
-	 * @param hasModifier
-	 * @param concept
+	 * @param cls that has relationship
+	 * @param hasModifier -property
+	 * @param concept - concept to add the inverse relationship to
 	 */
 	private void addInverseRelationships(IClass cls, IProperty hasModifier, Concept concept){
 		for(IProperty prop: hasModifier.getSubProperties()){
@@ -353,8 +321,8 @@ public class DomainOntology {
 	/**
 	 * convert the property name that follows a certain convention to a likely inverted form
 	 * Ex:  hasModifier -> isModifierOf and vice versa
-	 * @param name
-	 * @return
+	 * @param name - original property name
+	 * @return inverse property name
 	 */
 	private String getInversePropertyName(String name){
 		if(name.startsWith("has")){
@@ -365,42 +333,11 @@ public class DomainOntology {
 		return name;
 	}
 	
-	/**
-	 * get a semantic type class given an annotation class based on Schema.owl
-	 * @param anchorClass
-	 * @return Schema.owl upper level class
-	 *
-	private IClass getSemanticType(IClass annotationClass) {
-		for(ClassPath path : OntologyUtils.getRootPaths(annotationClass)){
-			for(int i=path.size()-1;i>=0;i--){
-				if(path.get(i).getURI().toString().contains(SCHEMA_OWL)){
-					return path.get(i);
-				}
-			}
-		}
-		return null;
-	}
-	*/
-	/**
-	 * Gets the semantic types.
-	 *
-	 * @param cls the cls
-	 * @return the semantic types
-	 *
-	private Set<SemanticType> getSemanticTypes(IClass cls) {
-		Set<SemanticType> semTypes = new LinkedHashSet<SemanticType>();
-		// if defined in ConText ontology, then class is its own SemType
-		SemanticType st = getSemanticTypeMap().get(cls.getName());
-		if(st != null)
-			semTypes.add(st);
-		return semTypes;
-	}
-	*/
 	
 	/**
 	 * get concept class for a given mention
-	 * @param mention
-	 * @return
+	 * @param mention object
+	 * @return class that represents this mention
 	 */
 	public IClass getConceptClass(Mention mention){
 		if(mention == null)
@@ -410,8 +347,8 @@ public class DomainOntology {
 	
 	/**
 	 * get concept class for a given concept
-	 * @param concept
-	 * @return
+	 * @param concept object
+	 * @return class object
 	 */
 	public IClass getConceptClass(Concept concept) {
 		if(concept == null)
@@ -432,8 +369,8 @@ public class DomainOntology {
 
 	/**
 	 * get concept class for a given mention
-	 * @param mention
-	 * @return
+	 * @param mention object
+	 * @return ontology instnace object
 	 */
 	public IInstance getConceptInstance(Mention mention){
 		if(mention == null)
@@ -443,8 +380,8 @@ public class DomainOntology {
 	
 	/**
 	 * get concept class for a given concept
-	 * @param concept
-	 * @return
+	 * @param concept object
+	 * @return ontology instance object
 	 */
 	public IInstance getConceptInstance(Concept concept) {
 		if(concept == null)
@@ -460,8 +397,8 @@ public class DomainOntology {
 	/**
 	 * get a list of anchors for given list of mentions typically in a sentence 
 	 * Anchors can be compound anchors too.
-	 * @param mentions
-	 * @return
+	 * @param mentions - list of them
+	 * @return list of instances
 	 */
 	public List<Instance> getAnchors(List<Mention> mentions) {
 		List<Instance> anchors = new ArrayList<Instance>();
@@ -480,6 +417,11 @@ public class DomainOntology {
 		return anchors;
 	}
 
+	/**
+	 * is mention an anchor?
+	 * @param m - mention object in question
+	 * @return true ro false
+	 */
 	private boolean isAnchor(Mention m) {
 		IClass cls = getConceptClass(m);
 		return cls != null ? cls.hasSuperClass(ontology.getClass(ANCHOR)):false;
@@ -487,9 +429,9 @@ public class DomainOntology {
 	
 	/**
 	 * is a mention of a given type
-	 * @param m
-	 * @param type
-	 * @return
+	 * @param m - mention object in question
+	 * @param type - type in question
+	 * @return true or not
 	 */
 	public boolean isTypeOf(Mention m, String type){
 		return isTypeOf(getConceptClass(m), type);
@@ -497,9 +439,9 @@ public class DomainOntology {
 	
 	/**
 	 * is a mention of a given type
-	 * @param m
-	 * @param type
-	 * @return
+	 * @param cls - class in question
+	 * @param type - type in question
+	 * @return true or not
 	 */
 	public boolean isTypeOf(IClass cls, String type){
 		return cls != null ? cls.hasSuperClass(ontology.getClass(type)):false;
@@ -507,8 +449,8 @@ public class DomainOntology {
 	
 	/**
 	 * get a list of compount anchors that can be constructed from a given set of mentions
-	 * @param mentions
-	 * @return
+	 * @param mentions list of them
+	 * @return list of Instance objects
 	 */
 	private List<Instance> getCompoundAnchors(List<Mention> mentions) {
 		List<Instance> compound = new ArrayList<Instance>();
@@ -593,9 +535,9 @@ public class DomainOntology {
 	
 	/**
 	 * create compound anchor mentions
-	 * @param comound
-	 * @param components
-	 * @return
+	 * @param compoundCls - compund class
+	 * @param components - list of mention objects that are its parts
+	 * @return combined Mention object
 	 */
 	public Mention createCompoundAnchorMention(IClass compoundCls, Collection<Mention> components){
 		Concept concept = null;
@@ -620,6 +562,13 @@ public class DomainOntology {
 	}
 	
 	
+	/**
+	 * get possible compoung anchor arguments
+	 * 
+	 * @param compoundCls - compound class in question
+	 * @param mentionsClss -  mention classes
+	 * @return set of classes that are arguments
+	 */
 	
 	private Set<IClass> getPossibleCompoundAnchorArguments(IClass compoundCls,Set<IClass> mentionsClss){
 		Set<IClass> found = new LinkedHashSet<IClass>();
@@ -639,7 +588,7 @@ public class DomainOntology {
 	
 	/**
 	 * get the mapping between compound anchors and its components
-	 * @return
+	 * @return compound anchor map
 	 */
 	private Map<IClass,Set<IClass>> getCompoundAnchorMap(){
 		if(compoundAnchorMap == null){
@@ -661,8 +610,8 @@ public class DomainOntology {
 	
 	/**
 	 * get all classes contained in a given expression
-	 * @param exp
-	 * @return
+	 * @param exp - logical expression
+	 * @return list of classes
 	 */
 	public List<IClass> getContainedClasses(ILogicExpression exp){
 		List<IClass> classes = new ArrayList<IClass>();
@@ -677,8 +626,8 @@ public class DomainOntology {
 	}
 	/**
 	 * get all classes contained in a given expression
-	 * @param exp
-	 * @return
+	 * @param rr set of restrictions
+	 * @return  list of classes
 	 */
 	public List<IClass> getContainedClasses(IRestriction [] rr){
 		List<IClass> classes = new ArrayList<IClass>();
@@ -692,7 +641,7 @@ public class DomainOntology {
 	
 	/**
 	 * get modifier target validator to check if modifier can be attached to target
-	 * @return
+	 * @return modifier validator
 	 */
 	public ConText.ModifierValidator getModifierValidator(){
 		if(modifierValidator == null){
@@ -736,9 +685,9 @@ public class DomainOntology {
 	
 	/**
 	 * is property range satisfied with a given class?
-	 * @param prop
-	 * @param cls
-	 * @return
+	 * @param prop - property in question
+	 * @param cls - class in question
+	 * @return true or false
 	 */
 	public boolean isPropertyRangeSatisfied(IProperty prop, IClass cls){
 		if(cls == null)
@@ -746,11 +695,12 @@ public class DomainOntology {
 		LogicExpression exp = new LogicExpression(ILogicExpression.OR,prop.getRange());
 		return exp.evaluate(cls);
 	}
+	
 	/**
 	 * is property range satisfied with a given class?
-	 * @param prop
-	 * @param cls
-	 * @return
+	 * @param prop- property in question
+	 * @param inst - instance in question
+	 * @return true or false
 	 */
 	public boolean isPropertyRangeSatisfied(IProperty prop, IInstance inst){
 		if(inst == null)
@@ -761,8 +711,8 @@ public class DomainOntology {
 	
 	/**
 	 * get all restrictions equivalent and necessary as a flat list
-	 * @param cls
-	 * @return
+	 * @param cls - class in question
+	 * @return get all restrictions for a class
 	 */
 	public List<IRestriction> getRestrictions(IClass cls){
 		List<IRestriction> list = new ArrayList<IRestriction>();
@@ -778,66 +728,9 @@ public class DomainOntology {
 	
 	
 	/**
-	 * extract classes that extend annotation
-	 * @param list
-	 * @return
-	 */
-	private List<IClass> getAnnotationClasses(List<ILogicExpression> list){
-		IClass annotation = ontology.getClass(ANNOTATION);
-		List<IClass> result = new ArrayList<IClass>();
-		for(ILogicExpression exp: list){
-			for(Object o: exp){
-				if(o instanceof IClass){
-					IClass c = (IClass) o;
-					if(c.hasSuperClass(annotation)){
-						result.add(c);
-					}
-				}
-			}
-		}
-		return result;
-	}
-	
-	
-	
-	/**
-	 * find a property that can relate two given classes
-	 * @param targetClass
-	 * @param modifierClass
-	 * @return
-	 *
-	private IProperty getRelationProperty(IClass targetClass, IClass modifierClass){
-		// first try to find properties that have a range defined for the modifier
-		for(IProperty prop: ((OOntology)ontology).getTopObjectProperty().getSubProperties()){
-			if(containsClass(prop.getRange(),modifierClass) && containsClass(prop.getDomain(),targetClass)){
-				return prop;
-			}
-		}
-		return null;
-	}*/
-	
-	/**
-	 * check if domain has classes that can fit it
-	 * @param domain
-	 * @param targetClass
-	 * @return
-	 */
-	private boolean containsClass(Object[] domain, IClass targetClass) {
-		for(Object o: domain){
-			if(o instanceof IClass){
-				IClass c = (IClass) o;
-				if(c.evaluate(targetClass)){
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-
-	/**
 	 * get a list of annotation variables that can be associated with a given anchor
-	 * @param anchor2
-	 * @return
+	 * @param anchor - that may be related to variables
+	 * @return list of annotation variables
 	 */
 	public List<AnnotationVariable> getAnnotationVariables(Instance anchor){
 		List<AnnotationVariable> list = new ArrayList<AnnotationVariable>();
@@ -864,7 +757,7 @@ public class DomainOntology {
 	 * @param cls  - a class that we are testing
 	 * @param prop - a property that this class is related to another class
 	 * @param comp - a component class
-	 * @return
+	 * @return true or false
 	 */
 	private boolean hasDefinedRelation(IClass cls, IProperty prop, IClass comp){
 		for(IRestriction r: cls.getRestrictions(prop)){
@@ -875,24 +768,21 @@ public class DomainOntology {
 		return false;
 	}
 	
-	/**
-	 * is class defined in domain ontology
-	 * @param cls
-	 * @return
-	 */
-	private boolean isDefinedInDomain(IClass cls) {
-		return cls.getURI().toString().startsWith(ontology.getURI().toString());
-	}
+
 	
 	/**
 	 * create usable and unique instance name
-	 * @param cls
-	 * @return
+	 * @param cls in question
+	 * @return  unique instnace name
 	 */
 	public String createInstanceName(IClass cls){
 		return cls.getName()+"-"+System.currentTimeMillis()+"-"+((int)(Math.random()*1000));
 	}
 	
+	/**
+	 * ontology name
+	 * @return name of ontology
+	 */
 	public String toString(){
 		return ontology.getName();
 	}
@@ -900,7 +790,7 @@ public class DomainOntology {
 	
 	/**
 	 * output file to write the ontology as
-	 * @param outputDirectory
+	 * @param outputFile - that we want to save to
 	 * @throws IOntologyException 
 	 * @throws FileNotFoundException 
 	 */
@@ -908,6 +798,10 @@ public class DomainOntology {
 		ontology.write(new FileOutputStream(outputFile),IOntology.OWL_FORMAT);
 	}
 
+	/**
+	 * ontology name
+	 * @return  name of ontology
+	 */
 	public String getName() {
 		return ontology.getName();
 	}

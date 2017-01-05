@@ -543,8 +543,7 @@ public class NobleMentionsTool implements ActionListener{
 
 	/**
 	 * process  documents.
-	 *
-	 * @param templates the templates
+	 * @param ontology the templates to process
 	 * @param in the in
 	 * @param out the out
 	 */

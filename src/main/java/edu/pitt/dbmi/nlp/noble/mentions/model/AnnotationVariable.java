@@ -26,7 +26,8 @@ public class AnnotationVariable extends Instance {
 	
 	/**
 	 * create a new annotation variable wih anchor
-	 * @param anchor
+	 * @param annotation class
+	 * @param anchor instance
 	 */
 	public AnnotationVariable(IClass annotation,Instance anchor) {
 		super(anchor.getDomainOntology(),anchor.getMention());
@@ -57,13 +58,18 @@ public class AnnotationVariable extends Instance {
 	}
 	*/
 
-	
-
+	/**
+	 * get annotation type of this variable
+	 * @return annotation type
+	 */
 	public String getAnnotationType() {
 		return annotationType;
 	}
 
-
+	/**
+	 * set annotation type of this variable
+	 * @param annotationType - annotation type
+	 */
 	public void setAnnotationType(String annotationType) {
 		this.annotationType = annotationType;
 	}
@@ -71,7 +77,7 @@ public class AnnotationVariable extends Instance {
 	
 	/**
 	 * get or create annotation type instance
-	 * @return
+	 * @return an annotation instance
 	 */
 	private IInstance getAnnotationTypeInstance(){
 		IOntology ont = domainOntology.getOntology();
@@ -84,7 +90,7 @@ public class AnnotationVariable extends Instance {
 
 	/**
 	 * get an instance that represents this annotation variable
-	 * @return
+	 * @return an instance that represents this variable
 	 */
 	public IInstance getInstance(){
 		if(instance == null){
@@ -124,12 +130,17 @@ public class AnnotationVariable extends Instance {
 	
 	/**
 	 * is the current annotation variable satisfied given its linguistic and semantic properties?
-	 * @return
+	 * @return is the variable satisfied
 	 */
 	public boolean isSatisfied() {
 		return getConceptClass().getEquivalentRestrictions().evaluate(getInstance());
 	}
 
+	
+	/**
+	 * string representation of this variable
+	 * @return string that is human readable
+	 */
 	public String toString(){
 		StringBuffer str = new StringBuffer();
 		str.append(getConceptClass()+"\n");

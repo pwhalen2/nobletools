@@ -34,8 +34,8 @@ public class Instance {
 	
 	/**
 	 * initilize an instance
-	 * @param ontology
-	 * @param m
+	 * @param ontology of the domain
+	 * @param m - mention object
 	 */
 	
 	public Instance(DomainOntology ontology,Mention m){
@@ -45,8 +45,8 @@ public class Instance {
 	
 	/**
 	 * initilize an instance
-	 * @param ontology
-	 * @param m
+	 * @param ontology object
+	 * @param m - modifier object
 	 */
 	
 	public Instance(DomainOntology ontology,Modifier m){
@@ -56,8 +56,9 @@ public class Instance {
 	
 	/**
 	 * initilize an instance
-	 * @param ontology
-	 * @param m
+	 * @param ontology - domain ontology
+	 * @param m  - mention object
+	 * @param inst - ontology instance
 	 */
 	
 	public Instance(DomainOntology ontology,Mention m, IInstance inst){
@@ -75,7 +76,10 @@ public class Instance {
 		this.domainOntology = domainOntology;
 	}
 
-	
+	/**
+	 * set mention associated with this instnace
+	 * @param mention object
+	 */
 	public void setMention(Mention mention) {
 		this.mention = mention;
 		cls = domainOntology.getConceptClass(mention);
@@ -84,12 +88,19 @@ public class Instance {
 		reset();
 	}
 
-	
+	/**
+	 * get modifier associated with this instance
+	 * @return modifier object
+	 */
 	
 	public Modifier getModifier() {
 		return modifier;
 	}
-
+	
+	/**
+	 * set modifier object
+	 * @param modifier object 
+	 */
 	public void setModifier(Modifier modifier) {
 		this.modifier = modifier;
 		setMention(modifier.getMention());
@@ -107,6 +118,10 @@ public class Instance {
 		annotations = null;
 	}
 	
+	/**
+	 * get mention associated with this class
+	 * @return mention object
+	 */
 
 	public Mention getMention() {
 		return mention;
@@ -126,7 +141,7 @@ public class Instance {
 	
 	/**
 	 * get concept class representing this mention
-	 * @return
+	 * @return class that represents this instance
 	 */
 	
 	public IClass getConceptClass() {
@@ -135,7 +150,7 @@ public class Instance {
 	
 	/**
 	 * get an instance representing this mention
-	 * @return
+	 * @return ontology instance
 	 */
 	public IInstance getInstance() {
 		// what's the point if we have no class?
@@ -174,10 +189,18 @@ public class Instance {
 		}
 		return instance;
 	}
-	
+	/**
+	 * get name of this instance (derived from class name)
+	 * @return name of this instance
+	 */
 	public String getName(){
 		return getConceptClass().getName();
 	}
+	
+	/**
+	 * get human preferred label for this instance
+	 * @return label of this instnace, returns name if label not available
+	 */
 	public String getLabel(){
 		return getConceptClass().getLabel();
 	}
@@ -185,6 +208,7 @@ public class Instance {
 	
 	/**
 	 * pretty print this name
+	 * @return pretty printed version of instance
 	 */
 	public String toString(){
 		StringBuffer str = new StringBuffer();
@@ -201,7 +225,7 @@ public class Instance {
 	/**
 	 * get a mapping of linguistic context found for this mention.
 	 *
-	 * @return the modifiers
+	 * @return the modifiers map
 	 */
 	public Map<String,Set<Instance>> getModifierInstances(){
 		if(modifierInstances == null){
@@ -210,6 +234,11 @@ public class Instance {
 		return modifierInstances;
 	}
 	
+	/**
+	 * get a set of instances associated via given property
+	 * @param prop - property by which instances are mapped
+	 * @return set of instances
+	 */
 	public Set<Instance> getModifierInstances(String prop){
 		return getModifierInstances().get(prop);
 	}
@@ -228,7 +257,7 @@ public class Instance {
 	
 	/**
 	 * get a list of current modifiers as instance list
-	 * @return
+	 * @return list of modifier instances
 	 */
 	public List<Instance> getModifierInstanceList(){
 		// instantiate available modifiers
@@ -252,8 +281,8 @@ public class Instance {
 	
 	/**
 	 * add modifier instance
-	 * @param property
-	 * @param inst
+	 * @param property by which modifier is related
+	 * @param inst - instance of modifier
 	 */
 	public void addModifierInstance(String property, Instance inst){
 		Set<Instance> list = getModifierInstances().get(property);
@@ -265,6 +294,10 @@ public class Instance {
 	}
 
 
+	/**
+	 * get a set of text annotations associated with this instance
+	 * @return set of annotations
+	 */
 	public Set<Annotation> getAnnotations() {
 		if(annotations == null){
 			annotations = new TreeSet<Annotation>();

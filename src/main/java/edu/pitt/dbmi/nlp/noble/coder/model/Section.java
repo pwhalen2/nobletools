@@ -18,6 +18,10 @@ public class Section extends Text{
 	
 	/**
 	 * initialize section with a document and offsets, but no text
+	 * @param doc - document object
+	 * @param start - start offset
+	 * @param bodyOffset - bodyOffset
+	 * @param end - end offset
 	 */
 	public Section(Document doc,int start, int bodyOffset, int end){
 		super(doc,start,end);

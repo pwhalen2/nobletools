@@ -36,7 +36,7 @@ public class NobleMentions implements Processor<Composition>{
 	
 	/**
 	 * get domain ontology
-	 * @return
+	 * @return get domain ontology
 	 */
 	public DomainOntology getDomainOntology() {
 		return domainOntology;
@@ -44,7 +44,7 @@ public class NobleMentions implements Processor<Composition>{
 
 	/**
 	 * set domain ontology
-	 * @param domainOntology
+	 * @param domainOntology - domain ontology
 	 */
 	public void setDomainOntology(DomainOntology domainOntology) {
 		this.domainOntology = domainOntology;
@@ -140,8 +140,8 @@ public class NobleMentions implements Processor<Composition>{
 	
 	/**
 	 * get all global modifiers that can be associated outside sentence boundaries
-	 * @param doc
-	 * @return
+	 * @param doc for processing
+	 * @return list of global modifiers
 	 */
 	private List<Mention> getGlobalModifiers(Document doc){
 		List<Mention> globalModifiers = new ArrayList<Mention>();

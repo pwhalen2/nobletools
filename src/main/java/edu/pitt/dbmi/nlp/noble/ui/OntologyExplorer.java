@@ -581,7 +581,7 @@ public class OntologyExplorer extends JPanel implements HyperlinkListener, Actio
 	 
 	 /**
 	  * get selecte entries
-	  * @return
+	  * @return list of selected entries
 	  */
 	 public List getSelectedEntries(){
 		 if(currentPanel != null){

@@ -300,7 +300,8 @@ public class ConText implements Processor<Sentence> {
 	
 	
 	/**
-	 * @return
+	 * get semantic modifier validator associated with ConText
+	 * @return modifier validator
 	 */
 	public ModifierValidator getModifierValidator() {
 		return modifierValidator;
@@ -308,7 +309,7 @@ public class ConText implements Processor<Sentence> {
 
 	/**
 	 * set an outside validator that can check if a modifier can actually map to a target
-	 * @param modifierValidator
+	 * @param modifierValidator - semantic modifier validator
 	 */
 	public void setModifierValidator(ModifierValidator modifierValidator) {
 		this.modifierValidator = modifierValidator;
@@ -459,16 +460,7 @@ public class ConText implements Processor<Sentence> {
 	 * @return true, if is modifier type
 	 */
 	private static  boolean isSemanticType(IClass cls){
-		/*IClass modifier = cls.getOntology().getClass(MODIFIER);
-		if(modifier.hasSubClass(cls)){
-			for(IClass subMod: modifier.getDirectSubClasses()){
-				if(subMod.hasDirectSubClass(cls))
-					return true;
-			}
-			return false;
-		}
-		//return false;
-*/		return cls.getURI().toString().matches(".*("+CONTEXT_OWL+"|"+SCHEMA_OWL+").*")  && !cls.getName().contains("_");
+		return cls.getURI().toString().matches(".*("+CONTEXT_OWL+"|"+SCHEMA_OWL+").*")  && !cls.getName().contains("_");
 	}
 	
 	/**
@@ -993,9 +985,9 @@ public class ConText implements Processor<Sentence> {
 	
 	/**
 	 * find semantically matching modifiers from a given list given a target mention
-	 * @param globalModifiers
-	 * @param sentence
-	 * @param var
+	 * @param globalModifiers - list of global modifier
+	 * @param target - target mention
+	 * @return list of modifiers that can be applied
 	 */
 	public List<Modifier> getMatchingModifiers(List<Mention> globalModifiers, Mention target) {
 		
