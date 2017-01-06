@@ -131,8 +131,8 @@ public class AcronymDetector implements Processor<Sentence>{
 	
 	/**
 	 * extract acronym and its epxanded form if found in text
-	 * @param phrase
-	 * @return
+	 * @param phrase - string
+	 * @return acronym object
 	 */
 	public static Acronym extractAcronym(String phrase){
 		// Ex: World Health Organization (WHO)

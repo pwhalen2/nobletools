@@ -28,7 +28,7 @@ public class NobleMentions implements Processor<Composition>{
 	
 	/**
 	 * initialize noble mentions with initialized domain ontology
-	 * @param ontoloy
+	 * @param ontoloy - ontology
 	 */
 	public NobleMentions(DomainOntology ontoloy){
 		setDomainOntology(ontoloy);

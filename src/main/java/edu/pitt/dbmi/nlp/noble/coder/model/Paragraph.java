@@ -13,7 +13,6 @@ public class Paragraph extends Text {
 	 *
 	 * @param text the text
 	 * @param offs the offs
-	 * @param type the type
 	 */
 	public Paragraph(String text,int offs){
 		super(text,offs);
@@ -21,9 +20,9 @@ public class Paragraph extends Text {
 	
 	/**
 	 * initialize with a document
-	 * @param doc
-	 * @param begin
-	 * @param end
+	 * @param doc - document
+	 * @param begin - start offset
+	 * @param end - end offset
 	 */
 	public Paragraph(Document doc, int begin, int end){
 		super(doc,begin,end);

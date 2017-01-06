@@ -41,7 +41,7 @@ public class SemanticType implements Serializable, Comparable<SemanticType>{
 	
 	/**
 	 * is a sementic type defined
-	 * @param group
+	 * @param semanticType - string semantic type TUI or name
 	 * @return is this a defined semantic type
 	 */
 	public static boolean isDefinedSemanticType(String semanticType) {

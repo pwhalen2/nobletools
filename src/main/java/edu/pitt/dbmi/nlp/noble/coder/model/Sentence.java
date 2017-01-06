@@ -103,7 +103,7 @@ public class Sentence extends Text {
 
 	/**
 	 * get paragraph that this sentence is part of
-	 * @return
+	 * @return a paragram that this sentence belongs to
 	 */
 	public Paragraph getParagraph() {
 		if(paragraph == null){

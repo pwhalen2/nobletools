@@ -116,8 +116,8 @@ public class ConText implements Processor<Sentence> {
 	public static interface ModifierValidator {
 		/**
 		 * is a given modifier applicable for a given target
-		 * @param target
-		 * @param modifier
+		 * @param modifier - modifier in question
+		 * @param target - target mention
 		 * @return true if it is applicable
 		 */
 		public boolean isModifierApplicable(Mention modifier,Mention target);
@@ -164,7 +164,7 @@ public class ConText implements Processor<Sentence> {
 	
 	/**
 	 * initialize context with existing and initialized modifier terminology
-	 * @param terminology
+	 * @param terminology - the terminology
 	 */
 	public ConText(Terminology terminology){
 		this.terminology = terminology;

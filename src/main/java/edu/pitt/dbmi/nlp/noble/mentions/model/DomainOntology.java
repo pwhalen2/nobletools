@@ -791,8 +791,8 @@ public class DomainOntology {
 	/**
 	 * output file to write the ontology as
 	 * @param outputFile - that we want to save to
-	 * @throws IOntologyException 
-	 * @throws FileNotFoundException 
+	 * @throws IOntologyException - exception 
+	 * @throws FileNotFoundException  - exception
 	 */
 	public void write(File outputFile) throws FileNotFoundException, IOntologyException{
 		ontology.write(new FileOutputStream(outputFile),IOntology.OWL_FORMAT);

@@ -27,7 +27,7 @@ public class ReportProcessor implements Processor<Document> {
 	
 	/**
 	 * get all processors associated with this document parser
-	 * @return
+	 * @return list of document processors
 	 */
 	public List<Processor<Document>> getProcessors(){
 		if(processors == null)
@@ -35,7 +35,10 @@ public class ReportProcessor implements Processor<Document> {
 		return processors;
 	}
 	
-	
+	/**
+	 * add another document processor
+	 * @param proc - processor
+	 */
 	public void addProcessor(Processor<Document> proc){
 		getProcessors().add(proc);
 	}

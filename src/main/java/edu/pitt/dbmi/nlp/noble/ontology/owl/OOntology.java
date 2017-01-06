@@ -320,7 +320,7 @@ public class OOntology extends OResource implements IOntology{
 	 * create new ontology with this URI.
 	 *
 	 * @param ontologyURI the uri of future ontology
-	 * @param parentURI the uri of parent ontology
+	 * @param parentOntology the file of parent ontology
 	 * @return the o ontology
 	 * @throws IOntologyException the i ontology exception
 	 */

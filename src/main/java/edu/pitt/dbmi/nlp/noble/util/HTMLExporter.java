@@ -824,6 +824,7 @@ public class HTMLExporter {
 	 * create a coded html report.
 	 *
 	 * @param doc the doc
+	 * @param htmlWriter - where to write to
 	 * @throws Exception the exception
 	 */
 	public void export(Composition doc, Writer htmlWriter) throws Exception {

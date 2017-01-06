@@ -40,9 +40,9 @@ public class Text implements Spannable {
 	
 	/**
 	 * initialize text as substring of document
-	 * @param doc
-	 * @param begin
-	 * @param end
+	 * @param doc - original document
+	 * @param begin - start offset
+	 * @param end - end offset
 	 */
 	public Text(Document doc, int begin, int end){
 		this.document = doc;
