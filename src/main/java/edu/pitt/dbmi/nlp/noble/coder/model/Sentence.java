@@ -87,6 +87,24 @@ public class Sentence extends Text {
 			mentions = new ArrayList<Mention>();
 		return mentions;
 	}
+	/**
+	 * add a mention to a list of mentions
+	 * @param m mention
+	 */
+	public void addMention(Mention m){
+		getMentions().add(m);
+		setMentions(getMentions());
+	}
+	
+	/**
+	 * add a mention to a list of mentions
+	 * @param m collection of mentions
+	 */
+	public void addMentions(Collection<Mention> m){
+		getMentions().addAll(m);
+		setMentions(getMentions());
+	}
+	
 	
 	/**
 	 * Sets the mentions.

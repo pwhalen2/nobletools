@@ -35,7 +35,7 @@ public class Modifier {
 	public static List<Modifier> getModifiers(Mention m){
 		List<Modifier> list = new ArrayList<Modifier>();
 		for(String type : ConText.getModifierTypes(m.getConcept())){
-			String value = ConText.getModifierValue(type,m.getConcept());
+			String value = ConText.getModifierValue(type,m);
 			Modifier mod = new Modifier(type,value);
 			mod.setMention(m);
 			list.add(mod);

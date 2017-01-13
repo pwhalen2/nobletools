@@ -200,7 +200,9 @@ public class ORestriction extends OClass implements IRestriction {
 		}else if(rest instanceof OWLHasValueRestriction){
 			Object val = convertOWLObject(((OWLHasValueRestriction)rest).getValue());
 			return (val instanceof ILogicExpression)?(ILogicExpression)val:getOntology().createLogicExpression(ILogicExpression.EMPTY,val);
-		} 
+		}else if(rest instanceof OWLQuantifiedDataRestriction){
+			
+		}
 		return null;
 	}
 

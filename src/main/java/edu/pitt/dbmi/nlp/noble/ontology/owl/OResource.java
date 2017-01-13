@@ -641,6 +641,12 @@ public class OResource implements IResource{
 			return exp;
 		}else if(val instanceof OWLRestriction){
 			return new ORestriction((OWLRestriction)val,getOntology());
+		}else if (val instanceof OWLDatatypeRestriction){
+			LogicExpression exp = new LogicExpression(LogicExpression.AND);
+			for(OWLFacetRestriction fr: ((OWLDatatypeRestriction) val).getFacetRestrictions()){
+				exp.add(new OFacetRestriction(fr, ontology));
+			}
+			return exp;
 		}else if (val instanceof OWLDataRange){
 			OWLDataRange l = (OWLDataRange) val;
 			if(l.isDatatype()){

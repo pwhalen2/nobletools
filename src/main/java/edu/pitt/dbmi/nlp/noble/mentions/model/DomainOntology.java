@@ -18,8 +18,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import edu.pitt.dbmi.nlp.noble.coder.model.Mention;
+import edu.pitt.dbmi.nlp.noble.coder.model.Modifier;
+import edu.pitt.dbmi.nlp.noble.coder.model.Sentence;
 import edu.pitt.dbmi.nlp.noble.ontology.ClassPath;
 import edu.pitt.dbmi.nlp.noble.ontology.IClass;
 import edu.pitt.dbmi.nlp.noble.ontology.IInstance;
@@ -40,6 +44,7 @@ import edu.pitt.dbmi.nlp.noble.terminology.TerminologyError;
 import edu.pitt.dbmi.nlp.noble.terminology.TerminologyException;
 import edu.pitt.dbmi.nlp.noble.terminology.impl.NobleCoderTerminology;
 import edu.pitt.dbmi.nlp.noble.tools.ConText;
+import edu.pitt.dbmi.nlp.noble.tools.TextTools;
 
 /**
  * This class is a wrapper for http://blulab.chpc.utah.edu/ontologies/v2/Schema.owl
@@ -50,9 +55,12 @@ public class DomainOntology {
 	public static final String ANCHOR = "Anchor";
 	public static final String COMPOUND_ANCHOR = "CompoundAnchor";
 	public static final String MODIFIER = "Modifier";
+
+	public static final String PSEUDO_ANCHOR = "PseudoAnchor";
+	public static final String PSEUDO_MODIFIER = "PseudoModifier";
 	public static final String ANNOTATION = "Annotation";
-	public static final List<String> ANCHOR_ROOTS =  Arrays.asList(ANCHOR,COMPOUND_ANCHOR);
-	public static final List<String> MODIFIER_ROOTS =  Arrays.asList("Closure","Pseudo",MODIFIER);
+	public static final List<String> ANCHOR_ROOTS =  Arrays.asList(ANCHOR,COMPOUND_ANCHOR,PSEUDO_ANCHOR);
+	public static final List<String> MODIFIER_ROOTS =  Arrays.asList("Closure",PSEUDO_MODIFIER,MODIFIER);
 	public static final String LANGUAGE = "en";
 	public static final String SEMTYPE_INSTANCE = "Instance";
 	public static final String HAS_ANCHOR = "hasAnchor";
@@ -62,16 +70,34 @@ public class DomainOntology {
 	public static final String HAS_ANNOTATION_TYPE = "hasAnnotationType";
 	public static final String ANNOTATION_MENTION = "MentionAnnotation";
 	public static final String LINGUISTIC_MODIFER = ConText.LINGUISTIC_MODIFIER;
-	private static final String HAS_COMPOUND_ARGUMENT = "hasCompoundArgument";
+	public static final String NUMERIC_MODIFER = "NumericModifier";
+	public static final String HAS_COMPOUND_ARGUMENT = "hasCompoundArgument";
 	public static final String COMPOSITION = "Composition";
 	public static final String HAS_TITLE = "hasTitle";
 	public static final String HAS_MENTION_ANNOTATION = "hasMentionAnnotation";
+	public static final String QUANTITY = "Quantity";
+	public static final String RANGE = "RangeModifier";
+	public static final String RATIO = "Ratio";
+	public static final String DIMENSIONAL_MEASUREMENT = "DimensionalMeasurement";
+	public static final String HAS_QUANTITY_VALUE = "hasQuantityValue";
+	public static final String HAS_NUMERATOR_VALUE = "hasNumeratorValue";
+	public static final String HAS_DENOMINATOR_VALUE = "hasDenominatorValue";
+	public static final String HAS_LOW_VALUE = "hasLowValue";
+	public static final String HAS_HIGH_VALUE = "hasHighValue";
+	private static final String DIMENSION_VALUE = "DimensionValue";
+	public static final String HAS_UNIT = "hasUnit";
+	public static final String UNIT = "Unit";
+	protected static final String EVAL_INSTANCE_SUFFIX = "_evaluation_inst";
+	
+	
 	
 	private IOntology ontology;
 	private Terminology anchorTerminology, modifierTerminology;
 	//private Map<String,SemanticType> semanticTypeMap;
-	private ConText.ModifierValidator modifierValidator;
+	private ConText.ModifierResolver modifierResolver;
 	private Map<IClass,Set<IClass>> compoundAnchorMap;
+	private File ontologyLocation;
+	
 	
 	/**
 	 * File or URL location of the domain ontology
@@ -92,6 +118,7 @@ public class DomainOntology {
 				ontologyURI = ontologyURI.substring(0,ontologyURI.length()-4);
 			ontologyURI += "Instances.owl";
 			setOntology(OOntology.createOntology(URI.create(ontologyURI),file));
+			ontologyLocation = file;
 		}else if (location.startsWith("http")){
 			String ontologyURI = location;
 			if(ontologyURI.endsWith(".owl"))
@@ -111,6 +138,9 @@ public class DomainOntology {
 	 */
 	public DomainOntology(IOntology ont) throws IOntologyException{
 		setOntology(ont); 
+		File file = new File(ont.getLocation());
+		if(file.exists())
+			ontologyLocation = file;
 	}
 	
 	
@@ -159,6 +189,37 @@ public class DomainOntology {
 		return fromSchema;
 	}
 
+	/**
+	 * get locations of terminology cache
+	 * @return File directory location
+	 */
+	public static File getTerminologyCacheLocation(File ontologyLocation){
+		if(ontologyLocation != null){
+			File file =  new File(ontologyLocation+".terminologies");
+			if(!file.exists())
+				file.mkdirs();
+			return file;
+		}
+		return null;
+	}
+	
+	
+	private File getAnchorTerminologyFile(){
+		if(ontologyLocation != null){
+			File file = new File(getTerminologyCacheLocation(ontologyLocation),"Anchors.term");
+			return file;
+		}
+		return null;
+	}
+	
+	private File getModifierTerminologyFile(){
+		if(ontologyLocation != null){
+			File file = new File(getTerminologyCacheLocation(ontologyLocation),"Modifiers.term");
+			return file;
+		}
+		return null;
+	}
+	
 
 	/**
 	 * get a terminology of anchors  
@@ -166,26 +227,50 @@ public class DomainOntology {
 	 */
 	public Terminology getAnchorTerminology() {
 		if(anchorTerminology == null){
-			NobleCoderTerminology terminology = new NobleCoderTerminology();
-			terminology.setName("AnchorTerminology");
-			//TODO: maybe custom params
-			// set language filter to only return English values
-			if(ontology instanceof OOntology)
-				((OOntology)ontology).setLanguageFilter(Arrays.asList(LANGUAGE));
-			
-			for(String root: ANCHOR_ROOTS){
-				IClass cls = ontology.getClass(root);
-				if(cls != null){
-					// add roots to terminology
-					terminology.addRoot(addConcept(terminology,cls).getCode());
-					// go over all subclasses
-					for(IClass c: cls.getSubClasses()){
-						addConcept(terminology,c);
+			File anchorFile = getAnchorTerminologyFile();
+			try {
+				// check if there is a cache available
+				if(anchorFile != null && anchorFile.exists()){
+					anchorTerminology = new NobleCoderTerminology(anchorFile);
+				}else{
+					NobleCoderTerminology terminology = null;
+					if(anchorFile.getParentFile().exists()){
+						terminology = new NobleCoderTerminology(anchorFile,false);
+					}else{
+						terminology = new NobleCoderTerminology();
+						terminology.setName("Anchors");
 					}
+					
+					//TODO: maybe custom params
+					// set language filter to only return English values
+					if(ontology instanceof OOntology)
+						((OOntology)ontology).setLanguageFilter(Arrays.asList(LANGUAGE));
+					
+					for(String root: ANCHOR_ROOTS){
+						IClass cls = ontology.getClass(root);
+						if(cls != null){
+							// add roots to terminology
+							terminology.addRoot(addConcept(terminology,cls).getCode());
+							// go over all subclasses
+							for(IClass c: cls.getSubClasses()){
+								addConcept(terminology,c);
+							}
+						}
+					}
+					// save cache
+					if(anchorFile.exists()){
+						terminology.save();
+						// reload
+						terminology = new NobleCoderTerminology(anchorFile);
+					}
+					
+					//semanticTypeMap = null;
+					anchorTerminology = terminology;
 				}
+			} catch (IOException e) {
+				throw new TerminologyError("Unable to load anchor terminology from "+anchorFile,e);
 			}
-			//semanticTypeMap = null;
-			anchorTerminology = terminology;
+	
 		}
 		
 		return anchorTerminology;
@@ -199,51 +284,75 @@ public class DomainOntology {
 	 */
 	public Terminology getModifierTerminology() {
 		if(modifierTerminology == null){
-			// setup special interest of noble coder
-			NobleCoderTerminology terminology = new NobleCoderTerminology();
-			//terminology.load(getClass().getSimpleName(),false);
-			terminology.setName("ModifierTerminology");
-			terminology.setDefaultSearchMethod(NobleCoderTerminology.CUSTOM_MATCH);
-			terminology.setContiguousMode(true);
-			terminology.setSubsumptionMode(false);
-			terminology.setOverlapMode(true);
-			terminology.setPartialMode(false);
-			terminology.setOrderedMode(true);
-			terminology.setMaximumWordGap(0);
-			terminology.setScoreConcepts(false);
-			terminology.setHandlePossibleAcronyms(false);
-			terminology.setLanguageFilter(new String [] {LANGUAGE});
-			terminology.setStemWords(false);
-			terminology.setStripStopWords(false);
-			terminology.setIgnoreSmallWords(false);
-			terminology.setIgnoreDigits(false);
-			terminology.setSemanticTypeFilter(SEMTYPE_INSTANCE);
-			
-			// set language filter to only return English values
-			if(ontology instanceof OOntology)
-				((OOntology)ontology).setLanguageFilter(Arrays.asList(LANGUAGE));
-			
-			
-			// load classes 
-			for(String root: MODIFIER_ROOTS ){
-				IClass cls = ontology.getClass(root);
-				if(cls != null){
-					// add roots to terminology
-					terminology.addRoot(addConcept(terminology,cls).getCode());
-					for(IInstance inst : cls.getDirectInstances()){
-						addConcept(terminology,inst);
+			// check if there is a cache available
+			File modifierFile = getModifierTerminologyFile();
+			try {
+				if(modifierFile != null && modifierFile.exists()){
+					modifierTerminology = new NobleCoderTerminology(modifierFile);
+				}else{
+					// setup special interest of noble coder
+					NobleCoderTerminology terminology = null;
+					if(modifierFile.getParentFile().exists()){
+						terminology = new NobleCoderTerminology(modifierFile,false);
+					}else{
+						terminology = new NobleCoderTerminology();
+						terminology.setName("Modifiers");
 					}
 					
-					// go over all subclasses
-					for(IClass c: cls.getSubClasses()){
-						addConcept(terminology,c);
-						for(IInstance inst : c.getDirectInstances()){
-							addConcept(terminology,inst);
+					
+					//terminology.load(getClass().getSimpleName(),false);
+					//terminology.setName("ModifierTerminology");
+					terminology.setDefaultSearchMethod(NobleCoderTerminology.CUSTOM_MATCH);
+					terminology.setContiguousMode(true);
+					terminology.setSubsumptionMode(false);
+					terminology.setOverlapMode(true);
+					terminology.setPartialMode(false);
+					terminology.setOrderedMode(true);
+					terminology.setMaximumWordGap(0);
+					terminology.setScoreConcepts(false);
+					terminology.setHandlePossibleAcronyms(false);
+					terminology.setLanguageFilter(new String [] {LANGUAGE});
+					terminology.setStemWords(false);
+					terminology.setStripStopWords(false);
+					terminology.setIgnoreSmallWords(false);
+					terminology.setIgnoreDigits(false);
+					terminology.setSemanticTypeFilter(SEMTYPE_INSTANCE);
+					
+					// set language filter to only return English values
+					if(ontology instanceof OOntology)
+						((OOntology)ontology).setLanguageFilter(Arrays.asList(LANGUAGE));
+					
+					
+					// load classes 
+					for(String root: MODIFIER_ROOTS ){
+						IClass cls = ontology.getClass(root);
+						if(cls != null){
+							// add roots to terminology
+							terminology.addRoot(addConcept(terminology,cls).getCode());
+							for(IInstance inst : cls.getDirectInstances()){
+								addConcept(terminology,inst);
+							}
+							
+							// go over all subclasses
+							for(IClass c: cls.getSubClasses()){
+								addConcept(terminology,c);
+								for(IInstance inst : c.getDirectInstances()){
+									addConcept(terminology,inst);
+								}
+							}
 						}
 					}
+					if(modifierFile.exists()){
+						terminology.save();
+						// reload
+						terminology = new NobleCoderTerminology(modifierFile);
+					}
+					modifierTerminology = terminology;
 				}
+			} catch (IOException e) {
+				throw new TerminologyError("Unable to load anchor terminology from "+modifierFile,e);
 			}
-			modifierTerminology = terminology;
+	
 		}
 		return modifierTerminology;
 	}
@@ -444,7 +553,8 @@ public class DomainOntology {
 	 * @return true or not
 	 */
 	public boolean isTypeOf(IClass cls, String type){
-		return cls != null ? cls.hasSuperClass(ontology.getClass(type)):false;
+		IClass typeCls = ontology.getClass(type); 
+		return cls != null ? cls.equals(typeCls) || cls.hasSuperClass(typeCls):false;
 	}
 	
 	/**
@@ -643,9 +753,10 @@ public class DomainOntology {
 	 * get modifier target validator to check if modifier can be attached to target
 	 * @return modifier validator
 	 */
-	public ConText.ModifierValidator getModifierValidator(){
-		if(modifierValidator == null){
-			modifierValidator = new ConText.ModifierValidator() {
+	public ConText.ModifierResolver getModifierResolver(){
+		if(modifierResolver == null){
+			modifierResolver = new ConText.ModifierResolver() {
+				
 				public boolean isModifierApplicable(Mention modifier, Mention target) {
 					// get an annotation class for this target
 					if(target.getConcept().getRelationMap().containsKey(IS_ANCHOR_OF)){
@@ -677,12 +788,202 @@ public class DomainOntology {
 					}
 					return false;
 				}
+
+				/**
+				 * process numeric modifiers to get
+				 */
+				public void processNumericModifiers(Sentence sentence) {
+					for(Mention m: new ArrayList<Mention>(sentence.getMentions())){
+						IClass modifierCls = getConceptClass(m);
+						if(isTypeOf(modifierCls,NUMERIC_MODIFER)){
+							// parse numeric component
+							List<Double> numbers = TextTools.parseNumericValues(m.getText());
+							
+							// skip if there are no numbers
+							if(numbers.isEmpty())
+								continue;
+							
+							
+							// add appropriate fields
+							if(isTypeOf(modifierCls,QUANTITY)){
+								if(numbers.size() > 0){
+									m.addModifier(Modifier.getModifier(HAS_QUANTITY_VALUE,""+numbers.get(0)));
+								}
+							}else if(isTypeOf(modifierCls,RATIO)){
+								if(numbers.size() > 1){
+									m.addModifier(Modifier.getModifier(HAS_NUMERATOR_VALUE,""+numbers.get(0)));
+									m.addModifier(Modifier.getModifier(HAS_DENOMINATOR_VALUE,""+numbers.get(1)));
+								}
+								
+							}else if(isTypeOf(modifierCls,RANGE)){
+								if(numbers.size() > 1){
+									m.addModifier(Modifier.getModifier(HAS_LOW_VALUE,""+numbers.get(0)));
+									m.addModifier(Modifier.getModifier(HAS_HIGH_VALUE,""+numbers.get(1)));
+								}
+							}else if(isTypeOf(modifierCls,DIMENSIONAL_MEASUREMENT)){
+								int i = 1;
+								for(Double d: numbers){
+									m.addModifier(Modifier.getModifier("has"+(i++)+DIMENSION_VALUE,""+d));
+								}
+							}
+							
+							// add units (now this is used in ConText
+							/*
+							for(Mention unit: getNumericUnits(m,sentence)){
+								m.addModifier(Modifier.getModifier(HAS_UNIT,getConceptClass(unit).getName(),unit));
+							}
+							*/
+							
+							
+							// now go over potential specific instances
+							for(IInstance inst: getSpecificInstances(modifierCls)){
+								// set data properties
+								for(String prop: m.getModifiers().keySet()){
+									IProperty property = getProperty(prop);
+									Modifier mod = m.getModifier(prop);
+									if(property == null)
+										continue;
+									
+									if(mod.getMention() != null){
+										inst.setPropertyValue(property,getConceptInstance(mod.getMention()));
+									}else{
+										inst.setPropertyValue(property,new Double(mod.getValue()));
+									}
+								}
+								
+								// now check the equivalence
+								IClass parentCls = inst.getDirectTypes()[0];
+								
+								// if instance valid, we found a more specific numeric class
+								if(parentCls.getEquivalentRestrictions().evaluate(inst)){
+									sentence.addMention(getModifierFromClass(parentCls,m));
+								}
+							}
+							
+						}
+					}
+				}
+				
+				
+				private Map<IClass,List<IInstance>> classInstanceMap;
+				
+				/**
+				 * get specific instances tied to a given numeric class
+				 * @param cls
+				 * @return
+				 */
+				private List<IInstance> getSpecificInstances(IClass cls){
+					if(classInstanceMap == null){
+						classInstanceMap = new HashMap<IClass, List<IInstance>>();
+					}
+					
+					List<IInstance> list = classInstanceMap.get(cls);
+					if(list == null){
+						list = new ArrayList<IInstance>();
+						// now see if we can get a more specific class added
+						for(IClass specificNum: cls.getSubClasses()){
+							// if we have equivalence restrictions defined, lets see if we get this
+							// class to be satisfied
+							if(!specificNum.getEquivalentRestrictions().isEmpty()){
+								IInstance inst = specificNum.createInstance(specificNum.getName()+EVAL_INSTANCE_SUFFIX);
+								list.add(inst);
+							}
+						}
+						classInstanceMap.put(cls,list);
+					}
+					return list;
+				}
 			};
 		}
-		return modifierValidator;
+		return modifierResolver;
+	}
+	
+	public IProperty getProperty(String name){
+		IProperty prop = ontology.getProperty(name);
+		if(prop == null)
+			prop = ontology.getProperty("has"+name);
+		return prop;
 	}
 	
 	
+	/**
+	 * get a list o f numeric units among the mentions
+	 * @param number - number mentions
+	 * @param mentions - all sentence mentions
+	 * @return list of units that follow that number
+	 *
+	private List<Mention> getNumericUnits(Mention number,Sentence sentence) {
+		List<Mention> list = new ArrayList<Mention>();
+		for(Mention m: sentence.getMentions()){
+			// if mention is after number, it is a unit and it is within window
+			if(m.after(number) && isTypeOf(m,UNIT) && getWordDistance(number,m) < 5){
+				list.add(m);
+				break;
+			}
+		}
+		return list;
+	}
+	*/
+	
+	/**
+	 * get word distance between two mentions
+	 * @param a
+	 * @param b
+	 * @return
+	 *
+	private int getWordDistance(Mention a, Mention b) {
+		Sentence s = a.getSentence();
+		String text = s.getText().substring(a.getEndPosition()-s.getOffset(),b.getStartPosition()-s.getOffset());
+		return TextTools.getWords(text).size();
+	}
+	*/
+
+	/**
+	 * get a modifier concept object from a given class
+	 * @param parentCls class
+	 * @return concept from terminology
+	 */
+	public Concept getModifierConcept(IClass parentCls) {
+		try {
+			IInstance inst = null;
+			for(IInstance i: parentCls.getDirectInstances()){
+				if(!i.getName().endsWith(EVAL_INSTANCE_SUFFIX)){
+					inst = i;
+					break;
+				}
+			}
+			Concept c = null;
+			if(inst != null)
+				c = getModifierTerminology().lookupConcept(inst.getName());
+			if(c == null)
+				c = getModifierTerminology().lookupConcept(parentCls.getName());
+			return c;
+		} catch (TerminologyException e) {
+			throw new TerminologyError("Unable to find concept for class "+parentCls,e);
+		}
+	}
+	
+	/**
+	 * get modifier from class and a more general mention
+	 * @param cls
+	 * @param mention
+	 * @return
+	 */
+	private Mention getModifierFromClass(IClass cls, Mention mention){
+		// try to find an instance from class
+		Concept concept = getModifierConcept(cls).clone();
+		concept.setSearchString(mention.getConcept().getSearchString());
+		concept.setMatchedTerm(mention.getConcept().getMatchedTerm());
+		concept.setTerminology(mention.getConcept().getTerminology());
+		
+		Mention m = new Mention();
+		m.setConcept(concept);
+		m.setAnnotations(mention.getAnnotations());
+		m.getModifiers().putAll(mention.getModifiers());
+		
+		return m;
+	}
+
 	/**
 	 * is property range satisfied with a given class?
 	 * @param prop - property in question

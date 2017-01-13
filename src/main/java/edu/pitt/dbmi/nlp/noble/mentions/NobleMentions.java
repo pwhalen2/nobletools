@@ -13,11 +13,9 @@ import edu.pitt.dbmi.nlp.noble.mentions.model.Instance;
 import edu.pitt.dbmi.nlp.noble.mentions.model.AnnotationVariable;
 import edu.pitt.dbmi.nlp.noble.mentions.model.Composition;
 import edu.pitt.dbmi.nlp.noble.mentions.model.DomainOntology;
-import edu.pitt.dbmi.nlp.noble.ontology.IOntologyException;
 import edu.pitt.dbmi.nlp.noble.terminology.TerminologyException;
 import edu.pitt.dbmi.nlp.noble.tools.ConText;
 import edu.pitt.dbmi.nlp.noble.tools.TextTools;
-import edu.pitt.dbmi.nlp.noble.ui.TerminologyBrowser;
 
 public class NobleMentions implements Processor<Composition>{
 	private long time;
@@ -57,7 +55,7 @@ public class NobleMentions implements Processor<Composition>{
 		
 		// initialize context
 		ConText conText = new ConText(domainOntology.getModifierTerminology());
-		conText.setModifierValidator(domainOntology.getModifierValidator());
+		conText.setModifierResolver(domainOntology.getModifierResolver());
 		coder.setConText(conText);
 		//coder.setDocumentProcessor(documentProcessor);
 	}

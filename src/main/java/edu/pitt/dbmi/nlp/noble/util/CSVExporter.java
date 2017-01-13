@@ -149,22 +149,24 @@ public class CSVExporter {
 	 */
 	public void export(Composition doc) throws Exception {
 		BufferedWriter writer = getCSVWriterForComposition(outputFile);
+		int n = 1;
 		for(AnnotationVariable var: doc.getAnnotationVariables()){
 			for(String prop: var.getModifierInstances().keySet()){
 				for(Instance inst: var.getModifierInstances().get(prop)){
-					StringBuffer value = new StringBuffer(inst.getName());
+					StringBuffer value = new StringBuffer(inst.getLabel());
 					StringBuffer valueProp = new StringBuffer();
 					if(!DomainOntology.HAS_ANCHOR.equals(prop)){
 						for(Instance ii: inst.getModifierInstanceList()){
-							valueProp.append(ii.getName()+", ");
+							valueProp.append(ii.getLabel()+", ");
 						}
 						if(valueProp.length() > 2){
 							valueProp.delete(valueProp.length()-2,valueProp.length());
 						}
 					}
-					writer.write(doc.getTitle()+S+var.getName()+S+prop+S+value+S+valueProp+S+getAnnotations(inst.getAnnotations())+"\n");
+					writer.write(doc.getTitle()+S+n+S+var.getLabel()+S+prop+S+value+S+valueProp+S+getAnnotations(inst.getAnnotations())+"\n");
 				}
 			}
+			n ++;
 		}
 		
 		writer.flush();
@@ -252,7 +254,7 @@ public class CSVExporter {
 	private BufferedWriter getCSVWriterForComposition(File out) throws Exception {
 		if(csvWriter == null){
 			csvWriter = new BufferedWriter(new FileWriter(out));
-			csvWriter.write("Document"+S+"Annotation Variable"+S+"Property"+S+"Value"+S+"Value Properies"+S+"Annotations\n");
+			csvWriter.write("Document"+S+"Id"+S+"Annotation Variable"+S+"Property"+S+"Value"+S+"Value Properies"+S+"Annotations\n");
 		}
 		return csvWriter;
 	}

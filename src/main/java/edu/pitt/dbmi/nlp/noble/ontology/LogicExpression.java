@@ -2,6 +2,8 @@ package edu.pitt.dbmi.nlp.noble.ontology;
 
 import java.util.*;
 
+import edu.pitt.dbmi.nlp.noble.ontology.owl.OFacetRestriction;
+
 /**
  * list of resources that could be conjunction or disjunction.
  *
@@ -147,6 +149,8 @@ public class LogicExpression extends ArrayList implements ILogicExpression {
 			return ((ILogicExpression) obj).evaluate(param);
 		}else if(obj instanceof IClass){
 			return ((IClass) obj).evaluate(param);
+		}else if(obj instanceof OFacetRestriction){
+			return ((OFacetRestriction)obj).evaluate(param);
 		}
 		return obj.equals(param);
 	}

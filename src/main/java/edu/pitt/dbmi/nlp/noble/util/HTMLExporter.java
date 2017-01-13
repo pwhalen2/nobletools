@@ -574,9 +574,11 @@ public class HTMLExporter {
 	
 	private String codeVariables(List<AnnotationVariable> variables){
 		StringBuffer str = new StringBuffer();
+		str.append("<ol>");
 		for(AnnotationVariable var: variables){
-			str.append("<p>"+codeVariable(var)+"</p>");
+			str.append("<li>"+codeVariable(var)+"</li>");
 		}
+		str.append("</ol>");
 		return str.toString();
 	}
 	

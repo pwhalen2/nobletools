@@ -71,7 +71,7 @@ public class ConText implements Processor<Sentence> {
 	public static final String MODIFIER = "Modifier";
 	public static final String PSEUDO = "Pseudo";
 	public static final int DEFAULT_WINDOW_SIZE = 8;
-	
+	public static final String QUALIFIER = "Qualifier";
 	
 	public static final String MODIFIER_TYPE_POLARITY = "Polarity";
 	public static final String MODIFIER_TYPE_EXPERIENCER = "Experiencer";
@@ -102,6 +102,7 @@ public class ConText implements Processor<Sentence> {
 
 
 
+
 	
 	
 	private long time;
@@ -113,7 +114,7 @@ public class ConText implements Processor<Sentence> {
 	 * a possible way for an outside code to validate if modifier can be linked to a target
 	 * @author tseytlin
 	 */
-	public static interface ModifierValidator {
+	public static interface ModifierResolver {
 		/**
 		 * is a given modifier applicable for a given target
 		 * @param modifier - modifier in question
@@ -121,8 +122,15 @@ public class ConText implements Processor<Sentence> {
 		 * @return true if it is applicable
 		 */
 		public boolean isModifierApplicable(Mention modifier,Mention target);
+		
+		/**
+		 * add semanticaly relevant information for numeric modifiers s.a. numerator/denominator
+		 * add new more specific numeric mentions if the numeric value satisfies equivalence relations
+		 * @param sentence - sentence with modifier mentions
+		 */
+		public void processNumericModifiers(Sentence sentence);
 	}
-	private ModifierValidator modifierValidator;
+	private ModifierResolver modifierResolver;
 	
 	
 	/**
@@ -301,18 +309,18 @@ public class ConText implements Processor<Sentence> {
 	
 	/**
 	 * get semantic modifier validator associated with ConText
-	 * @return modifier validator
+	 * @return modifier resolver
 	 */
-	public ModifierValidator getModifierValidator() {
-		return modifierValidator;
+	public ModifierResolver getModifierResolver() {
+		return modifierResolver;
 	}
 
 	/**
 	 * set an outside validator that can check if a modifier can actually map to a target
-	 * @param modifierValidator - semantic modifier validator
+	 * @param modifierResolver - semantic modifier validator
 	 */
-	public void setModifierValidator(ModifierValidator modifierValidator) {
-		this.modifierValidator = modifierValidator;
+	public void setModifierResolver(ModifierResolver modifierResolver) {
+		this.modifierResolver = modifierResolver;
 	}
 
 
@@ -377,11 +385,15 @@ public class ConText implements Processor<Sentence> {
 		Concept concept = cls.getConcept();
 		//overwrite URI, with name
 		concept.setCode(cls.getName());
-	
 		
 		// add semantic type
 		for(SemanticType st: getSemanticTypes(cls))
 			concept.addSemanticType(st);
+	
+		// if we actually have synonyms defined beyound the name,it should be treated as an instance
+		if(concept.getSynonyms().length > 1)
+			concept.addSemanticType(SemanticType.getSemanticType(SEMTYPE_INSTANCE));
+		
 		
 		// add relations to concept
 		for(IClass c: cls.getDirectSuperClasses()){
@@ -562,6 +574,25 @@ public class ConText implements Processor<Sentence> {
 		Sentence text = terminology.process(new Sentence(sentence));
 		
 		
+		// assign qualifiers to modifiers: Ex: Units to Quality or Laterality to BodySite
+		for(Mention m:  getRelevantModifiers(text)){
+			// check if mention is qualifier, otherwise don't bother
+			if(isTypeOf(m,QUALIFIER)){
+				// add modifiers to modifiers if relevant
+				for(Mention target: getTargetMentions(m,text,getTerminators(m,text))){
+					target.addModifiers(getModifiers(m));
+				}
+			}
+		}
+		
+		// process numeric modifiers (this will upgrade some of them based on equivalence classes)
+		if(getModifierResolver() != null)
+			getModifierResolver().processNumericModifiers(text);
+		
+		
+		// get relevant modifiers from parsed text, takes care of pseudo stuff too
+		List<Mention> relevantModifiers = getRelevantModifiers(text);
+		
 		//add defaults for stuff that was not picked up
 		for(Mention m: sentence.getMentions()){
 			for(String type: getDefaultValues().keySet()){
@@ -570,15 +601,13 @@ public class ConText implements Processor<Sentence> {
 		}
 		
 		// go over all modifier mentions
-		List<Mention> relevantModifiers = getRelevantModifiers(text);
 		for(Mention m: relevantModifiers){
-			// add relevant modifiers to target mentions
-			for(Mention target: getTargetMentions(m,sentence,getTerminators(m,text))){
-				target.addModifiers(getModifiers(m));
-			}
-			// add modifiers to modifiers if relevant
-			for(Mention target: getTargetMentions(m,text,getTerminators(m,text))){
-				target.addModifiers(getModifiers(m));
+			// don't bother with modifiers of modifiers, they don't connect to targets anyhow
+			if(!isTypeOf(m,QUALIFIER)){
+				// add relevant modifiers to target mentions
+				for(Mention target: getTargetMentions(m,sentence,getTerminators(m,text))){
+					target.addModifiers(getModifiers(m));
+				}
 			}
 		}
 		
@@ -652,6 +681,13 @@ public class ConText implements Processor<Sentence> {
 		boolean forward =  acts.contains(ACTION_FORWARD) || acts.contains(ACTION_BIDIRECTIONAL);
 		boolean backward = acts.contains(ACTION_BACKWARD) || acts.contains(ACTION_BIDIRECTIONAL);
 
+		// this is no good, but if we got no actions defined, can we assume some default?
+		if(forward == false && backward == false){
+			forward = backward = true;
+		}
+		
+		
+		
 		// figure out termination offset
 		int start = getWordWindowIndex(modifier,targetText,false);
 		int end   = getWordWindowIndex(modifier,targetText,true);
@@ -707,8 +743,8 @@ public class ConText implements Processor<Sentence> {
 			return true;
 		
 		// if we have an outside validator supplied, check with that
-		if(modifierValidator != null){
-			return modifierValidator.isModifierApplicable(modifier, target);
+		if(modifierResolver != null){
+			return modifierResolver.isModifierApplicable(modifier, target);
 		}
 		
 		return false;
@@ -933,8 +969,12 @@ public class ConText implements Processor<Sentence> {
 	 * @param c the c
 	 * @return the modifier value
 	 */
-	public static String getModifierValue(String type, Concept c) {
-		return c.getProperty(type);
+	public static String getModifierValue(String type, Mention m) {
+		Concept c = m.getConcept();
+		String val = c.getProperty(type);
+		if(val == null)
+			val = m.getText();
+		return val;
 	}
 	
 	
@@ -992,7 +1032,7 @@ public class ConText implements Processor<Sentence> {
 	public List<Modifier> getMatchingModifiers(List<Mention> globalModifiers, Mention target) {
 		
 		// if modifier validator is not defined, no point in going further
-		if(getModifierValidator() == null || globalModifiers.isEmpty() || target == null)
+		if(getModifierResolver() == null || globalModifiers.isEmpty() || target == null)
 			return Collections.EMPTY_LIST;
 		
 		// allocate best modifiers
@@ -1042,7 +1082,7 @@ public class ConText implements Processor<Sentence> {
 		List<Modifier> modifierList = new ArrayList<Modifier>();
 		for(String type: candidateModifiers.keySet()){
 			for(Modifier modifier: candidateModifiers.get(type)){
-				if(getModifierValidator().isModifierApplicable(modifier.getMention(), target)){
+				if(getModifierResolver().isModifierApplicable(modifier.getMention(), target)){
 					modifierList.add(modifier);
 					break;
 				}

@@ -631,6 +631,19 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 	}
 	
 	/**
+	 * initialize a named terminology that either has already been 
+	 * persisted on disk, or will be persisted on disk from file.
+	 *
+	 * @param dir the dir
+	 * @param boolean is readonly mode
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
+	public NobleCoderTerminology(File dir, boolean readonly) throws IOException{
+		setPersistenceDirectory(dir.getParentFile());
+		load(dir.getName(),readonly);
+	}
+	
+	/**
 	 * check if terminology with a given name exists inside
 	 * default persisted directory.
 	 *
@@ -1447,6 +1460,12 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 				
 				String cls_str = storage.getRegexMap().get(re);
 				String txt = m.group(1);    // THIS BETTER BE THERE,
+				
+				// well, we don't care about empty space right???
+				// if regex was messed up we don't want to return junk, right???
+				if(txt.length() == 0)
+					continue;
+				
 				//System.out.println(cls_str+" "+txt+" for re: "+re);	
 				// create concept from class
 				Concept c = convertConcept(storage.getConceptMap().get(cls_str));

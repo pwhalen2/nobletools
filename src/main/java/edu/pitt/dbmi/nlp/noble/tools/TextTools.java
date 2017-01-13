@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import edu.pitt.dbmi.nlp.noble.util.FileTools;
@@ -1108,6 +1109,23 @@ public class TextTools {
 		
 		return str.toString();
 	}
+	
+	
+	/**
+	 * get a sequence of double or integer numbers from a string of text
+	 * @param text - input text
+	 * @return list of double objects
+	 */
+	public static List<Double> parseNumericValues(String text){
+		List<Double> list = new ArrayList<Double>();
+		Pattern pt = Pattern.compile("(\\d*\\.\\d+|\\d+)");
+		Matcher mt = pt.matcher(text);
+		while(mt.find()){
+			list.add(new Double(mt.group()));
+		}
+		return list;
+	}
+	
 	
 	
 	/**

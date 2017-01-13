@@ -384,7 +384,7 @@ public class NobleMentionsTool implements ActionListener{
 	 * do export of highlighted template.
 	 */
 	private void doImport() {
-		JFileChooser chooser = new JFileChooser(file);
+		final JFileChooser chooser = new JFileChooser(file);
 		chooser.setFileFilter(new FileFilter(){
 			public boolean accept(File f) {
 				return f.isDirectory() || f.getName().endsWith(".owl");
@@ -396,16 +396,30 @@ public class NobleMentionsTool implements ActionListener{
 		});
 		int r = chooser.showOpenDialog(frame);
 		if(r == JFileChooser.APPROVE_OPTION){
-			try{
-				file = chooser.getSelectedFile();
-				Files.copy(file.toPath(),new File(repository.getOntologyLocation(),file.getName()).toPath(),StandardCopyOption.REPLACE_EXISTING);
-				refreshTemplateList();
-			}catch(Exception ex){
-				JOptionPane.showMessageDialog(frame,ex.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
-				ex.printStackTrace();
-			}
+			
+				new Thread(new Runnable(){
+					public void run(){
+						setBusy(true);
+						try{
+							file = chooser.getSelectedFile();
+							File newLocation = new File(repository.getOntologyLocation(),file.getName());
+							Files.copy(file.toPath(),newLocation.toPath(),StandardCopyOption.REPLACE_EXISTING);
+							
+							// remove terminology cache
+							File termCache = DomainOntology.getTerminologyCacheLocation(newLocation);
+							if(termCache.exists()){
+								FileTools.deleteDirectory(termCache);
+							}
+						}catch(Exception ex){
+							JOptionPane.showMessageDialog(frame,ex.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+							ex.printStackTrace();
+						}
+						refreshTemplateList();
+						setBusy(false);
+					}
+				}).start();
+			
 		}
-		
 	}
 
 	

@@ -194,7 +194,9 @@ public class Instance {
 	 * @return name of this instance
 	 */
 	public String getName(){
-		return getConceptClass().getName();
+		if(getConceptClass() != null)
+			return getConceptClass().getName();
+		return modifier != null?modifier.getValue():"unknown";
 	}
 	
 	/**
@@ -202,9 +204,10 @@ public class Instance {
 	 * @return label of this instnace, returns name if label not available
 	 */
 	public String getLabel(){
-		return getConceptClass().getLabel();
+		if(getConceptClass() != null)
+			return getConceptClass().getLabel();
+		return modifier != null?modifier.getValue():"unknown";
 	}
-	
 	
 	/**
 	 * pretty print this name
