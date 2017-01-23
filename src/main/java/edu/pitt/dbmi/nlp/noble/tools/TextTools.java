@@ -362,8 +362,16 @@ public class TextTools {
 			String s =t.nextToken();
 			if(s.length() > 0){
 				//|| s.endsWith(",") || s.endsWith("!") || s.endsWith("?") || s.endsWith(";") || s.endsWith(":")
-				while(s.endsWith("."))
-					s = s.substring(0,s.length()-1);
+				// remove trailing periods
+				//while(s.endsWith("."))
+				//	s = s.substring(0,s.length()-1);
+				
+				// if we have a period, check if it is float, otherwise split
+				if(s.length() > 1 && s.indexOf(".") > -1 && !s.matches("\\d*\\.\\d+")){
+					for(String ss: s.split("\\.+"))
+						list.add(ss);
+					s = "";
+				}
 				if(s.length() > 0)
 					list.add(s);
 			}
@@ -1465,32 +1473,5 @@ public class TextTools {
 		}
 		return null;
 	}
-	
-	
-	
-	/**
-	 * The main method.
-	 *
-	 * @param s the arguments
-	 * @throws Exception the exception
-	 */
-	public static void main(String [] s) throws Exception{
-		// test plurality
-		/*System.out.println("testing plurality ..");
-		for(String st: Arrays.asList("nevi","cells","buses","dolls","doors","margins","soldier")){ 
-			System.out.println("\t"+st+" "+isPlural(st));
-		}
-		System.out.println("testing abbreviations ..");
-		for(String st: Arrays.asList("SKIN","mDNA","BRCA2","Dolls","No","I","help-me")){ 
-			System.out.println("\t"+st+" "+isLikelyAbbreviation(st));
-		}*/
-		
-		/*Date dt = new Date();
-		System.out.println(dt);
-		String st = dt.toString();
-		Date d2 = parseDate(st);
-		System.out.println(d2);*/
-	
-		System.out.println(getStringStats("Cancer."));
-	}
+
 }

@@ -394,7 +394,7 @@ public class TermFilter {
 	/**
 	 * filter UMLS terms based on Hettne rules
 	 * 
-	 * @param synonyms  - input string
+	 * @param synonym  - input string
 	 * @return list of synonyms taht pass the filter
 	 */
 	public static Set<String> filter(String synonym) {

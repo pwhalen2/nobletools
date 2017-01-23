@@ -15,15 +15,25 @@ public class ReportProcessor implements Processor<Document> {
 	private List<Processor<Document>> processors;
 	
 	
-	
 	/**
 	 * initialize document processor with default (medical report) setting.
+	 * sentence, paragraph and reg-ex based sectionazier
 	 */
 	public ReportProcessor(){
 		addProcessor(new SectionProcessor());
 		addProcessor(new SentenceProcessor());
 		addProcessor(new ParagraphProcessor());
 	}
+	
+	
+	/**
+	 * initilize document processor with custom set of document processors
+	 * @param proc - list of processors
+	 */
+	public ReportProcessor(List<Processor<Document>> proc){
+		setProcessor(proc);
+	}
+	
 	
 	/**
 	 * get all processors associated with this document parser
@@ -41,6 +51,14 @@ public class ReportProcessor implements Processor<Document> {
 	 */
 	public void addProcessor(Processor<Document> proc){
 		getProcessors().add(proc);
+	}
+	
+	/**
+	 * set document processors
+	 * @param proc - list of document processors
+	 */
+	public void setProcessor(List<Processor<Document>> proc){
+		processors = proc;
 	}
 	
 
@@ -159,10 +177,6 @@ public class ReportProcessor implements Processor<Document> {
 	 */
 	public long getProcessTime(){
 		return time;
-	}
-	
-	public static void main(String [] args) throws Exception{
-		new ReportProcessor().processFile(new File(args[0]));
 	}
 
 }

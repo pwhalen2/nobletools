@@ -10,6 +10,7 @@ public class ParagraphProcessor implements Processor<Document> {
 	private static final String PARAGRAPH = "\\n{2,}";
 	private static final String DIVS = "\\-{5,}|_{5,}|={5,}";
 	private static final String PARTS = "PARTS?\\s+\\d+(\\s+AND\\s+\\d+)?:";
+	private static final Pattern PATTERN = Pattern.compile("("+PARAGRAPH+"|"+DIVS+"|"+PARTS+")",Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
 	private long time;
 	
 	
@@ -20,40 +21,62 @@ public class ParagraphProcessor implements Processor<Document> {
 		time = System.currentTimeMillis();
 		
 		// lets try to rely on sections first
-		//\\n\\t|\\n\\s{4,}
-		Pattern pt = Pattern.compile("("+PARAGRAPH+"|"+DIVS+"|"+PARTS+")",Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
-		for(Section section: doc.getSections()){
-			int offs = 0;
-			int bodyOffset = section.getBodyOffset();
-			String text = section.getBody();
-			if(text.trim().length() == 0)
-				continue;
-			Matcher mt = pt.matcher(text);
-			String delim = null;
-			while(mt.find()){
-				delim = mt.group();
-				//String txt = text.substring(offs,mt.start());
-				//Paragraph pgh = new Paragraph(txt,offs+section.getBodyOffset());
-				Paragraph pgh = new Paragraph(doc,offs+bodyOffset,mt.start()+bodyOffset);
-				if(delim.matches(PARTS))
-					pgh.setPart(delim);
-				doc.addParagraph(pgh);
-				offs = mt.end();
+		if(doc.getSections().isEmpty()){
+			parseParagraphs(doc);
+		}else{
+			for(Section section: doc.getSections()){
+				parseParagraphs(doc,section.getBody(),section.getBodyOffset(),section.getEndPosition());
 			}
-			// mopup 
-			//Paragraph pgh = new Paragraph(text.substring(offs),offs+section.getBodyOffset());
-			Paragraph pgh = new Paragraph(doc,offs+bodyOffset,section.getEndPosition());
-			if(delim != null && delim.matches(PARTS))
-				pgh.setPart(delim);
-			doc.addParagraph(pgh);
 		}
-		
 		
 		time = System.currentTimeMillis()-time;
 		doc.getProcessTime().put(getClass().getSimpleName(),time);
 		return doc;
 	}
+	
+	/**
+	 * parse paragraphs from given text
+	 * @param doc - document to add paragraphs to
+	 */
+	private void parseParagraphs(Document doc){
+		parseParagraphs(doc,doc.getText(),0,doc.getText().length());
+	}
 
+	/**
+	 * parse paragraphs from given text
+	 * @param doc - document to add paragraphs to
+	 * @param text - text 
+	 * @param bodyOffset -offset of section
+	 * @param endPosition - end offset of section
+	 */
+	private void parseParagraphs(Document doc, String text, int bodyOffset,int endPosition){
+		// don't bother with empty text
+		if(text.trim().length() == 0)
+			return;
+		
+		int offs = 0;
+		Matcher mt = PATTERN.matcher(text);
+		String delim = null;
+		while(mt.find()){
+			delim = mt.group();
+			//String txt = text.substring(offs,mt.start());
+			//Paragraph pgh = new Paragraph(txt,offs+section.getBodyOffset());
+			Paragraph pgh = new Paragraph(doc,offs+bodyOffset,mt.start()+bodyOffset);
+			if(delim.matches(PARTS))
+				pgh.setPart(delim);
+			doc.addParagraph(pgh);
+			offs = mt.end();
+		}
+		// mopup 
+		//Paragraph pgh = new Paragraph(text.substring(offs),offs+section.getBodyOffset());
+		Paragraph pgh = new Paragraph(doc,offs+bodyOffset,endPosition);
+		if(delim != null && delim.matches(PARTS))
+			pgh.setPart(delim);
+		doc.addParagraph(pgh);
+	}
+	
+	
+	
 	public long getProcessTime() {
 		return time;
 	}

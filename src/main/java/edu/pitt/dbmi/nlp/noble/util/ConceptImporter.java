@@ -348,6 +348,38 @@ public class ConceptImporter {
 		return count;
 	}
 
+	
+	/**
+	 * craate a concept object for a given class 
+	 * @param cls - class in the ontology
+	 * @return concept object from this class
+	 */
+	public Concept createConcept(IClass cls){
+		String code = getCode(cls,false);
+		
+		Concept concept = cls.getConcept();
+		concept.setCode(code);
+		concept.addCode(""+cls.getURI(),Source.URI);
+		
+		// fix sources
+		for(Source sr: concept.getSources())
+			sr.setCode(getCode(sr.getCode(),false));
+		
+		// add relations to concept
+		for(IClass c: cls.getDirectSuperClasses()){
+			concept.addRelatedConcept(Relation.BROADER,getCode(c,false));
+		}
+		
+		// add relations to concept
+		for(IClass c: cls.getDirectSubClasses()){
+			concept.addRelatedConcept(Relation.NARROWER,getCode(c,false));
+		}
+		
+		return concept;
+	}
+	
+	
+	
 	/**
 	 * load index finder tables from an IOntology object.
 	 *
@@ -360,8 +392,8 @@ public class ConceptImporter {
 	public void loadOntology(NobleCoderTerminology term, IOntology ontology) throws IOException, TerminologyException, IOntologyException {
 		loadOntology(term,ontology,null);
 	}
-	
 
+	
 	
 	/**
 	 * load index finder tables from an IOntology object.
@@ -430,24 +462,9 @@ public class ConceptImporter {
 			if(storage.getConceptMap().containsKey(code))
 				continue;
 			
-			Concept concept = cls.getConcept();
-			concept.setCode(code);
-			concept.addCode(""+cls.getURI(),Source.URI);
-			
-			// fix sources
-			for(Source sr: concept.getSources())
-				sr.setCode(getCode(sr.getCode(),false));
-			
-			// add relations to concept
-			for(IClass c: cls.getDirectSuperClasses()){
-				concept.addRelatedConcept(Relation.BROADER,getCode(c,false));
-			}
-			
-			// add relations to concept
-			for(IClass c: cls.getDirectSubClasses()){
-				concept.addRelatedConcept(Relation.NARROWER,getCode(c,false));
-			}
-						
+			// create concept object
+			Concept concept = createConcept(cls);
+					
 			// add concept
 			addConcept(term,concept,!inmemory);
 			

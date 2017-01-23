@@ -24,6 +24,7 @@ import java.util.regex.Pattern;
 import edu.pitt.dbmi.nlp.noble.coder.model.Mention;
 import edu.pitt.dbmi.nlp.noble.coder.model.Modifier;
 import edu.pitt.dbmi.nlp.noble.coder.model.Sentence;
+import edu.pitt.dbmi.nlp.noble.coder.processor.DictionarySectionProcessor;
 import edu.pitt.dbmi.nlp.noble.ontology.ClassPath;
 import edu.pitt.dbmi.nlp.noble.ontology.IClass;
 import edu.pitt.dbmi.nlp.noble.ontology.IInstance;
@@ -45,6 +46,7 @@ import edu.pitt.dbmi.nlp.noble.terminology.TerminologyException;
 import edu.pitt.dbmi.nlp.noble.terminology.impl.NobleCoderTerminology;
 import edu.pitt.dbmi.nlp.noble.tools.ConText;
 import edu.pitt.dbmi.nlp.noble.tools.TextTools;
+import edu.pitt.dbmi.nlp.noble.util.ConceptImporter;
 
 /**
  * This class is a wrapper for http://blulab.chpc.utah.edu/ontologies/v2/Schema.owl
@@ -88,15 +90,19 @@ public class DomainOntology {
 	public static final String HAS_UNIT = "hasUnit";
 	public static final String UNIT = "Unit";
 	protected static final String EVAL_INSTANCE_SUFFIX = "_evaluation_inst";
+	public static final String HAS_SECTION = "hasSection";
+	public static final String DOCUMENT_SECTION = "DocumentSection";
 	
 	
 	
 	private IOntology ontology;
-	private Terminology anchorTerminology, modifierTerminology;
+	private Terminology anchorTerminology, modifierTerminology,sectionTerminology;
 	//private Map<String,SemanticType> semanticTypeMap;
 	private ConText.ModifierResolver modifierResolver;
 	private Map<IClass,Set<IClass>> compoundAnchorMap;
 	private File ontologyLocation;
+	private Map<String,String> defaultValues;
+	private static int instanceCounter = 1;
 	
 	
 	/**
@@ -191,6 +197,7 @@ public class DomainOntology {
 
 	/**
 	 * get locations of terminology cache
+	 * @param ontologyLocation - location of ontology file
 	 * @return File directory location
 	 */
 	public static File getTerminologyCacheLocation(File ontologyLocation){
@@ -212,6 +219,15 @@ public class DomainOntology {
 		return null;
 	}
 	
+	private File getSectionTerminologyFile(){
+		if(ontologyLocation != null){
+			File file = new File(getTerminologyCacheLocation(ontologyLocation),"Sections.term");
+			return file;
+		}
+		return null;
+	}
+	
+	
 	private File getModifierTerminologyFile(){
 		if(ontologyLocation != null){
 			File file = new File(getTerminologyCacheLocation(ontologyLocation),"Modifiers.term");
@@ -221,6 +237,29 @@ public class DomainOntology {
 	}
 	
 
+	/**
+	 * get document section terminology
+	 * @return section terminology
+	 */
+	public Terminology getSectionTerminology(){
+		if(sectionTerminology == null){
+			File sectionFile = getSectionTerminologyFile();
+			try {
+				// check if there is a cache available
+				if(sectionFile != null && sectionFile.exists()){
+					sectionTerminology = new NobleCoderTerminology(sectionFile);
+				}else{
+					DictionarySectionProcessor.loadDocumentSections(ontology,sectionFile);
+					sectionTerminology =  new NobleCoderTerminology(sectionFile);
+				}
+			} catch (Exception e) {
+				throw new TerminologyError("Unable to load anchor terminology from "+sectionTerminology,e);
+			} 
+		}
+		return sectionTerminology;
+	}
+	
+	
 	/**
 	 * get a terminology of anchors  
 	 * @return anchor terminology
@@ -259,6 +298,10 @@ public class DomainOntology {
 					}
 					// save cache
 					if(anchorFile.exists()){
+						// compact
+						ConceptImporter.getInstance().compact(terminology);
+						
+						// save
 						terminology.save();
 						// reload
 						terminology = new NobleCoderTerminology(anchorFile);
@@ -343,6 +386,10 @@ public class DomainOntology {
 						}
 					}
 					if(modifierFile.exists()){
+						// compact
+						ConceptImporter.getInstance().compact(terminology);
+						
+						//save
 						terminology.save();
 						// reload
 						terminology = new NobleCoderTerminology(modifierFile);
@@ -1077,8 +1124,33 @@ public class DomainOntology {
 	 * @return  unique instnace name
 	 */
 	public String createInstanceName(IClass cls){
-		return cls.getName()+"-"+System.currentTimeMillis()+"-"+((int)(Math.random()*1000));
+		//return cls.getName()+"-"+System.currentTimeMillis()+"-"+((int)(Math.random()*1000));
+		return cls.getName()+"-"+(instanceCounter++);
 	}
+	
+	/**
+	 * get or create default instance from a class
+	 * @param cls - which instance to return
+	 * @return instance to be returned
+	 */
+	public IInstance getDefaultInstance(IClass cls){
+		String name = cls.getName()+"_Instance";
+		IInstance instance = ontology. getInstance(name);
+		if(instance == null)
+			instance = cls.createInstance(name);
+		return instance;
+	}
+	
+	
+	/**
+	 * create a unique instance of a given class with sensible name
+	 * @param cls - from which to create instance
+	 * @return instance to be returned
+	 */
+	public IInstance createInstance(IClass cls){
+		return cls.createInstance(createInstanceName(cls));
+	}
+	
 	
 	/**
 	 * ontology name
@@ -1106,5 +1178,29 @@ public class DomainOntology {
 	public String getName() {
 		return ontology.getName();
 	}
+	
+	
+	/**
+	 * get default values map.
+	 *
+	 * @return the default values
+	 */
+	public Map<String,String> getDefaultValues() {
+		if(defaultValues == null){
+			defaultValues = new LinkedHashMap<String,String>();
+			
+			// go over ALL modifiers
+			for(IClass cls: ontology.getClass(MODIFIER).getSubClasses()){
+				if(ConText.isDefaultValue(cls)){
+					for(IClass parent: cls.getDirectSuperClasses()){
+						defaultValues.put(parent.getName(),cls.getName());
+					}
+				}
+			}
+		}
+		return defaultValues;
+	}
+	
+	
 	
 }

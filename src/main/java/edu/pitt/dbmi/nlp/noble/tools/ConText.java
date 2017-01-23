@@ -481,7 +481,7 @@ public class ConText implements Processor<Sentence> {
 	 * @param cls the cls
 	 * @return true, if is default value
 	 */
-	private static boolean isDefaultValue(IClass cls){
+	public static boolean isDefaultValue(IClass cls){
 		for(Object o: cls.getDirectNecessaryRestrictions()){
 			if(o instanceof IRestriction){
 				IRestriction r = (IRestriction) o;
@@ -541,7 +541,7 @@ public class ConText implements Processor<Sentence> {
 	 * @return the default values
 	 * @throws TerminologyException the terminology exception
 	 */
-	private Map<String,String> getDefaultValues() throws TerminologyException{
+	public Map<String,String> getDefaultValues() throws TerminologyException{
 		if(defaultValues == null){
 			defaultValues = new LinkedHashMap<String,String>();
 			for(String type: MODIFIER_TYPES){
@@ -554,6 +554,14 @@ public class ConText implements Processor<Sentence> {
 		return defaultValues;
 	}
 	
+	/**
+	 * overwrite default values map.
+	 * if not set, the mapping will be re-generated
+	 * @param values - default vaulues map
+	 */
+	public void setDefaultValues(Map<String,String> values){
+		defaultValues = values;
+	}
 	
 	
 	
@@ -966,7 +974,7 @@ public class ConText implements Processor<Sentence> {
 	 * get modifier value for a given mention.
 	 *
 	 * @param type the type
-	 * @param c the c
+	 * @param m the mention
 	 * @return the modifier value
 	 */
 	public static String getModifierValue(String type, Mention m) {
@@ -1042,12 +1050,19 @@ public class ConText implements Processor<Sentence> {
 		Sentence sentence = target.getSentence();
 		Spannable section = sentence.getSection();
 		Spannable paragraph   = sentence.getParagraph();
+		
+		// if paragraph not there, make it a section
 		if(paragraph == null)
 			paragraph = section;
 		
-		// if no section even, just give up
-		if(section == null)
+		// if still no paragraph (as section), just give up
+		if(paragraph == null)
 			return  Collections.EMPTY_LIST;
+		
+		// if we actually don't have a section defined, then make it a parapgraph as we know that 
+		// think is defined already
+		if(section == null)
+			section = paragraph;
 		
 		// create a mapping of candidate modifiers for each type
 		Map<String,List<Modifier>> candidateModifiers = new HashMap<String, List<Modifier>>();

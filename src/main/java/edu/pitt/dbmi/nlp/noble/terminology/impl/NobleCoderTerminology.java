@@ -635,7 +635,7 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 	 * persisted on disk, or will be persisted on disk from file.
 	 *
 	 * @param dir the dir
-	 * @param boolean is readonly mode
+	 * @param readonly - boolean is readonly mode
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public NobleCoderTerminology(File dir, boolean readonly) throws IOException{

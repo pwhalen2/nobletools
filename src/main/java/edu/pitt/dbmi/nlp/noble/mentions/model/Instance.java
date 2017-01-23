@@ -161,7 +161,13 @@ public class Instance {
 		if(instance == null){
 			// check if we have an actual mention or some generic default value w/out a mention
 			if(mention != null){
-				instance = cls.createInstance(domainOntology.createInstanceName(cls));
+				
+				// if instance is DocumentSection, just make a default one
+				if(domainOntology.isTypeOf(cls,DomainOntology.DOCUMENT_SECTION)){
+					instance = domainOntology.getDefaultInstance(cls);
+				}else{
+					instance = domainOntology.createInstance(cls);
+				}
 				
 				// if instance is modifier, but not linguistic modifier (see if we neet to set some other properties
 				if(domainOntology.isTypeOf(cls,DomainOntology.MODIFIER) && !domainOntology.isTypeOf(cls,DomainOntology.LINGUISTIC_MODIFER)){
@@ -180,6 +186,7 @@ public class Instance {
 						}
 					}
 				}
+				
 			}else if(modifier != null){
 				instance = domainOntology.getOntology().getInstance(cls.getName()+"_default");
 				if(instance == null)

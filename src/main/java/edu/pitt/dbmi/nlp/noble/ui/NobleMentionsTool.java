@@ -489,10 +489,14 @@ public class NobleMentionsTool implements ActionListener{
 				
 				// create just-in-time instance file
 				try {
+					long t = System.currentTimeMillis();
+					progress("loading "+ontName+" ontology .. ");
 					ontology = new DomainOntology(ontology.getOntology().getLocation());
+					progress((System.currentTimeMillis()-t)+ " ms\n");
 				} catch (IOntologyException e1) {
 					e1.printStackTrace();
 				}
+				
 				
 				// check if it is valid
 				if(!ontology.isOntologyValid()){
@@ -562,6 +566,22 @@ public class NobleMentionsTool implements ActionListener{
 	 * @param out the out
 	 */
 	public void process(DomainOntology ontology,String in, String out){	
+		// preload terminologies
+		long t = System.currentTimeMillis();
+		progress("loading anchors .. ");
+		ontology.getAnchorTerminology();
+		progress((System.currentTimeMillis()-t)+" ms\n");
+		
+		t = System.currentTimeMillis();
+		progress("loading modifiers .. ");
+		ontology.getModifierTerminology();
+		progress((System.currentTimeMillis()-t)+" ms\n");
+		
+		t = System.currentTimeMillis();
+		progress("loading sections .. ");
+		ontology.getSectionTerminology();
+		progress((System.currentTimeMillis()-t)+" ms\n");
+		
 		// start a new instance of noble mentions
 		NobleMentions noble = new NobleMentions(ontology);
 		

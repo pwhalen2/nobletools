@@ -8,11 +8,15 @@ import java.util.*;
 
 import edu.pitt.dbmi.nlp.noble.coder.NobleCoder;
 import edu.pitt.dbmi.nlp.noble.coder.model.*;
+import edu.pitt.dbmi.nlp.noble.coder.processor.DictionarySectionProcessor;
+import edu.pitt.dbmi.nlp.noble.coder.processor.ParagraphProcessor;
 import edu.pitt.dbmi.nlp.noble.coder.processor.ReportProcessor;
+import edu.pitt.dbmi.nlp.noble.coder.processor.SentenceProcessor;
 import edu.pitt.dbmi.nlp.noble.mentions.model.Instance;
 import edu.pitt.dbmi.nlp.noble.mentions.model.AnnotationVariable;
 import edu.pitt.dbmi.nlp.noble.mentions.model.Composition;
 import edu.pitt.dbmi.nlp.noble.mentions.model.DomainOntology;
+import edu.pitt.dbmi.nlp.noble.terminology.Concept;
 import edu.pitt.dbmi.nlp.noble.terminology.TerminologyException;
 import edu.pitt.dbmi.nlp.noble.tools.ConText;
 import edu.pitt.dbmi.nlp.noble.tools.TextTools;
@@ -47,19 +51,33 @@ public class NobleMentions implements Processor<Composition>{
 	public void setDomainOntology(DomainOntology domainOntology) {
 		this.domainOntology = domainOntology;
 		
+		
+		// initialize document processor
+		List<Processor<Document>> processors = new ArrayList<Processor<Document>>();
+		processors.add(new SentenceProcessor());
+		processors.add(new DictionarySectionProcessor(domainOntology.getSectionTerminology()));
+		processors.add(new ParagraphProcessor());
+		ReportProcessor reportProcessor = new ReportProcessor(processors);
+		
+		
 		// initialize noble coder
 		coder = new NobleCoder(domainOntology.getAnchorTerminology());
 		coder.setAcronymExpansion(false);
 		coder.setContextDetection(true);
-		coder.setDocumentProcessor(new ReportProcessor());
+		coder.setDocumentProcessor(reportProcessor);
 		
 		// initialize context
 		ConText conText = new ConText(domainOntology.getModifierTerminology());
 		conText.setModifierResolver(domainOntology.getModifierResolver());
+		conText.setDefaultValues(domainOntology.getDefaultValues());
 		coder.setConText(conText);
+		
 		//coder.setDocumentProcessor(documentProcessor);
 	}
 
+	
+	
+	
 	/**
 	 * process document represented as a string.
 	 *

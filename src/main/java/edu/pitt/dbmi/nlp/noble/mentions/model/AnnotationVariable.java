@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import edu.pitt.dbmi.nlp.noble.coder.model.Mention;
 import edu.pitt.dbmi.nlp.noble.coder.model.Modifier;
+import edu.pitt.dbmi.nlp.noble.coder.model.Section;
 import edu.pitt.dbmi.nlp.noble.ontology.IClass;
 import edu.pitt.dbmi.nlp.noble.ontology.IInstance;
 import edu.pitt.dbmi.nlp.noble.ontology.IOntology;
@@ -74,19 +75,6 @@ public class AnnotationVariable extends Instance {
 		this.annotationType = annotationType;
 	}
 
-	
-	/**
-	 * get or create annotation type instance
-	 * @return an annotation instance
-	 */
-	private IInstance getAnnotationTypeInstance(){
-		IOntology ont = domainOntology.getOntology();
-		IClass cls = ont.getClass(getAnnotationType());
-		IInstance inst = ont.getInstance(cls.getName()+"Instance");
-		if(inst == null)
-			inst = cls.createInstance(cls.getName()+"Instance");
-		return inst;
-	}
 
 	/**
 	 * get an instance that represents this annotation variable
@@ -96,15 +84,24 @@ public class AnnotationVariable extends Instance {
 		if(instance == null){
 			// create an instance
 			IOntology ont = cls.getOntology();
-			instance = cls.createInstance(domainOntology.createInstanceName(cls));
+			instance = domainOntology.createInstance(cls);
 			
 			// add anchor
 			instance.addPropertyValue(ont.getProperty(DomainOntology.HAS_ANCHOR),anchor.getInstance());
 			addModifierInstance(DomainOntology.HAS_ANCHOR,anchor);
 			
 			// add type
-			instance.addPropertyValue(ont.getProperty(DomainOntology.HAS_ANNOTATION_TYPE),getAnnotationTypeInstance());
+			IClass annotationCls = ont.getClass(getAnnotationType());
+			instance.addPropertyValue(ont.getProperty(DomainOntology.HAS_ANNOTATION_TYPE),domainOntology.getDefaultInstance(annotationCls));
 			addModifierInstance(DomainOntology.HAS_ANNOTATION_TYPE,new Instance(domainOntology,Modifier.getModifier(DomainOntology.HAS_ANNOTATION_TYPE,getAnnotationType())));
+			
+			// add section if available
+			Section section = mention.getSentence().getSection();
+			if(section != null && section.getHeader() != null){
+				Instance sectionInstance = new Instance(domainOntology,section.getHeader());
+				instance.addPropertyValue(ont.getProperty(DomainOntology.HAS_SECTION), sectionInstance.getInstance());
+				addModifierInstance(DomainOntology.HAS_SECTION,sectionInstance);
+			}
 			
 			
 			// instantiate available modifiers

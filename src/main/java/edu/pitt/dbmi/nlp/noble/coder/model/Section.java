@@ -11,7 +11,7 @@ public class Section extends Text{
 	private List<Sentence> sentences;
 	private Section parent;
 	private List<Section> sections;
-	
+	private Mention header;
 	
 	public Section(){}
 	
@@ -74,6 +74,9 @@ public class Section extends Text{
 	}
 	*/
 
+	
+	
+	
 	/**
 	 * Gets the body.
 	 *
@@ -86,6 +89,25 @@ public class Section extends Text{
 			return getDocument().getText().substring(bodyOffset,end);
 		return null;
 	}
+
+	
+	/**
+	 * get header mention
+	 * @return mention object if set
+	 */
+	public Mention getHeader() {
+		return header;
+	}
+
+
+	/**
+	 * set header mention
+	 * @param header mention
+	 */
+	public void setHeader(Mention header) {
+		this.header = header;
+	}
+
 
 	/**
 	 * Sets the body.
