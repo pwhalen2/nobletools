@@ -308,6 +308,7 @@ public class TermFilter {
 				AcronymDetector.Acronym acr = AcronymDetector.extractAcronym(term);
 				if (acr != null) {
 					terms.add(acr.longForm);
+					//TODO: perhaps don't do that as it adds polysemy on grand scale
 					terms.add(acr.shortForm);
 					return terms;
 				}

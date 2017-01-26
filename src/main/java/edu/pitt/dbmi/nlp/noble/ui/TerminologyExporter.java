@@ -19,6 +19,7 @@ import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -70,6 +71,7 @@ import edu.pitt.dbmi.nlp.noble.terminology.SemanticType;
 import edu.pitt.dbmi.nlp.noble.terminology.Source;
 import edu.pitt.dbmi.nlp.noble.terminology.Terminology;
 import edu.pitt.dbmi.nlp.noble.terminology.TerminologyException;
+import edu.pitt.dbmi.nlp.noble.tools.TermFilter;
 import edu.pitt.dbmi.nlp.noble.ui.widgets.DynamicList;
 import edu.pitt.dbmi.nlp.noble.ui.widgets.ResourceCellRenderer;
 
@@ -102,7 +104,7 @@ public class TerminologyExporter implements ActionListener {
 	private JList rootList,semTypeList;
 	private DynamicList semanticTypeList;
 	private JComboBox<Terminology> metathesaurusList; //terminologyList,
-	private JCheckBox useMetaInfo,useMapping,useTermCore,depthCheck;
+	private JCheckBox useMetaInfo,useMapping,useTermCore,depthCheck,termFilter;
 	private JTextField outputFile,recursionDepth;
 	private JTextArea console;
 	private JPanel statusPanel,semanticTypePanel,mappingPanel;
@@ -360,6 +362,14 @@ public class TerminologyExporter implements ActionListener {
 				useParentText.setEditable(useParent.isSelected());
 			}
 		});
+		
+		c.gridy++;c.gridx = 0;
+		termFilter = new JCheckBox("Filter bad synonyms",false);
+		termFilter.setToolTipText("<html>Suppress problematic synonyms using rules described in <p><b>Hettne, Kristina M., et al.</b> \"<i>Rewriting and " + 
+				" suppressing UMLS terms <br>for improved biomedical term identification.</i>\" Journal " + 
+				" of biomedical semantics 1.1 (2010): 1. </p>");
+		advanced.add(termFilter,c);
+		
 		
 		leftPanel.add(advanced);
 	
@@ -710,6 +720,7 @@ public class TerminologyExporter implements ActionListener {
 					setBusy(false);
 					return;
 				}
+				boolean filterTerms = termFilter.isSelected();
 				int depth = Integer.MAX_VALUE;
 				if(depthCheck.isSelected())
 					depth = Integer.parseInt(recursionDepth.getText());
@@ -737,7 +748,7 @@ public class TerminologyExporter implements ActionListener {
 							root = cls;
 						}
 					}
-					export(null,umls,rootFilter,semanticTypeFilter,root,depth);
+					export(null,umls,rootFilter,semanticTypeFilter,root,depth,termFilter.isSelected());
 					if(ontologyFile.exists()){
 						ont.save();
 					}else{
@@ -812,7 +823,7 @@ public class TerminologyExporter implements ActionListener {
 	 * @throws Exception the exception
 	 */
 	public void export(Terminology term, Terminology umls,List<Concept> rootFilter, List<SemanticType> semanticTypeFilter,IClass root) throws Exception {
-		export(term,umls,rootFilter,semanticTypeFilter,root, Integer.MAX_VALUE);
+		export(term,umls,rootFilter,semanticTypeFilter,root, Integer.MAX_VALUE,false);
 	}
 	
 	/**
@@ -826,7 +837,7 @@ public class TerminologyExporter implements ActionListener {
 	 * @param depth the depth
 	 * @throws Exception the exception
 	 */
-	public void export(Terminology term, Terminology umls,List<Concept> rootFilter, List<SemanticType> semanticTypeFilter,IClass root,int depth) throws Exception {
+	public void export(Terminology term, Terminology umls,List<Concept> rootFilter, List<SemanticType> semanticTypeFilter,IClass root,int depth,boolean filterTerms) throws Exception {
 		IOntology ont = root.getOntology();
 		
 		// import term if necessary
@@ -836,7 +847,7 @@ public class TerminologyExporter implements ActionListener {
 		exporting = true;
 		List<Concept> roots = (rootFilter.isEmpty())?Arrays.asList(term.getRootConcepts()):rootFilter;
 		for(Concept c: roots){
-			exportConcept(c,umls,semanticTypeFilter,"",root,depth);
+			exportConcept(c,umls,semanticTypeFilter,"",root,depth,filterTerms);
 		}
 		exporting = false;
 	}
@@ -891,7 +902,7 @@ public class TerminologyExporter implements ActionListener {
 	 * @param depth the depth
 	 * @throws Exception the exception
 	 */
-	private void exportConcept(Concept c,Terminology umls, List<SemanticType> semanticTypeFilter,String prefix, IClass parent, int depth) throws Exception {
+	private void exportConcept(Concept c,Terminology umls, List<SemanticType> semanticTypeFilter,String prefix, IClass parent, int depth, boolean filterTerms) throws Exception {
 		// first make sure that it fits the filter
 		if(c == null || isFilteredOut(c, semanticTypeFilter) || depth  == 0){
 			return;
@@ -909,9 +920,9 @@ public class TerminologyExporter implements ActionListener {
 		// create class
 		cls = parent.createSubClass(clsName);
 		cls.addLabel(c.getName());
-		addConceptInfo(c, cls);
+		addConceptInfo(c, cls,filterTerms);
 		if(umls != null)
-			addConeptInfoFromUMLS(cls,umls);
+			addConeptInfoFromUMLS(cls,umls,filterTerms);
 		
 		// output
 		console.append(prefix+c.getName()+"\n");
@@ -923,7 +934,7 @@ public class TerminologyExporter implements ActionListener {
 		
 		// now go into children
 		for(Concept child: c.getChildrenConcepts()){
-			exportConcept(child,umls,semanticTypeFilter,"  "+prefix,cls,depth-1);
+			exportConcept(child,umls,semanticTypeFilter,"  "+prefix,cls,depth-1,filterTerms);
 		}
 	}
 	
@@ -965,12 +976,12 @@ public class TerminologyExporter implements ActionListener {
 	 * @param umls the umls
 	 * @throws TerminologyException the terminology exception
 	 */
-	private void addConeptInfoFromUMLS(IClass cls, Terminology umls) throws TerminologyException{
+	private void addConeptInfoFromUMLS(IClass cls, Terminology umls, boolean filterTerms) throws TerminologyException{
 		String name = cls.getLabels()[0];
 		if(umls != null){
 			for(Concept c: umls.search(name)){
 				if(c.getMatchedTerm().equals(name)){
-					addConceptInfo(c, cls);
+					addConceptInfo(c, cls,filterTerms);
 				}
 			}
 		}
@@ -982,7 +993,7 @@ public class TerminologyExporter implements ActionListener {
 	 * @param c the c
 	 * @param cls the cls
 	 */
-	private void addConceptInfo(Concept c, IClass cls) {
+	private void addConceptInfo(Concept c, IClass cls, boolean filterTerms) {
 		IOntology ont = cls.getOntology();
 		
 		Map<String,String> map = getPropertyMapping();
@@ -1012,8 +1023,16 @@ public class TerminologyExporter implements ActionListener {
 		cls.addPropertyValue(prefTerm,c.getName());
 		
 		
+		// optionally filter synonyms
+		Collection<String> synonyms = null;
+		if(filterTerms){
+			synonyms = TermFilter.filter(c.getSynonyms());
+		}else{
+			synonyms = Arrays.asList(c.getSynonyms());
+		}
+		
 		// add synonyms
-		for(String s: c.getSynonyms()){
+		for(String s: synonyms){
 			if(!cls.hasPropetyValue(synonym, s))
 				cls.addPropertyValue(synonym, s);
 		}

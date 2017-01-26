@@ -46,6 +46,7 @@ import edu.pitt.dbmi.nlp.noble.terminology.TerminologyException;
 import edu.pitt.dbmi.nlp.noble.terminology.impl.NobleCoderTerminology;
 import edu.pitt.dbmi.nlp.noble.terminology.impl.NobleCoderTerminology.WordStat;
 import edu.pitt.dbmi.nlp.noble.terminology.impl.NobleCoderUtils;
+import edu.pitt.dbmi.nlp.noble.tools.TermFilter;
 import edu.pitt.dbmi.nlp.noble.tools.TextTools;
 import static edu.pitt.dbmi.nlp.noble.terminology.impl.NobleCoderUtils.*;
 import static edu.pitt.dbmi.nlp.noble.terminology.impl.NobleCoderTerminology.*;
@@ -62,7 +63,7 @@ public class ConceptImporter {
 	
 	private PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 	private static ConceptImporter instance;
-	private boolean inMemory, compact;
+	private boolean inMemory, compact, filterTerms;
 	
 	
 	
@@ -131,6 +132,26 @@ public class ConceptImporter {
 	 */
 	public void setCompact(boolean compact) {
 		this.compact = compact;
+	}
+
+	
+	/**
+	 * is term filtering enabled
+	 * @return true/false
+	 */
+	public boolean isFilterTerms() {
+		return filterTerms;
+	}
+
+	/**
+	 *  Enable filtering of UMLS terms to remove bady synonymy This
+	 * implementation is based on Hettne, Kristina M., et al. "Rewriting and
+	 * suppressing UMLS terms for improved biomedical term identification." Journal
+	 * of biomedical semantics 1.1 (2010): 1. Created by tseytlin on 12/11/16.
+	 * @param filterTerms true/false
+	 */
+	public void setFilterTerms(boolean filterTerms) {
+		this.filterTerms = filterTerms;
 	}
 
 	/**
@@ -1398,8 +1419,23 @@ public class ConceptImporter {
 			}
 		}
 		
+		//optionally reduce the set of terms
+		if(filterTerms){
+			Set<String> synonyms = TermFilter.filter(c.getSynonyms());
+			c.setSynonyms(synonyms.toArray(new String [0]));
+		}
+		
 		// get list of terms
-		Set<String> terms = NobleCoderUtils.getTerms(terminology,c);
+		Set<String> terms = null;
+	
+		// if we got all synonyms cleaned, we should discount name as well that will get pulled in
+		if(filterTerms && c.getSynonyms().length == 0){
+			terms = Collections.EMPTY_SET;
+		}else{
+			terms = NobleCoderUtils.getNormalizedTerms(terminology,c);
+		}
+		
+		// go over terms
 		for(String term: terms){
 			// check if term is a regular expression
 			if(NobleCoderUtils.isRegExp(term)){
@@ -1517,27 +1553,4 @@ public class ConceptImporter {
 		storage.save();
 	
 	}
-	
-	/**
-	 * The main method.
-	 *
-	 * @param args the arguments
-	 * @throws Exception the exception
-	 */
-	public static void main(String[] args) throws Exception {
-		/*File dir = new File("/home/tseytlin/Data/Coropora/craft-1.0/ontologies");
-		//File out = new File("/home/tseytlin/Data/Coropora/craft-1.0/terminologies");
-		File out = new File("/home/tseytlin/Data/Coropora/CRAFT_ORF_update");
-		//File out = new File("/home/tseytlin/Data/Coropora/CRAFT_RRF_update");
-		for(File file: dir.listFiles()){
-			if(file.getName().endsWith(".obo")){
-				System.out.println("converting "+file.getName()+" ..");
-				Collection<Concept> concepts = ConceptImporter.getInstance().loadOBO(file).values();
-				//ConceptExporter.getInstances().exportRRF(concepts,out);
-				ConceptExporter.getInstances().exportORF(concepts,out);
-			}
-		}*/
-
-	}
-
 }

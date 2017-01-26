@@ -80,7 +80,7 @@ public class TerminologyImporter implements ItemListener, ActionListener, Proper
 	private JComboBox inputFormats,metathesaurusList;
 	private JTextField inputLocation,outputLocation,semanticTypeList,sourceList,languageList,memSize;
 	private JTextArea console;
-	private JCheckBox useStemmer,stripDigits,compact,suppressObsoleteTerms,useMetaInfo; //inMemory, truncateURI
+	private JCheckBox useStemmer,stripDigits,compact,suppressObsoleteTerms,useMetaInfo,termFilter; //inMemory, truncateURI
 	private JPanel buttonPanel,commonOptions, rrfOptions, owlOptions, txtOptions;
 	private JDialog bioportalDialog;
 	private OntologyImporter importer;
@@ -356,7 +356,6 @@ public class TerminologyImporter implements ItemListener, ActionListener, Proper
 			    	args.add("-useMeta");
 			    	args.add(""+metathesaurusList.getSelectedItem());
 			    }
-			    	
 			    
 			    if(compact != null && compact.isSelected())
 			    	args.add("-compact");
@@ -368,6 +367,10 @@ public class TerminologyImporter implements ItemListener, ActionListener, Proper
 			    
 			    if(suppressObsoleteTerms != null && suppressObsoleteTerms.isSelected())
 			    	args.add("-suppressObsoleteTerms");
+			    
+			    if(termFilter.isSelected())
+			    	args.add("-filterTerms");
+			    
 			    
 			    // execute import
 			    execute(args);
@@ -492,6 +495,12 @@ public class TerminologyImporter implements ItemListener, ActionListener, Proper
 			suppressObsoleteTerms = new JCheckBox("Suprress obsolete terms",true);
 			suppressObsoleteTerms.setToolTipText("Do not include terms that are marked 'Obsolete' in a dictionary");
 			
+			termFilter = new JCheckBox("Filter bad synonyms",false);
+			termFilter.setToolTipText("<html>Suppress problematic synonyms using rules described in <p><b>Hettne, Kristina M., et al.</b> \"<i>Rewriting and " + 
+					" suppressing UMLS terms <br>for improved biomedical term identification.</i>\" Journal " + 
+					" of biomedical semantics 1.1 (2010): 1. </p>");
+			
+			
 			commonOptions.add(useStemmer);
 			commonOptions.add(stripDigits);
 			commonOptions.add(createAncestors);
@@ -499,6 +508,7 @@ public class TerminologyImporter implements ItemListener, ActionListener, Proper
 			commonOptions.add(compact);
 			//commonOptions.add(inMemory);
 			commonOptions.add(suppressObsoleteTerms);
+			commonOptions.add(termFilter);
 			
 		}
 		return commonOptions;
@@ -782,6 +792,7 @@ public class TerminologyImporter implements ItemListener, ActionListener, Proper
 		//boolean inmem = params.contains("-inMem");
 		boolean hmwit = params.contains("-maxWordsInTerm");
 		boolean suppressObsoleteTerms = params.contains("-suppressObsoleteTerms");
+		boolean filterTerms = params.contains("-filterTerms");
 		
 		// remove previous listener
 		ConceptImporter.getInstance().removePropertyChangeListener(this);
@@ -798,7 +809,7 @@ public class TerminologyImporter implements ItemListener, ActionListener, Proper
 		if(compact)
 			ConceptImporter.getInstance().setCompact(compact);
 		ConceptImporter.getInstance().setInMemory(false);
-		
+		ConceptImporter.getInstance().setFilterTerms(filterTerms);
 	
 		// normalize meta info
 		Terminology metaTerm = null;

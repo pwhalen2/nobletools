@@ -284,8 +284,8 @@ public class NobleCoderUtils {
 	 * @param cls the cls
 	 * @return the terms
 	 */
-	public static Set<String> getTerms(NobleCoderTerminology term,Concept cls){
-		return getTerms(term,cls,term.isStemWords());
+	public static Set<String> getNormalizedTerms(NobleCoderTerminology term,Concept cls){
+		return getNormalizedTerms(term,cls,term.isStemWords());
 	}
 	
 	/**
@@ -296,7 +296,7 @@ public class NobleCoderUtils {
 	 * @param stem the stem
 	 * @return the terms
 	 */
-	public static Set<String> getTerms(NobleCoderTerminology term, Concept cls, boolean stem){
+	public static Set<String> getNormalizedTerms(NobleCoderTerminology term, Concept cls, boolean stem){
 		if(cls == null)
 			return Collections.EMPTY_SET;
 		

@@ -559,17 +559,22 @@ public class DomainOntology {
 	public List<Instance> getAnchors(List<Mention> mentions) {
 		List<Instance> anchors = new ArrayList<Instance>();
 
+		// add compound anchors as well 
+		Set<Mention> componentAnchors = new HashSet<Mention>();
+		for(Instance a: getCompoundAnchors(mentions)){
+			anchors.add(a);
+			componentAnchors.addAll(a.getCompoundComponents());
+		}
+		
 		// go all mentions and create anchors for them
 		for(Mention m: mentions){
-			if(isAnchor(m)){
+			if(isAnchor(m) && componentAnchors.contains(m)){
 				anchors.add(new Instance(this,m));
 			}
 		}
-				
-		// add compound anchors as well 
-		for(Instance a: getCompoundAnchors(mentions)){
-			anchors.add(a);
-		}
+		
+		
+		
 		return anchors;
 	}
 
@@ -672,7 +677,10 @@ public class DomainOntology {
 					if(compoundCls.getEquivalentRestrictions().evaluate(inst)){
 						Mention mention = createCompoundAnchorMention(compoundCls, possibleMentionComponents);
 						mentionMap.put(compoundCls,mention);
-						compound.add( new Instance(this,mention,inst));
+						
+						Instance compoundInstance = new Instance(this,mention,inst);
+						compoundInstance.setCompoundComponents(possibleMentionComponents);
+						compound.add(compoundInstance );
 						foundCompounds.add(compoundCls);
 						change = true;
 					}else{

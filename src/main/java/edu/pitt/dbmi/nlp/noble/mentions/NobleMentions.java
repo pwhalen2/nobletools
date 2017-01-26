@@ -114,7 +114,9 @@ public class NobleMentions implements Processor<Composition>{
 					
 					// associate with global modifiers
 					for(Modifier modifier: coder.getConText().getMatchingModifiers(globalModifiers,var.getAnchor().getMention())){
-						var.addModifier(modifier);
+						// only add it if we don't have a "local" sentence modifier
+						if(!var.hasModifierType(modifier.getType()))
+							var.addModifier(modifier);
 					}
 					
 					//check if property is fully satisfied

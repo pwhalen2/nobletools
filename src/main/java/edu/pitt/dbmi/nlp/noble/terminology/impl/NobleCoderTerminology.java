@@ -1115,7 +1115,7 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 		}
 
 		// get list of terms
-		Set<String> terms = getTerms(this, c);
+		Set<String> terms = getNormalizedTerms(this, c);
 		for (String term : terms) {
 			// check if term is a regular expression
 			if (isRegExp(term)) {
@@ -1182,7 +1182,7 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 		// find concept terms
 		if(storage.getConceptMap().containsKey(c.getCode()))
 			c = convertConcept(storage.getConceptMap().get(c.getCode()));
-		Set<String> terms = getTerms(this,c);
+		Set<String> terms = getNormalizedTerms(this,c);
 		// remove all terms and words
 		for(String term: terms){
 			storage.getTermMap().remove(term);

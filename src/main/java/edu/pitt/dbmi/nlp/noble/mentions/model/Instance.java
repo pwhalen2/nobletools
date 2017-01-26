@@ -31,6 +31,8 @@ public class Instance {
 	protected List<Modifier> modifiers;
 	protected Map<String,Set<Instance>> modifierInstances;
 	protected Set<Annotation> annotations;
+	protected List<Mention> compoundComponents;
+	
 	
 	/**
 	 * initilize an instance
@@ -97,6 +99,24 @@ public class Instance {
 		return modifier;
 	}
 	
+	/**
+	 * get mentions that might make up this instance
+	 * @return list of component mentions
+	 */
+	public List<Mention> getCompoundComponents() {
+		if(compoundComponents == null)
+			compoundComponents = new ArrayList<Mention>();
+		return compoundComponents;
+	}
+
+	/**
+	 * set compound component mentions
+	 * @param compoundComponents - list of components
+	 */
+	public void setCompoundComponents(List<Mention> compoundComponents) {
+		this.compoundComponents = compoundComponents;
+	}
+
 	/**
 	 * set modifier object
 	 * @param modifier object 
@@ -287,6 +307,15 @@ public class Instance {
 		getModifiers().add(m);
 		reset();
 	}
+	
+	public boolean hasModifierType(String type){
+		for(Modifier m: getModifiers()){
+			if(m.getType().equals(type))
+				return true;
+		}
+		return false;
+	}
+	
 
 	
 	/**

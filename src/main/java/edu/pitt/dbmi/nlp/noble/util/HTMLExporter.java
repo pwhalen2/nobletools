@@ -851,11 +851,12 @@ public class HTMLExporter {
 		result.append("</p>");
 		
 		// create list of rejected variables
-		result.append("<p><b><a href=\"\" onclick=\"showHide('failedVariables'); return false\" >Rejected Annotations</a> ..</b>");
-		result.append("<div id=\"failedVariables\" style=\"visibility: hidden\">");
-		result.append(codeVariables(doc.getRejectedAnnotationVariables()));
-		result.append("</div></p>");
-		
+		if(!doc.getRejectedAnnotationVariables().isEmpty()){
+			result.append("<p><b><a href=\"\" onclick=\"showHide('failedVariables'); return false\" >Rejected Annotations</a> ..</b>");
+			result.append("<div id=\"failedVariables\" style=\"visibility: hidden\">");
+			result.append(codeVariables(doc.getRejectedAnnotationVariables()));
+			result.append("</div></p>");
+		}
 		
 		
 		// get report representation and cap protocol

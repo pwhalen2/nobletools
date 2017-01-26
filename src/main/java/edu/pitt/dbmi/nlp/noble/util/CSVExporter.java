@@ -3,6 +3,7 @@ package edu.pitt.dbmi.nlp.noble.util;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.Writer;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -151,26 +152,35 @@ public class CSVExporter {
 		BufferedWriter writer = getCSVWriterForComposition(outputFile);
 		int n = 1;
 		for(AnnotationVariable var: doc.getAnnotationVariables()){
-			for(String prop: var.getModifierInstances().keySet()){
-				for(Instance inst: var.getModifierInstances().get(prop)){
-					StringBuffer value = new StringBuffer(inst.getLabel());
-					StringBuffer valueProp = new StringBuffer();
-					if(!DomainOntology.HAS_ANCHOR.equals(prop)){
-						for(Instance ii: inst.getModifierInstanceList()){
-							valueProp.append(ii.getLabel()+", ");
-						}
-						if(valueProp.length() > 2){
-							valueProp.delete(valueProp.length()-2,valueProp.length());
-						}
-					}
-					writer.write(doc.getTitle()+S+n+S+var.getLabel()+S+prop+S+value+S+valueProp+S+getAnnotations(inst.getAnnotations())+"\n");
-				}
-			}
-			n ++;
+			write(var,doc.getTitle(),"Accepted",n++,writer);
+		}
+		for(AnnotationVariable var: doc.getRejectedAnnotationVariables()){
+			write(var,doc.getTitle(),"Rejected",n++,writer);
 		}
 		
 		writer.flush();
 	}
+	
+	
+	private void write(AnnotationVariable var, String docName, String type, int n, Writer writer) throws Exception {
+		for(String prop: var.getModifierInstances().keySet()){
+			for(Instance inst: var.getModifierInstances().get(prop)){
+				StringBuffer value = new StringBuffer(inst.getLabel());
+				StringBuffer valueProp = new StringBuffer();
+				if(!DomainOntology.HAS_ANCHOR.equals(prop)){
+					for(Instance ii: inst.getModifierInstanceList()){
+						valueProp.append(ii.getLabel()+", ");
+					}
+					if(valueProp.length() > 2){
+						valueProp.delete(valueProp.length()-2,valueProp.length());
+					}
+				}
+				writer.write(docName+S+type+S+n+S+var.getLabel()+S+prop+S+value+S+valueProp+S+getAnnotations(inst.getAnnotations())+"\n");
+			}
+		}
+	}
+	
+	
 	
 	/**
 	 * get a list of annotations
@@ -254,7 +264,7 @@ public class CSVExporter {
 	private BufferedWriter getCSVWriterForComposition(File out) throws Exception {
 		if(csvWriter == null){
 			csvWriter = new BufferedWriter(new FileWriter(out));
-			csvWriter.write("Document"+S+"Id"+S+"Annotation Variable"+S+"Property"+S+"Value"+S+"Value Properies"+S+"Annotations\n");
+			csvWriter.write("Document"+S+"Type"+S+"Id"+S+"Annotation Variable"+S+"Property"+S+"Value"+S+"Value Properies"+S+"Annotations\n");
 		}
 		return csvWriter;
 	}
