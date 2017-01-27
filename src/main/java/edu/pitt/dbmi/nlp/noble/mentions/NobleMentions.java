@@ -54,8 +54,8 @@ public class NobleMentions implements Processor<Composition>{
 		
 		// initialize document processor
 		List<Processor<Document>> processors = new ArrayList<Processor<Document>>();
-		processors.add(new SentenceProcessor());
 		processors.add(new DictionarySectionProcessor(domainOntology.getSectionTerminology()));
+		processors.add(new SentenceProcessor());
 		processors.add(new ParagraphProcessor());
 		ReportProcessor reportProcessor = new ReportProcessor(processors);
 		
