@@ -568,12 +568,10 @@ public class DomainOntology {
 		
 		// go all mentions and create anchors for them
 		for(Mention m: mentions){
-			if(isAnchor(m) && componentAnchors.contains(m)){
+			if(isAnchor(m) && !componentAnchors.contains(m)){
 				anchors.add(new Instance(this,m));
 			}
 		}
-		
-		
 		
 		return anchors;
 	}

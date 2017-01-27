@@ -321,7 +321,8 @@ public class HTMLExporter {
 		for(String type: Arrays.asList(
 				ConText.MODIFIER_TYPE_CERTAINTY,	ConText.MODIFIER_TYPE_POLARITY,
 				ConText.MODIFIER_TYPE_EXPERIENCER,ConText.MODIFIER_TYPE_TEMPORALITY)){
-			st.append("\t"+type+" :\t"+m.getModifierValue(type)+"\n");
+			if(m.getModifierValue(type) != null)
+				st.append("\t"+type+" :\t"+m.getModifierValue(type)+"\n");
 		}
 		
 		return st.toString();
@@ -702,8 +703,8 @@ public class HTMLExporter {
 		htmlWriter.write("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">");
 		htmlWriter.write("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
 		htmlWriter.write("<head><title>Report Processor Output</title><script type=\"text/javascript\">");
-		htmlWriter.write("function h(id){for(i=0;i<id.length;i++){document.getElementById(id[i]).style.backgroundColor=\"yellow\";}}");
-		htmlWriter.write("function u(id){for(i=0;i<id.length;i++){document.getElementById(id[i]).style.backgroundColor=\"white\";}}"); //</script>
+		htmlWriter.write("function h(id){for(i=0;i<id.length;i++){if(document.getElementById(id[i])!=null){document.getElementById(id[i]).style.backgroundColor=\"yellow\";}}}");
+		htmlWriter.write("function u(id){for(i=0;i<id.length;i++){if(document.getElementById(id[i])!=null){document.getElementById(id[i]).style.backgroundColor=\"white\";}}}"); //</script>
 		htmlWriter.write("function j(id){for(i=0;i<id.length;i++){location.href=\"#\";location.href=\"#\"+id[i];}}");
 		htmlWriter.write("function l(){var h=800;if(!window.innerWidth){\n");
 		htmlWriter.write("if(!(document.documentElement.clientWidth == 0)){\n h = document.documentElement.clientHeight;\n");
@@ -881,8 +882,8 @@ public class HTMLExporter {
 		htmlWriter.write("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">");
 		htmlWriter.write("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
 		htmlWriter.write("<head><title>Report Processor Output</title><script type=\"text/javascript\">");
-		htmlWriter.write("function h(id){for(i=0;i<id.length;i++){document.getElementById(id[i]).style.backgroundColor=\"yellow\";}}");
-		htmlWriter.write("function u(id){for(i=0;i<id.length;i++){document.getElementById(id[i]).style.backgroundColor=\"white\";}}"); //</script>
+		htmlWriter.write("function h(id){for(i=0;i<id.length;i++){if(document.getElementById(id[i])!=null){document.getElementById(id[i]).style.backgroundColor=\"yellow\";}}}");
+		htmlWriter.write("function u(id){for(i=0;i<id.length;i++){if(document.getElementById(id[i])!=null){document.getElementById(id[i]).style.backgroundColor=\"white\";}}}"); //</script>
 		htmlWriter.write("function j(id){for(i=0;i<id.length;i++){location.href=\"#\";location.href=\"#\"+id[i];}}");
 		htmlWriter.write("function l(){var h=800;if(!window.innerWidth){\n");
 		htmlWriter.write("if(!(document.documentElement.clientWidth == 0)){\n h = document.documentElement.clientHeight;\n");

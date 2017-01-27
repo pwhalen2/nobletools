@@ -214,7 +214,7 @@ public class DictionarySectionProcessor implements Processor<Document> {
 		Sentence s = terminology.process(new Sentence(text,offs,Sentence.TYPE_HEADER));
 		for(Mention m: s.getMentions()){
 			// i only care of mentions that start at the begining of the sentence almost verbatum
-			if(m.getStartPosition() == s.getStartPosition()){
+			if(startsWith(s,m)){
 				// OK, I need to be a bit cute here
 				// header either has to span the entire sentence
 				if(m.getEndPosition() + 2 >= s.getEndPosition())
@@ -229,6 +229,22 @@ public class DictionarySectionProcessor implements Processor<Document> {
 		return null;
 	}
 
+	/**
+	 * does this sentence starts with this mention 
+	 * accounting for indentation
+	 * @param s - sentence
+	 * @param m - mention
+	 * @return true or false
+	 */
+	private boolean startsWith(Sentence s, Mention m){
+		if(s.getStartPosition() == m.getStartPosition())
+			return true;
+		String prefix = s.getText().substring(0,m.getStartPosition()-s.getStartPosition());
+		if(prefix.trim().length() == 0)
+			return true;
+		return false;
+	}
+	
 	public long getProcessTime() {
 		return time;
 	}
