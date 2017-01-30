@@ -24,10 +24,12 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import java.util.TreeSet;
@@ -1323,7 +1325,11 @@ public class NobleCoderTool implements ActionListener{
 				
 				// if input, change output to default
 				if(text == input){
-					output.setText(new File(file.getParent()+File.separator+"Output"+File.separator+file.getName()).getAbsolutePath());
+					String prefix = file.getName();
+					if(prefix.endsWith(".txt"))
+						prefix = prefix.substring(0,prefix.length()-4);
+					prefix = prefix+File.separator+(new SimpleDateFormat("yyyy-MM-dd HH.mm.ss").format(new Date(System.currentTimeMillis())));
+					output.setText(new File(file.getParent()+File.separator+"Output"+File.separator+prefix).getAbsolutePath());
 				}
 			}
 		}

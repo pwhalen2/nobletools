@@ -702,7 +702,8 @@ public class OntologyExplorer extends JPanel implements HyperlinkListener, Actio
 					buffer.append("<b>Synonyms: </b> "+Arrays.asList(e.getSynonyms())+"<br>");
 					buffer.append("<b>Sources: </b> "+Arrays.asList(e.getSources())+"<br>");
 					buffer.append("<b>Codes: </b> "+e.getCodes()+"<br>");
-					buffer.append("<b>Relations: </b> [<a href=\"relations:"+e.getCode()+"\">view related concepts</a>]");
+					buffer.append("<b>Relations: </b> [<a href=\"relations:"+e.getCode()+"\">view related concepts</a>]<br>");
+					buffer.append("<b>Properties: </b> "+e.getProperties()+"<br>");
 				}
 				info.setText("<html>"+buffer.toString());
 				currentConcept = e;

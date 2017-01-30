@@ -88,7 +88,9 @@ public class ConText implements Processor<Sentence> {
 	public static final String MODIFIER_VALUE_HEDGED = "Hedged_ContextualModality";
 	public static final String MODIFIER_VALUE_FAMILY_MEMBER = "FamilyMember_Experiencer";
 	public static final String MODIFIER_VALUE_HISTORICAL = "Before_DocTimeRel";
-
+	public static final List<String> MODIFIER_TYPES_FILTER =  Arrays.asList(SEMTYPE_INSTANCE,MODIFIER,LINGUISTIC_MODIFIER,NUMERIC_MODIFIER,SEMANTIC_MODIFIER,QUALIFIER,"Lexicon");
+	
+	
 	
 	public static final List<String> MODIFIER_TYPES = Arrays.asList(
 			MODIFIER_TYPE_CERTAINTY,
@@ -107,7 +109,6 @@ public class ConText implements Processor<Sentence> {
 	
 	private long time;
 	private Terminology terminology;
-	private PathHelper paths;
 	private Map<String,String> defaultValues;
 	
 	/**
@@ -151,7 +152,6 @@ public class ConText implements Processor<Sentence> {
 		}catch(Exception ex){
 			throw new TerminologyError("Unable to load ConText ontology", ex);
 		}
-		paths = new PathHelper(terminology);
 	}
 	
 	
@@ -166,7 +166,6 @@ public class ConText implements Processor<Sentence> {
 		} catch (Exception e) {
 			throw new TerminologyError("Unable to load ConText ontology",e);
 		}
-		paths = new PathHelper(terminology);
 	}
 	
 	
@@ -176,7 +175,6 @@ public class ConText implements Processor<Sentence> {
 	 */
 	public ConText(Terminology terminology){
 		this.terminology = terminology;
-		this.paths = new PathHelper(terminology);
 	}
 	
 	
@@ -190,6 +188,7 @@ public class ConText implements Processor<Sentence> {
 	private void load(IOntology ontology) throws TerminologyException, IOException {
 		// setup special interest of noble coder
 		NobleCoderTerminology terminology = new NobleCoderTerminology();
+		this.terminology = terminology;
 		terminology.load(getClass().getSimpleName(),false);
 		terminology.setDefaultSearchMethod(NobleCoderTerminology.CUSTOM_MATCH);
 		terminology.setContiguousMode(true);
@@ -234,7 +233,6 @@ public class ConText implements Processor<Sentence> {
 		
 		// save terminology
 		terminology.save();
-		this.terminology = terminology;
 	}
 
 	/**
@@ -245,67 +243,12 @@ public class ConText implements Processor<Sentence> {
 	 * @throws TerminologyException the terminology exception
 	 */
 	private Concept addConcept(IInstance inst) throws TerminologyException {
-		Concept concept = createConcept(inst);
+		Concept concept = ConTextHelper.createConcept(inst);
 		terminology.addConcept(concept);
 		return concept;
 	}
 	
-	/**
-	 * Adds the concept.
-	 *
-	 * @param inst the inst
-	 * @return the concept
-	 * @throws TerminologyException the terminology exception
-	 */
-	public static Concept createConcept(IInstance inst) throws TerminologyException {
-		Concept concept = new Concept(inst);
-		concept.setCode(inst.getName());
-		if(!isRootInstance(inst))
-			concept.addSemanticType(SemanticType.getSemanticType(SEMTYPE_INSTANCE));
-		
-		
-		// add relations to concept
-		for(IClass c: inst.getDirectTypes()){
-			for(SemanticType st: getSemanticTypes(c)){
-				concept.addSemanticType(st);
-				concept.addProperty(st.getName(),getModifierValue(st.getName(),c));
-			}
-			concept.addRelatedConcept(Relation.BROADER,c.getName());
-			
-			// add default value if parent is default
-			if(isDefaultValue(c)){
-				concept.addProperty(PROP_IS_DEFAULT_VALUE,"true");
-			}
-		}
-		
-		// add other relations to concept
-		for(IProperty p:  inst.getProperties()){
-			for(Object o: inst.getPropertyValues(p)){
-				if(o instanceof IResource){
-					//concept.addRelatedConcept(Relation.getRelation(p.getName()),((IResource)o).getName());
-					concept.addProperty(p.getName(),((IResource)o).getName());
-				}
-			}
-		}
-		
-		for(IClass cls: inst.getDirectTypes()){
-			// add other relations to a concept
-			for(Object o: cls.getNecessaryRestrictions()){
-				if(o instanceof IRestriction){
-					IRestriction r = (IRestriction) o;
-					for(Object v: r.getParameter()){
-						if(v instanceof IClass){
-							concept.addRelatedConcept(Relation.getRelation(r.getProperty().getName()), ((IClass)v).getName());
-						}
-					}
-				}
-			}
-		}
-		
-		
-		return concept;
-	}
-	
+
 	
 	/**
 	 * get semantic modifier validator associated with ConText
@@ -325,43 +268,6 @@ public class ConText implements Processor<Sentence> {
 
 
 	/**
-	 * get modifier value.
-	 *
-	 * @param type the type
-	 * @param c the c
-	 * @return the modifier value
-	 */
-	private static String getModifierValue(String type, IClass c){
-		/*IOntology o = c.getOntology();
-		if(c.hasDirectSuperClass(o.getClass(type))){
-			return c.getName();
-		}
-		for(IClass p: c.getDirectSuperClasses()){
-			String v = getModifierValue(type, p);
-			if(v != null)
-				return v;
-		}
-		return null;*/
-		return c.getName();
-	}
-	
-	
-
-	/**
-	 * Checks if is root instance.
-	 *
-	 * @param inst the inst
-	 * @return true, if is root instance
-	 */
-	private static boolean isRootInstance(IInstance inst) {
-		for(IClass c: inst.getDirectTypes()){
-			if(CONTEXT_ROOTS.contains(c.getName()))
-				return true;
-		}
-		return false;
-	}
-
-	/**
 	 * Adds the concept.
 	 *
 	 * @param cls the cls
@@ -369,91 +275,12 @@ public class ConText implements Processor<Sentence> {
 	 * @throws TerminologyException the terminology exception
 	 */
 	private Concept addConcept(IClass cls) throws TerminologyException{
-		Concept concept =  createConcept(cls);
+		Concept concept =  ConTextHelper.createConcept(cls);
 		terminology.addConcept(concept);
 		return concept;
 	}
 	
-	/**
-	 * Adds the concept.
-	 *
-	 * @param cls the cls
-	 * @return the concept
-	 * @throws TerminologyException the terminology exception
-	 */
-	public static Concept createConcept(IClass cls) throws TerminologyException{
-		Concept concept = cls.getConcept();
-		//overwrite URI, with name
-		concept.setCode(cls.getName());
-		
-		// add semantic type
-		for(SemanticType st: getSemanticTypes(cls))
-			concept.addSemanticType(st);
-	
-		// if we actually have synonyms defined beyound the name,it should be treated as an instance
-		if(concept.getSynonyms().length > 1)
-			concept.addSemanticType(SemanticType.getSemanticType(SEMTYPE_INSTANCE));
-		
-		
-		// add relations to concept
-		for(IClass c: cls.getDirectSuperClasses()){
-			concept.addRelatedConcept(Relation.BROADER,c.getName());
-		}
-		
-		// add relations to concept
-		for(IClass c: cls.getDirectSubClasses()){
-			concept.addRelatedConcept(Relation.NARROWER,c.getName());
-			
-			// get the default value for this type
-			if(isSemanticType(cls)){
-				if(isDefaultValue(c)){
-					concept.addProperty(PROP_HAS_DEFAULT_VALUE,c.getName());
-				}
-			}
-		}
-		
-		// add relations to concept
-		for(IInstance c: cls.getDirectInstances()){
-			concept.addRelatedConcept(Relation.NARROWER,c.getName());
-		}
-		
-		// add other properties defined in ConText to concept properties
-		for(IProperty prop: cls.getProperties()){
-			if(prop.getURI().toString().contains(CONTEXT_OWL)){
-				Object o = cls.getPropertyValue(prop);
-				if(o != null){
-					concept.addProperty(prop.getName(),""+o);
-				}
-			}
-		}
-		
-		// add other properties
-		for(Object o: cls.getDirectNecessaryRestrictions()){
-			if(o instanceof IRestriction){
-				IRestriction r = (IRestriction) o;
-				for(Object v: r.getParameter()){
-					if(!(v instanceof IClass)){
-						concept.addProperty(r.getProperty().getName(),""+v);
-					}
-				}
-			}
-		}
-		
-		
-		// add other relations to a concept
-		for(Object o: cls.getNecessaryRestrictions()){
-			if(o instanceof IRestriction){
-				IRestriction r = (IRestriction) o;
-				for(Object v: r.getParameter()){
-					if(v instanceof IClass){
-						concept.addRelatedConcept(Relation.getRelation(r.getProperty().getName()), ((IClass)v).getName());
-					}
-				}
-			}
-		}
-		
-		return concept;
-	}
+
 	
 	
 	/**
@@ -465,76 +292,7 @@ public class ConText implements Processor<Sentence> {
 		return terminology;
 	}
 
-	/**
-	 * Checks if is modifier type.
-	 *
-	 * @param cls the cls
-	 * @return true, if is modifier type
-	 */
-	private static  boolean isSemanticType(IClass cls){
-		return cls.getURI().toString().matches(".*("+CONTEXT_OWL+"|"+SCHEMA_OWL+").*")  && !cls.getName().contains("_");
-	}
-	
-	/**
-	 * Checks if is default value.
-	 *
-	 * @param cls the cls
-	 * @return true, if is default value
-	 */
-	public static boolean isDefaultValue(IClass cls){
-		for(Object o: cls.getDirectNecessaryRestrictions()){
-			if(o instanceof IRestriction){
-				IRestriction r = (IRestriction) o;
-				if(PROP_IS_DEFAULT_VALUE.equals(r.getProperty().getName())){
-					for(Object v: r.getParameter()){
-						return Boolean.parseBoolean(v.toString());
-					}
-				}
-			}
-		}
-		return false;
-	}
-	
-	
-	/**
-	 * Gets the semantic types.
-	 *
-	 * @param cls the cls
-	 * @return the semantic types
-	 */
-	private static Set<SemanticType> getSemanticTypes(IClass cls) {
-		//Set<SemanticType> semTypes = new LinkedHashSet<SemanticType>();
-		
-		IClass semType = null;
-		List<IClass> parents = new ArrayList<IClass>();
-		parents.add(cls);
-		Collections.addAll(parents,cls.getSuperClasses());
-		for(IClass c: parents){
-			if(isSemanticType(c)){
-				if(semType == null || semType.hasSubClass(c))
-					semType = c;
-			}
-		}
-		return semType != null?Collections.singleton(SemanticType.getSemanticType(semType.getName())):Collections.EMPTY_SET;
-		
-		
-		
-		//NOTE: this takes forever
-		// if defined in ConText ontology, then class is its own SemType
-		/*if(isSemanticType(cls)){
-			semTypes.add(SemanticType.getSemanticType(cls.getName()));
-		}else{
-			// else try the direct parent, the ontology is shallow
-			for(IClass c: cls.getDirectSuperClasses()){
-				semTypes.addAll(getSemanticTypes(c));
-			}
-		}*/
-		// this should never happen, but just in case here is the defautl
-		//return SemanticType.getSemanticType(SEMTYPE_CLASS);
-		//return semTypes;
-	}
 
-	
 	/**
 	 * get default values map.
 	 *
@@ -592,7 +350,6 @@ public class ConText implements Processor<Sentence> {
 				}
 			}
 		}
-		
 		// process numeric modifiers (this will upgrade some of them based on equivalence classes)
 		if(getModifierResolver() != null)
 			getModifierResolver().processNumericModifiers(text);
@@ -618,7 +375,6 @@ public class ConText implements Processor<Sentence> {
 				}
 			}
 		}
-		
 		
 		// add modifiers to anchor sentence mentions if it spans beyound sentence boundaries
 		sentence.getMentions().addAll(getGlobalModifierMentions(relevantModifiers));
@@ -765,25 +521,11 @@ public class ConText implements Processor<Sentence> {
 	 * @return
 	 */
 	private boolean isTypeOf(Mention m, String type){
-		Concept conceptType = null;
-		try {
-			conceptType = terminology.lookupConcept(type);
-		} catch (TerminologyException e) {
-			throw new TerminologyError("Unable to find concept type "+type,e);
-		}
-		return isTypeOf(m,conceptType);
+		for(SemanticType st: m.getConcept().getSemanticTypes())
+			if(st.getName().equals(type))
+				return true;
+		return false;
 	}
-	
-	/**
-	 * is a mention a type of some concept in ontology
-	 * @param m
-	 * @param type
-	 * @return
-	 */
-	private boolean isTypeOf(Mention m, Concept conceptType){
-		return paths.hasAncestor(m.getConcept(),conceptType);
-	}
-	
 	
 	/**
 	 * Gets the word window index.
@@ -858,9 +600,8 @@ public class ConText implements Processor<Sentence> {
 	private List<Mention> getRelevantModifiers(Sentence text) throws TerminologyException{
 		List<Mention> list = new ArrayList<Mention>();
 		List<Mention> pseudo = getPseudoModifiers(text);
-		Concept modifierConcept = terminology.lookupConcept(MODIFIER);//LINGUISTIC_MODIFIER
 		for(Mention m: text.getMentions()){
-			if(isTypeOf(m,modifierConcept) && !isPseudo(m,pseudo)){
+			if(isTypeOf(m,MODIFIER) && !isPseudo(m,pseudo)){
 				list.add(m);
 			}
 		}
@@ -877,9 +618,8 @@ public class ConText implements Processor<Sentence> {
 	 */
 	private List<Mention> getPseudoModifiers(Sentence text) throws TerminologyException{
 		List<Mention> list = new ArrayList<Mention>();
-		Concept pseudo = terminology.lookupConcept(PSEUDO);
 		for(Mention m: text.getMentions()){
-			if(paths.hasAncestor(m.getConcept(),pseudo)){
+			if(isTypeOf(m,PSEUDO)){	
 				list.add(m);
 			}
 		}
@@ -932,9 +672,6 @@ public class ConText implements Processor<Sentence> {
 	private static List<String> getAction(Concept c) throws TerminologyException {
 		List<String> list = new ArrayList<String>();
 		list.add(c.getProperty(HAS_SENTENCE_ACTION));
-		/*for(Concept a :	c.getRelatedConcepts(Relation.getRelation(HAS_SENTENCE_ACTION))){
-			list.add(a.getCode());
-		}*/
 		return list;
 	}
 	
@@ -964,7 +701,7 @@ public class ConText implements Processor<Sentence> {
 	public static List<String> getModifierTypes(Concept c){
 		List<String> types = new ArrayList<String>();
 		for(SemanticType st: c.getSemanticTypes()){
-			if(!SEMTYPE_INSTANCE.equals(st.getName()))
+			if(!MODIFIER_TYPES_FILTER.contains(st.getName()))
 				types.add(st.getCode());
 		}
 		return types;

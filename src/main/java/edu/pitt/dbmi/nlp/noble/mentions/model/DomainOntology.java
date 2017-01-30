@@ -45,6 +45,7 @@ import edu.pitt.dbmi.nlp.noble.terminology.TerminologyError;
 import edu.pitt.dbmi.nlp.noble.terminology.TerminologyException;
 import edu.pitt.dbmi.nlp.noble.terminology.impl.NobleCoderTerminology;
 import edu.pitt.dbmi.nlp.noble.tools.ConText;
+import edu.pitt.dbmi.nlp.noble.tools.ConTextHelper;
 import edu.pitt.dbmi.nlp.noble.tools.TextTools;
 import edu.pitt.dbmi.nlp.noble.util.ConceptImporter;
 
@@ -421,7 +422,7 @@ public class DomainOntology {
 	 */
 	private Concept addConcept(Terminology terminology, IInstance inst) {
 		try{
-			Concept concept = ConText.createConcept(inst);
+			Concept concept = ConTextHelper.createConcept(inst);
 			
 			// add inverse relationships based on ranges
 			addInverseRelationships(inst.getDirectTypes()[0],ontology.getProperty(HAS_MODIFIER), concept);
@@ -443,7 +444,7 @@ public class DomainOntology {
 	 */
 	private Concept addConcept(Terminology terminology, IClass cls) {
 		try{
-			Concept concept =  ConText.createConcept(cls);
+			Concept concept =  ConTextHelper.createConcept(cls);
 			
 			// add inverse relationships based on ranges
 			addInverseRelationships(cls,ontology.getProperty(HAS_MODIFIER), concept);
@@ -1197,7 +1198,7 @@ public class DomainOntology {
 			
 			// go over ALL modifiers
 			for(IClass cls: ontology.getClass(MODIFIER).getSubClasses()){
-				if(ConText.isDefaultValue(cls)){
+				if(ConTextHelper.isDefaultValue(cls)){
 					for(IClass parent: cls.getDirectSuperClasses()){
 						defaultValues.put(parent.getName(),cls.getName());
 					}

@@ -19,6 +19,7 @@ import edu.pitt.dbmi.nlp.noble.coder.NobleCoder;
 import edu.pitt.dbmi.nlp.noble.coder.model.Document;
 import edu.pitt.dbmi.nlp.noble.coder.model.Mention;
 import edu.pitt.dbmi.nlp.noble.coder.model.Modifier;
+import edu.pitt.dbmi.nlp.noble.coder.model.Section;
 import edu.pitt.dbmi.nlp.noble.coder.model.Sentence;
 import edu.pitt.dbmi.nlp.noble.extract.InformationExtractor;
 import edu.pitt.dbmi.nlp.noble.extract.model.ItemInstance;
@@ -508,7 +509,13 @@ public class HTMLExporter {
 	private String codeSentence(Sentence s) {
 		StringBuffer str = new StringBuffer();
 		if(Sentence.TYPE_HEADER.equals(s.getSentenceType())){
-			str.append("<b>"+s.getText()+"</b><br>");
+			String sid = "";
+			// if this is a section header, see if we have a mention
+			Section sec = s.getSection();
+			if(sec != null && sec.getTitleOffset() == s.getOffset() && sec.getHeader() != null){
+				sid = " id="+sec.getHeader().getStartPosition()+" ";
+			}
+			str.append("<b"+sid+">"+s.getText()+"</b><br>");
 		}else{
 			int offs = 0;
 			String content = s.getText();
@@ -702,15 +709,8 @@ public class HTMLExporter {
 		
 		htmlWriter.write("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">");
 		htmlWriter.write("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
-		htmlWriter.write("<head><title>Report Processor Output</title><script type=\"text/javascript\">");
-		htmlWriter.write("function h(id){for(i=0;i<id.length;i++){if(document.getElementById(id[i])!=null){document.getElementById(id[i]).style.backgroundColor=\"yellow\";}}}");
-		htmlWriter.write("function u(id){for(i=0;i<id.length;i++){if(document.getElementById(id[i])!=null){document.getElementById(id[i]).style.backgroundColor=\"white\";}}}"); //</script>
-		htmlWriter.write("function j(id){for(i=0;i<id.length;i++){location.href=\"#\";location.href=\"#\"+id[i];}}");
-		htmlWriter.write("function l(){var h=800;if(!window.innerWidth){\n");
-		htmlWriter.write("if(!(document.documentElement.clientWidth == 0)){\n h = document.documentElement.clientHeight;\n");
-		htmlWriter.write("}else{h = document.body.clientHeight;}}else{ h = window.innerHeight;} var hd = (h-100)+\"px\";\n");
-		htmlWriter.write("document.getElementById(\"d1\").style.maxHeight=hd;document.getElementById(\"d2\").style.maxHeight=hd;}</script>\n");
-		
+		htmlWriter.write("<head><title>Report Processor Output</title>");
+		htmlWriter.write(getJavaScript());
 		htmlWriter.write("</head><body onload=\"l();\" onresize=\"l();\"><table width=\"100%\" style=\"table-layout:fixed; \" cellspacing=\"5\">\n"); //word-wrap:break-word;
 		if(name != null)
 			htmlWriter.write("<tr><td colspan=2 align=center><h3>"+name+"</h3></td></tr>\n");
@@ -791,15 +791,8 @@ public class HTMLExporter {
 		
 		htmlWriter.write("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">");
 		htmlWriter.write("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
-		htmlWriter.write("<head><title>Report Processor Output</title><script type=\"text/javascript\">");
-		htmlWriter.write("function h(id){for(i=0;i<id.length;i++){document.getElementById(id[i]).style.backgroundColor=\"yellow\";}}");
-		htmlWriter.write("function u(id){for(i=0;i<id.length;i++){document.getElementById(id[i]).style.backgroundColor=\"white\";}}"); //</script>
-		htmlWriter.write("function j(id){for(i=0;i<id.length;i++){location.href=\"#\";location.href=\"#\"+id[i];}}");
-		htmlWriter.write("function l(){var h=800;if(!window.innerWidth){\n");
-		htmlWriter.write("if(!(document.documentElement.clientWidth == 0)){\n h = document.documentElement.clientHeight;\n");
-		htmlWriter.write("}else{h = document.body.clientHeight;}}else{ h = window.innerHeight;} var hd = (h-100)+\"px\";\n");
-		htmlWriter.write("document.getElementById(\"d1\").style.maxHeight=hd;document.getElementById(\"d2\").style.maxHeight=hd;}</script>\n");
-		
+		htmlWriter.write("<head><title>Report Processor Output</title>");
+		htmlWriter.write(getJavaScript());
 		htmlWriter.write("</head><body onload=\"l();\" onresize=\"l();\"><table width=\"100%\" style=\"table-layout:fixed; \" cellspacing=\"5\">\n"); //word-wrap:break-word;
 		htmlWriter.write("<tr><td colspan=2 align=center><h3>"+name+"</h3></td></tr>\n");
 		htmlWriter.write("<tr><td width=\"50%\" valign=middle><div id=\"d1\" style=\"overflow: auto; max-height: 800px; \">"+report+"</div></td>");
@@ -881,18 +874,8 @@ public class HTMLExporter {
 		
 		htmlWriter.write("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">");
 		htmlWriter.write("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
-		htmlWriter.write("<head><title>Report Processor Output</title><script type=\"text/javascript\">");
-		htmlWriter.write("function h(id){for(i=0;i<id.length;i++){if(document.getElementById(id[i])!=null){document.getElementById(id[i]).style.backgroundColor=\"yellow\";}}}");
-		htmlWriter.write("function u(id){for(i=0;i<id.length;i++){if(document.getElementById(id[i])!=null){document.getElementById(id[i]).style.backgroundColor=\"white\";}}}"); //</script>
-		htmlWriter.write("function j(id){for(i=0;i<id.length;i++){location.href=\"#\";location.href=\"#\"+id[i];}}");
-		htmlWriter.write("function l(){var h=800;if(!window.innerWidth){\n");
-		htmlWriter.write("if(!(document.documentElement.clientWidth == 0)){\n h = document.documentElement.clientHeight;\n");
-		htmlWriter.write("}else{h = document.body.clientHeight;}}else{ h = window.innerHeight;} var hd = (h-100)+\"px\";\n");
-		htmlWriter.write("document.getElementById(\"d1\").style.maxHeight=hd;document.getElementById(\"d2\").style.maxHeight=hd;}");
-		htmlWriter.write("function showHide(id){ var a = \"hidden\"; if(document.getElementById(id).style.visibility == \"hidden\"){ a = \"visible\";}");
-		htmlWriter.write( "document.getElementById(id).style.visibility = a;}");
-		htmlWriter.write("</script>\n");
-		
+		htmlWriter.write("<head><title>Report Processor Output</title>");
+		htmlWriter.write(getJavaScript());
 		htmlWriter.write("</head><body onload=\"l();\" onresize=\"l();\"><table width=\"100%\" style=\"table-layout:fixed; \" cellspacing=\"5\">\n"); //word-wrap:break-word;
 		if(name != null)
 			htmlWriter.write("<tr><td colspan=2 align=center><h3>"+name+"</h3></td></tr>\n");
@@ -1006,4 +989,41 @@ public class HTMLExporter {
 		//.replaceAll("(^|<br>)(\\[[A-Za-z ]+\\])<br>", "$1<b>$2</b><br>");
 	}
 	*/
+	
+	/**
+	 * get javascript definitions
+	 * @return javascript definitions
+	 */
+	
+	private String getJavaScript(){
+		return "<script type=\"text/javascript\">"+
+				// hightlight annotations
+				"function h(id){ for(i=0;i<id.length;i++){if(document.getElementById(id[i])!=null){document.getElementById(id[i]).style.backgroundColor=\"yellow\";}}}\n"+
+				// un-hightlight annotations
+				"function u(id){for(i=0;i<id.length;i++){if(document.getElementById(id[i])!=null){document.getElementById(id[i]).style.backgroundColor=\"white\";}}}\n"+
+				// is element in view
+				"function inView(id) {\n" + 
+				"	var el = document.getElementById(id);\n" + 
+				"	if(el == null){return true;}\n" + 
+				"    var tp = el.getBoundingClientRect().top;\n" + 
+				"    var bt = el.getBoundingClientRect().bottom;\n" + 
+				"    return (tp >= 0) && (bt <= window.innerHeight);\n" + 
+				"}\n\n" + 
+				// jump to annotation if not in view
+				"function j(id){\n" + 
+				"	if(!inView(id[0])){\n" + 
+				"		location.href=\"#\"+id[0];\n" + 
+				"	}\n" + 
+				"}\n" + 
+				// resize viewport 
+				"function l(){var h=800;if(!window.innerWidth){\n"+
+				"if(!(document.documentElement.clientWidth == 0)){\n h = document.documentElement.clientHeight;\n"+
+				"}else{h = document.body.clientHeight;}}else{ h = window.innerHeight;} var hd = (h-100)+\"px\";\n"+
+				"document.getElementById(\"d1\").style.maxHeight=hd;document.getElementById(\"d2\").style.maxHeight=hd;}"+
+				
+				// show/hide element
+				"function showHide(id){ var a = \"hidden\"; if(document.getElementById(id).style.visibility == \"hidden\"){ a = \"visible\";}"+
+				"document.getElementById(id).style.visibility = a;}"+
+				"</script>\n";
+	}
 }
