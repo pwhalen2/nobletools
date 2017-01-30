@@ -91,65 +91,60 @@ http://nexihub.com/contact
 		</dependency>
 	</dependencies>
 	<build>
-
 		<plugins>
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
-				<configuration>
-					<finalName>NobleCoder-${project.version}</finalName>
-					<appendAssemblyId>false</appendAssemblyId>
-					<attach>false</attach>
-					<descriptorRefs>
-						<descriptorRef>jar-with-dependencies</descriptorRef>
-					</descriptorRefs>
-					<archive>
-						<manifest>
-							<mainClass>edu.pitt.dbmi.nlp.noble.ui.NobleCoderTool</mainClass>
-						</manifest>
-						<manifestEntries>
-							<Trusted-Library>true</Trusted-Library>
-							<Permissions>all-permissions</Permissions>
-							<Codebase>*</Codebase>
-						</manifestEntries>
-					</archive>
-				</configuration>
 				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>single</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			
-			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<configuration>
-					<finalName>NobleMentions-${project.version}</finalName>
-					<appendAssemblyId>false</appendAssemblyId>
-					<attach>false</attach>
-					<descriptorRefs>
-						<descriptorRef>jar-with-dependencies</descriptorRef>
-					</descriptorRefs>
-					<archive>
-						<manifest>
-							<mainClass>edu.pitt.dbmi.nlp.noble.ui.NobleMentionsTool</mainClass>
-						</manifest>
-						<manifestEntries>
-							<Trusted-Library>true</Trusted-Library>
-							<Permissions>all-permissions</Permissions>
-							<Codebase>*</Codebase>
-						</manifestEntries>
-					</archive>
-				</configuration>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>single</goal>
-						</goals>
-					</execution>
+			        <execution>
+			            <id>NobleCoder</id>
+				        <configuration>
+							<finalName>NobleCoder-${project.version}</finalName>
+							<appendAssemblyId>false</appendAssemblyId>
+							<attach>false</attach>
+							<descriptorRefs>
+								<descriptorRef>jar-with-dependencies</descriptorRef>
+							</descriptorRefs>
+							<archive>
+								<manifest>
+									<mainClass>edu.pitt.dbmi.nlp.noble.ui.NobleCoderTool</mainClass>
+								</manifest>
+								<manifestEntries>
+									<Trusted-Library>true</Trusted-Library>
+									<Permissions>all-permissions</Permissions>
+									<Codebase>*</Codebase>
+								</manifestEntries>
+							</archive>
+						</configuration>
+			            <phase>package</phase>
+			            <goals>
+			                <goal>single</goal>
+			            </goals>
+		        	</execution>
+		        	<execution>
+			            <id>NobleMentions</id>
+				        <configuration>
+							<finalName>NobleMentions-${project.version}</finalName>
+							<appendAssemblyId>false</appendAssemblyId>
+							<attach>false</attach>
+							<descriptorRefs>
+								<descriptorRef>jar-with-dependencies</descriptorRef>
+							</descriptorRefs>
+							<archive>
+								<manifest>
+									<mainClass>edu.pitt.dbmi.nlp.noble.ui.NobleMentionsTool</mainClass>
+								</manifest>
+								<manifestEntries>
+									<Trusted-Library>true</Trusted-Library>
+									<Permissions>all-permissions</Permissions>
+									<Codebase>*</Codebase>
+								</manifestEntries>
+							</archive>
+						</configuration>
+			            <phase>package</phase>
+			            <goals>
+			                <goal>single</goal>
+			            </goals>
+		        	</execution>
 				</executions>
 			</plugin>
 			
