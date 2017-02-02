@@ -151,6 +151,8 @@ public class LogicExpression extends ArrayList implements ILogicExpression {
 			return ((IClass) obj).evaluate(param);
 		}else if(obj instanceof OFacetRestriction){
 			return ((OFacetRestriction)obj).evaluate(param);
+		}else if(obj instanceof Number && param instanceof Number){
+			return ((Number)obj).doubleValue() == ((Number)param).doubleValue();
 		}
 		return obj.equals(param);
 	}
