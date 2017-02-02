@@ -134,8 +134,12 @@ public class OInstance extends OResource implements IInstance {
 	 * @see edu.pitt.dbmi.nlp.noble.ontology.owl.OResource#removePropertyValues(edu.pitt.dbmi.nlp.noble.ontology.IProperty)
 	 */
 	public void removePropertyValues(IProperty prop) {
-		for(Object o: getPropertyValues(prop)){
-			removePropertyValue(prop,o);
+		if(prop.isAnnotationProperty()){
+			super.removePropertyValues(prop);
+		}else{
+			for(Object o: getPropertyValues(prop)){
+				removePropertyValue(prop,o);
+			}
 		}
 	}
 

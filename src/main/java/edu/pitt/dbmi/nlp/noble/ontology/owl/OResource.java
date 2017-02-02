@@ -587,8 +587,9 @@ public class OResource implements IResource{
 		
 		if(val instanceof OWLLiteral){
 			OWLLiteral l = (OWLLiteral) val;
-				
-			if(l.isInteger())
+			String type = l.getDatatype().toString().toLowerCase();
+			
+			if(l.isInteger() || type.contains("int") || type.contains("short"))
 				return l.parseInteger();
 			if(l.isBoolean())
 				return l.parseBoolean();

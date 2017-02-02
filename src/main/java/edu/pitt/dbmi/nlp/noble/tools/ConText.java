@@ -701,7 +701,8 @@ public class ConText implements Processor<Sentence> {
 	public static List<String> getModifierTypes(Concept c){
 		List<String> types = new ArrayList<String>();
 		for(SemanticType st: c.getSemanticTypes()){
-			if(!MODIFIER_TYPES_FILTER.contains(st.getName()))
+			// skip general semantic types and UMLS semantic types as possible modifier types
+			if(!MODIFIER_TYPES_FILTER.contains(st.getName()) && !SemanticType.isDefinedSemanticType(st.getName()))
 				types.add(st.getCode());
 		}
 		return types;

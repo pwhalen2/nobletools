@@ -1502,12 +1502,12 @@ public class ConceptImporter {
 	public void compact(NobleCoderTerminology terminology) throws IOException{
 		NobleCoderTerminology.Storage storage = terminology.getStorage();
 		
-		int n = storage.getTermMap().size();
+		double n =  storage.getTermMap().size();
 		
 		// first create a temporary term files
 		storage.useTempWordFolder = true;
 		pcs.firePropertyChange(LOADING_MESSAGE,null,"Saving terms as files ...");
-		pcs.firePropertyChange(LOADING_TOTAL,null,storage.getTermMap().size());
+		pcs.firePropertyChange(LOADING_TOTAL,null,n);
 		
 		int i=0;
 		for(String term:  storage.getTermMap().keySet()){
