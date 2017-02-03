@@ -368,7 +368,7 @@ public class TerminologyImporter implements ItemListener, ActionListener, Proper
 			    if(suppressObsoleteTerms != null && suppressObsoleteTerms.isSelected())
 			    	args.add("-suppressObsoleteTerms");
 			    
-			    if(termFilter.isSelected())
+			    if(termFilter != null && termFilter.isSelected())
 			    	args.add("-filterTerms");
 			    
 			    

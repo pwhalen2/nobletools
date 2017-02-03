@@ -90,7 +90,7 @@ public class NobleMentionsTool implements ActionListener{
 	private JProgressBar progress;
 	private JPanel buttonPanel;
 	private JButton run;
-	private File file;
+	private File lastFile;
 	private long totalTime;
 	private long processCount;
 	private HTMLExporter htmlExporter;
@@ -384,13 +384,13 @@ public class NobleMentionsTool implements ActionListener{
 	 * do export of highlighted template.
 	 */
 	private void doImport() {
-		final JFileChooser chooser = new JFileChooser(file);
+		final JFileChooser chooser = new JFileChooser(lastFile);
 		chooser.setFileFilter(new FileFilter(){
 			public boolean accept(File f) {
 				return f.isDirectory() || f.getName().endsWith(".owl");
 			}
 			public String getDescription() {
-				return "OWL file (extending Schema.owl)";
+				return "OWL lastFile (extending Schema.owl)";
 			}
 			
 		});
@@ -401,9 +401,9 @@ public class NobleMentionsTool implements ActionListener{
 					public void run(){
 						setBusy(true);
 						try{
-							file = chooser.getSelectedFile();
-							File newLocation = new File(repository.getOntologyLocation(),file.getName());
-							Files.copy(file.toPath(),newLocation.toPath(),StandardCopyOption.REPLACE_EXISTING);
+							lastFile = chooser.getSelectedFile();
+							File newLocation = new File(repository.getOntologyLocation(),lastFile.getName());
+							Files.copy(lastFile.toPath(),newLocation.toPath(),StandardCopyOption.REPLACE_EXISTING);
 							
 							// remove terminology cache
 							File termCache = DomainOntology.getTerminologyCacheLocation(newLocation);
@@ -415,6 +415,7 @@ public class NobleMentionsTool implements ActionListener{
 							ex.printStackTrace();
 						}
 						refreshTemplateList();
+						setDefaultOutputLocation();
 						setBusy(false);
 					}
 				}).start();
@@ -425,12 +426,12 @@ public class NobleMentionsTool implements ActionListener{
 	
 	
 	/**
-     * Display a file in the system browser. If you want to display a file, you
+     * Display a lastFile in the system browser. If you want to display a lastFile, you
      * must include the absolute path name.
      *
      * @param url
-     *            the file's url (the url must start with either "http://" or
-     *            "file://").
+     *            the lastFile's url (the url must start with either "http://" or
+     *            "lastFile://").
      */
      private void browseURLInSystemBrowser(String url) {
     	 Desktop desktop = Desktop.getDesktop();
@@ -487,7 +488,7 @@ public class NobleMentionsTool implements ActionListener{
 					});
 				}
 				
-				// create just-in-time instance file
+				// create just-in-time instance lastFile
 				try {
 					long t = System.currentTimeMillis();
 					progress("loading "+ontName+" ontology .. ");
@@ -528,37 +529,46 @@ public class NobleMentionsTool implements ActionListener{
 	 * @param text the text
 	 */
 	private void doBrowse(JTextField text){
-		//if(text == domain){
-		//	
-		//}else{
-			JFileChooser fc = new JFileChooser(file);
-			fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-			fc.addChoosableFileFilter(new FileFilter() {
-				public String getDescription() {
-					return "Text files (.txt)";
-				}
-				public boolean accept(File f) {
-					return f.isDirectory() || f.getName().endsWith(".txt");
-				}
-			});
-		
-			int r = (output == text)?fc.showSaveDialog(frame):fc.showOpenDialog(frame);
-			if(r == JFileChooser.APPROVE_OPTION){
-				file = fc.getSelectedFile();
-				text.setText(file.getAbsolutePath());
-				
-				// if input, change output to default
-				if(text == input){
-					String prefix = file.getName();
-					if(prefix.endsWith(".txt"))
-						prefix = prefix.substring(0,prefix.length()-4);
-					prefix = prefix+File.separator+(new SimpleDateFormat("yyyy-MM-dd HH.mm.ss").format(new Date(System.currentTimeMillis())));
-					output.setText(new File(file.getParent()+File.separator+"Output"+File.separator+prefix).getAbsolutePath());
-				}
+		File file = new File(text.getText());
+		JFileChooser fc = new JFileChooser(file);
+		fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+		fc.addChoosableFileFilter(new FileFilter() {
+			public String getDescription() {
+				return "Text files (.txt)";
 			}
-		//}
+			public boolean accept(File f) {
+				return f.isDirectory() || f.getName().endsWith(".txt");
+			}
+		});
+	
+		int r = (output == text)?fc.showSaveDialog(frame):fc.showOpenDialog(frame);
+		if(r == JFileChooser.APPROVE_OPTION){
+			file = fc.getSelectedFile();
+			text.setText(file.getAbsolutePath());
+			
+			// if input, change output to default
+			if(text == input){
+				setDefaultOutputLocation();
+			}
+		}
 	}
 
+	/**
+	 * set default output location, based on input file
+	 */
+	private void setDefaultOutputLocation(){
+		File file = new File(input.getText());
+		if(file.exists()){
+			String prefix = file.getName();
+			if(prefix.endsWith(".txt"))
+				prefix = prefix.substring(0,prefix.length()-4);
+			prefix = prefix+File.separator+(new SimpleDateFormat("yyyy-MM-dd HH.mm.ss").format(new Date(System.currentTimeMillis())));
+			output.setText(new File(file.getParent()+File.separator+"Output"+File.separator+prefix).getAbsolutePath());
+		}
+	}
+	
+	
+	
 	/**
 	 * process  documents.
 	 * @param ontology the templates to process
@@ -585,7 +595,7 @@ public class NobleMentionsTool implements ActionListener{
 		// start a new instance of noble mentions
 		NobleMentions noble = new NobleMentions(ontology);
 		
-		// process file
+		// process lastFile
 		List<File> files = FileTools.getFilesInDirectory(new File(in),".txt");
 		if(progress != null){
 			final int n = files.size();
@@ -655,7 +665,7 @@ public class NobleMentionsTool implements ActionListener{
 	 * process report.
 	 *
 	 * @param templates the templates
-	 * @param reportFile the report file
+	 * @param reportFile the report lastFile
 	 * @throws Exception the exception
 	 */
 	private void process(NobleMentions noble,File reportFile) throws Exception {

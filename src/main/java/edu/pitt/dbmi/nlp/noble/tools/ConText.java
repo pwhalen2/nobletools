@@ -68,10 +68,12 @@ public class ConText implements Processor<Sentence> {
 	public static final String LINGUISTIC_MODIFIER = "LinguisticModifier";
 	public static final String SEMANTIC_MODIFIER = "SemanticModifier";
 	public static final String NUMERIC_MODIFIER = "NumericModifier";
+	public static final String BODY_MODIFIER = "BodyModifier";
 	public static final String MODIFIER = "Modifier";
 	public static final String PSEUDO = "Pseudo";
 	public static final int DEFAULT_WINDOW_SIZE = 8;
 	public static final String QUALIFIER = "Qualifier";
+	public static final String LEXICON = "Lexicon";
 	
 	public static final String MODIFIER_TYPE_POLARITY = "Polarity";
 	public static final String MODIFIER_TYPE_EXPERIENCER = "Experiencer";
@@ -88,7 +90,8 @@ public class ConText implements Processor<Sentence> {
 	public static final String MODIFIER_VALUE_HEDGED = "Hedged_ContextualModality";
 	public static final String MODIFIER_VALUE_FAMILY_MEMBER = "FamilyMember_Experiencer";
 	public static final String MODIFIER_VALUE_HISTORICAL = "Before_DocTimeRel";
-	public static final List<String> MODIFIER_TYPES_FILTER =  Arrays.asList(SEMTYPE_INSTANCE,MODIFIER,LINGUISTIC_MODIFIER,NUMERIC_MODIFIER,SEMANTIC_MODIFIER,QUALIFIER,"Lexicon");
+	public static final List<String> MODIFIER_TYPES_FILTER =  
+			Arrays.asList(SEMTYPE_INSTANCE,MODIFIER,LINGUISTIC_MODIFIER,NUMERIC_MODIFIER,SEMANTIC_MODIFIER,QUALIFIER,BODY_MODIFIER,LEXICON);
 	
 	
 	

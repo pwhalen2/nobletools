@@ -410,7 +410,7 @@ public class DomainOntology {
 	 * @return all terminologies associated with this ontology
 	 */
 	public Terminology [] getTerminologies(){
-		return new Terminology [] {getAnchorTerminology(),getModifierTerminology()};
+		return new Terminology [] {getAnchorTerminology(),getModifierTerminology(),getSectionTerminology()};
 	}
 
 	/**
