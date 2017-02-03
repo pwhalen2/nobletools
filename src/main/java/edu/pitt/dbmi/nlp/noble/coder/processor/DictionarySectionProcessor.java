@@ -240,7 +240,8 @@ public class DictionarySectionProcessor implements Processor<Document> {
 		if(s.getStartPosition() == m.getStartPosition())
 			return true;
 		String prefix = s.getText().substring(0,m.getStartPosition()-s.getStartPosition());
-		if(prefix.trim().length() == 0)
+		// if we have whitespace or TIES special case [ ]
+		if(prefix.trim().length() == 0 || prefix.equals("["))
 			return true;
 		return false;
 	}

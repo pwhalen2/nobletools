@@ -78,33 +78,4 @@ public class PartProcessor implements Processor<Section> {
 	public long getProcessTime() {
 		return time;
 	}
-
-	/**
-	 * The main method.
-	 *
-	 * @param args the arguments
-	 * @throws TerminologyException the terminology exception
-	 */
-	public static void main(String [] args) throws TerminologyException{
-		String text = "";
-		DocumentProcessor dp = new DocumentProcessor();
-		PartProcessor pp = new PartProcessor();
-		List<Section> sections = dp.process(text).getSections();
-		if(sections.isEmpty()){
-			System.out.println("no sections found");
-			return;
-		}
-			
-		Section sec = pp.process(sections.get(0));
-		System.out.println("["+sec.getTitle()+"]");
-		System.out.println(sec.getBody());
-		System.out.println("--");
-		for(Section s: sec.getSections()){
-			System.out.println("|"+s.getTitle()+"|");
-			System.out.println(s.getBody());
-			System.out.println("--");
-			System.out.println(s.getSentences().size());
-		}
-	}
-	
 }

@@ -9,7 +9,7 @@ import edu.pitt.dbmi.nlp.noble.terminology.TerminologyException;
 public class ParagraphProcessor implements Processor<Document> {
 	private static final String PARAGRAPH = "\\n{2,}";
 	private static final String DIVS = "\\-{5,}|_{5,}|={5,}";
-	private static final String PARTS = "PARTS?\\s+\\d+(\\s+AND\\s+\\d+)?:";
+	private static final String PARTS = "PARTS?\\s+\\d+(\\s+AND\\s+\\d+)?:?";
 	private static final Pattern PATTERN = Pattern.compile("("+PARAGRAPH+"|"+DIVS+"|"+PARTS+")",Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
 	private long time;
 	

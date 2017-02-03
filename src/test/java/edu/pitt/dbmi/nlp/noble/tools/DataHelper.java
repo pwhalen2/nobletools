@@ -16,6 +16,7 @@ public class DataHelper {
 				"===================================================================\n" + 
 				"[Report de-identified (Limited dataset compliant) by De-ID v.6.24.5.1]\n" + 
 				"\n" + 
+				"[Final Diagnosis]" + 
 				"\n" + 
 				"FINAL DIAGNOSIS:\n" + 
 				"PART 1:  BREAST, LEFT, MODIFIED RADICAL MASTECTOMY\n" + 
