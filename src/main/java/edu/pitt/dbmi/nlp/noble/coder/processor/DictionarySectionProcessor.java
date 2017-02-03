@@ -154,7 +154,7 @@ public class DictionarySectionProcessor implements Processor<Document> {
 			if(header != null){
 				// save previous header
 				if(lastHeader != null){
-					Section sec = new Section(doc,sectionStart,bodyStart,offset-1);
+					Section sec = new Section(doc,sectionStart,bodyStart,offset); //-1
 					sec.setHeader(lastHeader);
 					doc.addSection(sec);
 				}
@@ -168,7 +168,7 @@ public class DictionarySectionProcessor implements Processor<Document> {
 		}
 		// wrap up with last section
 		if(lastHeader != null){
-			Section sec = new Section(doc,sectionStart,bodyStart,offset-1);
+			Section sec = new Section(doc,sectionStart,bodyStart,offset); //-1
 			sec.setHeader(lastHeader);
 			doc.addSection(sec);
 		}
