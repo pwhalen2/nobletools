@@ -1207,7 +1207,16 @@ public class DomainOntology {
 		}
 		return defaultValues;
 	}
-	
-	
+
+	/**
+	 * is modifier1 better specified as modifier2, that is has more modifiers or more specific.
+	 * @param modifier1 - first modifier
+	 * @param modifier2 - second modifier
+	 * @return true or false
+	 */
+	public boolean isBetterSpecified(Modifier modifier1, Modifier modifier2) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 	
 }

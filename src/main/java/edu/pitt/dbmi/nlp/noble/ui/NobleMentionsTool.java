@@ -23,6 +23,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -245,7 +246,13 @@ public class NobleMentionsTool implements ActionListener{
 			public void run(){
 				repository.reset();
 				((DefaultListModel<DomainOntology>)templateList.getModel()).removeAllElements();
-				for(IOntology t: repository.getOntologies()){
+				IOntology [] ontologies = repository.getOntologies();
+				Arrays.sort(ontologies,new Comparator<IOntology>() {
+					public int compare(IOntology o1, IOntology o2) {
+						return o1.getName().compareTo(o2.getName());
+					}
+				});
+				for(IOntology t: ontologies){
 					try {
 						((DefaultListModel<DomainOntology>)templateList.getModel()).addElement(new DomainOntology(t));
 					} catch (IOntologyException e) {

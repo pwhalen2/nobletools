@@ -299,7 +299,7 @@ public class Instance {
 	}
 	
 	/**
-	 * add linguistic mofifier of this mention.
+	 * add linguistic modifier of this mention.
 	 *
 	 * @param m the m
 	 */
@@ -307,6 +307,22 @@ public class Instance {
 		getModifiers().add(m);
 		reset();
 	}
+	
+	/**
+	 * remove a modifier of this mention.
+	 *
+	 * @param m the m
+	 */
+	public void removeModifier(Modifier m) {
+		getModifiers().remove(m);
+		reset();
+	}
+	
+	/**
+	 * does this variable has a modifier of a given type?
+	 * @param type - type of modifier
+	 * @return true or false
+	 */
 	
 	public boolean hasModifierType(String type){
 		for(Modifier m: getModifiers()){
@@ -316,7 +332,18 @@ public class Instance {
 		return false;
 	}
 	
-
+	/**
+	 * get the first modifier of a given type
+	 * @param type - type of modifier 
+	 */
+	public Modifier getModifier(String type){
+		for(Modifier m: getModifiers()){
+			if(m.getType().equals(type))
+				return m;
+		}
+		return null;
+	}
+	
 	
 	/**
 	 * add modifier instance
