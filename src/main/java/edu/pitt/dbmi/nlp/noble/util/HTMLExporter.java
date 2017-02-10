@@ -272,7 +272,7 @@ public class HTMLExporter {
 	 * @param mentions the mentions
 	 * @return the string
 	 */
-	private String codeLabel(Annotation l, List<Mention> mentions){
+	private String codeLabel(Annotation l, Set<Mention> mentions){
 		String lid = ""+l.getOffset();
 		String word = l.getText();
 		List<String> codes = new ArrayList<String>();
@@ -453,15 +453,15 @@ public class HTMLExporter {
 	 * @param s the s
 	 * @return the map
 	 */
-	private Map<Annotation,List<Mention>> groupAnnotations(Sentence s) {
-		Map<Annotation,List<Mention>> map = new TreeMap<Annotation, List<Mention>>();
+	private Map<Annotation,Set<Mention>> groupAnnotations(Sentence s) {
+		Map<Annotation,Set<Mention>> map = new TreeMap<Annotation, Set<Mention>>();
 		for(Mention m: s.getMentions()){
 			// this takes care of main mentions
 			for(Annotation a: m.getAnnotations()){
 				if(s.contains(a) && !intersects(a,map.keySet())){
-					List<Mention> mm = map.get(a);
+					Set<Mention> mm = map.get(a);
 					if(mm == null){
-						mm = new ArrayList<Mention>();
+						mm = new LinkedHashSet<Mention>();
 						map.put(a,mm);
 					}
 					mm.add(m);
@@ -471,9 +471,9 @@ public class HTMLExporter {
 			for(Modifier mmm: m.getModifiers().values()){
 				for(Annotation a: mmm.getAnnotations()){
 					if(s.contains(a) && !intersects(a,map.keySet())){
-						List<Mention> mm = map.get(a);
+						Set<Mention> mm = map.get(a);
 						if(mm == null){
-							mm = new ArrayList<Mention>();
+							mm = new LinkedHashSet<Mention>();
 							map.put(a,mm);
 						}
 						mm.add(m);
@@ -519,7 +519,7 @@ public class HTMLExporter {
 		}else{
 			int offs = 0;
 			String content = s.getText();
-			Map<Annotation,List<Mention>> annotations = groupAnnotations(s);
+			Map<Annotation,Set<Mention>> annotations = groupAnnotations(s);
 			for(Annotation l : annotations.keySet()){
 				try{
 					int o = l.getOffset()-s.getOffset();

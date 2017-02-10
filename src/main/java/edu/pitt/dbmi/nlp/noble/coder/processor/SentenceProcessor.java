@@ -13,7 +13,7 @@ import edu.pitt.dbmi.nlp.noble.tools.SentenceDetector;
 import edu.pitt.dbmi.nlp.noble.tools.SynopticReportDetector;
 
 public class SentenceProcessor implements Processor<Document> {
-	private static final String PROSE_PATTERN = ".*\\b[a-z]+\\.\\s+[A-Z][a-z]+\\b.*";
+	private static final String PROSE_PATTERN = ".*\\b[a-z]+(\\.|\\?|!)\\s+[A-Z][a-z]+\\b.*";
 	private long time;
 	
 	
@@ -50,7 +50,7 @@ public class SentenceProcessor implements Processor<Document> {
 		}
 		// take care of the last sentence
 		if(str.length() > 0){
-			if(str.toString().trim().contains("\n") || Pattern.compile("[a-z]\\.\\s*[A-Z]").matcher(str.toString()).find()){
+			if(str.toString().trim().contains("\n") || str.toString().trim().matches(PROSE_PATTERN)){
 				parseSentences(doc, str.toString(), strOffset, Sentence.TYPE_PROSE);
 			}else{
 				parseSentences(doc, str.toString(), strOffset, Sentence.TYPE_LINE);

@@ -1122,7 +1122,12 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 				String regex = term.substring(1, term.length() - 1);
 				try {
 					Pattern.compile(regex);
-					storage.getRegexMap().put("\\b(" + regex + ")\\b", c.getCode());
+					// if pattern matches non-word characters, then  don't use  word, boundaries
+					if(regex.matches("\\W+"))
+						regex = "("+regex+")";
+					else
+						regex = "\\b(" + regex + ")\\b";
+					storage.getRegexMap().put(regex, c.getCode());
 				} catch (PatternSyntaxException ex) {
 					pcs.firePropertyChange(LOADING_MESSAGE, null, "Warning: failed to add regex /" + regex
 							+ "/ as synonym, because of pattern error : " + ex.getMessage());
