@@ -627,7 +627,7 @@ public class DomainOntology {
 	 */
 	private boolean isAnchor(Mention m) {
 		IClass cls = getConceptClass(m);
-		return cls != null ? cls.hasSuperClass(ontology.getClass(ANCHOR)):false;
+		return cls != null ? cls.hasSuperClass(ontology.getClass(ANCHOR)) || cls.hasSuperClass(ontology.getClass(COMPOUND_ANCHOR)):false;
 	}
 	
 	/**
