@@ -567,6 +567,9 @@ public class DomainOntology {
 	public List<Instance> getAnchors(List<Mention> mentions) {
 		List<Instance> anchors = new ArrayList<Instance>();
 
+		// remove redundant mentions
+		mentions = removeRedundantMentions(mentions);
+		
 		// add compound anchors as well 
 		Set<Mention> componentAnchors = new HashSet<Mention>();
 		for(Instance a: getCompoundAnchors(mentions)){
@@ -582,6 +585,39 @@ public class DomainOntology {
 		}
 		
 		return anchors;
+	}
+
+	/**
+	 * remove mentions that have the same concept and overlap
+	 * Ex: "EPITHELIAL INCLUSION CYST" produces 2 annotations in NM. One with synonym "Epithelial cyst" and another with synonym "Inclusion Cyst". 
+	 * @param mentions
+	 * @return
+	 */
+	private List<Mention> removeRedundantMentions(List<Mention> mentions) {
+		// assume mentions are already sorted
+		List<Mention> torem = new ArrayList<Mention>();
+		Mention prioMention = null;
+		for(Mention m: mentions){
+			if(prioMention != null){
+				// if prior mention contains the next one over and the share a concept nuke the next one
+				if(prioMention.getConcept().equals(m.getConcept())){
+					if(prioMention.contains(m) ){
+						torem.add(m);
+						continue;
+					}else if(m.contains(prioMention)){
+						torem.add(prioMention);
+					}
+				}
+			}
+			prioMention = m;
+		}
+		
+		// now remove reduntant mentions
+		if(!torem.isEmpty()){
+			mentions.removeAll(torem);
+		}
+		
+		return mentions;
 	}
 
 	/**

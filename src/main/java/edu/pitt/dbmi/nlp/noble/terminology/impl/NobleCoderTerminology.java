@@ -2409,6 +2409,7 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 		
 		// create result list
 		//time = System.currentTimeMillis();
+		Set<String> seenOriginalTerms = new HashSet<String>();
 		for(String term: resultTerms){
 			Set<String> codes = storage.getTermMap().get(term);
 			if(codes == null){
@@ -2416,7 +2417,13 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 			}
 			// Derive original looking term
 			String oterm = getOriginalTerm(text, term, normWords);
-		
+			
+			// if have multiple normalized terms, resolve to the same original term
+			// then skip subsequent onces
+			if(seenOriginalTerms.contains(oterm))
+				continue;
+			seenOriginalTerms.add(oterm);
+			
 			// create 
 			List<Concept> termConcepts = new ArrayList<Concept>();
 			for(String code: codes){
