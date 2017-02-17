@@ -490,7 +490,14 @@ public class DomainOntology {
 		return name;
 	}
 	
-	
+	/**
+	 * get concept class for a given mention
+	 * @param modifier object
+	 * @return class that represents this mention
+	 */
+	public IClass getConceptClass(Modifier modifier){
+		return getConceptClass(modifier.getMention());
+	}
 	/**
 	 * get concept class for a given mention
 	 * @param mention object
@@ -1215,7 +1222,31 @@ public class DomainOntology {
 	 * @return true or false
 	 */
 	public boolean isBetterSpecified(Modifier modifier1, Modifier modifier2) {
-		// TODO Auto-generated method stub
+		IClass mod1 = getConceptClass(modifier1);
+		IClass mod2 = getConceptClass(modifier2);
+		if(mod1 != null && mod2 != null){
+			// if two modifiers are the same, then 
+			// check based on other modifiers
+			if(mod1.equals(mod2)){
+				Map<String,Modifier> mp1 = modifier1.getMention().getModifiers();
+				Map<String,Modifier> mp2 = modifier2.getMention().getModifiers();
+				
+				// make sure, that there is no huge different in attributes
+				// Ex: left breast 1:30 o'cloc vs right breast
+				for(String type: mp1.keySet()){
+					if(mp2.containsKey(type)){
+						if(!mp1.get(type).getValue().equals(mp2.get(type).getValue())){
+							return false;
+						}
+					}
+				}
+				
+				return mp1.size() > mp2.size();
+			// if modifier1 is more specific, it is better specified	
+			}else if(mod1.hasSuperClass(mod2)){
+				return true;
+			}
+		}
 		return false;
 	}
 	
