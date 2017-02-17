@@ -71,13 +71,17 @@ public class SentenceProcessor implements Processor<Document> {
 	 * @param type the type
 	 */
 	private void parseSentences(Document doc, String text, int offset, String type){
-		// if sentence starts with lots of spaces or bullets
-		Pattern p = Pattern.compile("^(([A-Z0-9-\\)]{1,2}\\.?)?\\s+)\\w.*",Pattern.DOTALL|Pattern.MULTILINE);
+		// if sentence starts with lots of spaces or bullets 
+		// old pattern
+		Pattern p = Pattern.compile("^(([A-Z]?[0-9-\\)]{0,2}\\.?)?\\s+)\\w.*",Pattern.DOTALL|Pattern.MULTILINE);
+	
 		Matcher m = p.matcher(text);
 		if(m.matches()){
 			String prefix = m.group(1);
-			text = text.substring(prefix.length());
-			offset = offset + prefix.length();
+			if(prefix.trim().length()>0){
+				text = text.substring(prefix.length());
+				offset = offset + prefix.length();
+			}
 		}
 		
 		// start adding sentences
