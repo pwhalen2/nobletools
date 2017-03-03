@@ -523,7 +523,7 @@ public class ConText implements Processor<Sentence> {
 	 * @param type
 	 * @return
 	 */
-	private boolean isTypeOf(Mention m, String type){
+	public static boolean isTypeOf(Mention m, String type){
 		for(SemanticType st: m.getConcept().getSemanticTypes())
 			if(st.getName().equals(type))
 				return true;

@@ -282,33 +282,48 @@ public class HTMLExporter {
 			Concept c = m.getConcept();
 			String p = (m.isNegated())?"N":(m.isHedged()?"U":"");
 			codes.add("'"+p+m.getConcept().getCode()+"'");
-			tip.append(c.getName()+" ("+c.getCode()+") "+Arrays.toString(c.getSemanticTypes())+"\n");
+			tip.append(c.getName()+" ("+c.getCode()+")\n"+Arrays.toString(c.getSemanticTypes())+"\n");
 			
 			// add modifiers
 			tip.append(getModifiers(m));
-			
-			if(!isDefaultModifiers(m)){
-				color = "#994d00";
+
+			if("green".equals(color)) {
+				if (isModifiers(m)) {
+					color = "#FF8C00";
+				}/* else if (!isDefaultLinguisticModifiers(m)) {
+					color = "#556B2F"; //"#994d00";
+				}*/
 			}
-			
 		}
 		return "<label id=\""+lid+"\" style=\"color:"+color+";\" onmouseover=\"h("+codes+");\" onmouseout=\"u("+codes+
 				");\" title=\""+TextTools.escapeHTML(tip.toString())+"\">"+word+"</label>";
 	}
 	
 	/**
-	 * Checks if is default modifiers.
+	 * Checks if is default linguistic modifiers.
 	 *
 	 * @param m the m
 	 * @return true, if is default modifiers
 	 */
-	private boolean isDefaultModifiers(Mention m) {
-		for(Modifier mod: m.getModifiers().values()){
-			if(!mod.isDefaultValue()){
-				return false;
+	private boolean isDefaultLinguisticModifiers(Mention m) {
+		for(String type: Mention.getLinguisticModifierTypes()){
+			for(Modifier mod: m.getModifiers(type)){
+				if(!mod.isDefaultValue()){
+					return false;
+				}
 			}
 		}
 		return true;
+	}
+
+	/**
+	 * Checks if is default linguistic modifiers.
+	 *
+	 * @param m the m
+	 * @return true, if is default modifiers
+	 */
+	private boolean isModifiers(Mention m) {
+		return ConText.isTypeOf(m,ConText.MODIFIER);
 	}
 
 	/**
@@ -323,7 +338,7 @@ public class HTMLExporter {
 				ConText.MODIFIER_TYPE_CERTAINTY,	ConText.MODIFIER_TYPE_POLARITY,
 				ConText.MODIFIER_TYPE_EXPERIENCER,ConText.MODIFIER_TYPE_TEMPORALITY)){
 			if(m.getModifierValue(type) != null)
-				st.append("\t"+type+" :\t"+m.getModifierValue(type)+"\n");
+				st.append("  "+type+" : "+m.getModifierValue(type)+"\n");
 		}
 		
 		return st.toString();
@@ -468,7 +483,7 @@ public class HTMLExporter {
 				}
 			}
 			// what about modifiers for each mention?
-			for(Modifier mmm: m.getModifiers().values()){
+			for(Modifier mmm: m.getModifiers()){
 				for(Annotation a: mmm.getAnnotations()){
 					if(s.contains(a) && !intersects(a,map.keySet())){
 						Set<Mention> mm = map.get(a);
@@ -476,7 +491,7 @@ public class HTMLExporter {
 							mm = new LinkedHashSet<Mention>();
 							map.put(a,mm);
 						}
-						mm.add(m);
+						mm.add(mmm.getMention());
 					}
 				}
 			}

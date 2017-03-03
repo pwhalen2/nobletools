@@ -54,10 +54,10 @@ public class ConTextTest {
 				Concept c = m.getConcept();
 				System.out.println("\t"+c.getName()+" ("+c.getCode()+") "+Arrays.toString(c.getSemanticTypes())+" \""+
 						m.getText()+"\"");
-				for(String context: m.getModifiers().keySet()){
-					Modifier modifier = m.getModifier(context);
-					String mention = modifier.getMention() != null?"\""+modifier.getMention()+"\"":"(default)";
-					System.out.println("\t\t"+modifier.getType()+" : "+modifier+"\t "+mention);
+				for(String context: m.getModifierTypes()){
+					//Modifier modifier = m.getModifier(context);
+					//String mention = modifier.getMention() != null?"\""+modifier.getMention()+"\"":"(default)";
+					System.out.println("\t\t"+context+" : "+m.getModifiers(context));
 				}
 
 			}

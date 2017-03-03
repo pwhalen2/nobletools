@@ -169,6 +169,7 @@ public class SentenceProcessor implements Processor<Document> {
 			return false;
 		
 		// if previous sentence ends with a lower case word or digit or comma
+		// and next one starts with normal non-upper case word
 		if(last.matches(".+\\s([A-Z]?[a-z]+|\\d+),?") && s.matches("\\s*([A-Z]?[a-z]+)\\b.+")){
 			return true;
 		}

@@ -218,7 +218,7 @@ public class CSVExporter {
 	 */
 	private String getModifierTypes(){
 		StringBuffer st = new StringBuffer();
-		for(String s: Mention.getModifierTypes()){
+		for(String s: Mention.getLinguisticModifierTypes()){
 			st.append(S+s);
 		}
 		return st.toString();
@@ -232,7 +232,7 @@ public class CSVExporter {
 	 */
 	private String getModifierValues(Mention m){
 		StringBuffer st = new StringBuffer();
-		for(String s: Mention.getModifierTypes()){
+		for(String s: Mention.getLinguisticModifierTypes()){
 			String v = m.getModifierValue(s);
 			st.append(S+(v == null?"":v));
 		}

@@ -761,7 +761,7 @@ public class DomainOntology {
 			if(mention.getSentence() == null)
 				mention.setSentence(m.getSentence());
 			annotations.addAll(m.getAnnotations());
-			mention.getModifiers().putAll(m.getModifiers());
+			mention.addModifiers(m.getModifierMap());
 		}
 		mention.setAnnotations(annotations);
 		
@@ -935,16 +935,19 @@ public class DomainOntology {
 							// now go over potential specific instances
 							for(IInstance inst: getSpecificInstances(modifierCls)){
 								// set data properties
-								for(String prop: m.getModifiers().keySet()){
+								for(String prop: m.getModifierMap().keySet()){
 									IProperty property = getProperty(prop);
-									Modifier mod = m.getModifier(prop);
 									if(property == null)
 										continue;
-									
-									if(mod.getMention() != null){
-										inst.setPropertyValue(property,getConceptInstance(mod.getMention()));
-									}else{
-										inst.setPropertyValue(property,new Double(mod.getValue()));
+									// clear values
+									inst.removePropertyValues(property);
+									// add all values
+									for(Modifier mod : m.getModifiers(prop)) {
+										if (mod.getMention() != null) {
+											inst.addPropertyValue(property,getConceptInstance(mod.getMention()));
+										} else {
+											inst.addPropertyValue(property, new Double(mod.getValue()));
+										}
 									}
 								}
 								
@@ -1076,7 +1079,7 @@ public class DomainOntology {
 		Mention m = new Mention();
 		m.setConcept(concept);
 		m.setAnnotations(mention.getAnnotations());
-		m.getModifiers().putAll(mention.getModifiers());
+		m.addModifiers(mention.getModifierMap());
 		
 		return m;
 	}
@@ -1264,8 +1267,8 @@ public class DomainOntology {
 			// if two modifiers are the same, then 
 			// check based on other modifiers
 			if(mod1.equals(mod2)){
-				Map<String,Modifier> mp1 = modifier1.getMention().getModifiers();
-				Map<String,Modifier> mp2 = modifier2.getMention().getModifiers();
+				/*	Map<String,List<Modifier>> mp1 = modifier1.getMention().getModifierMap();
+				Map<String,List<Modifier>> mp2 = modifier2.getMention().getModifierMap();
 				
 				// make sure, that there is no huge different in attributes
 				// Ex: left breast 1:30 o'cloc vs right breast
@@ -1276,8 +1279,21 @@ public class DomainOntology {
 						}
 					}
 				}
-				
-				return mp1.size() > mp2.size();
+
+				return mp1.size() > mp2.size();*/
+
+				// make sure, that there is no huge different in attributes
+				// Ex: left breast 1:30 o'cloc vs right breast
+				Mention m1 = modifier1.getMention();
+				Mention m2 = modifier2.getMention();
+				for(String type: m1.getModifierTypes()){
+					List<String> values = m2.getModifierValues(type);
+					if(!values.isEmpty() && !m1.getModifierValues(type).containsAll(values)){
+						return false;
+					}
+				}
+				return m1.getModifierTypes().size() > m2.getModifierTypes().size();
+
 			// if modifier1 is more specific, it is better specified	
 			}else if(mod1.hasSuperClass(mod2)){
 				return true;

@@ -1,5 +1,6 @@
 package edu.pitt.dbmi.nlp.noble.coder.model;
 
+import com.sun.org.apache.xpath.internal.operations.Mod;
 import edu.pitt.dbmi.nlp.noble.terminology.*;
 import edu.pitt.dbmi.nlp.noble.terminology.impl.NobleCoderTerminology;
 import edu.pitt.dbmi.nlp.noble.tools.ConText;
@@ -16,7 +17,7 @@ public class Mention implements Spannable, Comparable<Mention> {
 	private Concept concept;
 	private List<Annotation> annotations;
 	private Sentence sentence;
-	private Map<String,Modifier> modifiers;
+	private Map<String,List<Modifier>> modifiers;
 	
 	
 	/**
@@ -160,6 +161,14 @@ public class Mention implements Spannable, Comparable<Mention> {
 	}
 
 	/**
+	 * get length of this mention span
+	 * @return length of the span
+	 */
+	public int getLength() {
+		return getText().length();
+	}
+
+	/**
 	 * compare to other mentions.
 	 *
 	 * @param o the o
@@ -261,12 +270,34 @@ public class Mention implements Spannable, Comparable<Mention> {
 
 
 	/**
-	 * modifier types used throught the system.
+	 * modifier types used for this mention
 	 *
 	 * @return the modifier types
 	 */
-	public static List<String> getModifierTypes(){
+	public Set<String> getModifierTypes(){
+		return getModifierMap().keySet();
+	}
+
+	/**
+	 * linguistic modifier types used for this mention
+	 *
+	 * @return the modifier types
+	 */
+	public static List<String> getLinguisticModifierTypes(){
 		return ConText.MODIFIER_TYPES;
+	}
+
+
+	/**
+	 * get a mapping of linguistic context found for this mention.
+	 *
+	 * @return the modifiers
+	 */
+	public Map<String,List<Modifier>> getModifierMap(){
+		if(modifiers == null){
+			modifiers = new LinkedHashMap<String, List<Modifier>>();
+		}
+		return modifiers;
 	}
 
 	/**
@@ -274,11 +305,11 @@ public class Mention implements Spannable, Comparable<Mention> {
 	 *
 	 * @return the modifiers
 	 */
-	public Map<String,Modifier> getModifiers(){
-		if(modifiers == null){
-			modifiers = new LinkedHashMap<String,Modifier>();
-		}
-		return modifiers;
+	public List<Modifier> getModifiers(){
+		List<Modifier> list = new ArrayList<Modifier>();
+		for(List<Modifier> l : getModifierMap().values())
+			list.addAll(l);
+		return list;
 	}
 	
 	/**
@@ -288,54 +319,12 @@ public class Mention implements Spannable, Comparable<Mention> {
 	 */
 	public List<Annotation> getModifierAnnotations(){
 		List<Annotation> list = new ArrayList<Annotation>();
-		for(Modifier m: getModifiers().values()){
+		for(Modifier m: getModifiers()){
 			list.addAll(m.getAnnotations());
 		}
 		return list;
 	}
 
-	/**
-	 * add linguistic mofifier of this mention.
-	 *
-	 * @param m the m
-	 */
-	public void addModifier(Modifier m) {
-		boolean add = false;
-		if(getModifiers().containsKey(m.getType())){
-			Modifier oldM = getModifiers().get(m.getType());
-			// replace default modifier, with non default modifier
-			if(oldM.isDefaultValue() && !m.isDefaultValue()){
-				add = true;
-			}
-			// if new modifier is longer, then replace the old one
-			if(m.getMention() != null && oldM.getMention() != null && m.getMention().contains(oldM.getMention())){
-				add = true;
-			}
-		}else{
-			// if no modifier of that type was defined 
-			add = true;
-		}
-		
-		// add modifier
-		if(add)
-			getModifiers().put(m.getType(),m);
-		
-		// if we don't have modifier defined for that type, or it is default, or the new value is not default
-		//if(!getModifiers().containsKey(m.getType()) || getModifiers().get(m.getType()).isDefaultValue() || !m.isDefaultValue()){
-		//	getModifiers().put(m.getType(),m);
-		//}
-	}
-	
-	/**
-	 * add linguistic mofifier of this mention.
-	 *
-	 * @param list the list
-	 */
-	public void addModifiers(List<Modifier> list) {
-		for(Modifier m: list){
-			addModifier(m);
-		}
-	}
 	
 	/**
 	 * Gets the modifier.
@@ -343,18 +332,38 @@ public class Mention implements Spannable, Comparable<Mention> {
 	 * @param type the type
 	 * @return the modifier
 	 */
-	public Modifier getModifier(String type){
-		return getModifiers().get(type);
+	public List<Modifier> getModifiers(String type){
+		if(getModifierMap().containsKey(type)){
+			return getModifierMap().get(type);
+		}
+		return Collections.EMPTY_LIST;
 	}
 	
+	/**
+	 * Gets the modifier value of the first mention of that type.
+	 *
+	 * @param type the type
+	 * @return the modifier value
+	 */
+	public String getModifierValue(String type){
+		for(Modifier m: getModifiers(type)){
+			return m.getValue();
+		}
+		return null;
+	}
+
 	/**
 	 * Gets the modifier value.
 	 *
 	 * @param type the type
 	 * @return the modifier value
 	 */
-	public String getModifierValue(String type){
-		return getModifiers().containsKey(type)?getModifiers().get(type).getValue():null;
+	public List<String> getModifierValues(String type){
+		List<String> values = new ArrayList<String>();
+		for(Modifier m: getModifiers(type)){
+			values.add(m.getValue());
+		}
+		return values;
 	}
 	
 	/**
@@ -392,6 +401,120 @@ public class Mention implements Spannable, Comparable<Mention> {
 	public boolean isFamilyMember(){
 		return ConText.MODIFIER_VALUE_FAMILY_MEMBER.equals(getModifierValue(ConText.MODIFIER_TYPE_EXPERIENCER));
 	}
-	
 
+	/**
+	 * add modifier to this mention.
+	 *
+	 * @param m the m
+	 */
+	public void addModifier(Modifier m) {
+		/*
+		boolean add = false;
+		if(getModifierMap().containsKey(m.getType())){
+			Modifier oldM = getModifierMap().get(m.getType());
+			// replace default modifier, with non default modifier
+			if(oldM.isDefaultValue() && !m.isDefaultValue()){
+				add = true;
+			}
+			// if new modifier is longer, then replace the old one
+			if(m.getMention() != null && oldM.getMention() != null && m.getMention().contains(oldM.getMention())){
+				add = true;
+			}
+		}else{
+			// if no modifier of that type was defined
+			add = true;
+		}
+
+		// add modifier
+		if(add)
+			getModifiers().put(m.getType(),m);
+		*/
+
+
+		// get existing values
+		List<Modifier> list = getModifierMap().get(m.getType());
+		// if nothing there, then just add
+		if(list == null){
+			list = new ArrayList<Modifier>();
+		}else{
+			// augment or replace the existing list
+			for(ListIterator<Modifier> it=list.listIterator();it.hasNext();){
+				Modifier oldM = it.next();
+				// replace default modifier, with non default modifier
+				if(oldM.isDefaultValue() && !m.isDefaultValue()){
+					it.remove(); // remove the old (default) modifier
+					continue;
+				}
+				// if old modifier has no mention, but new one does, replace
+				if(oldM.getMention() == null && m.getMention() != null){
+					it.remove(); // remove the old (default) modifier
+					continue;
+				}
+
+				// if both modifiers have mentions, which should be most of the time
+				if(m.getMention() != null && oldM.getMention() != null ){
+					Mention nM = m.getMention();
+					Mention oM = oldM.getMention();
+					// if a new modifier contains an old modifier and is larger then remove old
+					if(nM.contains(oM) && nM.getLength() > oM.getLength()){
+						it.remove();
+					// if an older modifier contains a new modifier
+					}else if (oM.contains(nM) && oM.getLength() > nM.getLength()){
+						// old modifier is better as it has a larger span,
+						return;
+					// don't add identical mentions please
+					}else if(nM.equals(oM)){
+						return;
+					}
+				}
+			}
+		}
+		// add/re-add the list back to the map
+		list.add(m);
+		getModifierMap().put(m.getType(),list);
+	}
+
+	/**
+	 * add linguistic mofifier of this mention.
+	 *
+	 * @param list the list
+	 */
+	public void addModifiers(List<Modifier> list) {
+		for(Modifier m: list){
+			addModifier(m);
+		}
+	}
+
+	/**
+	 * add linguistic mofifier of this mention.
+	 *
+	 * @param map of modifier lists
+	 */
+	public void addModifiers(Map<String,List<Modifier>> map) {
+		for(String type: map.keySet()){
+			if(getModifierMap().containsKey(type)){
+				addModifiers(map.get(type));
+			}else {
+				getModifierMap().put(type, map.get(type));
+			}
+		}
+	}
+
+	/**
+	 * is mention equal to another mention?
+	 * It is if they point to the same concept and have the same set of text annotations
+	 * @param m - mention to compare to
+	 * @return true or false
+	 */
+	public boolean equals(Mention m){
+		return getConcept().equals(m.getConcept()) && getAnnotations().containsAll(m.getAnnotations());
+	}
+
+	/**
+	 * generate hash code from concept code and annotations
+	 * @return true or false
+	 */
+	public int hashCode() {
+		return (getCode()+getAnnotations()).hashCode();
+	}
 }

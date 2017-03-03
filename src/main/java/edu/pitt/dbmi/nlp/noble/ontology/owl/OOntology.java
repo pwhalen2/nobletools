@@ -230,6 +230,20 @@ public class OOntology extends OResource implements IOntology{
 	 */
 	public static OOntology loadOntology(File file) throws IOntologyException {
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+		setupLocalIRImapper(manager,file);
+		try{
+			return new OOntology(manager.loadOntologyFromOntologyDocument(file));
+		} catch (OWLOntologyCreationException e) {
+			throw new IOntologyException("Unable to create ontology "+file,e);
+		}
+	}
+
+	/**
+	 * setup local IRI mapper from an local ontology file
+	 * @param manager
+	 * @param dir
+	 */
+	private static void setupLocalIRImapper(OWLOntologyManager manager, File file){
 		for(File f: file.getParentFile().listFiles()){
 			if(f.getName().endsWith(".owl") && !file.equals(f)){
 				URI uri = null;
@@ -242,13 +256,8 @@ public class OOntology extends OResource implements IOntology{
 					manager.addIRIMapper(new SimpleIRIMapper(IRI.create(uri), IRI.create(f)));
 			}
 		}
-		try{
-			return new OOntology(manager.loadOntologyFromOntologyDocument(file));
-		} catch (OWLOntologyCreationException e) {
-			throw new IOntologyException("Unable to create ontology "+file,e);
-		}
 	}
-	
+
 	
 	/**
 	 * load ontology from file.
@@ -326,6 +335,7 @@ public class OOntology extends OResource implements IOntology{
 	 */
 	public static OOntology createOntology(URI ontologyURI, File parentOntology) throws IOntologyException {
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+		setupLocalIRImapper(manager,parentOntology);
 		//manager.addOntologyStorer(new OWLXMLOntologyStorer());
 		try{
 			URI parentURI = OntologyUtils.getOntologyURI(parentOntology);

@@ -62,4 +62,12 @@ public interface Spannable {
 	 * @return true, if successful
 	 */
 	public boolean after(Spannable s);
+
+
+	/**
+	 * Gets the length.
+	 *
+	 * @return the length
+	 */
+	public int getLength();
 }

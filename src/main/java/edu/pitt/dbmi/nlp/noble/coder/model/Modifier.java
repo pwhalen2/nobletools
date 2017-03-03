@@ -158,4 +158,18 @@ public class Modifier {
 			return mention.getAnnotations();
 		return Collections.EMPTY_LIST;
 	}
+
+	public int hashCode() {
+		return getInfo().hashCode();
+	}
+
+	public boolean equals(Modifier m) {
+		if(mention != null && m.getMention() != null)
+			return mention.equals(m.getMention());
+		return getInfo().equals(m.getInfo());
+	}
+
+	private String getInfo(){
+		return type+": "+value+" "+mention;
+	}
 }

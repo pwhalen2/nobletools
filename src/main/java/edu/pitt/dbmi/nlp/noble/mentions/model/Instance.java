@@ -28,7 +28,7 @@ public class Instance {
 	protected Modifier modifier;
 	protected IClass cls;
 	protected IInstance instance;
-	protected List<Modifier> modifiers;
+	protected Set<Modifier> modifiers;
 	protected Map<String,Set<Instance>> modifierInstances;
 	protected Set<Annotation> annotations;
 	protected List<Mention> compoundComponents;
@@ -86,7 +86,7 @@ public class Instance {
 		this.mention = mention;
 		cls = domainOntology.getConceptClass(mention);
 		if(mention != null)
-			getModifiers().addAll(mention.getModifiers().values());
+			getModifiers().addAll(mention.getModifiers());
 		reset();
 	}
 
@@ -278,9 +278,9 @@ public class Instance {
 	 * get a list of modifiers associated with this instance
 	 * @return the modifiers
 	 */
-	public List<Modifier> getModifiers(){
+	public Set<Modifier> getModifiers(){
 		if(modifiers == null){
-			modifiers = new ArrayList<Modifier>();
+			modifiers = new LinkedHashSet<Modifier>();
 		}
 		return modifiers;
 	}
