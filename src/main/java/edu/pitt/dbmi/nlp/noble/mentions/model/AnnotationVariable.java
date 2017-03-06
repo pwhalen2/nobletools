@@ -1,11 +1,6 @@
 package edu.pitt.dbmi.nlp.noble.mentions.model;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.*;
 
 import edu.pitt.dbmi.nlp.noble.coder.model.Mention;
 import edu.pitt.dbmi.nlp.noble.coder.model.Modifier;
@@ -23,8 +18,7 @@ import edu.pitt.dbmi.nlp.noble.ontology.IRestriction;
 public class AnnotationVariable extends Instance {
 	private Instance anchor;
 	private String annotationType;
-	//private List<Mention> mentions;
-	
+
 	/**
 	 * create a new annotation variable wih anchor
 	 * @param annotation class
@@ -41,23 +35,7 @@ public class AnnotationVariable extends Instance {
 	public Instance getAnchor() {
 		return anchor;
 	}
-	
-	/**
-	 * get all of mentions associated with this variable
-	 * @return
-	 *
-	public List<Mention> getMentions() {
-		if(mentions == null){
-			mentions = new ArrayList<Mention>();
-			mentions.addAll(anchor.getMentions());
-			for(Modifier m: getModifierList()){
-				if(m.getMention() != null)
-					mentions.add(m.getMention());
-			}
-		}
-		return mentions;
-	}
-	*/
+
 
 	/**
 	 * get annotation type of this variable
@@ -95,17 +73,21 @@ public class AnnotationVariable extends Instance {
 			instance.addPropertyValue(ont.getProperty(DomainOntology.HAS_ANNOTATION_TYPE),domainOntology.getDefaultInstance(annotationCls));
 			addModifierInstance(DomainOntology.HAS_ANNOTATION_TYPE,new Instance(domainOntology,Modifier.getModifier(DomainOntology.HAS_ANNOTATION_TYPE,getAnnotationType())));
 			
-			// add section if available
+			// add section if available, if not use default
+			Instance sectionInstance = null;
 			Section section = mention.getSentence().getSection();
 			if(section != null && section.getHeader() != null){
-				Instance sectionInstance = new Instance(domainOntology,section.getHeader());
-				instance.addPropertyValue(ont.getProperty(DomainOntology.HAS_SECTION), sectionInstance.getInstance());
-				addModifierInstance(DomainOntology.HAS_SECTION,sectionInstance);
+				sectionInstance = new Instance(domainOntology,section.getHeader());
+			}else{
+				// add generic upper level section if section is not available
+				sectionInstance = new Instance(domainOntology,
+						Modifier.getModifier(DomainOntology.HAS_SECTION,DomainOntology.DOCUMENT_SECTION));
 			}
-			
+			instance.addPropertyValue(ont.getProperty(DomainOntology.HAS_SECTION), sectionInstance.getInstance());
+			addModifierInstance(DomainOntology.HAS_SECTION,sectionInstance);
 			
 			// instantiate available modifiers
-			List<Instance> modifierInstances = getModifierInstanceList();
+			List<Instance> modifierInstances = createModifierInstanceList();
 			
 			// go over all restrictions
 			for(IRestriction r: domainOntology.getRestrictions(cls)){
@@ -113,7 +95,7 @@ public class AnnotationVariable extends Instance {
 				for(Instance modifierInstance: modifierInstances){
 					IInstance modInstance = modifierInstance.getInstance();
 					if(modInstance != null && domainOntology.isPropertyRangeSatisfied(prop,modInstance)){
-						instance.addPropertyValue(prop, modInstance);
+						//instance.addPropertyValue(prop, modInstance);
 						addModifierInstance(prop.getName(),modifierInstance);
 					}
 				}

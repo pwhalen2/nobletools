@@ -21,9 +21,7 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import edu.pitt.dbmi.nlp.noble.coder.model.Mention;
-import edu.pitt.dbmi.nlp.noble.coder.model.Modifier;
-import edu.pitt.dbmi.nlp.noble.coder.model.Sentence;
+import edu.pitt.dbmi.nlp.noble.coder.model.*;
 import edu.pitt.dbmi.nlp.noble.coder.processor.DictionarySectionProcessor;
 import edu.pitt.dbmi.nlp.noble.ontology.ClassPath;
 import edu.pitt.dbmi.nlp.noble.ontology.IClass;
@@ -87,6 +85,7 @@ public class DomainOntology {
 	public static final String HAS_DENOMINATOR_VALUE = "hasDenominatorValue";
 	public static final String HAS_LOW_VALUE = "hasLowValue";
 	public static final String HAS_HIGH_VALUE = "hasHighValue";
+	public static final String HAS_RELATION = "hasRelation";
 	private static final String DIMENSION_VALUE = "DimensionValue";
 	public static final String HAS_UNIT = "hasUnit";
 	public static final String UNIT = "Unit";
@@ -1118,10 +1117,21 @@ public class DomainOntology {
 	public List<IRestriction> getRestrictions(IClass cls){
 		List<IRestriction> list = new ArrayList<IRestriction>();
 		for(ILogicExpression exp: Arrays.asList(cls.getEquivalentRestrictions(),cls.getNecessaryRestrictions())){
-			for(Object obj: exp){
-				if(obj instanceof IRestriction){
-					list.add((IRestriction)obj);
-				}
+			list.addAll(getRestrictions(exp));
+		}
+		return list;
+	}
+
+	/**
+	 * get all restrictions equivalent and necessary as a flat list
+	 * @param exp - expression in question
+	 * @return get all restrictions for a class
+	 */
+	public List<IRestriction> getRestrictions(ILogicExpression exp){
+		List<IRestriction> list = new ArrayList<IRestriction>();
+		for(Object obj: exp){
+			if(obj instanceof IRestriction){
+				list.add((IRestriction)obj);
 			}
 		}
 		return list;
@@ -1301,5 +1311,116 @@ public class DomainOntology {
 		}
 		return false;
 	}
-	
+
+	/**
+	 * find nearest mention of related variables by relationship
+	 * @param var - variable in question
+	 * @param variables - list of variables in the document
+	 * @return
+	 */
+	public Map<String,Instance> getRelatedVariables(AnnotationVariable var, List<AnnotationVariable> variables) {
+		Map<String,Instance> map = new LinkedHashMap<String, Instance>();
+		Document doc = var.getMention().getSentence().getDocument();
+
+		int i = variables.indexOf(var);
+		if(i > -1){
+			IClass cls = var.getConceptClass();
+			Map<String,Set<IClass>> relatedAnnotations = getRelatedAnnotations(cls);
+
+			// search for variables before this instance
+			List<AnnotationVariable> before = variables.subList(0,i);
+			List<AnnotationVariable> after  = variables.subList(i+1,variables.size());
+
+			// reverse the before variables
+			Collections.reverse(before);
+
+			// go over relations that apply
+			for (String relation : relatedAnnotations.keySet()) {
+				// go over  both candidate lists: before and after
+				for(List<AnnotationVariable> list: Arrays.asList(before,after)) {
+					// for each candidate in a respective list
+					for (AnnotationVariable candidate : list) {
+						// if this annotation variable satisfies the relation
+						if(isSatisfiable(candidate.getConceptClass(),relatedAnnotations.get(relation))) {
+							// get previous instance
+							Instance oldInstance = map.get(relation);
+							if(oldInstance == null) {
+								map.put(relation, candidate);
+							}else{
+								// if new candidate is closer then the old one
+								// replace the old one
+								int oWC = Text.getWordDistance(doc,oldInstance.getMention(),var.getMention());
+								int nWC = Text.getWordDistance(doc,candidate.getMention(),var.getMention());
+
+								// if word distance of the new candidate
+								// is smaller, then replace it
+								if(nWC < oWC){
+									map.put(relation,candidate);
+								}
+							}
+							break;
+						}
+					}
+				}
+			}
+		}
+
+		return map;
+	}
+
+	/**
+	 * is the class satisfiable based on the list of candidates
+	 * the class needs to be equal or more specific then any of the classes
+	 * @param cls - class in question
+	 * @param candidates - list of candidates
+	 * @return true if class if equal or more specific
+	 */
+	private boolean isSatisfiable(IClass cls, Set<IClass> candidates){
+		for(IClass c: candidates){
+			if(c.equals(cls) || c.hasSubClass(cls))
+				return true;
+		}
+		return false;
+	}
+
+
+	/**
+	 * get a mapping of relations and classes that are related annotations
+	 * @param cls - class in question
+	 * @return map -  a map of relation per related classes
+	 */
+
+	private Map<String,Set<IClass>> getRelatedAnnotations(IClass cls){
+		IClass annotation = cls.getOntology().getClass(ANNOTATION);
+		IProperty hasRelation = cls.getOntology().getProperty(HAS_RELATION);
+
+		Map<String,Set<IClass>> relatedAnnotations = new HashMap<String, Set<IClass>>();
+
+		// go through equivalent, then direct, the all necessary restrictions
+		for(ILogicExpression exp: Arrays.asList(
+				cls.getEquivalentRestrictions(),
+				cls.getDirectNecessaryRestrictions(),
+				cls.getNecessaryRestrictions())) {
+			for (IRestriction r : getRestrictions(exp)) {
+				IProperty p = r.getProperty();
+				// make sure property restriction is also legit property
+				if(hasRelation.hasSubProperty(p)){
+					// only associate annotations, when this property was not added prior
+					// this assures that equivalent property overrides the direct,
+					// then all necessary restrictions
+					if(!relatedAnnotations.containsKey(p.getName())) {
+						Set<IClass> list = new LinkedHashSet<IClass>();
+						for (IClass c : getContainedClasses(r.getParameter())) {
+							// if a class is an annotation
+							if (c.hasSuperClass(annotation)) {
+								list.add(c);
+							}
+						}
+						relatedAnnotations.put(p.getName(),list);
+					}
+				}
+			}
+		}
+		return relatedAnnotations;
+	}
 }

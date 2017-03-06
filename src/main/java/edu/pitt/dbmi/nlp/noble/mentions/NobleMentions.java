@@ -16,6 +16,7 @@ import edu.pitt.dbmi.nlp.noble.mentions.model.Instance;
 import edu.pitt.dbmi.nlp.noble.mentions.model.AnnotationVariable;
 import edu.pitt.dbmi.nlp.noble.mentions.model.Composition;
 import edu.pitt.dbmi.nlp.noble.mentions.model.DomainOntology;
+import edu.pitt.dbmi.nlp.noble.terminology.Annotation;
 import edu.pitt.dbmi.nlp.noble.terminology.Concept;
 import edu.pitt.dbmi.nlp.noble.terminology.TerminologyException;
 import edu.pitt.dbmi.nlp.noble.tools.ConText;
@@ -118,7 +119,7 @@ public class NobleMentions implements Processor<Composition>{
 						if(!var.hasModifierType(modifier.getType())){
 							var.addModifier(modifier);
 						}else{
-							//if global is more "defined" global modifierscd
+							//if global is more "defined" global modifiers
 							Modifier priorModifier = var.getModifier(modifier.getType());
 							if(domainOntology.isBetterSpecified(modifier,priorModifier)){
 								var.removeModifier(priorModifier);
@@ -149,10 +150,41 @@ public class NobleMentions implements Processor<Composition>{
 				}
 			}
 		}
-		
-		// add them to a document
+
+		// convert the map to list
+		List<AnnotationVariable> goodVariables = new ArrayList<AnnotationVariable>();
+		// add them to a list
 		for(String key: variables.keySet()){
-			doc.addAnnotationVariable(variables.get(key));
+			goodVariables.add(variables.get(key));
+		}
+
+		// now go over all satisfied variables and see if we can link them
+		// to other variables that were already satisfied
+		for(AnnotationVariable var : goodVariables){
+			Map<String,Instance> relatedVariables = domainOntology.getRelatedVariables(var,goodVariables);
+			for(String relation: relatedVariables.keySet()){
+				var.addModifierInstance(relation,relatedVariables.get(relation));
+			}
+		}
+
+		// what if failed variable failed, cause it didn't have a relationship
+		for(ListIterator<AnnotationVariable> it = failedVariables.listIterator();it.hasNext();){
+			AnnotationVariable var = it.next();
+			Map<String,Instance> relatedVariables = domainOntology.getRelatedVariables(var,goodVariables);
+			for(String relation: relatedVariables.keySet()){
+				var.addModifierInstance(relation,relatedVariables.get(relation));
+			}
+			// re-check if the variable is satisfiable all of the sudden
+			if(var.isSatisfied()){
+				goodVariables.add(var);
+				it.remove();
+			}
+		}
+
+		
+		// add them to a document as good variables
+		for(AnnotationVariable var : goodVariables){
+			doc.addAnnotationVariable(var);
 		}
 		
 		// add failed variables

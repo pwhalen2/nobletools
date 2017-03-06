@@ -192,7 +192,7 @@ public class Instance {
 				// if instance is modifier, but not linguistic modifier (see if we neet to set some other properties
 				if(domainOntology.isTypeOf(cls,DomainOntology.MODIFIER) && !domainOntology.isTypeOf(cls,DomainOntology.LINGUISTIC_MODIFER)){
 					// instantiate available modifiers
-					List<Instance> modifierInstances = getModifierInstanceList();
+					List<Instance> modifierInstances = createModifierInstanceList();
 					
 					// go over all restrictions
 					for(IRestriction r: domainOntology.getRestrictions(cls)){
@@ -200,7 +200,7 @@ public class Instance {
 						for(Instance modifierInstance: modifierInstances){
 							IInstance modInstance = modifierInstance.getInstance();
 							if(modInstance != null && domainOntology.isPropertyRangeSatisfied(prop,modInstance)){
-								instance.addPropertyValue(prop, modInstance);
+								//instance.addPropertyValue(prop, modInstance);
 								addModifierInstance(prop.getName(),modifierInstance);
 							}
 						}
@@ -289,15 +289,28 @@ public class Instance {
 	 * get a list of current modifiers as instance list
 	 * @return list of modifier instances
 	 */
-	public List<Instance> getModifierInstanceList(){
-		// instantiate available modifiers
+	protected List<Instance> createModifierInstanceList(){
+		// instantiate available modifiers as instances
 		List<Instance> modifierInstances = new ArrayList<Instance>();
 		for(Modifier m: getModifiers()){
 			modifierInstances.add(new Instance(domainOntology, m));
 		}
 		return modifierInstances;
 	}
-	
+
+	/**
+	 * get a list of current modifiers as instance list
+	 * @return list of modifier instances
+	 */
+	public List<Instance> getModifierInstanceList(){
+		// instantiate available modifiers
+		List<Instance> modifierInstances = new ArrayList<Instance>();
+		for(String key: getModifierInstances().keySet()){
+			modifierInstances.addAll(getModifierInstances(key));
+		}
+		return modifierInstances;
+	}
+
 	/**
 	 * add linguistic modifier of this mention.
 	 *
@@ -357,6 +370,12 @@ public class Instance {
 		}
 		list.add(inst);
 		getModifierInstances().put(property,list);
+
+		// add it to the instance
+		IProperty prop = domainOntology.getOntology().getProperty(property);
+		if(prop != null && instance != null){
+			instance.addPropertyValue(prop, inst.getInstance());
+		}
 	}
 
 
@@ -378,5 +397,20 @@ public class Instance {
 		
 		return annotations;
 	}
-	
+
+	public int hashCode() {
+		if(mention != null)
+			return mention.hashCode();
+		if(modifier != null)
+			return modifier.hashCode();
+		return super.hashCode();
+	}
+
+	public boolean equals(Instance m) {
+		if(mention != null && m.getMention() != null)
+			return mention.equals(m.getMention());
+		else if(modifier != null && m.getModifier() != null)
+			return modifier.equals(m.getModifier());
+		return super.equals(m);
+	}
 }
