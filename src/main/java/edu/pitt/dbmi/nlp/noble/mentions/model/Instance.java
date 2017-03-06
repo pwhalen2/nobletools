@@ -228,7 +228,7 @@ public class Instance {
 	
 	/**
 	 * get human preferred label for this instance
-	 * @return label of this instnace, returns name if label not available
+	 * @return label of this instance, returns name if label not available
 	 */
 	public String getLabel(){
 		if(getConceptClass() != null)
@@ -303,7 +303,10 @@ public class Instance {
 	 * @return list of modifier instances
 	 */
 	public List<Instance> getModifierInstanceList(){
-		// instantiate available modifiers
+		if(getModifierInstances().isEmpty())
+            return createModifierInstanceList();
+
+        // instantiate available modifiers
 		List<Instance> modifierInstances = new ArrayList<Instance>();
 		for(String key: getModifierInstances().keySet()){
 			modifierInstances.addAll(getModifierInstances(key));
@@ -364,19 +367,39 @@ public class Instance {
 	 * @param inst - instance of modifier
 	 */
 	public void addModifierInstance(String property, Instance inst){
-		Set<Instance> list = getModifierInstances().get(property);
-		if(list == null){
-			list = new LinkedHashSet<Instance>();
-		}
-		list.add(inst);
-		getModifierInstances().put(property,list);
-
 		// add it to the instance
 		IProperty prop = domainOntology.getOntology().getProperty(property);
+        IClass number = domainOntology.getOntology().getClass(DomainOntology.NUMERIC_MODIFER);
+
+        // check if this number instance is too general for THIS instance
+        IClass vc = inst.getConceptClass();
+        if(vc.hasSuperClass(number) && !isSatisfied(getConceptClass(),prop,vc))
+            return;
+
+        // add property
 		if(prop != null && instance != null){
 			instance.addPropertyValue(prop, inst.getInstance());
 		}
-	}
+
+		// add to a map
+        Set<Instance> list = getModifierInstances().get(property);
+        if(list == null){
+            list = new LinkedHashSet<Instance>();
+        }
+        list.add(inst);
+        getModifierInstances().put(property,list);
+
+
+    }
+
+    private boolean isSatisfied(IClass cls, IProperty prop, IClass value){
+        // we only care about the first restriction
+        for(IRestriction r: cls.getRestrictions(prop)){
+            return r.getParameter().evaluate(value);
+        }
+        return false;
+    }
+
 
 
 	/**

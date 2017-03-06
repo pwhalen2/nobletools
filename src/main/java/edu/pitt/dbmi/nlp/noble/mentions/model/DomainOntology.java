@@ -647,7 +647,7 @@ public class DomainOntology {
 	 */
 	public boolean isTypeOf(IClass cls, String type){
 		IClass typeCls = ontology.getClass(type); 
-		return cls != null ? cls.equals(typeCls) || cls.hasSuperClass(typeCls):false;
+		return cls != null && (cls.equals(typeCls) || cls.hasSuperClass(typeCls));
 	}
 	
 	/**
@@ -1375,7 +1375,7 @@ public class DomainOntology {
 	 * @param candidates - list of candidates
 	 * @return true if class if equal or more specific
 	 */
-	private boolean isSatisfiable(IClass cls, Set<IClass> candidates){
+	public static boolean isSatisfiable(IClass cls, Set<IClass> candidates){
 		for(IClass c: candidates){
 			if(c.equals(cls) || c.hasSubClass(cls))
 				return true;
