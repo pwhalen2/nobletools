@@ -11,10 +11,7 @@ import java.util.TreeSet;
 
 import edu.pitt.dbmi.nlp.noble.coder.model.Mention;
 import edu.pitt.dbmi.nlp.noble.coder.model.Modifier;
-import edu.pitt.dbmi.nlp.noble.ontology.IClass;
-import edu.pitt.dbmi.nlp.noble.ontology.IInstance;
-import edu.pitt.dbmi.nlp.noble.ontology.IProperty;
-import edu.pitt.dbmi.nlp.noble.ontology.IRestriction;
+import edu.pitt.dbmi.nlp.noble.ontology.*;
 import edu.pitt.dbmi.nlp.noble.terminology.Annotation;
 
 /**
@@ -368,13 +365,28 @@ public class Instance {
 	 */
 	public void addModifierInstance(String property, Instance inst){
 		// add it to the instance
-		IProperty prop = domainOntology.getOntology().getProperty(property);
-        IClass number = domainOntology.getOntology().getClass(DomainOntology.NUMERIC_MODIFER);
+        IOntology ont = domainOntology.getOntology();
+		IProperty prop = ont.getProperty(property);
+        IClass number = ont.getClass(DomainOntology.NUMERIC_MODIFER);
 
         // check if this number instance is too general for THIS instance
         IClass vc = inst.getConceptClass();
-        if(vc.hasSuperClass(number) && !isSatisfied(getConceptClass(),prop,vc))
+        if(vc.hasSuperClass(number) && !isSatisfied(getConceptClass(),prop,vc)) {
             return;
+        }
+
+        // check that what is in the map doesn't already have the same thing
+        for(String p: new ArrayList<String>(getModifierInstances().keySet())){
+            IProperty pp =  ont.getProperty(p);
+            // if the property that is already in the map is a super property?
+            if(prop.hasSuperProperty(pp)){
+                getModifierInstances().remove(p);
+            // if the new property is more general, then don't add it
+            }else if(prop.hasSubProperty(pp)){
+                return;
+            }
+        }
+
 
         // add property
 		if(prop != null && instance != null){
