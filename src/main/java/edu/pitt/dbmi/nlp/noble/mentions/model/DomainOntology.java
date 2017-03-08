@@ -934,13 +934,15 @@ public class DomainOntology {
 							
 							// now go over potential specific instances
 							for(IInstance inst: getSpecificInstances(modifierCls)){
+								// clear values
+								inst.removePropertyValues();
+							
+								
 								// set data properties
 								for(String prop: m.getModifierMap().keySet()){
 									IProperty property = getProperty(prop);
 									if(property == null)
 										continue;
-									// clear values
-									inst.removePropertyValues(property);
 									// add all values
 									for(Modifier mod : m.getModifiers(prop)) {
 										if (mod.getMention() != null) {
