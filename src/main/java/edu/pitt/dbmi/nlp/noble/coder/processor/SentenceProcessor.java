@@ -14,6 +14,13 @@ import edu.pitt.dbmi.nlp.noble.tools.SynopticReportDetector;
 
 public class SentenceProcessor implements Processor<Document> {
 	private static final String PROSE_PATTERN = ".*\\b[a-z]+(\\.|\\?|!)\\s+[A-Z][a-z]+\\b.*";
+	private static final String BULLET_PATTERN = "^(([A-Z]?[0-9-\\)]{0,2}\\.?)?\\s+)\\w.*";
+	private static final String DIVIDER_PATTERN = "(\\-{5,}|_{5,}|={5,})" ;
+	private static final String PROPERTIES_PATTERN = "([A-Z][A-Za-z /]{3,25})(?:\\.{2,}|\\:)(.{2,25})";
+	private static final String PROSE_SENTENCE_END = ".+\\s([A-Z]?[a-z]+|\\d+),?";
+	private static final String PROSE_SENTENCE_START = "\\s*([A-Z]?[a-z]+)\\b.+";
+
+	
 	private long time;
 	
 	
@@ -73,12 +80,12 @@ public class SentenceProcessor implements Processor<Document> {
 	private void parseSentences(Document doc, String text, int offset, String type){
 		// if sentence starts with lots of spaces or bullets 
 		// old pattern
-		Pattern p = Pattern.compile("^(([A-Z]?[0-9-\\)]{0,2}\\.?)?\\s+)\\w.*",Pattern.DOTALL|Pattern.MULTILINE);
+		Pattern p = Pattern.compile(BULLET_PATTERN,Pattern.DOTALL|Pattern.MULTILINE);
 	
 		Matcher m = p.matcher(text);
 		if(m.matches()){
 			String prefix = m.group(1);
-			if(prefix.trim().length()>0){
+			if(prefix.length()>0){
 				text = text.substring(prefix.length());
 				offset = offset + prefix.length();
 			}
@@ -136,7 +143,7 @@ public class SentenceProcessor implements Processor<Document> {
 	
 
 	private boolean isDivider(Sentence s) {
-		return s.getText().trim().matches("(\\-{5,}|_{5,}|={5,})");
+		return s.getText().trim().matches(DIVIDER_PATTERN);
 	}
 
 
@@ -147,7 +154,7 @@ public class SentenceProcessor implements Processor<Document> {
 	 * @param text the text
 	 */
 	private void parseProperties(Document doc, String text){
-		Pattern p = Pattern.compile("([A-Z][A-Za-z /]{3,25})(?:\\.{2,}|\\:)(.{2,25})");
+		Pattern p = Pattern.compile(PROPERTIES_PATTERN);
 		Matcher m = p.matcher(text);
 		while(m.find()){
 			doc.getProperties().put(m.group(1).trim(),m.group(2).trim());
@@ -170,7 +177,7 @@ public class SentenceProcessor implements Processor<Document> {
 		
 		// if previous sentence ends with a lower case word or digit or comma
 		// and next one starts with normal non-upper case word
-		if(last.matches(".+\\s([A-Z]?[a-z]+|\\d+),?") && s.matches("\\s*([A-Z]?[a-z]+)\\b.+")){
+		if(last.matches(PROSE_SENTENCE_END) && s.matches(PROSE_SENTENCE_START)){
 			return true;
 		}
 		return false;
