@@ -108,7 +108,9 @@ public class NobleMentions implements Processor<Composition>{
 		
 		// now lets construct annotation variables from anchor mentions
 		List<AnnotationVariable> failedVariables = new ArrayList<AnnotationVariable>();
-		Map<String,AnnotationVariable> variables = new LinkedHashMap<String, AnnotationVariable>();
+		List<AnnotationVariable> goodVariables = new ArrayList<AnnotationVariable>();
+		Map<String,AnnotationVariable> variables = new HashMap<String, AnnotationVariable>();
+		
 		for(Sentence sentence: doc.getSentences()){
 			for(Instance anchor: domainOntology.getAnchors(sentence.getMentions())){
 				for(AnnotationVariable var : domainOntology.getAnnotationVariables(anchor)){
@@ -138,10 +140,13 @@ public class NobleMentions implements Processor<Composition>{
 							// then replace it
 							if(var.getConceptClass().hasSuperClass(oldVar.getConceptClass())){
 								variables.put(""+var.getAnnotations(),var);
+								goodVariables.remove(oldVar);
+								goodVariables.add(var);
 							}
 							// else don't do anything, as the more specific value is already there
 						}else{
 							variables.put(""+var.getAnnotations(),var);
+							goodVariables.add(var);
 						}
 						
 					}else{
@@ -149,13 +154,6 @@ public class NobleMentions implements Processor<Composition>{
 					}
 				}
 			}
-		}
-
-		// convert the map to list
-		List<AnnotationVariable> goodVariables = new ArrayList<AnnotationVariable>();
-		// add them to a list
-		for(String key: variables.keySet()){
-			goodVariables.add(variables.get(key));
 		}
 
 		// now go over all satisfied variables and see if we can link them

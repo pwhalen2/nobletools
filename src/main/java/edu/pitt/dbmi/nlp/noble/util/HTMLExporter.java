@@ -385,7 +385,7 @@ public class HTMLExporter {
 	private String codeVariable(AnnotationVariable var){
 		String color = "blue";
 		String code = var.getConceptClass().getName();
-		String tip = "";
+		String tip = var.getDefinedConstraints();
 		
 		StringBuilder out = new StringBuilder();
 		

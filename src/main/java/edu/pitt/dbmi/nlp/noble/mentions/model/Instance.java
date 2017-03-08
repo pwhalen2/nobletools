@@ -448,4 +448,15 @@ public class Instance {
 			return modifier.equals(m.getModifier());
 		return super.equals(m);
 	}
+	
+	public String getDefinedConstraints(){
+		IClass cls = getConceptClass();
+		StringBuilder str = new StringBuilder();
+		str.append(cls.getLabel()+"\n");
+		for(Object o: cls.getEquivalentRestrictions()){
+			str.append("\t"+o+"\n");
+		}
+		return str.toString();
+	}
+	
 }
