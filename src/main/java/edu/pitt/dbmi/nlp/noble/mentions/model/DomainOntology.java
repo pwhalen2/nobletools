@@ -88,6 +88,7 @@ public class DomainOntology {
 	public static final String HAS_RELATION = "hasRelation";
 	private static final String DIMENSION_VALUE = "DimensionValue";
 	public static final String HAS_UNIT = "hasUnit";
+	public static final String HAS_VALUE = "hasValue";
 	public static final String UNIT = "Unit";
 	protected static final String EVAL_INSTANCE_SUFFIX = "_evaluation_inst";
 	public static final String HAS_SECTION = "hasSection";

@@ -158,6 +158,17 @@ public class Modifier {
 			return mention.getAnnotations();
 		return Collections.EMPTY_LIST;
 	}
+	
+	/**
+	 * get annotations for this modifier.
+	 *
+	 * @return the annotations
+	 */
+	public List<Annotation> getQualifierAnnotations(){
+		if(mention != null)
+			return mention.getModifierAnnotations();
+		return Collections.EMPTY_LIST;
+	}
 
 	public int hashCode() {
 		return getInfo().hashCode();

@@ -13,6 +13,7 @@ import edu.pitt.dbmi.nlp.noble.coder.model.Mention;
 import edu.pitt.dbmi.nlp.noble.coder.model.Modifier;
 import edu.pitt.dbmi.nlp.noble.ontology.*;
 import edu.pitt.dbmi.nlp.noble.terminology.Annotation;
+import edu.pitt.dbmi.nlp.noble.tools.TextTools;
 
 /**
  * a domain instance is a wrapper for any instance and mention found in text 
@@ -197,8 +198,13 @@ public class Instance {
 						for(Instance modifierInstance: modifierInstances){
 							IInstance modInstance = modifierInstance.getInstance();
 							if(modInstance != null && domainOntology.isPropertyRangeSatisfied(prop,modInstance)){
-								//instance.addPropertyValue(prop, modInstance);
 								addModifierInstance(prop.getName(),modifierInstance);
+							}else if(modifierInstance.getModifier() != null && prop.getName().equals(modifierInstance.getModifier().getType())){
+								// check if this is a number
+								IProperty p = cls.getOntology().getProperty(modifierInstance.getModifier().getType());
+								if(p != null && p.hasSuperProperty(cls.getOntology().getProperty(DomainOntology.HAS_VALUE))){
+									addModifierInstance(prop.getName(),modifierInstance);
+								}
 							}
 						}
 					}
@@ -371,7 +377,7 @@ public class Instance {
 
         // check if this number instance is too general for THIS instance
         IClass vc = inst.getConceptClass();
-        if(vc.hasSuperClass(number) && !isSatisfied(getConceptClass(),prop,vc)) {
+        if(vc != null && vc.hasSuperClass(number) && !isSatisfied(getConceptClass(),prop,vc)) {
             return;
         }
 
@@ -390,7 +396,11 @@ public class Instance {
 
         // add property
 		if(prop != null && instance != null){
-			instance.addPropertyValue(prop, inst.getInstance());
+			if(inst.getInstance() != null){
+				instance.addPropertyValue(prop, inst.getInstance());
+			}else if(prop.isDatatypeProperty() && inst.getModifier() != null){
+				instance.addPropertyValue(prop,new Double(TextTools.parseDecimalValue(inst.getLabel())));
+			}
 		}
 
 		// add to a map
@@ -421,8 +431,10 @@ public class Instance {
 	public Set<Annotation> getAnnotations() {
 		if(annotations == null){
 			annotations = new TreeSet<Annotation>();
-			if(getMention() != null)
+			if(getMention() != null){
 				annotations.addAll(getMention().getAnnotations());
+				annotations.addAll(getMention().getModifierAnnotations());
+			}
 			for(String type: getModifierInstances().keySet()){
 				for(Instance modifier:getModifierInstances().get(type)){
 					annotations.addAll(modifier.getAnnotations());

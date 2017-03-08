@@ -473,26 +473,15 @@ public class HTMLExporter {
 		for(Mention m: s.getMentions()){
 			// this takes care of main mentions
 			for(Annotation a: m.getAnnotations()){
-				if(s.contains(a) && !intersects(a,map.keySet())){
-					Set<Mention> mm = map.get(a);
-					if(mm == null){
-						mm = new LinkedHashSet<Mention>();
-						map.put(a,mm);
-					}
-					mm.add(m);
-				}
+				addAnnotation(a, m, s, map);
 			}
 			// what about modifiers for each mention?
 			for(Modifier mmm: m.getModifiers()){
 				for(Annotation a: mmm.getAnnotations()){
-					if(s.contains(a) && !intersects(a,map.keySet())){
-						Set<Mention> mm = map.get(a);
-						if(mm == null){
-							mm = new LinkedHashSet<Mention>();
-							map.put(a,mm);
-						}
-						mm.add(mmm.getMention());
-					}
+					addAnnotation(a, mmm.getMention(), s, map);
+				}
+				for(Annotation a: mmm.getQualifierAnnotations()){
+					addAnnotation(a, mmm.getMention(), s, map);
 				}
 			}
 			
@@ -500,6 +489,25 @@ public class HTMLExporter {
 		return map;
 	}
 
+	/**
+	 * add annotation to a map
+	 * @param a - annotation
+	 * @param m - mention 
+	 * @param s - sentence
+	 * @param map - map to put it in
+	 */
+	private void addAnnotation(Annotation a,  Mention m, Sentence s, Map<Annotation,Set<Mention>> map){
+		if(s.contains(a) && !intersects(a,map.keySet())){
+			Set<Mention> mm = map.get(a);
+			if(mm == null){
+				mm = new LinkedHashSet<Mention>();
+				map.put(a,mm);
+			}
+			mm.add(m);
+		}
+	}
+	
+	
 	/**
 	 * Intersects.
 	 *

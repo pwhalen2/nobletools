@@ -173,18 +173,11 @@ public class ConTextHelper {
 			return c.getName();
 		}
 		// else, if we got some nested "polarity" shit going on, go over parents
-		for(IClass p: c.getSuperClasses()){
+		for(IClass p: c.getEquivalentClasses()){
 			if(p.hasDirectSuperClass(typeCls))
 				return p.getName();
 		}
-		/*
-		for(IClass p: c.getDirectSuperClasses()){
-			String v = getModifierValue(type, p);
-			if(v != null)
-				return v;
-		}
-		return null;*/
-		
+
 		// should never, be here, but make this a default
 		return c.getName();
 	}

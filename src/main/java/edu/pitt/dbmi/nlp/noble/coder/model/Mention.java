@@ -321,6 +321,7 @@ public class Mention implements Spannable, Comparable<Mention> {
 		List<Annotation> list = new ArrayList<Annotation>();
 		for(Modifier m: getModifiers()){
 			list.addAll(m.getAnnotations());
+			list.addAll(m.getQualifierAnnotations());
 		}
 		return list;
 	}
