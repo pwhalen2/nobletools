@@ -102,7 +102,7 @@ public class OntologyUtils {
 		// do varias pretty printing things
 		if(o instanceof IRestriction){
 			IRestriction r = (IRestriction) o;
-			StringBuffer str = new StringBuffer();
+			StringBuilder str = new StringBuilder();
 			str.append(toHTML(r.getProperty()));
 			switch(r.getRestrictionType()){
 			case IRestriction.ALL_VALUES_FROM:
@@ -135,7 +135,7 @@ public class OntologyUtils {
 				sep = " &rArr; ";
 			}
 			
-			StringBuffer str = new StringBuffer();
+			StringBuilder str = new StringBuilder();
 			for(Object i: (Collection) o){
 				str.append(toHTML(i)+sep);
 			}
@@ -143,7 +143,7 @@ public class OntologyUtils {
 			return (o instanceof ILogicExpression)?"("+s+")":s;
 		}else if (o instanceof Object []){
 			String sep = ", ";
-			StringBuffer str = new StringBuffer();
+			StringBuilder str = new StringBuilder();
 			for(Object i: (Object []) o){
 				str.append(toHTML(i)+sep);
 			}

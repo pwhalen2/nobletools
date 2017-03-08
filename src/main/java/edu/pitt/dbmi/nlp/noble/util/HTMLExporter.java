@@ -224,7 +224,7 @@ public class HTMLExporter {
 	 * @return the string
 	 */
 	private String createTemplate(TemplateDocument doc){
-		StringBuffer cap = new StringBuffer();
+		StringBuilder cap = new StringBuilder();
 		
 		for(Template template: doc.getItemInstances().keySet()){
 			int num = 1;
@@ -276,7 +276,7 @@ public class HTMLExporter {
 		String lid = ""+l.getOffset();
 		String word = l.getText();
 		List<String> codes = new ArrayList<String>();
-		StringBuffer tip = new StringBuffer();
+		StringBuilder tip = new StringBuilder();
 		String color = "green";
 		for(Mention m: mentions){
 			Concept c = m.getConcept();
@@ -333,7 +333,7 @@ public class HTMLExporter {
 	 * @return the modifiers
 	 */
 	private String getModifiers(Mention m){
-		StringBuffer st = new StringBuffer();
+		StringBuilder st = new StringBuilder();
 		for(String type: Arrays.asList(
 				ConText.MODIFIER_TYPE_CERTAINTY,	ConText.MODIFIER_TYPE_POLARITY,
 				ConText.MODIFIER_TYPE_EXPERIENCER,ConText.MODIFIER_TYPE_TEMPORALITY)){
@@ -360,12 +360,12 @@ public class HTMLExporter {
 			ids.add("'"+a.getOffset()+"'");
 		}
 		String code = c.getCode();
-		StringBuffer sy = new StringBuffer("\nterms:  ");
+		StringBuilder sy = new StringBuilder("\nterms:  ");
 		for(String s: c.getSynonyms())
 			sy.append(s+"; ");
 		String tip = c.getCode()+" "+Arrays.toString(c.getSemanticTypes())+"\n"+c.getDefinition()+sy;
 		String term = c.getTerminology().getName();
-		StringBuffer out = new StringBuffer();
+		StringBuilder out = new StringBuilder();
 		out.append("<a style=\"color:"+color+";\" onmouseover=\"h("+ids+");t=setTimeout(function(){j("+ids+");},2000);\" ");
 		out.append(	"onmouseout=\"u("+ids+"); clearTimeout(t);\" id=\""+p+code+"\"");
 		out.append(" href=\""+terminologySerlvet+"?action=lookup_concept&term="+term+"&code="+code);
@@ -387,7 +387,7 @@ public class HTMLExporter {
 		String code = var.getConceptClass().getName();
 		String tip = "";
 		
-		StringBuffer out = new StringBuffer();
+		StringBuilder out = new StringBuilder();
 		
 		out.append("<table><tr><th colspan=3 align=left>");
 		out.append(codeEntity(var.getLabel(),code, tip, color,var.getAnnotations()));
@@ -420,7 +420,7 @@ public class HTMLExporter {
 	 * @return
 	 */
 	private String codeEntities(Collection<Instance> instances,boolean includeComponents){
-		StringBuffer out = new StringBuffer();
+		StringBuilder out = new StringBuilder();
 		for(Instance inst: instances){
 			String color = inst.getAnnotations().isEmpty()?"black":"blue";
 			out.append(codeEntity(inst.getLabel(),inst.getName(),"",color,inst.getAnnotations()));
@@ -452,7 +452,7 @@ public class HTMLExporter {
 		for(Annotation a: annnotations){
 			ids.add("'"+a.getOffset()+"'");
 		}
-		StringBuffer out = new StringBuffer();
+		StringBuilder out = new StringBuilder();
 		out.append("<span style=\"color:"+color+";\" onmouseover=\"h("+ids+");t=setTimeout(function(){j("+ids+");},2000);\" ");
 		out.append(	"onmouseout=\"u("+ids+"); clearTimeout(t);\" id=\""+code+"\"");
 		//out.append(" href=\""+terminologySerlvet+"?action=lookup_concept&term="+term+"&code="+code+"\" target=\"_blank\"");
@@ -522,7 +522,7 @@ public class HTMLExporter {
 	 * @return the string
 	 */
 	private String codeSentence(Sentence s) {
-		StringBuffer str = new StringBuffer();
+		StringBuilder str = new StringBuilder();
 		if(Sentence.TYPE_HEADER.equals(s.getSentenceType())){
 			String sid = "";
 			// if this is a section header, see if we have a mention
@@ -567,7 +567,7 @@ public class HTMLExporter {
 				return (x == 0)?o1.getCode().compareTo(o2.getCode()):x;
 			}
 		});
-		StringBuffer str = new StringBuffer();
+		StringBuilder str = new StringBuilder();
 		// load and sort mentions
 		for(Mention m: mentions){
 			List<Annotation> list = map.get(m.getConcept());
@@ -596,7 +596,7 @@ public class HTMLExporter {
 	 */
 	
 	private String codeVariables(List<AnnotationVariable> variables){
-		StringBuffer str = new StringBuffer();
+		StringBuilder str = new StringBuilder();
 		str.append("<ol>");
 		for(AnnotationVariable var: variables){
 			str.append("<li>"+codeVariable(var)+"</li>");
@@ -689,7 +689,7 @@ public class HTMLExporter {
 		title = "Noble Coder";
 		// build report
 		String content = doc.getText();
-		StringBuffer text = new StringBuffer();
+		StringBuilder text = new StringBuilder();
 		int offs = 0;
 		for(Sentence s: doc.getSentences()){
 			int o = s.getOffset();
@@ -700,13 +700,13 @@ public class HTMLExporter {
 		if(offs < content.length())
 			text.append(content.substring(offs).replaceAll("\n", "<br>"));
 			
-		StringBuffer result = new StringBuffer();
+		StringBuilder result = new StringBuilder();
 		result.append(codeMentions(doc.getMentions()));
 			
 		// get report representation and cap protocol
 		String report = text.toString(); //convertToHTML(text.toString());
 		
-		StringBuffer info = new StringBuffer();
+		StringBuilder info = new StringBuilder();
 		Long time = doc.getProcessTime().get(NobleCoder.class.getSimpleName());
 		info.append("report process time: <b>"+((time != null)?time.longValue():-1)+"</b> ms , ");
 		info.append("found items: <b>"+doc.getMentions().size()+"</b>");
@@ -773,7 +773,7 @@ public class HTMLExporter {
 		
 		// build report
 		String content = doc.getText();
-		StringBuffer text = new StringBuffer();
+		StringBuilder text = new StringBuilder();
 		int offs = 0;
 		for(Sentence s: doc.getSentences()){
 			int o = s.getOffset();
@@ -791,7 +791,7 @@ public class HTMLExporter {
 		// get report representation and cap protocol
 		String report = text.toString(); //convertToHTML(text.toString());
 		
-		StringBuffer info = new StringBuffer();
+		StringBuilder info = new StringBuilder();
 		Long time = doc.getProcessTime().get(InformationExtractor.class.getSimpleName());
 		info.append("report process time: <b>"+((time != null)?time.longValue():-1)+"</b> ms , ");
 		info.append("found items: <b>"+n+"</b>");
@@ -842,7 +842,7 @@ public class HTMLExporter {
 		title = "Noble Mentions";
 		// build report
 		String content = doc.getText();
-		StringBuffer text = new StringBuffer();
+		StringBuilder text = new StringBuilder();
 		int offs = 0;
 		for(Sentence s: doc.getSentences()){
 			int o = s.getOffset();
@@ -854,7 +854,7 @@ public class HTMLExporter {
 			text.append(content.substring(offs).replaceAll("\n", "<br>"));
 			
 		// build up results
-		StringBuffer result = new StringBuffer();
+		StringBuilder result = new StringBuilder();
 		result.append("<p><b>Annotations</b><p>");
 		result.append(codeVariables(doc.getAnnotationVariables()));
 		result.append("</p>");
@@ -871,7 +871,7 @@ public class HTMLExporter {
 		// get report representation and cap protocol
 		String report = text.toString(); //convertToHTML(text.toString());
 		
-		StringBuffer info = new StringBuffer();
+		StringBuilder info = new StringBuilder();
 		Long time = doc.getProcessTime().get(NobleCoder.class.getSimpleName());
 		info.append("report process time: <b>"+((time != null)?time.longValue():-1)+"</b> ms , ");
 		info.append("found items: <b>"+doc.getMentions().size()+"</b>");

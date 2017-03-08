@@ -102,7 +102,7 @@ public class CSVExporter {
 				for(String question: temp.getQuestions()){
 					TemplateItem attribute = temp.getAttribute(question);
 					List<ItemInstance> instances = attribute == null?doc.getItemInstances(temp):doc.getItemInstances(temp, attribute);
-					StringBuffer b = new StringBuffer();
+					StringBuilder b = new StringBuilder();
 					for(ItemInstance inst :instances){
 						b.append((inst.getAnswer(false))+" ;"); 
 					}
@@ -130,12 +130,12 @@ public class CSVExporter {
 		for(Mention m: doc.getMentions()){
 			Concept c = m.getConcept();
 			String s = Arrays.toString(c.getSemanticTypes());
-			StringBuffer a = new StringBuffer();
+			StringBuilder a = new StringBuilder();
 			for(Annotation an : m.getAnnotations()){
 				a.append(an.getText()+"/"+(+an.getOffset())+", ");
 			}
 			if(a.length()> 0){
-				a = new StringBuffer(a.substring(0,a.length()-2));
+				a = new StringBuilder(a.substring(0,a.length()-2));
 			}
 			writer.write(doc.getTitle()+S+m.getText()+S+c.getCode()+S+c.getName()+S+s.substring(1,s.length()-1)+S+a+getModifierValues(m)+"\n");
 		}
@@ -165,8 +165,8 @@ public class CSVExporter {
 	private void write(AnnotationVariable var, String docName, String type, int n, Writer writer) throws Exception {
 		for(String prop: var.getModifierInstances().keySet()){
 			for(Instance inst: var.getModifierInstances().get(prop)){
-				StringBuffer value = new StringBuffer(inst.getLabel());
-				StringBuffer valueProp = new StringBuffer();
+				StringBuilder value = new StringBuilder(inst.getLabel());
+				StringBuilder valueProp = new StringBuilder();
 				if(!DomainOntology.HAS_ANCHOR.equals(prop)){
 					for(Instance ii: inst.getModifierInstanceList()){
 						valueProp.append(ii.getLabel()+", ");
@@ -188,12 +188,12 @@ public class CSVExporter {
 	 * @return
 	 */
 	private String getAnnotations(Collection<Annotation> annotations){
-		StringBuffer a = new StringBuffer();
+		StringBuilder a = new StringBuilder();
 		for(Annotation an : annotations){
 			a.append(an.getText()+"/"+(+an.getOffset())+", ");
 		}
 		if(a.length()> 0){
-			a = new StringBuffer(a.substring(0,a.length()-2));
+			a = new StringBuilder(a.substring(0,a.length()-2));
 		}
 		return a.toString();
 	}
@@ -217,7 +217,7 @@ public class CSVExporter {
 	 * @return the modifier types
 	 */
 	private String getModifierTypes(){
-		StringBuffer st = new StringBuffer();
+		StringBuilder st = new StringBuilder();
 		for(String s: Mention.getLinguisticModifierTypes()){
 			st.append(S+s);
 		}
@@ -231,7 +231,7 @@ public class CSVExporter {
 	 * @return the modifier values
 	 */
 	private String getModifierValues(Mention m){
-		StringBuffer st = new StringBuffer();
+		StringBuilder st = new StringBuilder();
 		for(String s: Mention.getLinguisticModifierTypes()){
 			String v = m.getModifierValue(s);
 			st.append(S+(v == null?"":v));

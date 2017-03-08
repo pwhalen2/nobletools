@@ -108,7 +108,7 @@ public class StringUtils {
 	 * @return the string
 	 */
 	public static String join(final String [] str, final String s){
-		StringBuffer buff = new StringBuffer();
+		StringBuilder buff = new StringBuilder();
 		for (String st : str) {
 			if (buff.length() > 0) {
 				buff.append(s);

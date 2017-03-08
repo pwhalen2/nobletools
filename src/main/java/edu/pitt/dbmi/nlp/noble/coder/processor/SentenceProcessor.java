@@ -31,7 +31,7 @@ public class SentenceProcessor implements Processor<Document> {
 		time = System.currentTimeMillis();
 		
 		int offset = 0, strOffset = 0;
-		StringBuffer str = new StringBuffer();
+		StringBuilder str = new StringBuilder();
 		String last = null;
 		for(String s: doc.getText().split("\n")){
 			// check if this sentence does not need to be merged
@@ -46,7 +46,7 @@ public class SentenceProcessor implements Processor<Document> {
 						parseSentences(doc, str.toString(), strOffset, Sentence.TYPE_LINE);
 					}
 					// start the counter again
-					str = new StringBuffer();
+					str = new StringBuilder();
 					strOffset = offset;
 				}
 			}

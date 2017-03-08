@@ -47,7 +47,7 @@ public class SentenceDetector {
 		List<String> sentences =new ArrayList<String>();
 		char [] tc = txt.toCharArray();
 		//int st = 0;
-		StringBuffer s = new StringBuffer();
+		StringBuilder s = new StringBuilder();
 		for(int i=0;i<txt.length();i++){
 			// skip control characters and replace them with space
 			if(tc[i] == '\n' || tc[i] == '\r')
@@ -78,7 +78,7 @@ public class SentenceDetector {
 				
 				// move start 
 				//st = i+1;
-				s = new StringBuffer();
+				s = new StringBuilder();
 			}
 		}
 		// mop up in case you don't have a period at the end
@@ -102,7 +102,7 @@ public class SentenceDetector {
 		List<Sentence> sentences =new ArrayList<Sentence>();
 		char [] tc = txt.toCharArray();
 		//int st = 0;
-		StringBuffer s = new StringBuffer();
+		StringBuilder s = new StringBuilder();
 		int s_offs = offset;
 		for(int i=0;i<txt.length();i++){
 			// skip control characters and replace them with space
@@ -134,7 +134,7 @@ public class SentenceDetector {
 				
 				// move start 
 				//st = i+1;
-				s = new StringBuffer();
+				s = new StringBuilder();
 				s_offs = offset+i+1;
 			}
 		}

@@ -84,7 +84,7 @@ public class Mention implements Spannable, Comparable<Mention> {
 	 * @see edu.pitt.dbmi.nlp.noble.coder.model.Spannable#getText()
 	 */
 	public String getText(){
-		StringBuffer b = new StringBuffer();
+		StringBuilder b = new StringBuilder();
 		
 		for(Annotation a: getAnnotations()){
 			b.append(" "+a.getText());

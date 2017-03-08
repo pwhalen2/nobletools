@@ -238,7 +238,7 @@ public class Instance {
 	 * @return pretty printed version of instance
 	 */
 	public String toString(){
-		StringBuffer str = new StringBuffer();
+		StringBuilder str = new StringBuilder();
 		str.append(getLabel());
 		for(String type: getModifierInstances().keySet()){
 			for(Instance modifier:getModifierInstances().get(type)){

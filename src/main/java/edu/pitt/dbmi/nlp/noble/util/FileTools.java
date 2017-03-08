@@ -114,7 +114,7 @@ public class FileTools {
 	 *             text and want to put it somewhere you should delete newlines
 	 */
 	public static String getText(InputStream in, String lineSeparator) throws IOException {
-		StringBuffer strBuf = new StringBuffer();
+		StringBuilder strBuf = new StringBuilder();
 		BufferedReader buf = new BufferedReader(new InputStreamReader(in));
 		try {
 			for (String line = buf.readLine(); line != null; line = buf.readLine()) {

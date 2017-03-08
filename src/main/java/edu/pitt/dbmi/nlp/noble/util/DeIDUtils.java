@@ -61,7 +61,7 @@ public class DeIDUtils {
 		// find and replace all tags
 		Pattern pt = Pattern.compile("\\*?\\*\\*[A-Z\\-]+(\\[.*\\])?");
 		Matcher mt = pt.matcher(line);
-		StringBuffer buffer = new StringBuffer(line);
+		StringBuilder buffer = new StringBuilder(line);
 		while(mt.find()){
 			buffer.replace(mt.start(),mt.end(),fill(mt.group().length()));
 		}
@@ -75,7 +75,7 @@ public class DeIDUtils {
 	 * @return the string
 	 */
 	private static String fill(int length) {
-		StringBuffer b = new StringBuffer();
+		StringBuilder b = new StringBuilder();
 		for(int i=0;i<length;i++)
 			b.append(" ");
 		return b.toString();

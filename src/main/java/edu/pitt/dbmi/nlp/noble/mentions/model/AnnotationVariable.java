@@ -121,7 +121,7 @@ public class AnnotationVariable extends Instance {
 	 * @return string that is human readable
 	 */
 	public String toString(){
-		StringBuffer str = new StringBuffer();
+		StringBuilder str = new StringBuilder();
 		str.append(getConceptClass()+"\n");
 		for(String type: getModifierInstances().keySet()){
 			for(Instance modifier:getModifierInstances().get(type)){

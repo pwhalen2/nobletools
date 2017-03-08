@@ -401,7 +401,7 @@ public class TextTools {
 			// w/ given ngram size, get all combinations
 			for(int s = 0; s <= words.size() - e; s++){ 
 				// inner loop to construct the actual ngram
-				StringBuffer b = new StringBuffer();
+				StringBuilder b = new StringBuilder();
 				for(int i=s;i<s+e; i++){
 					b.append(words.get(i)+" ");
 				}
@@ -658,7 +658,7 @@ public class TextTools {
 			Collections.sort((List)words);
 			
 		// convert words to single string
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		for(String s: words)
 			buf.append(s+" ");
 		return buf.toString().trim();
@@ -997,7 +997,7 @@ public class TextTools {
 	 * @return the string
 	 */
 	public static String escapeURL(String s){
-		StringBuffer str = new StringBuffer();
+		StringBuilder str = new StringBuilder();
 		Map<Character,String> m = getURLEscapeCode();
 		for(char x: s.toCharArray()){
 			if(m.containsKey(x))
@@ -1015,7 +1015,7 @@ public class TextTools {
 	 * @return the string
 	 */
 	public static String escapeHTML(String s){
-		StringBuffer str = new StringBuffer();
+		StringBuilder str = new StringBuilder();
 		Map<Character,String> m = getHTMLEscapeCode();
 		for(char x: s.toCharArray()){
 			if(m.containsKey(x))
@@ -1097,7 +1097,7 @@ public class TextTools {
 	 * the source string will use the case of the last character of the target string
 	 */
 	public static String copyCharacterCase(String source, String target){
-		StringBuffer str = new StringBuffer();
+		StringBuilder str = new StringBuilder();
 		char [] s = source.toCharArray();
 		char [] t = target.toCharArray();
 		int i=0;
@@ -1276,7 +1276,7 @@ public class TextTools {
 	 * @return the capitalized words
 	 */
 	public static String getCapitalizedWords(String text){
-		StringBuffer b = new StringBuffer();
+		StringBuilder b = new StringBuilder();
 		for(String s: text.split("[\\s_]+")){
 			if(s.length() > 2)
 				b.append(Character.toUpperCase(s.charAt(0))+s.substring(1).toLowerCase()+" ");
