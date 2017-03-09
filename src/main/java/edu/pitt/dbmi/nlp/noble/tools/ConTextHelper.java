@@ -12,6 +12,7 @@ import java.util.Set;
 
 import edu.pitt.dbmi.nlp.noble.ontology.IClass;
 import edu.pitt.dbmi.nlp.noble.ontology.IInstance;
+import edu.pitt.dbmi.nlp.noble.ontology.ILogicExpression;
 import edu.pitt.dbmi.nlp.noble.ontology.IOntology;
 import edu.pitt.dbmi.nlp.noble.ontology.IProperty;
 import edu.pitt.dbmi.nlp.noble.ontology.IResource;
@@ -173,13 +174,31 @@ public class ConTextHelper {
 			return c.getName();
 		}
 		// else, if we got some nested "polarity" shit going on, go over parents
-		for(IClass p: c.getEquivalentClasses()){
+		for(IClass p: getEquivalentClasses(c)){
 			if(p.hasDirectSuperClass(typeCls))
 				return p.getName();
 		}
+		
 
 		// should never, be here, but make this a default
 		return c.getName();
+	}
+	
+	private static Set<IClass> getEquivalentClasses(IClass c){
+		Set<IClass> list = new HashSet<IClass>();
+		for(IClass p: c.getEquivalentClasses()){
+			if(!p.equals(c))
+				list.add(p);
+		}
+		for(Object o: c.getEquivalentRestrictions()){
+			if(o instanceof ILogicExpression){
+				for(Object oo: ((ILogicExpression)o)){
+					if(oo instanceof IClass)
+						list.add((IClass)oo);
+				}
+			}
+		}
+		return list;
 	}
 	
 	
