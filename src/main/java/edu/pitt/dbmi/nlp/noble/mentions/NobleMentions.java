@@ -179,11 +179,20 @@ public class NobleMentions implements Processor<Composition>{
 			}
 		}
 
+		// sort the variables
+		Comparator<AnnotationVariable> comp = new Comparator<AnnotationVariable>() {
+			public int compare(AnnotationVariable o1, AnnotationVariable o2) {
+				return o1.getAnchor().getMention().getStartPosition() - o2.getAnchor().getMention().getStartPosition();
+			}
+		};
+		Collections.sort(goodVariables,comp);
+		Collections.sort(failedVariables,comp);
 		
 		// add them to a document as good variables
 		for(AnnotationVariable var : goodVariables){
 			doc.addAnnotationVariable(var);
 		}
+		
 		
 		// add failed variables
 		doc.getRejectedAnnotationVariables().addAll(failedVariables);

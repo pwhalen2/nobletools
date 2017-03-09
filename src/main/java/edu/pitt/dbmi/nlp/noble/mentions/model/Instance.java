@@ -210,6 +210,10 @@ public class Instance {
 					}
 				}
 				
+				// now just add span
+				instance.setPropertyValue(cls.getOntology().getProperty(DomainOntology.HAS_SPAN),getInstanceSpan());
+				
+				
 			}else if(modifier != null){
 				instance = domainOntology.getOntology().getInstance(cls.getName()+"_default");
 				if(instance == null)
@@ -219,6 +223,19 @@ public class Instance {
 		}
 		return instance;
 	}
+	
+	/**
+	 * create a string representation of instance span
+	 * @return
+	 */
+	protected String getInstanceSpan() {
+		StringBuilder str = new StringBuilder();
+		for(Annotation a: getAnnotations()){
+			str.append(a.getStartPosition()+":"+a.getEndPosition()+" ");
+		}
+		return str.toString().trim();
+	}
+
 	/**
 	 * get name of this instance (derived from class name)
 	 * @return name of this instance

@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import edu.pitt.dbmi.nlp.noble.coder.model.Mention;
 import edu.pitt.dbmi.nlp.noble.coder.model.Modifier;
@@ -548,24 +550,33 @@ public class ConText implements Processor<Sentence> {
 		// if windows size after modifier
 		if(beforeModifier){
 			offs = targetText.getLength();
-			for(int i = modifier.getEndPosition()-offset,j=0;i>=0 && i<txt.length();i = txt.indexOf(' ',i+1),j++){
+			for(int i = modifier.getEndPosition()-offset,j=0,k=i;i>=0 && i<txt.length();i = txt.indexOf(' ',i+1)){ //j++
+				// to avoid multiple consequtive spaces only increment word count if the delta is more then 1
+				if(i > k +1)
+					j++;
 				if(j >= windowSize){
 					offs = i;
 					break;
 				}
+				k = i;
 			}
 		// if windows size before modifier	
 		}else{
 			offs = 0;
-			for(int i = modifier.getStartPosition()-offset,j=0;i>=0;i = txt.lastIndexOf(' ',i-1),j++){
+			for(int i = modifier.getStartPosition()-offset,j=0,k=i;i>=0;i = txt.lastIndexOf(' ',i-1)){ //,j++
+				// to avoid multiple consequtive spaces only increment word count if the delta is more then 1
+				if(i < k -1)
+					j++;
 				if(j > windowSize){
 					offs = i;
 					break;
 				}
+				k=i;
 			}
 		}
 		return offs+offset;
 	}
+
 
 
 	/**

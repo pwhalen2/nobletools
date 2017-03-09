@@ -100,6 +100,10 @@ public class AnnotationVariable extends Instance {
 					}
 				}
 			}
+			
+			// now just add span
+			instance.setPropertyValue(ont.getProperty(DomainOntology.HAS_SPAN),getInstanceSpan());
+			
 		}
 		return instance;
 	}

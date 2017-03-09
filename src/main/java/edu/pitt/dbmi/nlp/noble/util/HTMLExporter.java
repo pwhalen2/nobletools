@@ -396,7 +396,15 @@ public class HTMLExporter {
 		Map<String,Set<Instance>> modifiers = var.getModifierInstances();
 		for(String prop: modifiers.keySet()){
 			Set<Instance> instances = modifiers.get(prop);
-			String val =  codeEntities(instances,!DomainOntology.HAS_ANCHOR.equals(prop));
+			// don't include components for an anchor
+			boolean includeComponents = !DomainOntology.HAS_ANCHOR.equals(prop);
+			// if we have a modifier that is annatation variable, then don't display components as well
+			for(Instance i: instances){
+				if(i instanceof AnnotationVariable)
+					includeComponents = false;
+			}
+			
+			String val =  codeEntities(instances,includeComponents);
 			out.append("<tr><td>&nbsp;</td><td>"+prop);
 			out.append("</td><td>"+val+"</td></tr>");
 		}

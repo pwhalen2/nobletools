@@ -93,6 +93,7 @@ public class DomainOntology {
 	protected static final String EVAL_INSTANCE_SUFFIX = "_evaluation_inst";
 	public static final String HAS_SECTION = "hasSection";
 	public static final String DOCUMENT_SECTION = "DocumentSection";
+	public static final String HAS_SPAN = "hasSpan";
 	
 	
 	
