@@ -114,7 +114,6 @@ public class NobleMentions implements Processor<Composition>{
 		for(Sentence sentence: doc.getSentences()){
 			for(Instance anchor: domainOntology.getAnchors(sentence.getMentions())){
 				for(AnnotationVariable var : domainOntology.getAnnotationVariables(anchor)){
-					
 					// associate with global modifiers
 					for(Modifier modifier: coder.getConText().getMatchingModifiers(globalModifiers,var.getAnchor().getMention())){
 						// only add it if we don't have a "local" sentence modifier
@@ -178,7 +177,8 @@ public class NobleMentions implements Processor<Composition>{
 				it.remove();
 			}
 		}
-
+		
+		
 		// sort the variables
 		Comparator<AnnotationVariable> comp = new Comparator<AnnotationVariable>() {
 			public int compare(AnnotationVariable o1, AnnotationVariable o2) {

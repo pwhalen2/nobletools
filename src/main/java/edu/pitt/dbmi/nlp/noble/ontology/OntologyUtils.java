@@ -161,6 +161,12 @@ public class OntologyUtils {
 	 * @return the string
 	 */
 	public static String toResourceName(String name){
+		//if name starts with /, then maybe it is a unit measurement
+		if(name.startsWith("/"))
+			name = "per_"+name.substring(1);
+		// if name starts with a number, then add n
+		if(name.matches("\\d.*"))
+			name = "n"+name;
 		return name.trim().replaceAll("\\s*\\(.+\\)\\s*","").replaceAll("[^\\w\\-]","_").replaceAll("_+","_");
 	}
 

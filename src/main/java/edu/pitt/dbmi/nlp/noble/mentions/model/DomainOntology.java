@@ -925,15 +925,8 @@ public class DomainOntology {
 								}
 							}
 							
-							// add units (now this is used in ConText
-							/*
-							for(Mention unit: getNumericUnits(m,sentence)){
-								m.addModifier(Modifier.getModifier(HAS_UNIT,getConceptClass(unit).getName(),unit));
-							}
-							*/
-							
-							
 							// now go over potential specific instances
+							//TODO: perhaps do this not here, but elsewhere in Instance.isSatisfy()
 							for(IInstance inst: getSpecificInstances(modifierCls)){
 								// clear values
 								inst.removePropertyValues();
@@ -962,7 +955,6 @@ public class DomainOntology {
 									sentence.addMention(getModifierFromClass(parentCls,m));
 								}
 							}
-							
 						}
 					}
 				}
@@ -1315,6 +1307,8 @@ public class DomainOntology {
 		}
 		return false;
 	}
+	
+	
 
 	/**
 	 * find nearest mention of related variables by relationship
@@ -1325,12 +1319,13 @@ public class DomainOntology {
 	public Map<String,Instance> getRelatedVariables(AnnotationVariable var, List<AnnotationVariable> variables) {
 		Map<String,Instance> map = new LinkedHashMap<String, Instance>();
 		Document doc = var.getMention().getSentence().getDocument();
-
+		IClass cls = var.getConceptClass();
+		Map<String,Set<IClass>> relatedAnnotations = getRelatedAnnotations(cls);
+		if(relatedAnnotations.isEmpty())
+			return map;
+		
 		int i = variables.indexOf(var);
 		if(i > -1){
-			IClass cls = var.getConceptClass();
-			Map<String,Set<IClass>> relatedAnnotations = getRelatedAnnotations(cls);
-
 			// search for variables before this instance
 			List<AnnotationVariable> before = variables.subList(0,i);
 			List<AnnotationVariable> after  = variables.subList(i+1,variables.size());
@@ -1368,7 +1363,6 @@ public class DomainOntology {
 				}
 			}
 		}
-
 		return map;
 	}
 
