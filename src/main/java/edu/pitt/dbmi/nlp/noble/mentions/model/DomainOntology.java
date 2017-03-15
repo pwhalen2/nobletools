@@ -76,6 +76,7 @@ public class DomainOntology {
 	public static final String COMPOSITION = "Composition";
 	public static final String HAS_TITLE = "hasTitle";
 	public static final String HAS_MENTION_ANNOTATION = "hasMentionAnnotation";
+	public static final String HAS_DOCUMENT_ANNOTATION = "hasDocumentAnnotation";
 	public static final String QUANTITY = "Quantity";
 	public static final String RANGE = "RangeModifier";
 	public static final String RATIO = "Ratio";
