@@ -31,13 +31,13 @@ import edu.pitt.dbmi.nlp.noble.terminology.Concept;
 import edu.pitt.dbmi.nlp.noble.terminology.Terminology;
 import edu.pitt.dbmi.nlp.noble.terminology.TerminologyException;
 import edu.pitt.dbmi.nlp.noble.terminology.impl.NobleCoderTerminology;
+import edu.pitt.dbmi.nlp.noble.tools.TextTools;
 import edu.pitt.dbmi.nlp.noble.util.XMLUtils;
 
 public class RiskFactorsToInstances {
 	private static final String DEFAULT_DOCUMENT_SUFFIX = ".txt";
 	private Map<String,IClass> schemaMap;
 	private IOntology ontology;
-	private Terminology terminology;
 	
 	public static void main(String[] args) throws IOntologyException, IOException, TerminologyException {
 		if(args.length > 2){
@@ -173,7 +173,6 @@ public class RiskFactorsToInstances {
 		//String docText = FileTools.getText(new FileInputStream(docFile));
 		Document dom = XMLUtils.parseXML(new FileInputStream(xmlFile));
 		Map<String,Entity> annotations = parseAnnotations(dom,documentName);
-		Map<String,IClass> schemaMap = getSchemaMap();
 		
 		
 		// create an instance
@@ -183,12 +182,15 @@ public class RiskFactorsToInstances {
 		// process annotations
 		for(String id: annotations.keySet()){
 			Entity entity = annotations.get(id);
-			if(schemaMap.containsKey(entity.getTag())){
-				IInstance mentionAnnotation = getInstance(entity,annotations,ontology);
+			IClass cls = getClass(entity);
+			if(cls !=  null && cls.hasSuperClass(ontology.getClass(ANNOTATION))){
+				IInstance mentionAnnotation = getInstance(cls,entity,annotations,ontology);
 				// add annotations
-				if(mentionAnnotation != null && ontology.getClass(ANNOTATION).hasSubClass(mentionAnnotation.getDirectTypes()[0])){
+				if(mentionAnnotation != null){
 					composition.addPropertyValue(ontology.getProperty(HAS_MENTION_ANNOTATION),mentionAnnotation);
 				}
+			}else{
+				System.out.println("WARNING: skipped "+entity);
 			}
 		}
 		
@@ -197,110 +199,91 @@ public class RiskFactorsToInstances {
 	private Map<String, IClass> getSchemaMap() {
 		if(schemaMap == null){
 			schemaMap = new HashMap<String, IClass>();
-			schemaMap.put("MEDICATION",ontology.getClass("MedicationStatement"));
+			/*schemaMap.put("MEDICATION",ontology.getClass("MedicationStatement"));
 			schemaMap.put("SMOKER",ontology.getClass("smoker_mention"));
 			schemaMap.put("HYPERTENSION",ontology.getClass("Hypertension_mention"));
 			schemaMap.put("CAD",ontology.getClass("CAD_mention"));
 			schemaMap.put("DIABETES",ontology.getClass("Diabetes_mention"));
 			schemaMap.put("HYPERLIPIDEMIA",ontology.getClass("Hyperlipidemia_mention"));
-			schemaMap.put("OBESE",ontology.getClass("Obesity_mention"));
+			schemaMap.put("OBESE",ontology.getClass("Obesity_mention"));*/
 			
+			// hard-code some values
 			schemaMap.put("after DCT",ontology.getClass("After_DocTimeRel"));
 			schemaMap.put("before DCT",ontology.getClass("Before_DocTimeRel"));
 			schemaMap.put("during DCT",ontology.getClass("Overlap_DocTimeRel"));
+			
+			// load up everything by label
+			for(IClass cls: ontology.getClass("Annotation").getSubClasses()){
+				schemaMap.put(cls.getLabel().toLowerCase(),cls);
+			}
 			
 		}
 		return schemaMap;
 	}
 
-	private IInstance getInstance(Entity entity, Map<String, Entity> annotations, IOntology ontology) throws TerminologyException, IOException, IOntologyException {
-		IClass cls = getClass(entity); 
+	private IInstance getInstance(IClass cls,Entity entity, Map<String, Entity> annotations, IOntology ontology) throws TerminologyException, IOException, IOntologyException {
 		IInstance inst = cls.createInstance(cls.getName()+"_"+entity.getID());
 		IProperty hasSpan = ontology.getProperty("hasSpan");
-		inst.addPropertyValue(hasSpan,entity.get("start")+":"+entity.get("end"));
+		
+		if(entity.get("start") != null && entity.get("end") != null)
+			inst.addPropertyValue(hasSpan,entity.get("start")+":"+entity.get("end"));
 		if(entity.get("time") != null){
 			IClass time = getSchemaMap().get(entity.get("time"));
 			if(time != null){
 				inst.addPropertyValue(ontology.getProperty("hasTemporality"),getDefaultInstance(time));
 			}
 		}
+		if(entity.get("text") != null){
+			IProperty hasText = ontology.getProperty("hasAnnotationText");
+			inst.addPropertyValue(hasText,entity.get("text"));
+		}
 		return inst;
 	}
 
+	/**
+	 * get a class for a given entity
+	 * @param entity
+	 * @return
+	 * @throws TerminologyException
+	 * @throws IOException
+	 * @throws IOntologyException
+	 */
 	private IClass getClass(Entity entity) throws TerminologyException, IOException, IOntologyException {
-				/*
-				indicator="A1C"
-				indicator="BMI"
-				indicator="event"
-				indicator="glucose"
-				indicator="high bp"
-				indicator="high chol."
-				indicator="high LDL"
-				indicator="mention"
-				indicator="not present"
-				indicator="present"
-				indicator="symptom"
-				indicator="test"
-				*/
-		/*
-		 * MEDS
-		    type1="ACE inhibitor"
-			type1="ARB"
-			type1="aspirin"
-			type1="beta blocker"
-			type1="calcium channel blocker"
-			type1="diuretic"
-			type1="DPP4 inhibitors"
-			type1="ezetimibe"
-			type1="fibrate"
-			type1="insulin"
-			type1="metformin"
-			type1="niacin"
-			type1="nitrate"
-			type1="statin"
-			type1="sulfonylureas"
-			type1="thiazolidinedione"
-			type1="thienopyridine"
-
-		 */
+		String tag = entity.getTag();
+		String indicator = entity.get("indicator");
+		String type = entity.get("type1");
+		String status = entity.get("status");
+		String label = null;
 		
-		
-		/*   
-		 *  SMOKER
-		 *  156 status="current"
-		     19 status="ever"
-		    503 status="never"
-		    410 status="past"
-		    977 status="unknown"
-
-		 * 
-		 */
-		
-		
-		
-		IClass cls = getSchemaMap().get(entity.getTag());
-		if(cls != null && "MedicationStatement".equals(cls.getName())){
-			String name = entity.get("type1");
-			for(Concept c: getTerminology().search(name)){
-				IClass cc = ontology.getClass(c.getCode());
-				if(cc != null){
-					IProperty prop = ontology.getProperty("isAnchorOf");
-					for(IRestriction r: cc.getRestrictions(prop)){
-						IClass ccc = (IClass) r.getParameter().getOperand();
-						getSchemaMap().put(name,ccc);
-						return ccc;
-					}
-				}
-			}
+		// now look at indicator
+		if(indicator != null){
+			/*
+			</CAD>  </DIABETES> </HYPERLIPIDEMIA> </HYPERTENSION> </OBESE> 	
+			/* indicator="A1C"  indicator="BMI" indicator="event" indicator="glucose" indicator="high bp"
+			indicator="high chol." indicator="high LDL"  indicator="mention" indicator="not present"
+			indicator="present" indicator="symptom" indicator="test"
+			*/
+			// if mention
+			indicator = indicator.replaceAll("[^A-Za-z0-9 ]+","");
+			tag= tag.replaceAll("_"," ");
+			label = tag+("mention".equals(indicator)?"":" "+indicator)+" mention";
+		}else if(status != null){
+			/* SMOKER: 	status="current" status="ever" status="never" status="past"  status="unknown"  */
+			label = tag+" "+status+" mention";
+		}else if(type != null){
+			/* MEDICATION: type1="ACE inhibitor" type1="ARB" type1="aspirin" type1="beta blocker" type1="calcium channel blocker"
+				type1="diuretic" type1="DPP4 inhibitors" type1="ezetimibe" type1="fibrate" type1="insulin" type1="metformin"
+				type1="niacin" type1="nitrate" type1="statin" type1="sulfonylureas" type1="thiazolidinedione" type1="thienopyridine"
+			 */
+			label = tag+" "+type+" mention";
 		}
-		return cls;
-	}
-
-	private Terminology getTerminology() throws IOException, TerminologyException, IOntologyException {
-		if(terminology == null){
-			terminology = new NobleCoderTerminology(ontology);
+		
+		// remember the class
+		if(label != null){
+			return getSchemaMap().get(label.toLowerCase());
 		}
-		return terminology;
+	
+		return null;
 	}
 
 	private IInstance getDefaultInstance(IClass time) {

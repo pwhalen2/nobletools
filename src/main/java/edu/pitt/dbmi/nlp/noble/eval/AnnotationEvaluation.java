@@ -210,7 +210,8 @@ public class AnnotationEvaluation {
 				prop = inst.getOntology().getProperty(DomainOntology.HAS_SPAN);
 			String span = ""+inst.getPropertyValue(prop);
 			IClass type = inst.getDirectTypes()[0];
-			if(type.equals(goldType)){
+			// if candidate type is identical to gold or more specific
+			if(type.equals(goldType) || type.hasSuperClass(goldType)){
 				int overlap = spanOverlap(goldSpan,span);
 				if(overlap > candidateSpan){
 					candidateAnnotation = inst;
