@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -17,6 +19,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -169,6 +172,20 @@ public class XMLUtils {
 					list.add(e);
 				}
 			}
+		return list;
+	}
+	
+	/**
+	 * get attribute map from the element
+	 * @param el - element
+	 * @return mapping of attributes
+	 */
+	public static Map<String,String> getAttributes(Element el){
+		Map<String,String> list = new LinkedHashMap<String,String>();
+		NamedNodeMap map = el.getAttributes();
+		for(int i=0;i<map.getLength();i++){
+			list.put(map.item(i).getNodeName(),map.item(i).getNodeValue());
+		}
 		return list;
 	}
 }

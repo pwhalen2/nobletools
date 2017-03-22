@@ -835,10 +835,11 @@ public class ConText implements Processor<Sentence> {
 					if(list == null){
 						if(ConText.ACTION_FIRST_MENTION.equals(action)){
 							list = new ArrayList<Modifier>();
-						}else if(ConText.ACTION_NEAREST_MENTION.equals(action)){
+						}else if(ConText.ACTION_NEAREST_MENTION.equals(action) || ConText.ACTION_BIDIRECTIONAL.equals(action)){
 							list = new Stack<Modifier>();
 						}
 					}
+					//TODO: implement forward and backword actions
 					list.add(mod);
 					candidateModifiers.put(mod.getType()+"-"+action,list);
 				}

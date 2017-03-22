@@ -129,6 +129,9 @@ public class NobleMentions implements Processor<Composition>{
 						}
 					}
 					
+					// upgrade quantities
+					
+					
 					//check if property is fully satisfied
 					if(var.isSatisfied()){
 						//doc.addAnnotationVariable(var);

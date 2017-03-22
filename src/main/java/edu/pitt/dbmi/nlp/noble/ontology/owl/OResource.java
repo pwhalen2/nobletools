@@ -650,6 +650,7 @@ public class OResource implements IResource{
 			return exp;
 		}else if (val instanceof OWLDataRange){
 			OWLDataRange l = (OWLDataRange) val;
+			/*
 			if(l.isDatatype()){
 				if(l.asOWLDatatype().isBoolean()){
 					return Boolean.FALSE;
@@ -662,7 +663,9 @@ public class OResource implements IResource{
 				}else{
 					return new String("string");
 				}
-			}
+				return l.toString();
+			}*/
+			return new ODataRange(l,getOntology());
 		}
 		return null;
 	}

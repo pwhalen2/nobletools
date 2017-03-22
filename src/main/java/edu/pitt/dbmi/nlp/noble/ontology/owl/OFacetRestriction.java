@@ -35,8 +35,14 @@ public class OFacetRestriction extends OResource  {
 		
 		//conver paraeter to a number
 		if(obj instanceof Number && facetLiteral instanceof Number){
-			value = ((Number)obj).doubleValue();
+			Number num = (Number)obj; 
+			value = num.doubleValue();
 			facetValue =  ((Number)facetLiteral).doubleValue();
+			
+			// if we restrict an integer and the parameter is a double, then invalidate restriction
+			if(facetLiteral instanceof Integer && num.doubleValue() != num.intValue())
+				return false;
+			
 			
 			if(OWLFacet.MAX_INCLUSIVE.equals(facetRestriction.getFacet())){
 				return value <= facetValue;

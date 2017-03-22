@@ -106,7 +106,7 @@ public class DomainOntology {
 	private File ontologyLocation;
 	private Map<String,String> defaultValues;
 	private static int instanceCounter = 1;
-	
+	private boolean stemAnchorTerms = false;
 	
 	/**
 	 * File or URL location of the domain ontology
@@ -153,6 +153,16 @@ public class DomainOntology {
 	}
 	
 	
+	
+	
+	public boolean isStemAnchorTerms() {
+		return stemAnchorTerms;
+	}
+
+	public void setStemAnchorTerms(boolean stemAnchorTerms) {
+		this.stemAnchorTerms = stemAnchorTerms;
+	}
+
 	/**
 	 * get ontology object
 	 * @return IOntology object
@@ -282,6 +292,10 @@ public class DomainOntology {
 						terminology = new NobleCoderTerminology();
 						terminology.setName("Anchors");
 					}
+					
+					// set some options
+					terminology.setStemWords(isStemAnchorTerms());
+					
 					
 					//TODO: maybe custom params
 					// set language filter to only return English values
