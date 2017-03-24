@@ -198,7 +198,7 @@ public class AnaforaToInstances {
 		//String docText = FileTools.getText(new FileInputStream(docFile));
 		Document dom = XMLUtils.parseXML(new FileInputStream(xmlFile));
 		Map<String,Entity> annotations = parseAnnotations(dom);
-		Map<String,IClass> schemaMap = getSchemaMap(ontology);
+		//Map<String,IClass> schemaMap = getSchemaMap(ontology);
 		
 		// create an instance
 		IInstance composition = ontology.getClass(COMPOSITION).createInstance(OntologyUtils.toResourceName(documentTitle));
@@ -207,13 +207,13 @@ public class AnaforaToInstances {
 		// process annotations
 		for(String id: annotations.keySet()){
 			Entity entity = annotations.get(id);
-			if(schemaMap.containsKey(entity.type)){
+			//if(schemaMap.containsKey(entity.type)){
 				IInstance mentionAnnotation = getInstance(entity,annotations,ontology);
 				// add annotations
 				if(mentionAnnotation != null && ontology.getClass(ANNOTATION).hasSubClass(mentionAnnotation.getDirectTypes()[0])){
 					composition.addPropertyValue(ontology.getProperty(HAS_MENTION_ANNOTATION),mentionAnnotation);
 				}
-			}
+			//}
 		}
 		
 	}
@@ -246,6 +246,19 @@ public class AnaforaToInstances {
 		return null;
 	}
 
+	/*
+	 
+	 
+	 
+	 
+	 
+	 */
+	
+	
+	
+	
+	
+	
 	private IClass findMatchingClass(IClass typeClass, String code) {
 		// TODO Auto-generated method stub
 		return null;

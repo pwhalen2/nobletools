@@ -16,6 +16,8 @@ import edu.pitt.dbmi.nlp.noble.tools.TextTools;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -29,31 +31,66 @@ public class AnnotationEvaluation {
 	public static boolean PRINT_RECORD_LEVEL_STATS = false;
 	public static boolean LIST_RECORD_LEVEL_STATS = false;
 	public static int MAX_ATTRIBUTE_SIZE = 10;
+	private Map<String,Double> attributeWeights;
+	private Map<String,ConfusionMatrix> confusions;
+	
 	
 	public static void main(String[] args) throws Exception {
 		// compare two files
 		if(args.length >= 2){
-			File gold = null, candidate = null;
+			File gold = null, candidate = null, weights = null;
 			for(String s: args){
 				if("-strict".equals(s)){
 					STRICT_VALUE_CALCULATION = true;
 				}else if("-print".equals(s)){
 					PRINT_RECORD_LEVEL_STATS = true;
-				}else if("-list".equals(s)){
-					LIST_RECORD_LEVEL_STATS = true;
 				}else if(gold  == null){
 					gold = new File(s);
 				}else if(candidate == null){
 					candidate = new File(s);
+				}else if(weights == null){
+					weights = new File(s);
 				}
 			}
 			
 			AnnotationEvaluation pe = new AnnotationEvaluation();
+			pe.loadWeights(weights);
 			pe.evaluate(gold,candidate);	
 		}else{
-			System.err.println("Usage: java "+AnnotationEvaluation.class.getSimpleName()+" [-print|-strict|-list] <gold .owl file> <candidate .owl file>");
+			System.err.println("Usage: java "+AnnotationEvaluation.class.getSimpleName()+" [-print|-strict] <gold instance owl file> <system instnace owl file> [weights file]");
 		}
 	}
+
+	/**
+	 * load attribute weights
+	 * @param weights
+	 * @throws IOException 
+	 * @throws FileNotFoundException 
+	 * @throws NumberFormatException 
+	 */
+	public void loadWeights(File weights) throws NumberFormatException, FileNotFoundException, IOException {
+		if(weights != null){
+			for(String l: TextTools.getText(new FileInputStream(weights)).split("\n")){
+				String [] p = l.split("\t");
+				if(p.length == 2){
+					getAttributeWeights().put(p[0].trim(),Double.parseDouble(p[1]));
+				}
+			}
+		}
+	}
+	
+	
+	/**
+	 * get attribute weights loaded from the corpus
+	 * @return mapping of attribute name to its weight
+	 */
+	public Map<String, Double> getAttributeWeights() {
+		if(attributeWeights == null)
+			attributeWeights = new LinkedHashMap<String, Double>();
+		return attributeWeights;
+	}
+
+
 
 	public static enum ConfusionLabel {
 		TP,FP,FN,TN
@@ -123,6 +160,18 @@ public class AnnotationEvaluation {
 		return s;
 	}
 	
+	
+	/**
+	 * get generated confusion matricies
+	 * @return map of confusion matricies
+	 */
+	public Map<String,ConfusionMatrix> getConfusionMatricies(){
+		if(confusions == null)
+			confusions = new LinkedHashMap<String, AnnotationEvaluation.ConfusionMatrix>();
+		return confusions;
+	}
+	
+	
 	/**
 	 * evaluate phenotype of two BSV files
 	 * @param file1
@@ -132,16 +181,19 @@ public class AnnotationEvaluation {
 	 */
 	
 	private void evaluate(File file1, File file2) throws IOException, IOntologyException {
-		IOntology goldOntology = OOntology.loadOntology(file1);
-		IOntology candidateOntology = OOntology.loadOntology(file2);
+		IOntology goldInstances = OOntology.loadOntology(file1);
+		IOntology systemInstances = OOntology.loadOntology(file2);
 		
 		// init confusionMatrix
 		ConfusionMatrix mentionConfusion = new ConfusionMatrix();
 		ConfusionMatrix documentConfusion = new ConfusionMatrix();
+		getConfusionMatricies().put("Mention",mentionConfusion);
+		getConfusionMatricies().put("Document",mentionConfusion);
+		
 		
 		// get composition
-		List<IInstance> goldCompositions = getCompositions(goldOntology);
-		List<IInstance> candidateCompositions = getCompositions(candidateOntology);
+		List<IInstance> goldCompositions = getCompositions(goldInstances);
+		List<IInstance> candidateCompositions = getCompositions(systemInstances);
 		
 		// init error storage
 		Map<ConfusionLabel,List<IInstance>> errors = new LinkedHashMap<AnnotationEvaluation.ConfusionLabel, List<IInstance>>();
@@ -149,17 +201,24 @@ public class AnnotationEvaluation {
 		for(IInstance gold: goldCompositions){
 			IInstance cand = getMatchingComposition(candidateCompositions,gold);
 			if(cand != null){
-				calculateConfusion(gold, cand,DomainOntology.HAS_MENTION_ANNOTATION,mentionConfusion,errors);
-				calculateConfusion(gold, cand,DomainOntology.HAS_DOCUMENT_ANNOTATION,documentConfusion,errors);
+				calculateDocumentConfusion(gold, cand,DomainOntology.HAS_MENTION_ANNOTATION,mentionConfusion,errors);
+				calculateDocumentConfusion(gold, cand,DomainOntology.HAS_DOCUMENT_ANNOTATION,documentConfusion,errors);
 			}
 		}
 		
 		// print results
 		ConfusionMatrix.printHeader(System.out);
-		mentionConfusion.print(System.out,"Mention");
-		documentConfusion.print(System.out,"Document");
+		for(String label: getConfusionMatricies().keySet()){
+			getConfusionMatricies().get(label).print(System.out,label);
+		}
 	}
 
+	public static boolean isPrintErrors(){
+		return PRINT_RECORD_LEVEL_STATS;
+	}
+	public static boolean isStrict(){
+		return STRICT_VALUE_CALCULATION;
+	}
 	
 	/**
 	 * calculate confusion for two composition on a given annotation type
@@ -169,29 +228,33 @@ public class AnnotationEvaluation {
 	 * @param confusion
 	 * @param errors
 	 */
-	private void calculateConfusion(IInstance gold, IInstance cand, String prop, ConfusionMatrix confusion, Map<ConfusionLabel,List<IInstance>> errors){
+	private void calculateDocumentConfusion(IInstance gold, IInstance cand, String prop, ConfusionMatrix confusion, Map<ConfusionLabel,List<IInstance>> errors){
 		if(!errors.containsKey(ConfusionLabel.FN))
 			errors.put(ConfusionLabel.FN,new ArrayList<IInstance>());
 		if(!errors.containsKey(ConfusionLabel.FP))
 			errors.put(ConfusionLabel.FP,new ArrayList<IInstance>());
 		
+		// get a list of gold variables and system vars for each document
 		List<IInstance> goldVariables = getAnnotationVariables(gold,gold.getOntology().getProperty(prop));
-		List<IInstance> candidateVariables = getAnnotationVariables(cand,cand.getOntology().getProperty(prop));
-		Set<IInstance> usedCandidates = new HashSet<IInstance>();
+		List<IInstance> systemVariables = getAnnotationVariables(cand,cand.getOntology().getProperty(prop));
+		
+		Set<IInstance> usedSystemCandidates = new HashSet<IInstance>();
+		
 		for(IInstance goldInst: goldVariables){
-			IInstance candInst = getMatchingAnnotationVaiable(candidateVariables,goldInst);
-			if(candInst != null){
-				usedCandidates.add(candInst);
-				confusion.TPP ++;
-				confusion.TP += getWeightedScore(goldInst,candInst);
-			}else{
+			List<IInstance> sysInstances = getMatchingAnnotationVaiables(systemVariables,goldInst);
+			if(sysInstances.isEmpty()){
 				confusion.FN ++;
 				errors.get(ConfusionLabel.FN).add(goldInst);
+			}else{
+				for(IInstance sysInst : sysInstances ){
+					usedSystemCandidates.add(sysInst);
+					confusion.TPP ++;
+					confusion.TP += getWeightedScore(goldInst,sysInst);
+				}
 			}
-			
 		}
-		for(IInstance inst: candidateVariables){
-			if(!usedCandidates.contains(inst)){
+		for(IInstance inst: systemVariables){
+			if(!usedSystemCandidates.contains(inst)){
 				confusion.FP ++;
 				errors.get(ConfusionLabel.FP).add(inst);
 			}
@@ -199,12 +262,17 @@ public class AnnotationEvaluation {
 	}
 	
 	
-	private IInstance getMatchingAnnotationVaiable(List<IInstance> candidateVariables, IInstance goldInst) {
+	private List<IInstance> getMatchingAnnotationVaiables(List<IInstance> candidateVariables, IInstance goldInst) {
+		List<IInstance> matchedInstances = new ArrayList<IInstance>();
 		IProperty prop = null; 
 		String goldSpan = ""+goldInst.getPropertyValue(goldInst.getOntology().getProperty(DomainOntology.HAS_SPAN));
 		IClass goldType = goldInst.getDirectTypes()[0];
-		IInstance candidateAnnotation = null;
-		int candidateSpan = 0;
+		
+		// set to the percent of overlap of gold 
+		double overlapThreshold = 0;
+		
+		// go through all possible candidate variables and select the ones that are the same type (or more specific)
+		// and have a span overlap above threshold
 		for(IInstance inst: candidateVariables){
 			if(prop == null)
 				prop = inst.getOntology().getProperty(DomainOntology.HAS_SPAN);
@@ -213,14 +281,13 @@ public class AnnotationEvaluation {
 			// if candidate type is identical to gold or more specific
 			if(type.equals(goldType) || type.hasSuperClass(goldType)){
 				int overlap = spanOverlap(goldSpan,span);
-				if(overlap > candidateSpan){
-					candidateAnnotation = inst;
-					candidateSpan = overlap;
+				if(overlap > overlapThreshold){
+					matchedInstances.add(inst);
 				}
 			}
 			
 		}
-		return candidateAnnotation;
+		return matchedInstances;
 	}
 
 	/**
@@ -242,9 +309,25 @@ public class AnnotationEvaluation {
 		return overlap;
 	}
 
-	private class Span {
-		int start,end;
+	public static class Span {
+		public int start,end;
+		public static Span getSpan(String st, String en){
+			Span sp = new Span();
+			sp.start = Integer.parseInt(st);
+			sp.end = Integer.parseInt(en);
+			return sp;
+		}
+		public static Span getSpan(String span){
+			String [] p = span.split(SPAN_SEPERATOR);
+			if(p.length == 2){
+				return getSpan(p[0],p[1]);
+			}
+			return null;
+		}
+		
 		public boolean overlaps(Span s){
+			if(s == null)
+				return false;
 			//NOT this region ends before this starts or other region ends before this one starts
 			return !(end < s.start || s.end < start);
 		}
@@ -265,11 +348,8 @@ public class AnnotationEvaluation {
 	private List<Span> parseSpans(String text) {
 		List<Span> list = new ArrayList<Span>();
 		for(String span: text.split(DISJOINT_SPANS)){
-			String [] p = span.split(SPAN_SEPERATOR);
-			if(p.length == 2){
-				Span sp = new Span();
-				sp.start = Integer.parseInt(p[0]);
-				sp.end = Integer.parseInt(p[1]);
+			Span sp = Span.getSpan(span);
+			if(sp != null){
 				list.add(sp);
 			}
 		}
@@ -277,23 +357,30 @@ public class AnnotationEvaluation {
 	}
 
 	private double getWeightedScore(IInstance goldInst, IInstance candInst) {
-		double score = 0;
-		// equal weights for now
-		int total =  0;
-		for(IProperty prop: goldInst.getProperties()){
-			if(prop.isObjectProperty()){
-				total ++;
-				score += compareValues(goldInst,candInst,prop);
-			}
+		// we start with score of 1.0 cause we did match up the (anchor aprory)
+		double numerator   = 1.0;  // initial weight of an anchor
+		double denominator = 1.0;  // initial total score 
+		for(IProperty goldProp: getProperties(goldInst)){
+				//total ++; // increase the total
+				//score += compareValues(goldInst,candInst,prop);
+				// for each gold value
+				for(IInstance gVal: getInstanceValues(goldInst.getPropertyValues(goldProp))){
+					
+				}
+				
+			
 		}
-		return score/ total;
+		//return score/ total;
+		return 0;
 	}
 
+
+	
 
 	private double compareValues(IInstance goldInst, IInstance candInst, IProperty goldProp) {
 		//double weight = 1.0;
 		double score = 0.0;
-		int total = 0;
+		double total = 0;
 		IProperty prop = candInst.getOntology().getProperty(goldProp.getName());
 		if(goldProp.isObjectProperty()){
 			for(IInstance gVal: getInstanceValues(goldInst.getPropertyValues(goldProp))){
@@ -309,6 +396,16 @@ public class AnnotationEvaluation {
 			}
 		}
 		return (total > 0)?score/total:0;
+	}
+	
+	private List<IProperty> getProperties(IInstance inst){
+		List<IProperty> props = new ArrayList<IProperty>();
+		for(IProperty p: inst.getProperties()){
+			if(p.isObjectProperty()){
+				props.add(p);
+			}
+		}
+		return props;
 	}
 	
 	private List<IInstance> getInstanceValues(Object [] objects ){

@@ -86,6 +86,10 @@ public class AnnotationVariable extends Instance {
 			instance.addPropertyValue(ont.getProperty(DomainOntology.HAS_SECTION), sectionInstance.getInstance());
 			addModifierInstance(DomainOntology.HAS_SECTION,sectionInstance);
 			
+			// upgrade numbers
+			upgradeNumericModifiers();
+			
+			
 			// instantiate available modifiers
 			List<Instance> modifierInstances = createModifierInstanceList();
 			

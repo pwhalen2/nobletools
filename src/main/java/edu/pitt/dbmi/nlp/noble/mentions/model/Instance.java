@@ -2,6 +2,7 @@ package edu.pitt.dbmi.nlp.noble.mentions.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -486,6 +487,63 @@ public class Instance {
 			str.append("\t"+o+"\n");
 		}
 		return str.toString();
+	}
+	
+	/**
+	 * go over numeric quantities and see if any can be upgraded
+	 */
+	protected void upgradeNumericModifiers(){
+		Set<Modifier> newVals = new HashSet<Modifier>();
+		
+		for(Modifier mm:  getModifiers()){
+			if(mm.hasMention()){
+				Mention m = mm.getMention();
+				IClass modifierCls = domainOntology.getConceptClass(m);
+				if(domainOntology.isTypeOf(modifierCls,DomainOntology.NUMERIC_MODIFER)){
+					IProperty hasNumValue = domainOntology.getRelatedProperty(getConceptClass(),mm);
+					if(hasNumValue == null)
+						continue;
+					
+					// now go over potential specific instances
+					for(IInstance inst: domainOntology.getSpecificInstances(modifierCls)){
+						
+						// don't bother looking into an instance if it doesn't satisfy the property of this instnace 
+						if(!isSatisfied(getConceptClass(), hasNumValue, inst.getDirectTypes()[0]))
+							continue;
+						
+						// clear values
+						inst.removePropertyValues();
+					
+						
+						// set data properties
+						for(String prop: m.getModifierMap().keySet()){
+							IProperty property = domainOntology.getProperty(prop);
+							if(property == null)
+								continue;
+							// add all values
+							for(Modifier mod : m.getModifiers(prop)) {
+								if (mod.getMention() != null) {
+									inst.addPropertyValue(property,domainOntology.getConceptInstance(mod.getMention()));
+								} else {
+									inst.addPropertyValue(property, new Double(mod.getValue()));
+								}
+							}
+						}
+						
+						// now check the equivalence
+						IClass parentCls = inst.getDirectTypes()[0];
+						
+						// if instance valid, we found a more specific numeric class
+						if(parentCls.getEquivalentRestrictions().evaluate(inst)){
+							Mention specificM = domainOntology.getModifierFromClass(parentCls,m);
+							Modifier mod = Modifier.getModifier(hasNumValue.getName(),parentCls.getName(),specificM);
+							newVals.add(mod);
+						}
+					}
+				}
+			}
+		}
+		getModifiers().addAll(newVals);
 	}
 	
 }

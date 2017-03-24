@@ -183,4 +183,12 @@ public class Modifier {
 	private String getInfo(){
 		return type+": "+value+" "+mention;
 	}
+
+	/**
+	 * does this modifier has a mention associated with it
+	 * @return true or false
+	 */
+	public boolean hasMention() {
+		return mention != null;
+	}
 }

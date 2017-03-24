@@ -168,6 +168,7 @@ public class NobleMentions implements Processor<Composition>{
 		}
 
 		// what if failed variable failed, cause it didn't have a relationship
+		/*
 		for(ListIterator<AnnotationVariable> it = failedVariables.listIterator();it.hasNext();){
 			AnnotationVariable var = it.next();
 			Map<String,Instance> relatedVariables = domainOntology.getRelatedVariables(var,goodVariables);
@@ -180,7 +181,7 @@ public class NobleMentions implements Processor<Composition>{
 				it.remove();
 			}
 		}
-		
+		*/
 		
 		// sort the variables
 		Comparator<AnnotationVariable> comp = new Comparator<AnnotationVariable>() {

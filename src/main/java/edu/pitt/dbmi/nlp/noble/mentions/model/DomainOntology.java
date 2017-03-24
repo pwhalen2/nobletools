@@ -17,6 +17,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -107,6 +108,8 @@ public class DomainOntology {
 	private Map<String,String> defaultValues;
 	private static int instanceCounter = 1;
 	private boolean stemAnchorTerms = false;
+	private Map<IClass,List<IInstance>> classInstanceMap;
+	
 	
 	/**
 	 * File or URL location of the domain ontology
@@ -906,7 +909,8 @@ public class DomainOntology {
 				 * process numeric modifiers to get
 				 */
 				public void processNumericModifiers(Sentence sentence) {
-					for(Mention m: new ArrayList<Mention>(sentence.getMentions())){
+					//new ArrayList<Mention>(
+					for(Mention m: sentence.getMentions()){
 						IClass modifierCls = getConceptClass(m);
 						if(isTypeOf(modifierCls,NUMERIC_MODIFER)){
 							// parse numeric component
@@ -942,6 +946,7 @@ public class DomainOntology {
 							
 							// now go over potential specific instances
 							//TODO: perhaps do this not here, but elsewhere in Instance.isSatisfy()
+							/*
 							for(IInstance inst: getSpecificInstances(modifierCls)){
 								// clear values
 								inst.removePropertyValues();
@@ -970,39 +975,11 @@ public class DomainOntology {
 									sentence.addMention(getModifierFromClass(parentCls,m));
 								}
 							}
+							*/
 						}
 					}
 				}
-				
-				
-				private Map<IClass,List<IInstance>> classInstanceMap;
-				
-				/**
-				 * get specific instances tied to a given numeric class
-				 * @param cls
-				 * @return
-				 */
-				private List<IInstance> getSpecificInstances(IClass cls){
-					if(classInstanceMap == null){
-						classInstanceMap = new HashMap<IClass, List<IInstance>>();
-					}
-					
-					List<IInstance> list = classInstanceMap.get(cls);
-					if(list == null){
-						list = new ArrayList<IInstance>();
-						// now see if we can get a more specific class added
-						for(IClass specificNum: cls.getSubClasses()){
-							// if we have equivalence restrictions defined, lets see if we get this
-							// class to be satisfied
-							if(!specificNum.getEquivalentRestrictions().isEmpty()){
-								IInstance inst = specificNum.createInstance(specificNum.getName()+EVAL_INSTANCE_SUFFIX);
-								list.add(inst);
-							}
-						}
-						classInstanceMap.put(cls,list);
-					}
-					return list;
-				}
+			
 			};
 		}
 		return modifierResolver;
@@ -1014,7 +991,50 @@ public class DomainOntology {
 			prop = ontology.getProperty("has"+name);
 		return prop;
 	}
+
+	/**
+	 * get a property that a given mention can be related as
+	 * @param cls - a target instance
+	 * @param m - modifier
+	 * @return related property
+	 */
+	public IProperty getRelatedProperty(IClass cls, Modifier m){
+		IClass mod = getConceptClass(m);
+		for(IRestriction r: getRestrictions(cls)){
+			if(isPropertyRangeSatisfied(r.getProperty(),mod)){
+				return r.getProperty();
+			}
+		}
+		return null;
+	}
 	
+	
+	/**
+	 * get specific instances tied to a given numeric class
+	 * @param cls
+	 * @return
+	 */
+	public List<IInstance> getSpecificInstances(IClass cls){
+		if(classInstanceMap == null){
+			classInstanceMap = new HashMap<IClass, List<IInstance>>();
+		}
+		
+		List<IInstance> list = classInstanceMap.get(cls);
+		if(list == null){
+			list = new ArrayList<IInstance>();
+			// now see if we can get a more specific class added
+			for(IClass specificNum: cls.getSubClasses()){
+				// if we have equivalence restrictions defined, lets see if we get this
+				// class to be satisfied
+				if(!specificNum.getEquivalentRestrictions().isEmpty()){
+					IInstance inst = specificNum.createInstance(specificNum.getName()+EVAL_INSTANCE_SUFFIX);
+					list.add(inst);
+				}
+			}
+			classInstanceMap.put(cls,list);
+		}
+		return list;
+	}
 	
 	/**
 	 * get a list o f numeric units among the mentions
@@ -1079,7 +1099,7 @@ public class DomainOntology {
 	 * @param mention
 	 * @return
 	 */
-	private Mention getModifierFromClass(IClass cls, Mention mention){
+	public Mention getModifierFromClass(IClass cls, Mention mention){
 		// try to find an instance from class
 		Concept concept = getModifierConcept(cls).clone();
 		concept.setSearchString(mention.getConcept().getSearchString());
@@ -1339,7 +1359,26 @@ public class DomainOntology {
 		if(relatedAnnotations.isEmpty())
 			return map;
 		
-		int i = variables.indexOf(var);
+		// create vraiable lists 
+		List<AnnotationVariable> before =  new Stack<AnnotationVariable>();
+		List<AnnotationVariable> after  =  new ArrayList<AnnotationVariable>();
+		Spannable span = var.getMention().getSentence().getSection();
+		if(span == null)
+			span = var.getMention().getSentence().getDocument();
+		
+		// create a before and after list
+		for(AnnotationVariable v: variables){
+			if(span.contains(v.getMention())){
+				if(v.getMention().before(var.getMention())){
+					before.add(v);
+				}else if(v.getMention().after(var.getMention())){
+					after.add(v);
+				}
+			}
+		}
+
+		
+	/*	int i = variables.indexOf(var);
 		if(i > -1){
 			// search for variables before this instance
 			List<AnnotationVariable> before = variables.subList(0,i);
@@ -1347,37 +1386,37 @@ public class DomainOntology {
 
 			// reverse the before variables
 			Collections.reverse(before);
+	 		*/
+		// go over relations that apply
+		for (String relation : relatedAnnotations.keySet()) {
+			// go over  both candidate lists: before and after
+			for(List<AnnotationVariable> list: Arrays.asList(before,after)) {
+				// for each candidate in a respective list
+				for (AnnotationVariable candidate : list) {
+					// if this annotation variable satisfies the relation
+					if(isSatisfiable(candidate.getConceptClass(),relatedAnnotations.get(relation))) {
+						// get previous instance
+						Instance oldInstance = map.get(relation);
+						if(oldInstance == null) {
+							map.put(relation, candidate);
+						}else{
+							// if new candidate is closer then the old one
+							// replace the old one
+							int oWC = Text.getWordDistance(doc,oldInstance.getMention(),var.getMention());
+							int nWC = Text.getWordDistance(doc,candidate.getMention(),var.getMention());
 
-			// go over relations that apply
-			for (String relation : relatedAnnotations.keySet()) {
-				// go over  both candidate lists: before and after
-				for(List<AnnotationVariable> list: Arrays.asList(before,after)) {
-					// for each candidate in a respective list
-					for (AnnotationVariable candidate : list) {
-						// if this annotation variable satisfies the relation
-						if(isSatisfiable(candidate.getConceptClass(),relatedAnnotations.get(relation))) {
-							// get previous instance
-							Instance oldInstance = map.get(relation);
-							if(oldInstance == null) {
-								map.put(relation, candidate);
-							}else{
-								// if new candidate is closer then the old one
-								// replace the old one
-								int oWC = Text.getWordDistance(doc,oldInstance.getMention(),var.getMention());
-								int nWC = Text.getWordDistance(doc,candidate.getMention(),var.getMention());
-
-								// if word distance of the new candidate
-								// is smaller, then replace it
-								if(nWC < oWC){
-									map.put(relation,candidate);
-								}
+							// if word distance of the new candidate
+							// is smaller, then replace it
+							if(nWC < oWC){
+								map.put(relation,candidate);
 							}
-							break;
 						}
+						break;
 					}
 				}
 			}
 		}
+		//}
 		return map;
 	}
 

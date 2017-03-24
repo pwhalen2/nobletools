@@ -11,14 +11,20 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
+import edu.pitt.dbmi.nlp.noble.eval.AnnotationEvaluation.Span;
 import edu.pitt.dbmi.nlp.noble.ontology.IClass;
 import edu.pitt.dbmi.nlp.noble.ontology.IInstance;
 import edu.pitt.dbmi.nlp.noble.ontology.IOntology;
@@ -118,7 +124,7 @@ public class RiskFactorsToInstances {
 			for(Element ml: XMLUtils.getChildElements(el)){
 				Entity entity = Entity.load(ml);
 				entity.put("document",documentName);
-				map.put(entity.get("id"),entity);
+				map.put(entity.getID(),entity);
 			}	
 		}
 		return map;
@@ -129,6 +135,7 @@ public class RiskFactorsToInstances {
 	 */
 	private static class Entity {
 		public Map<String,String> properties = new LinkedHashMap<String,String>();
+		private Span span;
 		
 		/**
 		 * load entity form XML element
@@ -156,6 +163,22 @@ public class RiskFactorsToInstances {
 		public String getID() {
 			return get("document")+"_"+get("id");
 		}
+		public Span getSpan(){
+			if(span == null){
+				String st = get("start");
+				String en = get("end");
+				if(st != null && en != null){
+					span = Span.getSpan(st, en);
+				}
+			}
+			return span;
+		}
+		public boolean equals(Object obj){
+			return toString().equals(obj.toString());
+		}
+		public int hashCode() {
+			return toString().hashCode();
+		}
 	}
 
 	private void addDocumentInstance(File xmlFile, IOntology ontology) throws FileNotFoundException, IOException, TerminologyException, IOntologyException {
@@ -174,6 +197,8 @@ public class RiskFactorsToInstances {
 		Document dom = XMLUtils.parseXML(new FileInputStream(xmlFile));
 		Map<String,Entity> annotations = parseAnnotations(dom,documentName);
 		
+		//deduplicate annotations
+		deduplicateAnnotations(annotations);
 		
 		// create an instance
 		IInstance composition = ontology.getClass(COMPOSITION).createInstance(OntologyUtils.toResourceName(documentTitle));
@@ -193,9 +218,97 @@ public class RiskFactorsToInstances {
 				System.out.println("WARNING: skipped "+entity);
 			}
 		}
-		
 	}
 
+	/**
+	 * remove duplicating annotations
+	 * @param annotations
+	 */
+	private void deduplicateAnnotations(Map<String,Entity> annotations){
+		Set<Entity> visited = new HashSet<RiskFactorsToInstances.Entity>();
+		List<Entity> annotationList = new ArrayList<RiskFactorsToInstances.Entity>(annotations.values());
+		
+		for(Entity a: annotationList){
+			if(visited.contains(a) || a.getSpan() == null)
+				continue;
+			List<Entity> duplicateEntries = new ArrayList<Entity>();
+			for(Entity b: annotationList){
+				if(visited.contains(b) || b.getSpan() == null)
+					continue;
+				if(!a.equals(b) && a.getSpan().overlaps(b.getSpan()) && a.getTag().equals(b.getTag())){
+					if(!visited.contains(a))
+						duplicateEntries.add(a);
+					duplicateEntries.add(b);
+					visited.add(a);
+					visited.add(b);
+				}
+			}
+			if(!duplicateEntries.isEmpty()){
+				deduplicateAnnotations(annotations,duplicateEntries);
+			}
+		}
+	}
+	
+	/**
+	 * merge duplicated overapping annotations
+	 * @param annotations
+	 * @param duplicateEntries
+	 */
+	private void deduplicateAnnotations(Map<String, Entity> annotations, List<Entity> duplicateEntries) {
+		Entity best = null;
+		String time = null;
+		for(Entity e: duplicateEntries){
+			
+			// get time 
+			if(time == null)
+				time =e.get("time");
+			// get best
+			if(best == null){
+				best = e;
+			}else{
+				// if old time, doesn't equal new time
+				if(time !=  null && !e.get("time").equals(time)){
+					time = "before-overlap DCT";
+				}
+				// get largest spanning text to replace the best
+				if(best.get("text").trim().length() < e.get("text").trim().length()){
+					best = e;
+				}
+			}
+		}
+		if(time != null)
+			best.put("time",time);
+		System.out.println(best);
+		for(Entity e: duplicateEntries){
+			if(!e.equals(best)){
+				System.out.println("\t"+e);
+				annotations.remove(e.getID());
+			}
+		}
+		System.out.println("");
+	}
+
+	private void printOverlappingEntities(Collection<Entity> entities){
+		Set<Entity> visited = new HashSet<RiskFactorsToInstances.Entity>();
+		for(Entity a: entities){
+			if(visited.contains(a) || a.getSpan() == null)
+				continue;
+			for(Entity b: entities){
+				if(visited.contains(b) || b.getSpan() == null)
+					continue;
+				if(!a.equals(b) && a.getSpan().overlaps(b.getSpan())){
+					if(!visited.contains(a))
+						System.out.println(a);
+					System.out.println(b);
+					visited.add(a);
+					visited.add(b);
+				}
+			}
+		}
+	}
+	
+	
+	
 	private Map<String, IClass> getSchemaMap() {
 		if(schemaMap == null){
 			schemaMap = new HashMap<String, IClass>();
@@ -211,6 +324,7 @@ public class RiskFactorsToInstances {
 			schemaMap.put("after DCT",ontology.getClass("After_DocTimeRel"));
 			schemaMap.put("before DCT",ontology.getClass("Before_DocTimeRel"));
 			schemaMap.put("during DCT",ontology.getClass("Overlap_DocTimeRel"));
+			schemaMap.put("before-overlap DCT",ontology.getClass("Before-Overlap_DocTimeRel"));
 			
 			// load up everything by label
 			for(IClass cls: ontology.getClass("Annotation").getSubClasses()){
