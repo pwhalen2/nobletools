@@ -188,7 +188,7 @@ public class AnnotationEvaluation {
 		ConfusionMatrix mentionConfusion = new ConfusionMatrix();
 		ConfusionMatrix documentConfusion = new ConfusionMatrix();
 		getConfusionMatricies().put("Mention",mentionConfusion);
-		getConfusionMatricies().put("Document",mentionConfusion);
+		getConfusionMatricies().put("Document",documentConfusion);
 		
 		
 		// get composition
@@ -241,27 +241,48 @@ public class AnnotationEvaluation {
 		Set<IInstance> usedSystemCandidates = new HashSet<IInstance>();
 		
 		for(IInstance goldInst: goldVariables){
+			ConfusionMatrix varConfusion = getConfusionMatrix(goldInst);
 			List<IInstance> sysInstances = getMatchingAnnotationVaiables(systemVariables,goldInst);
 			if(sysInstances.isEmpty()){
 				confusion.FN ++;
+				varConfusion.FN++;
 				errors.get(ConfusionLabel.FN).add(goldInst);
 			}else{
 				for(IInstance sysInst : sysInstances ){
 					usedSystemCandidates.add(sysInst);
+					double score = getWeightedScore(goldInst,sysInst);
 					confusion.TPP ++;
-					confusion.TP += getWeightedScore(goldInst,sysInst);
+					confusion.TP += score;
+
+					varConfusion.TPP ++;
+					varConfusion.TP += score;
+
 				}
 			}
 		}
 		for(IInstance inst: systemVariables){
 			if(!usedSystemCandidates.contains(inst)){
 				confusion.FP ++;
+				getConfusionMatrix(inst).FP++;
 				errors.get(ConfusionLabel.FP).add(inst);
 			}
 		}
 	}
-	
-	
+
+	private ConfusionMatrix getConfusionMatrix(IInstance goldInst) {
+		String name = goldInst.getDirectTypes()[0].getName();
+		return getConfusionMatrix(name);
+	}
+
+	private ConfusionMatrix getConfusionMatrix(String name) {
+		ConfusionMatrix confusion = getConfusionMatricies().get(name);
+		if(confusion == null){
+			confusion = new ConfusionMatrix();
+			getConfusionMatricies().put(name,confusion);
+		}
+		return confusion;
+	}
+
 	private List<IInstance> getMatchingAnnotationVaiables(List<IInstance> candidateVariables, IInstance goldInst) {
 		List<IInstance> matchedInstances = new ArrayList<IInstance>();
 		IProperty prop = null; 
@@ -356,48 +377,61 @@ public class AnnotationEvaluation {
 		return list;
 	}
 
-	private double getWeightedScore(IInstance goldInst, IInstance candInst) {
+	private double getWeightedScore(IInstance goldInst, IInstance systemInst) {
 		// we start with score of 1.0 cause we did match up the (anchor aprory)
+		double defaultWeight = getDefaultWeight(goldInst);
 		double numerator   = 1.0;  // initial weight of an anchor
 		double denominator = 1.0;  // initial total score 
 		for(IProperty goldProp: getProperties(goldInst)){
-				//total ++; // increase the total
-				//score += compareValues(goldInst,candInst,prop);
-				// for each gold value
-				for(IInstance gVal: getInstanceValues(goldInst.getPropertyValues(goldProp))){
-					
-				}
-				
-			
+			for(IInstance gVal: getInstanceValues(goldInst.getPropertyValues(goldProp))){
+				double weight = getWeight(gVal);
+				if(weight == 0)
+					weight = defaultWeight;
+				denominator += weight;
+				numerator += weight * hasAttributeValue(systemInst,goldProp,gVal);
+			}
 		}
-		//return score/ total;
+		return numerator / denominator;
+	}
+
+	private double getDefaultWeight(IInstance inst){
+		double count = 0;
+		for(IProperty goldProp: getProperties(inst)) {
+			for (IInstance gVal : getInstanceValues(inst.getPropertyValues(goldProp))) {
+				count++;
+			}
+		}
+		return count > 0?1.0 / count:0;
+	}
+
+	/**
+	 * does a system instance have a given value
+	 * @param systemInst - system instnce
+	 * @param prop - property
+	 * @param goldValue - gold value
+	 * @return 1 or 0
+	 */
+	private int hasAttributeValue(IInstance systemInst, IProperty prop, IInstance goldValue){
+		IClass goldValueClass = goldValue.getDirectTypes()[0];
+		prop = systemInst.getOntology().getProperty(prop.getName());
+		for(IInstance val: getInstanceValues(systemInst.getPropertyValues(prop))){
+			if(goldValueClass.equals(val.getDirectTypes()[0])){
+				return 1;
+			}
+		}
 		return 0;
 	}
 
-
-	
-
-	private double compareValues(IInstance goldInst, IInstance candInst, IProperty goldProp) {
-		//double weight = 1.0;
-		double score = 0.0;
-		double total = 0;
-		IProperty prop = candInst.getOntology().getProperty(goldProp.getName());
-		if(goldProp.isObjectProperty()){
-			for(IInstance gVal: getInstanceValues(goldInst.getPropertyValues(goldProp))){
-				total ++;
-				for(IInstance cVal: getInstanceValues(candInst.getPropertyValues(prop))){
-					// assume single direct type
-					// if class names of both instnaces matched, we got a winnder
-					if(gVal.getDirectTypes()[0].equals(cVal.getDirectTypes()[0])){
-						score ++;
-						break; // don't double count statters
-					}
-				}
-			}
+	private double getWeight(IInstance inst){
+		String name = inst.getDirectTypes()[0].getName();
+		if(getAttributeWeights().containsKey(name)){
+			return getAttributeWeights().get(name);
 		}
-		return (total > 0)?score/total:0;
+		// default weight in case we don't have a good one
+		System.err.println("no weight for: "+name);
+		return 0;
 	}
-	
+
 	private List<IProperty> getProperties(IInstance inst){
 		List<IProperty> props = new ArrayList<IProperty>();
 		for(IProperty p: inst.getProperties()){

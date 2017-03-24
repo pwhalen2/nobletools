@@ -1342,7 +1342,26 @@ public class DomainOntology {
 		}
 		return false;
 	}
-	
+
+	/**
+	 * does this variable has a equivalent relation to another annotation
+	 * @param var
+	 * @return
+	 */
+	public boolean hasDefiningRelatedVariable(AnnotationVariable var){
+		IClass annotation = ontology.getClass(ANNOTATION);
+		for(Object o: var.getConceptClass().getEquivalentRestrictions()){
+			if(o instanceof IRestriction){
+				IRestriction r = (IRestriction) o;
+				for(IClass cls : getContainedClasses(r.getParameter())){
+					if(cls.hasSuperClass(annotation)){
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
 	
 
 	/**

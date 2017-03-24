@@ -66,6 +66,7 @@ public class NobleMentions implements Processor<Composition>{
 		coder.setAcronymExpansion(false);
 		coder.setContextDetection(true);
 		coder.setDocumentProcessor(reportProcessor);
+		coder.setProcessFilter(NobleCoder.FILTER_DEID);
 		
 		// initialize context
 		ConText conText = new ConText(domainOntology.getModifierTerminology());
@@ -168,20 +169,21 @@ public class NobleMentions implements Processor<Composition>{
 		}
 
 		// what if failed variable failed, cause it didn't have a relationship
-		/*
 		for(ListIterator<AnnotationVariable> it = failedVariables.listIterator();it.hasNext();){
 			AnnotationVariable var = it.next();
-			Map<String,Instance> relatedVariables = domainOntology.getRelatedVariables(var,goodVariables);
-			for(String relation: relatedVariables.keySet()){
-				var.addModifierInstance(relation,relatedVariables.get(relation));
-			}
-			// re-check if the variable is satisfiable all of the sudden
-			if(var.isSatisfied()){
-				goodVariables.add(var);
-				it.remove();
+			if(domainOntology.hasDefiningRelatedVariable(var)){
+				Map<String,Instance> relatedVariables = domainOntology.getRelatedVariables(var,goodVariables);
+				for(String relation: relatedVariables.keySet()){
+					var.addModifierInstance(relation,relatedVariables.get(relation));
+				}
+				// re-check if the variable is satisfiable all of the sudden
+				if(var.isSatisfied()){
+					goodVariables.add(var);
+					it.remove();
+				}
 			}
 		}
-		*/
+
 		
 		// sort the variables
 		Comparator<AnnotationVariable> comp = new Comparator<AnnotationVariable>() {
