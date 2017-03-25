@@ -2,10 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a37f4458-0304-45b2-88b1-c0f9e019c671" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/eval/Analysis.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/dictionaries/tseytlin.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/eval/Analysis.java" afterPath="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/eval/Analysis.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/eval/AnnotationEvaluation.java" afterPath="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/eval/AnnotationEvaluation.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/util/HTMLExporter.java" afterPath="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/util/HTMLExporter.java" />
     </list>
     <list id="f191e77f-c034-4898-98d8-9b33493655f9" name="re-organization" comment="" />
     <list id="7862b3a0-d48e-4dc8-ac80-1d4226692b0a" name="Failed commit: re-organization" comment="re-organization" />
@@ -39,28 +40,18 @@
       <file leaf-file-name="NobleMentions.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/mentions/NobleMentions.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="481">
+            <state relative-caret-position="393">
               <caret line="68" column="55" selection-start-line="68" selection-start-column="55" selection-end-line="68" selection-end-column="55" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="AnnotationEvaluation.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="AnnotationEvaluation.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/eval/AnnotationEvaluation.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="61">
-              <caret line="234" column="18" selection-start-line="234" selection-start-column="12" selection-end-line="234" selection-end-column="18" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Analysis.java" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/eval/Analysis.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1035">
-              <caret line="125" column="23" selection-start-line="125" selection-start-column="23" selection-end-line="125" selection-end-column="23" />
+            <state relative-caret-position="-2655">
+              <caret line="126" column="76" selection-start-line="126" selection-start-column="76" selection-end-line="126" selection-end-column="76" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -68,22 +59,26 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="RiskFactorsToInstances.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/eval/gold/RiskFactorsToInstances.java">
+      <file leaf-file-name="Analysis.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/eval/Analysis.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="105">
-              <caret line="45" column="31" selection-start-line="45" selection-start-column="31" selection-end-line="45" selection-end-column="31" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Instance.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/mentions/model/Instance.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="5955">
-              <caret line="407" column="69" selection-start-line="407" selection-start-column="69" selection-end-line="407" selection-end-column="69" />
-              <folding />
+            <state relative-caret-position="138">
+              <caret line="226" column="37" selection-start-line="226" selection-start-column="37" selection-end-line="226" selection-end-column="37" />
+              <folding>
+                <element signature="imports" expanded="true" />
+                <element signature="e#845#846#0" expanded="true" />
+                <element signature="e#881#882#0" expanded="true" />
+                <element signature="e#927#928#0" expanded="true" />
+                <element signature="e#969#970#0" expanded="true" />
+                <element signature="e#2500#2501#0" expanded="true" />
+                <element signature="e#2547#2548#0" expanded="true" />
+                <element signature="e#2583#2584#0" expanded="true" />
+                <element signature="e#2630#2631#0" expanded="true" />
+                <element signature="e#4433#4434#0" expanded="true" />
+                <element signature="e#4461#4462#0" expanded="true" />
+                <element signature="e#4503#4504#0" expanded="true" />
+                <element signature="e#4537#4538#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -91,30 +86,8 @@
       <file leaf-file-name="HTMLExporter.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/util/HTMLExporter.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="528">
-              <caret line="1058" column="5" selection-start-line="1058" selection-start-column="5" selection-end-line="1058" selection-end-column="5" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="AnnotationVariable.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/mentions/model/AnnotationVariable.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="169">
-              <caret line="100" column="55" selection-start-line="100" selection-start-column="55" selection-end-line="100" selection-end-column="55" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="DomainOntology.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/mentions/model/DomainOntology.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="286">
-              <caret line="1355" column="33" selection-start-line="1355" selection-start-column="33" selection-end-line="1355" selection-end-column="33" />
+            <state relative-caret-position="93">
+              <caret line="1083" column="67" selection-start-line="1083" selection-start-column="67" selection-end-line="1083" selection-end-column="67" />
               <folding />
             </state>
           </provider>
@@ -152,13 +125,13 @@
         <option value="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/coder/model/Modifier.java" />
         <option value="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/ontology/owl/OOntology.java" />
         <option value="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/coder/processor/SentenceProcessor.java" />
-        <option value="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/util/HTMLExporter.java" />
         <option value="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/mentions/model/AnnotationVariable.java" />
         <option value="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/mentions/model/Instance.java" />
         <option value="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/mentions/model/DomainOntology.java" />
         <option value="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/mentions/NobleMentions.java" />
-        <option value="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/eval/AnnotationEvaluation.java" />
         <option value="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/eval/gold/Analysis.java" />
+        <option value="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/eval/AnnotationEvaluation.java" />
+        <option value="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/util/HTMLExporter.java" />
         <option value="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/eval/Analysis.java" />
       </list>
     </option>
@@ -384,8 +357,8 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scratches" />
       <pane id="PackagesPane" />
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -394,141 +367,9 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
           </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="nobletools" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="nobletools" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="nobletools" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="nobletools" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="nobletools" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="nobletools" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="nobletools" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="nobletools" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="noble" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="nobletools" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="nobletools" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="noble" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="eval" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="nobletools" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="nobletools" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="noble" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="eval" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="gold" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
+      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -948,11 +789,18 @@
       <option name="project" value="LOCAL" />
       <updated>1490391754637</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="implemented AnnotationEvaluation weighted score&#10;NobleMentions should now process headers as well&#10;NobleMentions now tries to re-validate failed variables if they contain an equivalent annotation relation&#10;Added Analysis object for storing analysis">
+      <created>1490420369211</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1490420369211</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="64" y="23" width="1216" height="777" extended-state="6" />
+    <frame x="64" y="23" width="1216" height="777" extended-state="0" />
     <editor active="false" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -960,9 +808,9 @@
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32846716" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32846716" sideWeight="0.5014028" order="10" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32846716" sideWeight="0.50511074" order="10" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3296796" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32846716" sideWeight="0.4985972" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32846716" sideWeight="0.49488926" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.329927" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -1005,7 +853,8 @@
     <MESSAGE value="Filter upgraded numbers when they are attached to variables" />
     <MESSAGE value="modified addModifierInstance() method to  account for the fact that a same thing can be added using more specific property" />
     <MESSAGE value="implemented AnnotationEvaluation weighted score&#10;NobleMentions should now process headers as well&#10;NobleMentions now tries to re-validate failed variables if they contain an equivalent annotation relation" />
-    <option name="LAST_COMMIT_MESSAGE" value="implemented AnnotationEvaluation weighted score&#10;NobleMentions should now process headers as well&#10;NobleMentions now tries to re-validate failed variables if they contain an equivalent annotation relation" />
+    <MESSAGE value="implemented AnnotationEvaluation weighted score&#10;NobleMentions should now process headers as well&#10;NobleMentions now tries to re-validate failed variables if they contain an equivalent annotation relation&#10;Added Analysis object for storing analysis" />
+    <option name="LAST_COMMIT_MESSAGE" value="implemented AnnotationEvaluation weighted score&#10;NobleMentions should now process headers as well&#10;NobleMentions now tries to re-validate failed variables if they contain an equivalent annotation relation&#10;Added Analysis object for storing analysis" />
     <option name="PRESELECT_EXISTING_CHANGELIST" value="false" />
   </component>
   <component name="XDebuggerManager">
@@ -1046,9 +895,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="imports" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1103,9 +949,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="331">
           <caret line="561" column="13" selection-start-line="561" selection-start-column="13" selection-end-line="561" selection-end-column="13" />
-          <folding>
-            <element signature="imports" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1137,7 +980,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="4350">
           <caret line="362" column="51" selection-start-line="362" selection-start-column="51" selection-end-line="362" selection-end-column="51" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1145,7 +987,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2490">
           <caret line="178" column="0" selection-start-line="178" selection-start-column="0" selection-end-line="178" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1153,7 +994,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="486">
           <caret line="67" column="21" selection-start-line="67" selection-start-column="21" selection-end-line="67" selection-end-column="21" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1270,9 +1110,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="127">
           <caret line="43" column="0" selection-start-line="43" selection-start-column="0" selection-end-line="43" selection-end-column="0" />
-          <folding>
-            <element signature="e#1023#1024#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1295,7 +1132,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="181">
           <caret line="230" column="54" selection-start-line="230" selection-start-column="48" selection-end-line="230" selection-end-column="54" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1311,7 +1147,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="127">
           <caret line="2463" column="0" selection-start-line="2463" selection-start-column="0" selection-end-line="2463" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1319,7 +1154,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="164">
           <caret line="233" column="0" selection-start-line="233" selection-start-column="0" selection-end-line="233" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1327,7 +1161,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="127">
           <caret line="227" column="27" selection-start-line="227" selection-start-column="27" selection-end-line="227" selection-end-column="27" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1335,10 +1168,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="165">
           <caret line="39" column="0" selection-start-line="39" selection-start-column="0" selection-end-line="39" selection-end-column="0" />
-          <folding>
-            <element signature="e#1852#1853#0" expanded="false" />
-            <element signature="e#1890#1891#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1346,32 +1175,74 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="195">
           <caret line="724" column="0" selection-start-line="724" selection-start-column="0" selection-end-line="724" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/mentions/model/Instance.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="5955">
+        <state relative-caret-position="5685">
           <caret line="407" column="69" selection-start-line="407" selection-start-column="69" selection-end-line="407" selection-end-column="69" />
-          <folding />
+          <folding>
+            <element signature="imports" expanded="false" />
+            <element signature="e#1752#1753#0" expanded="false" />
+            <element signature="e#1780#1781#0" expanded="false" />
+            <element signature="e#1845#1846#0" expanded="false" />
+            <element signature="e#1888#1889#0" expanded="false" />
+            <element signature="e#2296#2297#0" expanded="false" />
+            <element signature="e#2318#2319#0" expanded="false" />
+            <element signature="e#2751#2752#0" expanded="false" />
+            <element signature="e#2802#2803#0" expanded="false" />
+            <element signature="e#3335#3336#0" expanded="false" />
+            <element signature="e#3356#3357#0" expanded="false" />
+            <element signature="e#3711#3712#0" expanded="false" />
+            <element signature="e#3728#3729#0" expanded="false" />
+            <element signature="e#7692#7693#0" expanded="false" />
+            <element signature="e#7738#7739#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/mentions/model/DomainOntology.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="286">
+        <state relative-caret-position="19365">
           <caret line="1355" column="33" selection-start-line="1355" selection-start-column="33" selection-end-line="1355" selection-end-column="33" />
-          <folding />
+          <folding>
+            <element signature="imports" expanded="false" />
+            <element signature="e#6911#6912#0" expanded="false" />
+            <element signature="e#6940#6941#0" expanded="false" />
+            <element signature="e#7000#7001#0" expanded="false" />
+            <element signature="e#7045#7046#0" expanded="false" />
+            <element signature="e#7143#7144#0" expanded="false" />
+            <element signature="e#7165#7166#0" expanded="false" />
+            <element signature="e#17245#17246#0" expanded="false" />
+            <element signature="e#17297#17298#0" expanded="false" />
+            <element signature="e#20908#20909#0" expanded="false" />
+            <element signature="e#20956#20957#0" expanded="false" />
+            <element signature="e#22325#22326#0" expanded="false" />
+            <element signature="e#22393#22394#0" expanded="false" />
+            <element signature="e#39499#39500#0" expanded="false" />
+            <element signature="e#39556#39557#0" expanded="false" />
+            <element signature="e#39644#39645#0" expanded="false" />
+            <element signature="e#39676#39677#0" expanded="false" />
+            <element signature="e#40118#40119#0" expanded="false" />
+            <element signature="e#40150#40151#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/mentions/model/AnnotationVariable.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="169">
+        <state relative-caret-position="1275">
           <caret line="100" column="55" selection-start-line="100" selection-start-column="55" selection-end-line="100" selection-end-column="55" />
           <folding>
-            <element signature="imports" expanded="true" />
+            <element signature="e#1077#1078#0" expanded="false" />
+            <element signature="e#1097#1098#0" expanded="false" />
+            <element signature="e#1215#1216#0" expanded="false" />
+            <element signature="e#1243#1244#0" expanded="false" />
+            <element signature="e#1395#1396#0" expanded="false" />
+            <element signature="e#1438#1439#0" expanded="false" />
+            <element signature="e#3932#3933#0" expanded="false" />
+            <element signature="e#4015#4016#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1384,14 +1255,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/mentions/NobleMentions.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="481">
-          <caret line="68" column="55" selection-start-line="68" selection-start-column="55" selection-end-line="68" selection-end-column="55" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/eval/gold/RiskFactorsToInstances.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="105">
@@ -1400,26 +1263,48 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/util/HTMLExporter.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/mentions/NobleMentions.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="528">
-          <caret line="1058" column="5" selection-start-line="1058" selection-start-column="5" selection-end-line="1058" selection-end-column="5" />
+        <state relative-caret-position="393">
+          <caret line="68" column="55" selection-start-line="68" selection-start-column="55" selection-end-line="68" selection-end-column="55" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/eval/AnnotationEvaluation.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/util/HTMLExporter.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="61">
-          <caret line="234" column="18" selection-start-line="234" selection-start-column="12" selection-end-line="234" selection-end-column="18" />
+        <state relative-caret-position="93">
+          <caret line="1083" column="67" selection-start-line="1083" selection-start-column="67" selection-end-line="1083" selection-end-column="67" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/eval/Analysis.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1035">
-          <caret line="125" column="23" selection-start-line="125" selection-start-column="23" selection-end-line="125" selection-end-column="23" />
+        <state relative-caret-position="138">
+          <caret line="226" column="37" selection-start-line="226" selection-start-column="37" selection-end-line="226" selection-end-column="37" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#845#846#0" expanded="true" />
+            <element signature="e#881#882#0" expanded="true" />
+            <element signature="e#927#928#0" expanded="true" />
+            <element signature="e#969#970#0" expanded="true" />
+            <element signature="e#2500#2501#0" expanded="true" />
+            <element signature="e#2547#2548#0" expanded="true" />
+            <element signature="e#2583#2584#0" expanded="true" />
+            <element signature="e#2630#2631#0" expanded="true" />
+            <element signature="e#4433#4434#0" expanded="true" />
+            <element signature="e#4461#4462#0" expanded="true" />
+            <element signature="e#4503#4504#0" expanded="true" />
+            <element signature="e#4537#4538#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/eval/AnnotationEvaluation.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-2655">
+          <caret line="126" column="76" selection-start-line="126" selection-start-column="76" selection-end-line="126" selection-end-column="76" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>

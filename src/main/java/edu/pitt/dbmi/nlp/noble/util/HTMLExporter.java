@@ -1,9 +1,6 @@
 package edu.pitt.dbmi.nlp.noble.util;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.Writer;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -21,6 +18,7 @@ import edu.pitt.dbmi.nlp.noble.coder.model.Mention;
 import edu.pitt.dbmi.nlp.noble.coder.model.Modifier;
 import edu.pitt.dbmi.nlp.noble.coder.model.Section;
 import edu.pitt.dbmi.nlp.noble.coder.model.Sentence;
+import edu.pitt.dbmi.nlp.noble.eval.Analysis;
 import edu.pitt.dbmi.nlp.noble.extract.InformationExtractor;
 import edu.pitt.dbmi.nlp.noble.extract.model.ItemInstance;
 import edu.pitt.dbmi.nlp.noble.extract.model.Template;
@@ -39,8 +37,9 @@ import edu.pitt.dbmi.nlp.noble.tools.TextTools;
  * The Class HTMLExporter.
  */
 public class HTMLExporter {
-	public final String TERM_SERVLET = "http://slidetutor.upmc.edu/term/servlet/TerminologyServlet";
-	public final String HTML_REPORT_LOCATION = "reports";
+	public static final String TERM_SERVLET = "http://slidetutor.upmc.edu/term/servlet/TerminologyServlet";
+	public static final String HTML_REPORT_LOCATION = "reports";
+	public static final String HTML_ERROR_LOCATION = "errors";
 	private String title = "";
 	private File outputDirectory;
 	private String resultFileName;
@@ -734,15 +733,8 @@ public class HTMLExporter {
 			if(name.endsWith(".txt"))
 				name = name.substring(0,name.length()-".txt".length());
 		}
-		//File out = new File(outputDirectory.getAbsolutePath()+File.separator+HTML_REPORT_LOCATION+File.separator+name+".html");
-		//BufferedWriter htmlWriter = new BufferedWriter(new FileWriter(out));
-		
-		
-		htmlWriter.write("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">");
-		htmlWriter.write("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
-		htmlWriter.write("<head><title>Report Processor Output</title>");
-		htmlWriter.write(getJavaScript());
-		htmlWriter.write("</head><body onload=\"l();\" onresize=\"l();\"><table width=\"100%\" style=\"table-layout:fixed; \" cellspacing=\"5\">\n"); //word-wrap:break-word;
+		htmlWriter.write(createHTMLHeader("Report Processor Output",true));
+		htmlWriter.write("<body onload=\"l();\" onresize=\"l();\"><table width=\"100%\" style=\"table-layout:fixed; \" cellspacing=\"5\">\n"); //word-wrap:break-word;
 		if(name != null)
 			htmlWriter.write("<tr><td colspan=2 align=center><h3>"+name+"</h3></td></tr>\n");
 		
@@ -818,13 +810,9 @@ public class HTMLExporter {
 			name = name.substring(0,name.length()-".txt".length());
 		File out = new File(outputDirectory.getAbsolutePath()+File.separator+HTML_REPORT_LOCATION+File.separator+name+".html");
 		BufferedWriter htmlWriter = new BufferedWriter(new FileWriter(out));
-		
-		
-		htmlWriter.write("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">");
-		htmlWriter.write("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
-		htmlWriter.write("<head><title>Report Processor Output</title>");
-		htmlWriter.write(getJavaScript());
-		htmlWriter.write("</head><body onload=\"l();\" onresize=\"l();\"><table width=\"100%\" style=\"table-layout:fixed; \" cellspacing=\"5\">\n"); //word-wrap:break-word;
+
+		htmlWriter.write(createHTMLHeader("Report Processor Output",true));
+		htmlWriter.write("<body onload=\"l();\" onresize=\"l();\"><table width=\"100%\" style=\"table-layout:fixed; \" cellspacing=\"5\">\n"); //word-wrap:break-word;
 		htmlWriter.write("<tr><td colspan=2 align=center><h3>"+name+"</h3></td></tr>\n");
 		htmlWriter.write("<tr><td width=\"50%\" valign=middle><div id=\"d1\" style=\"overflow: auto; max-height: 800px; \">"+report+"</div></td>");
 		htmlWriter.write("<td width=\"50%\" valign=top><div id=\"d2\" style=\"overflow: auto; max-height: 800px;\">"+cap+"</div></td></tr>\n");
@@ -901,13 +889,9 @@ public class HTMLExporter {
 		}
 		//File out = new File(outputDirectory.getAbsolutePath()+File.separator+HTML_REPORT_LOCATION+File.separator+name+".html");
 		//BufferedWriter htmlWriter = new BufferedWriter(new FileWriter(out));
-		
-		
-		htmlWriter.write("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">");
-		htmlWriter.write("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
-		htmlWriter.write("<head><title>Report Processor Output</title>");
-		htmlWriter.write(getJavaScript());
-		htmlWriter.write("</head><body onload=\"l();\" onresize=\"l();\"><table width=\"100%\" style=\"table-layout:fixed; \" cellspacing=\"5\">\n"); //word-wrap:break-word;
+
+		htmlWriter.write(createHTMLHeader("Report Processor Output",true));
+		htmlWriter.write("<body onload=\"l();\" onresize=\"l();\"><table width=\"100%\" style=\"table-layout:fixed; \" cellspacing=\"5\">\n"); //word-wrap:break-word;
 		if(name != null)
 			htmlWriter.write("<tr><td colspan=2 align=center><h3>"+name+"</h3></td></tr>\n");
 		
@@ -1056,5 +1040,60 @@ public class HTMLExporter {
 				"function showHide(id){ var a = \"hidden\"; if(document.getElementById(id).style.visibility == \"hidden\"){ a = \"visible\";}"+
 				"document.getElementById(id).style.visibility = a;}"+
 				"</script>\n";
+	}
+
+	/**
+	 * get HTML header
+	 * @param title = title
+	 * @param includeJavaScript - include JavaScript or not
+	 * @return
+	 */
+	private String createHTMLHeader(String title, boolean includeJavaScript){
+		return 	"<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">"+
+				"<html xmlns=\"http://www.w3.org/1999/xhtml\">\n"+
+				"<head><title>"+title+"</title>\n"+(includeJavaScript?getJavaScript():"")+"</head>\n";
+	}
+
+	/**
+	 * export analysis object to HTML
+	 * @param analysis
+	 */
+	public void export(Analysis analysis) throws IOException{
+		File out = new File(outputDirectory,"analysis.html");
+		BufferedWriter htmlWriter = new BufferedWriter(new FileWriter(out));
+
+		// create analysis HTML
+		htmlWriter.write(createHTMLHeader("Analysis",false));
+		htmlWriter.write("<body><center>");
+		htmlWriter.write("<h2>"+analysis.getTitle()+"</h2>");
+		htmlWriter.write(analysis.getResultTableAsHTML());
+		htmlWriter.write("</center></body></html>\n");
+		htmlWriter.flush();
+		htmlWriter.close();
+
+		// create error files
+		for(String label: analysis.getErrorMap().keySet()){
+			out = new File(outputDirectory,HTML_ERROR_LOCATION+File.separator+label+".html");
+			if(!out.getParentFile().exists())
+				out.getParentFile().mkdirs();
+			htmlWriter = new BufferedWriter(new FileWriter(out));
+
+			// create analysis HTML
+			htmlWriter.write(createHTMLHeader(label,false));
+			htmlWriter.write("<body>");
+			htmlWriter.write("<center><h2>"+label+"</h2></center>");
+			htmlWriter.write("<center><table bgcolor=\"#FFFFF\" width=\"100%\" height=\"95%\" border=0>\n");
+			htmlWriter.write("<tr><td align=\"left\" valign=\"top\" width=\"400px\" style=\"white-space: nowrap\">\n");
+			htmlWriter.write("<div id=\"d1\" style=\"overflow: auto; max-height: 800px;\"><div style=\"border-style:solid; border-color: #EEEEFF; padding:10px 10px;\">");
+
+			htmlWriter.write(analysis.getErrorsAsHTML(label));
+
+			htmlWriter.write("</div></div></td><td valign=top><iframe bgcolor=white frameborder=\"0\" scrolling=\"auto\" name=\"frame\" width=\"100%\" height=\"100%\"></iframe>\n");
+			htmlWriter.write("</td></tr></table></center></body></html>\n");
+
+			htmlWriter.flush();
+			htmlWriter.close();
+		}
+
 	}
 }

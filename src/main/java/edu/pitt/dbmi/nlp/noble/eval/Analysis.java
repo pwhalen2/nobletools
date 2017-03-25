@@ -1,7 +1,11 @@
 package edu.pitt.dbmi.nlp.noble.eval;
 
+import edu.pitt.dbmi.nlp.noble.mentions.model.DomainOntology;
 import edu.pitt.dbmi.nlp.noble.ontology.IInstance;
+import edu.pitt.dbmi.nlp.noble.ontology.IProperty;
+import edu.pitt.dbmi.nlp.noble.ontology.IResource;
 import edu.pitt.dbmi.nlp.noble.tools.TextTools;
+import edu.pitt.dbmi.nlp.noble.util.HTMLExporter;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -20,7 +24,16 @@ public class Analysis {
     }
     public static class ConfusionMatrix {
         public double TPP,TP,FP,FN,TN;
-        public void append(AnnotationEvaluation.ConfusionMatrix c){
+        private String label;
+
+        public String getLabel() {
+            return label;
+        }
+
+        public void setLabel(String label) {
+            this.label = label;
+        }
+        public void append(ConfusionMatrix c){
             TPP += c.TPP;
             TP += c.TP;
             FP += c.FP;
@@ -58,18 +71,63 @@ public class Analysis {
         public String toString(){
             return "TP: "+TP+" ,FP: "+FP+", FN: "+FN;
         }
+
+        public String getLabelFP(){
+            return getLabel()+".FP";
+        }
+        public String getLabelFN(){
+            return getLabel()+".FN";
+        }
+
+        public String getRowAsHTML(String label) {
+            String fpErrors = "href=\""+ HTMLExporter.HTML_ERROR_LOCATION+"/"+getLabelFP()+".html\" target=\"_blank\"";
+            String fnErrors = "href=\""+ HTMLExporter.HTML_ERROR_LOCATION+"/"+getLabelFN()+".html\" target=\"_blank\"";
+
+            StringBuilder str = new StringBuilder();
+            str.append("<tr>");
+            str.append("<td>"+label+"</td>");
+            str.append("<td>"+TextTools.toString(TP)+"</td>");
+            str.append("<td>"+TextTools.toString(TPP)+"</td>");
+            if(FP > 0)
+                str.append("<td><a "+fpErrors+">"+TextTools.toString(FP)+"</a></td>");
+            else
+                str.append("<td>"+TextTools.toString(FP)+"</td>");
+            if(FN > 0)
+                str.append("<td><a "+fnErrors+">"+TextTools.toString(FN)+"</a></td>");
+            else
+                str.append("<td>"+TextTools.toString(FN)+"</td>");
+            str.append("<td>"+TextTools.toString(TN)+"</td>");
+            str.append("<td>"+TextTools.toString(getPrecision())+"</td>");
+            str.append("<td>"+TextTools.toString(getRecall())+"</td>");
+            str.append("<td>"+TextTools.toString(getAccuracy())+"</td>");
+            str.append("<td>"+TextTools.toString(getFscore())+"</td>");
+            str.append("</tr>");
+            return str.toString();
+        }
+        public static String getHeaderAsHTML(){
+            return "<tr><th>Label</th><th>TP</th><th>TP'</th><th>FP</th><th>FN</th><th>TN</th>" +
+                    "<th>Precision</th><th>Recall</th><th>Accuracy</th><th>F1-Score</th></tr>";
+        }
+    }
+    private String title;
+    private Map<String,ConfusionMatrix> confusions;
+    private Map<String,Map<String,List<IInstance>>> errorMap;
+
+    public String getTitle() {
+        return title;
     }
 
-    private Map<String,AnnotationEvaluation.ConfusionMatrix> confusions;
-    private Map<String,Map<String,List<IInstance>>> errorMap;
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
     /**
      * get generated confusion matricies
      * @return map of confusion matricies
      */
-    public Map<String,AnnotationEvaluation.ConfusionMatrix> getConfusionMatricies(){
+    public Map<String,ConfusionMatrix> getConfusionMatricies(){
         if(confusions == null)
-            confusions = new LinkedHashMap<String, AnnotationEvaluation.ConfusionMatrix>();
+            confusions = new LinkedHashMap<String, ConfusionMatrix>();
         return confusions;
     }
 
@@ -78,11 +136,14 @@ public class Analysis {
      * @param name - name of the confusion matrix
      * @return confusion matrix
      */
-    public AnnotationEvaluation.ConfusionMatrix getConfusionMatrix(String name) {
-        AnnotationEvaluation.ConfusionMatrix confusion = getConfusionMatricies().get(name);
+    public ConfusionMatrix getConfusionMatrix(String name) {
+        ConfusionMatrix confusion = getConfusionMatricies().get(name);
         if(confusion == null){
-            confusion = new AnnotationEvaluation.ConfusionMatrix();
+            confusion = new ConfusionMatrix();
+            confusion.setLabel(name);
             getConfusionMatricies().put(name,confusion);
+            if(name.length() > MAX_ATTRIBUTE_SIZE)
+                MAX_ATTRIBUTE_SIZE = name.length();
         }
         return confusion;
     }
@@ -125,4 +186,78 @@ public class Analysis {
         }
         list.add(inst);
     }
+
+    /**
+     * print result table to print stream
+     * @param out - print stream s.a. System.out
+     */
+    public void printResultTable(PrintStream out){
+        ConfusionMatrix.printHeader(out);
+        for(String label: getConfusionMatricies().keySet()){
+            getConfusionMatricies().get(label).print(out,label);
+        }
+    }
+    /**
+     * get result table as HTML
+     * @return String representing HTML table
+     */
+    public String getResultTableAsHTML() {
+        StringBuilder str = new StringBuilder();
+        str.append("<table border=1>");
+        str.append(ConfusionMatrix.getHeaderAsHTML());
+        for(String label: getConfusionMatricies().keySet()){
+            str.append(getConfusionMatricies().get(label).getRowAsHTML(label));
+        }
+        str.append("</table>");
+        return str.toString();
+    }
+
+    /**
+     * get error information for each label
+     * @param label
+     * @return
+     */
+    public String getErrorsAsHTML(String label) {
+        StringBuilder str = new StringBuilder();
+        for(String report :getErrorMap(label).keySet()){
+            String name = report;
+            if(name.endsWith(".txt"))
+                name = name.substring(0,name.length()-4);
+            str.append("<p><h3>");
+            str.append("<a href=\"../"+HTMLExporter.HTML_REPORT_LOCATION+"/"+name);
+            str.append(".html\" target=\"frame\">"+report+"</a>");
+            str.append("</h3><ul>");
+            for(IInstance inst: getErrorMap(label).get(report)){
+                str.append(toHTML(inst));
+            }
+            str.append("</ul></p>");
+        }
+
+        return str.toString();
+    }
+
+    /**
+     * return HTML view of an instance
+     * @param inst - instance
+     * @return HTML string
+     */
+    private String toHTML(IInstance inst){
+        StringBuilder str = new StringBuilder();
+        str.append("<li>"+inst.getDirectTypes()[0].getName()+"<ul>");
+        for(IProperty p: inst.getProperties()){
+            str.append("<li>"+p.getName()+": ");
+            for(Object o: inst.getPropertyValues(p)){
+                if(o instanceof IInstance){
+                    str.append(((IInstance)o).getDirectTypes()[0].getName()+" ");
+                }else{
+                    str.append(o+" ");
+                }
+            }
+            str.append("</li>");
+        }
+        str.append("</ul></li>");
+        return str.toString();
+    }
+
 }
+

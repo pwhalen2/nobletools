@@ -12,7 +12,9 @@ import edu.pitt.dbmi.nlp.noble.ontology.IOntology;
 import edu.pitt.dbmi.nlp.noble.ontology.IOntologyException;
 import edu.pitt.dbmi.nlp.noble.ontology.IProperty;
 import edu.pitt.dbmi.nlp.noble.ontology.owl.OOntology;
+import edu.pitt.dbmi.nlp.noble.terminology.Annotation;
 import edu.pitt.dbmi.nlp.noble.tools.TextTools;
+import edu.pitt.dbmi.nlp.noble.util.HTMLExporter;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -29,11 +31,8 @@ public class AnnotationEvaluation {
 	
 	public static boolean STRICT_VALUE_CALCULATION = false;
 	public static boolean PRINT_RECORD_LEVEL_STATS = false;
-	public static boolean LIST_RECORD_LEVEL_STATS = false;
-	public static int MAX_ATTRIBUTE_SIZE = 10;
 	private Map<String,Double> attributeWeights;
-	private Map<String,ConfusionMatrix> confusions;
-	
+	private Analysis analysis;
 	
 	public static void main(String[] args) throws Exception {
 		// compare two files
@@ -55,10 +54,30 @@ public class AnnotationEvaluation {
 			
 			AnnotationEvaluation pe = new AnnotationEvaluation();
 			pe.loadWeights(weights);
-			pe.evaluate(gold,candidate);	
+			pe.evaluate(gold,candidate);
+			pe.outputHTML(candidate.getParentFile());
 		}else{
 			System.err.println("Usage: java "+AnnotationEvaluation.class.getSimpleName()+" [-print|-strict] <gold instance owl file> <system instance owl file> [weights file]");
 		}
+	}
+
+	/**
+	 * output HTML files to a given parent directory
+	 * @param parentFile
+	 */
+	public void outputHTML(File parentFile) throws IOException {
+		HTMLExporter exporter = new HTMLExporter(parentFile);
+		exporter.export(getAnalysis());
+	}
+
+	/**
+	 * get analysis object for a given evaluation
+	 * @return analysis object
+	 */
+	public Analysis getAnalysis(){
+		if(analysis == null)
+			analysis = new Analysis();
+		return  analysis;
 	}
 
 	/**
@@ -90,87 +109,6 @@ public class AnnotationEvaluation {
 		return attributeWeights;
 	}
 
-
-
-	public static enum ConfusionLabel {
-		TP,FP,FN,TN
-	}
-	public static class ConfusionMatrix {
-		public double TPP,TP,FP,FN,TN;
-		public void append(ConfusionMatrix c){
-			TPP += c.TPP;
-			TP += c.TP;
-			FP += c.FP;
-			FN += c.FN;
-			TN += c.TN;
-		}
-		
-		public double getPrecision(){
-			return TP / (TP+ FP);
-		}
-		public double getRecall(){
-			return  TP / (TP+ FN);
-		}
-		public double getFscore(){
-			double precision = getPrecision();
-			double recall = getRecall();
-			return (2*precision*recall)/(precision + recall);
-		}
-		public double getAccuracy(){
-			return (TP+TN) / (TP+TN+FP+FN);
-		}
-		
-		public static void printHeader(PrintStream out){
-			out.println(String.format("%1$-"+MAX_ATTRIBUTE_SIZE+"s","Label")+"\tTP\tTP'\tFP\tFN\tTN\tPrecis\tRecall\tAccur\tF1-Score");
-		}
-		public void print(PrintStream out,String label){
-			out.println(String.format("%1$-"+MAX_ATTRIBUTE_SIZE+"s",label)+"\t"+
-					TextTools.toString(TP)+"\t"+TextTools.toString(TPP)+"\t"+TextTools.toString(FP)+"\t"+
-					TextTools.toString(FN)+"\t"+TextTools.toString(TN)+"\t"+
-					TextTools.toString(getPrecision())+"\t"+
-					TextTools.toString(getRecall())+"\t"+
-					TextTools.toString(getAccuracy())+"\t"+
-					TextTools.toString(getFscore()));
-		}
-		public String toString(){
-			return "TP: "+TP+" ,FP: "+FP+", FN: "+FN;
-		}
-	}
-	
-	
-	
-	private void append(Map<String,ConfusionMatrix> first, Map<String,ConfusionMatrix> second){
-		for(String hd: second.keySet()){
-			ConfusionMatrix c = first.get(hd);
-			if(c == null){
-				c = new ConfusionMatrix();
-				first.put(hd,c);
-			}
-			c.append(second.get(hd));
-		}
-		
-	}
-	
-	private static String toString(Collection c){
-		if(c == null)
-			return "";
-		String s = c.toString();
-		if(s.startsWith("[") && s.endsWith("]"))
-			return s.substring(1,s.length()-1);
-		return s;
-	}
-	
-	
-	/**
-	 * get generated confusion matricies
-	 * @return map of confusion matricies
-	 */
-	public Map<String,ConfusionMatrix> getConfusionMatricies(){
-		if(confusions == null)
-			confusions = new LinkedHashMap<String, AnnotationEvaluation.ConfusionMatrix>();
-		return confusions;
-	}
-	
 	
 	/**
 	 * evaluate phenotype of two BSV files
@@ -185,32 +123,27 @@ public class AnnotationEvaluation {
 		IOntology systemInstances = OOntology.loadOntology(file2);
 		
 		// init confusionMatrix
-		ConfusionMatrix mentionConfusion = new ConfusionMatrix();
-		ConfusionMatrix documentConfusion = new ConfusionMatrix();
-		getConfusionMatricies().put("Mention",mentionConfusion);
-		getConfusionMatricies().put("Document",documentConfusion);
-		
+		Analysis analysis = getAnalysis();
+		analysis.setTitle("Results for "+file1.getName()+" on "+new Date());
+		Analysis.ConfusionMatrix mentionConfusion = analysis.getConfusionMatrix("Mention");
+		Analysis.ConfusionMatrix documentConfusion = analysis.getConfusionMatrix("Document");
+
 		
 		// get composition
 		List<IInstance> goldCompositions = getCompositions(goldInstances);
 		List<IInstance> candidateCompositions = getCompositions(systemInstances);
 		
-		// init error storage
-		Map<ConfusionLabel,List<IInstance>> errors = new LinkedHashMap<AnnotationEvaluation.ConfusionLabel, List<IInstance>>();
-				
+
 		for(IInstance gold: goldCompositions){
 			IInstance cand = getMatchingComposition(candidateCompositions,gold);
 			if(cand != null){
-				calculateDocumentConfusion(gold, cand,DomainOntology.HAS_MENTION_ANNOTATION,mentionConfusion,errors);
-				calculateDocumentConfusion(gold, cand,DomainOntology.HAS_DOCUMENT_ANNOTATION,documentConfusion,errors);
+				calculateDocumentConfusion(gold, cand,DomainOntology.HAS_MENTION_ANNOTATION,mentionConfusion);
+				calculateDocumentConfusion(gold, cand,DomainOntology.HAS_DOCUMENT_ANNOTATION,documentConfusion);
 			}
 		}
 		
 		// print results
-		ConfusionMatrix.printHeader(System.out);
-		for(String label: getConfusionMatricies().keySet()){
-			getConfusionMatricies().get(label).print(System.out,label);
-		}
+		analysis.printResultTable(System.out);
 	}
 
 	public static boolean isPrintErrors(){
@@ -222,31 +155,27 @@ public class AnnotationEvaluation {
 	
 	/**
 	 * calculate confusion for two composition on a given annotation type
-	 * @param gold
-	 * @param cand
-	 * @param prop
-	 * @param confusion
-	 * @param errors
+	 * @param gold - gold document instance
+	 * @param system - system document instance
+	 * @param prop - property for a type of annotations to fetch
+	 * @param confusion - total confusion matrix
 	 */
-	private void calculateDocumentConfusion(IInstance gold, IInstance cand, String prop, ConfusionMatrix confusion, Map<ConfusionLabel,List<IInstance>> errors){
-		if(!errors.containsKey(ConfusionLabel.FN))
-			errors.put(ConfusionLabel.FN,new ArrayList<IInstance>());
-		if(!errors.containsKey(ConfusionLabel.FP))
-			errors.put(ConfusionLabel.FP,new ArrayList<IInstance>());
-		
+	private void calculateDocumentConfusion(IInstance gold, IInstance system, String prop, Analysis.ConfusionMatrix confusion){
 		// get a list of gold variables and system vars for each document
+		String docTitle = getDocumentTitle(gold);
 		List<IInstance> goldVariables = getAnnotationVariables(gold,gold.getOntology().getProperty(prop));
-		List<IInstance> systemVariables = getAnnotationVariables(cand,cand.getOntology().getProperty(prop));
+		List<IInstance> systemVariables = getAnnotationVariables(system,system.getOntology().getProperty(prop));
 		
 		Set<IInstance> usedSystemCandidates = new HashSet<IInstance>();
 		
 		for(IInstance goldInst: goldVariables){
-			ConfusionMatrix varConfusion = getConfusionMatrix(goldInst);
+			Analysis.ConfusionMatrix varConfusion = getConfusionMatrix(goldInst);
 			List<IInstance> sysInstances = getMatchingAnnotationVaiables(systemVariables,goldInst);
 			if(sysInstances.isEmpty()){
 				confusion.FN ++;
 				varConfusion.FN++;
-				errors.get(ConfusionLabel.FN).add(goldInst);
+				getAnalysis().addError(confusion.getLabelFN(),docTitle,goldInst);
+				getAnalysis().addError(varConfusion.getLabelFN(),docTitle,goldInst);
 			}else{
 				for(IInstance sysInst : sysInstances ){
 					usedSystemCandidates.add(sysInst);
@@ -264,24 +193,32 @@ public class AnnotationEvaluation {
 			if(!usedSystemCandidates.contains(inst)){
 				confusion.FP ++;
 				getConfusionMatrix(inst).FP++;
-				errors.get(ConfusionLabel.FP).add(inst);
+				getAnalysis().addError(confusion.getLabelFP(),docTitle,inst);
+				getAnalysis().addError(getConfusionMatrix(inst).getLabelFP(),docTitle,inst);
 			}
 		}
 	}
 
-	private ConfusionMatrix getConfusionMatrix(IInstance goldInst) {
-		String name = goldInst.getDirectTypes()[0].getName();
-		return getConfusionMatrix(name);
+	/**
+	 * get document title
+	 * @param doc
+	 * @return
+	 */
+	private String getDocumentTitle(IInstance doc) {
+		IProperty title = doc.getOntology().getProperty(DomainOntology.HAS_TITLE);
+		return (String) doc.getPropertyValue(title);
 	}
 
-	private ConfusionMatrix getConfusionMatrix(String name) {
-		ConfusionMatrix confusion = getConfusionMatricies().get(name);
-		if(confusion == null){
-			confusion = new ConfusionMatrix();
-			getConfusionMatricies().put(name,confusion);
-		}
-		return confusion;
+	/**
+	 * get confusion matrix for a given type of instance
+	 * @param goldInst
+	 * @return
+	 */
+	private Analysis.ConfusionMatrix getConfusionMatrix(IInstance goldInst) {
+		String name = goldInst.getDirectTypes()[0].getName();
+		return getAnalysis().getConfusionMatrix(name);
 	}
+
 
 	private List<IInstance> getMatchingAnnotationVaiables(List<IInstance> candidateVariables, IInstance goldInst) {
 		List<IInstance> matchedInstances = new ArrayList<IInstance>();
