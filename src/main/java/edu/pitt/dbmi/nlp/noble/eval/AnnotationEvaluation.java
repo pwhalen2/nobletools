@@ -57,7 +57,7 @@ public class AnnotationEvaluation {
 			pe.loadWeights(weights);
 			pe.evaluate(gold,candidate);	
 		}else{
-			System.err.println("Usage: java "+AnnotationEvaluation.class.getSimpleName()+" [-print|-strict] <gold instance owl file> <system instnace owl file> [weights file]");
+			System.err.println("Usage: java "+AnnotationEvaluation.class.getSimpleName()+" [-print|-strict] <gold instance owl file> <system instance owl file> [weights file]");
 		}
 	}
 
