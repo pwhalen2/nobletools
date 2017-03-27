@@ -1,6 +1,9 @@
 package edu.pitt.dbmi.nlp.noble.eval;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -31,14 +34,40 @@ public class AttributeWeights {
 
 	/**
 	 * print weights matrix
-	 * @param computeWeights
-	 * @param out
+	 * @param computeWeights - weight matrix
+	 * @param out - print stream
 	 */
 	private void printWeights(Map<String,Double> computeWeights, PrintStream out) {
 		for(String key: computeWeights.keySet()){
 			out.println(key+"\t"+TextTools.toString(computeWeights.get(key)));
 		}
 	}
+	
+	/**
+	 * get weights as string
+	 * @param computeWeights - weight matrix
+	 * @return String representation of them
+	 */
+	public String getWeightsAsText(Map<String,Double> computeWeights){
+		StringBuilder str = new StringBuilder();
+		for(String key: computeWeights.keySet()){
+			str.append(key+"\t"+TextTools.toString(computeWeights.get(key))+"\n");
+		}
+		return str.toString();
+	}
+	
+	/**
+	 * write weights to a file
+	 * @param computeWeights - matrix of weights
+	 * @param outFile - output file
+	 * @throws IOException exception to be thrown
+	 */
+	public void writeWeights(Map<String,Double> computeWeights,File outFile) throws IOException{
+		BufferedWriter writer = new BufferedWriter(new FileWriter(outFile));
+		writer.write(getWeightsAsText(computeWeights));
+		writer.close();
+	}
+	
 
 	/**
 	 * compute weights matrix
@@ -46,7 +75,7 @@ public class AttributeWeights {
 	 * @return
 	 * @throws IOntologyException
 	 */
-	private Map<String,Double> computeWeights(File gold) throws IOntologyException {
+	public Map<String,Double> computeWeights(File gold) throws IOntologyException {
 		Map<String,Double> weights = new LinkedHashMap<String, Double>();
 		Map<String,Map<String,Double>> counts = new LinkedHashMap<String, Map<String,Double>>();
 		IOntology ont = OOntology.loadOntology(gold);

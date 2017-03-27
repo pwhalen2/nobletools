@@ -7,11 +7,13 @@ import edu.pitt.dbmi.nlp.noble.ontology.IResource;
 import edu.pitt.dbmi.nlp.noble.tools.TextTools;
 import edu.pitt.dbmi.nlp.noble.util.HTMLExporter;
 
+import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Created by tseytlin on 3/25/17.
@@ -82,10 +84,13 @@ public class Analysis {
         public String getRowAsHTML(String label) {
             String fpErrors = "href=\""+ HTMLExporter.HTML_ERROR_LOCATION+"/"+getLabelFP()+".html\" target=\"_blank\"";
             String fnErrors = "href=\""+ HTMLExporter.HTML_ERROR_LOCATION+"/"+getLabelFN()+".html\" target=\"_blank\"";
-
+            String labelText = label;
+            if(labelText.startsWith(" "))
+            	labelText = "<b>"+label+"</b>";
+            
             StringBuilder str = new StringBuilder();
             str.append("<tr>");
-            str.append("<td>"+label+"</td>");
+            str.append("<td>"+labelText+"</td>");
             str.append("<td>"+TextTools.toString(TP)+"</td>");
             str.append("<td>"+TextTools.toString(TPP)+"</td>");
             if(FP > 0)
@@ -127,7 +132,7 @@ public class Analysis {
      */
     public Map<String,ConfusionMatrix> getConfusionMatricies(){
         if(confusions == null)
-            confusions = new LinkedHashMap<String, ConfusionMatrix>();
+            confusions = new TreeMap<String, ConfusionMatrix>();
         return confusions;
     }
 
@@ -166,7 +171,7 @@ public class Analysis {
     public Map<String,List<IInstance>> getErrorMap(String label){
         Map<String,List<IInstance>> errors = getErrorMap().get(label);
         if(errors == null) {
-            errors = new LinkedHashMap<String, List<IInstance>>();
+            errors = new TreeMap<String, List<IInstance>>();
             getErrorMap().put(label,errors);
         }
         return errors;
@@ -197,13 +202,25 @@ public class Analysis {
             getConfusionMatricies().get(label).print(out,label);
         }
     }
+    
+    /**
+     * get result table as string
+     * @return string object
+     */
+    public String getResultTableAsText(){
+    	ByteArrayOutputStream os = new ByteArrayOutputStream();
+		PrintStream ps = new PrintStream(os);
+		printResultTable(ps);
+		return os.toString();
+    }
+    
     /**
      * get result table as HTML
      * @return String representing HTML table
      */
     public String getResultTableAsHTML() {
         StringBuilder str = new StringBuilder();
-        str.append("<table border=1>");
+        str.append("<table border=1 cellspacing=0 cellpadding=0>");
         str.append(ConfusionMatrix.getHeaderAsHTML());
         for(String label: getConfusionMatricies().keySet()){
             str.append(getConfusionMatricies().get(label).getRowAsHTML(label));

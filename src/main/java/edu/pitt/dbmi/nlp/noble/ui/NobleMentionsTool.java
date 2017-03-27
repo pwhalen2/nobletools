@@ -35,6 +35,7 @@ import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -55,6 +56,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.text.html.HTMLDocument;
 
+import edu.pitt.dbmi.nlp.noble.eval.AnnotationEvaluation;
 import edu.pitt.dbmi.nlp.noble.mentions.NobleMentions;
 import edu.pitt.dbmi.nlp.noble.mentions.model.AnnotationVariable;
 import edu.pitt.dbmi.nlp.noble.mentions.model.Composition;
@@ -71,6 +73,7 @@ import edu.pitt.dbmi.nlp.noble.tools.TextTools;
 import edu.pitt.dbmi.nlp.noble.util.CSVExporter;
 import edu.pitt.dbmi.nlp.noble.util.FileTools;
 import edu.pitt.dbmi.nlp.noble.util.HTMLExporter;
+import edu.pitt.dbmi.nlp.noble.util.UITools;
 
 
 
@@ -98,6 +101,7 @@ public class NobleMentionsTool implements ActionListener{
 	private CSVExporter csvExporter;
 	private static boolean statandlone = false;
 	private DefaultRepository repository = new DefaultRepository();
+	
 	
 	/**
 	 * What .
@@ -153,13 +157,18 @@ public class NobleMentionsTool implements ActionListener{
 			info.setActionCommand("preview");
 			info.addActionListener(this);
 			JScrollPane scroll = new JScrollPane(templateList);
-			scroll.setPreferredSize(new Dimension(100,100));
+			scroll.setPreferredSize(new Dimension(100,130));
 			
-			panel.add(new JLabel("Input Schema"),c);c.gridx++;c.gridheight=3;
+			JButton eval = new JButton("Evaluate");
+			eval.setActionCommand("eval");
+			eval.addActionListener(this);
+			
+			panel.add(new JLabel("Input Schema"),c);c.gridx++;c.gridheight=4;
 			panel.add(scroll,c);c.gridx++;c.gridheight=1;
 			panel.add(add,c);c.gridy++;
 			panel.add(export,c);c.gridy++;
 			panel.add(info,c);c.gridy++;
+			panel.add(eval,c);c.gridy++;
 			c.gridx = 0;
 			panel.add(new JLabel("Input Directory "),c);c.gridx++;
 			panel.add(input,c);c.gridx++;
@@ -328,9 +337,21 @@ public class NobleMentionsTool implements ActionListener{
 			doImport();
 		}else if("preview".equals(cmd)){
 			doPreview();
+		}else if("eval".equals(cmd)){
+			doEvaluate();
 		}
 	}
 	
+	private void doEvaluate() {
+		AnnotationEvaluation ae = new AnnotationEvaluation();
+		JDialog dialog = ae.getDialog(frame);
+		DomainOntology ontology = templateList.getSelectedValue();
+		String name = ontology.getName()+"Instances.owl";;
+		ae.setSystemInstanceOntlogy(output.getText()+File.separator+name);
+		dialog.setVisible(true);
+	}
+
+
 	/**
 	 * do preview.
 	 */
@@ -432,27 +453,7 @@ public class NobleMentionsTool implements ActionListener{
 
 	
 	
-	/**
-     * Display a lastFile in the system browser. If you want to display a lastFile, you
-     * must include the absolute path name.
-     *
-     * @param url
-     *            the lastFile's url (the url must start with either "http://" or
-     *            "lastFile://").
-     */
-     private void browseURLInSystemBrowser(String url) {
-    	 Desktop desktop = Desktop.getDesktop();
-    	 if( !desktop.isSupported( java.awt.Desktop.Action.BROWSE ) ) {
-    		 progress("Could not open "+url+"\n");
-    	 }
-    	 try {
-    		 java.net.URI uri = new java.net.URI( url );
-    		 desktop.browse( uri );
-    	 }catch ( Exception e ) {
-           System.err.println( e.getMessage() );
-    	 }
-     }
-	
+
 	
      /**
       * check UI inputs.
@@ -516,14 +517,18 @@ public class NobleMentionsTool implements ActionListener{
 				try {
 					process(ontology,input.getText(),output.getText());
 				} catch (Exception e) {
-					e.printStackTrace();
+					UITools.showErrorDialog(frame,e);
 				}
 				
 				
 				setBusy(false);
 				
 				// open in browser
-				browseURLInSystemBrowser(new File(output.getText()+File.separator+"index.html").toURI().toString());
+				try{
+					UITools.browseURLInSystemBrowser(new File(output.getText()+File.separator+"index.html").toURI().toString());
+				}catch(Exception ex){
+					UITools.showErrorDialog(frame,ex);
+				}
 				
 			}
 		})).start();

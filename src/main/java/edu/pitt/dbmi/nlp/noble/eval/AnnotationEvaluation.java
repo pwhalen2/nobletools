@@ -4,6 +4,27 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
+import javax.swing.filechooser.FileFilter;
+
 import edu.pitt.dbmi.nlp.noble.coder.model.Spannable;
 import edu.pitt.dbmi.nlp.noble.mentions.model.DomainOntology;
 import edu.pitt.dbmi.nlp.noble.ontology.IClass;
@@ -14,25 +35,49 @@ import edu.pitt.dbmi.nlp.noble.ontology.IProperty;
 import edu.pitt.dbmi.nlp.noble.ontology.owl.OOntology;
 import edu.pitt.dbmi.nlp.noble.terminology.Annotation;
 import edu.pitt.dbmi.nlp.noble.tools.TextTools;
+import edu.pitt.dbmi.nlp.noble.util.FileTools;
 import edu.pitt.dbmi.nlp.noble.util.HTMLExporter;
+import edu.pitt.dbmi.nlp.noble.util.UITools;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Frame;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.Point;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
 
-public class AnnotationEvaluation {
+public class AnnotationEvaluation implements ActionListener {
 	public static final String DISJOINT_SPANS = "\\s+"; // span seperate
 	public static final String SPAN_SEPERATOR = ":";    //within a span Ex: 12:45
-	
-	
+	public static final String ANALYSIS_HTML = "analysis.html";
+	public static final String ANALYSIS_TSV = "analysis.tsv";
 	public static boolean STRICT_VALUE_CALCULATION = false;
 	public static boolean PRINT_RECORD_LEVEL_STATS = false;
 	private Map<String,Double> attributeWeights;
+	private Set<IClass> validAnnotations;
 	private Analysis analysis;
+	
+	// UI components
+	private JDialog dialog;
+	private JTextField goldOntology, systemOntology, goldWeights;
+	private JTextArea console;
+	private JPanel buttonPanel;
+	private JProgressBar progress;
+	private File lastFile;
 	
 	public static void main(String[] args) throws Exception {
 		// compare two files
@@ -53,10 +98,14 @@ public class AnnotationEvaluation {
 			}
 			
 			AnnotationEvaluation pe = new AnnotationEvaluation();
+			pe.getDialog().setVisible(true);
+			/*
 			pe.loadWeights(weights);
 			pe.evaluate(gold,candidate);
 			pe.outputHTML(candidate.getParentFile());
+			*/
 		}else{
+			
 			System.err.println("Usage: java "+AnnotationEvaluation.class.getSimpleName()+" [-print|-strict] <gold instance owl file> <system instance owl file> [weights file]");
 		}
 	}
@@ -70,6 +119,17 @@ public class AnnotationEvaluation {
 		exporter.export(getAnalysis());
 	}
 
+	/**
+	 * output TSV to file
+	 * @param parentFile
+	 * @throws FileNotFoundException
+	 */
+	public void outputTSV(File parentFile) throws FileNotFoundException {
+		PrintStream fos = new PrintStream(new File(parentFile,ANALYSIS_TSV));
+		getAnalysis().printResultTable(fos);
+		fos.close();
+	}
+	
 	/**
 	 * get analysis object for a given evaluation
 	 * @return analysis object
@@ -118,15 +178,18 @@ public class AnnotationEvaluation {
 	 * @throws IOntologyException 
 	 */
 	
-	private void evaluate(File file1, File file2) throws IOException, IOntologyException {
+	public void evaluate(File file1, File file2) throws IOException, IOntologyException {
 		IOntology goldInstances = OOntology.loadOntology(file1);
 		IOntology systemInstances = OOntology.loadOntology(file2);
+	
+		// load valid annotations for totals
+		loadAnnotationFilter(goldInstances);
 		
 		// init confusionMatrix
 		Analysis analysis = getAnalysis();
 		analysis.setTitle("Results for "+file1.getName()+" on "+new Date());
-		Analysis.ConfusionMatrix mentionConfusion = analysis.getConfusionMatrix("Mention");
-		Analysis.ConfusionMatrix documentConfusion = analysis.getConfusionMatrix("Document");
+		Analysis.ConfusionMatrix mentionConfusion = analysis.getConfusionMatrix(" Overall Mention");
+		//Analysis.ConfusionMatrix documentConfusion = analysis.getConfusionMatrix(" Document");
 
 		
 		// get composition
@@ -138,7 +201,7 @@ public class AnnotationEvaluation {
 			IInstance cand = getMatchingComposition(candidateCompositions,gold);
 			if(cand != null){
 				calculateDocumentConfusion(gold, cand,DomainOntology.HAS_MENTION_ANNOTATION,mentionConfusion);
-				calculateDocumentConfusion(gold, cand,DomainOntology.HAS_DOCUMENT_ANNOTATION,documentConfusion);
+				//calculateDocumentConfusion(gold, cand,DomainOntology.HAS_DOCUMENT_ANNOTATION,documentConfusion);
 			}
 		}
 		
@@ -146,6 +209,23 @@ public class AnnotationEvaluation {
 		analysis.printResultTable(System.out);
 	}
 
+	/**
+	 * go over 
+	 * @param ontology
+	 */
+	private void loadAnnotationFilter(IOntology ontology) {
+		validAnnotations = new HashSet<IClass>();
+		for(IClass cls: ontology.getClass(DomainOntology.ANNOTATION).getSubClasses()){
+			validAnnotations.add(cls);
+		}
+	}
+
+	private Set<IClass> getAnnotationFilter(){
+		if(validAnnotations == null)
+			validAnnotations = new HashSet<IClass>();
+		return validAnnotations;
+	}
+	
 	public static boolean isPrintErrors(){
 		return PRINT_RECORD_LEVEL_STATS;
 	}
@@ -165,8 +245,10 @@ public class AnnotationEvaluation {
 		String docTitle = getDocumentTitle(gold);
 		List<IInstance> goldVariables = getAnnotationVariables(gold,gold.getOntology().getProperty(prop));
 		List<IInstance> systemVariables = getAnnotationVariables(system,system.getOntology().getProperty(prop));
-		
 		Set<IInstance> usedSystemCandidates = new HashSet<IInstance>();
+		
+		boolean includeInTotal = getAnnotationFilter().contains(system.getDirectTypes()[0]);
+		
 		
 		for(IInstance goldInst: goldVariables){
 			Analysis.ConfusionMatrix varConfusion = getConfusionMatrix(goldInst);
@@ -191,9 +273,13 @@ public class AnnotationEvaluation {
 		}
 		for(IInstance inst: systemVariables){
 			if(!usedSystemCandidates.contains(inst)){
-				confusion.FP ++;
+				// there could be some annotations that we simply don't evaluate because
+				// GOLD didn't bother to annotate them
+				if(includeInTotal){
+					confusion.FP ++;
+					getAnalysis().addError(confusion.getLabelFP(),docTitle,inst);
+				}
 				getConfusionMatrix(inst).FP++;
-				getAnalysis().addError(confusion.getLabelFP(),docTitle,inst);
 				getAnalysis().addError(getConfusionMatrix(inst).getLabelFP(),docTitle,inst);
 			}
 		}
@@ -316,14 +402,14 @@ public class AnnotationEvaluation {
 
 	private double getWeightedScore(IInstance goldInst, IInstance systemInst) {
 		// we start with score of 1.0 cause we did match up the (anchor aprory)
-		double defaultWeight = getDefaultWeight(goldInst);
+		//double defaultWeight =  1.0; //getDefaultWeight(goldInst);
 		double numerator   = 1.0;  // initial weight of an anchor
 		double denominator = 1.0;  // initial total score 
 		for(IProperty goldProp: getProperties(goldInst)){
 			for(IInstance gVal: getInstanceValues(goldInst.getPropertyValues(goldProp))){
 				double weight = getWeight(gVal);
-				if(weight == 0)
-					weight = defaultWeight;
+				//if(weight == 0)
+				//	weight = defaultWeight;
 				denominator += weight;
 				numerator += weight * hasAttributeValue(systemInst,goldProp,gVal);
 			}
@@ -331,7 +417,7 @@ public class AnnotationEvaluation {
 		return numerator / denominator;
 	}
 
-	private double getDefaultWeight(IInstance inst){
+	/*private double getDefaultWeight(IInstance inst){
 		double count = 0;
 		for(IProperty goldProp: getProperties(inst)) {
 			for (IInstance gVal : getInstanceValues(inst.getPropertyValues(goldProp))) {
@@ -339,7 +425,7 @@ public class AnnotationEvaluation {
 			}
 		}
 		return count > 0?1.0 / count:0;
-	}
+	}*/
 
 	/**
 	 * does a system instance have a given value
@@ -365,8 +451,8 @@ public class AnnotationEvaluation {
 			return getAttributeWeights().get(name);
 		}
 		// default weight in case we don't have a good one
-		System.err.println("no weight for: "+name);
-		return 0;
+		//System.err.println("no weight for: "+name);
+		return 1.0;
 	}
 
 	private List<IProperty> getProperties(IInstance inst){
@@ -438,5 +524,270 @@ public class AnnotationEvaluation {
 		return list;
 	}
 	
+	
+	public JDialog getDialog(){
+		return getDialog(null);
+	}
+	
+	public JDialog getDialog(Frame owner){
+		if(dialog == null){
+			dialog = new JDialog(owner,"Annotation Evaluation",false);
+			//dialog.setIconImage(new ImageIcon(LOGO_ICON).getImage());
+			
+			JPanel panel = new JPanel();
+			panel.setLayout(new BoxLayout(panel,BoxLayout.Y_AXIS));
+			GridBagConstraints c = new GridBagConstraints(0,0,1,1,1,1,GridBagConstraints.CENTER,GridBagConstraints.HORIZONTAL,new Insets(5,5,5,5),0,0);
+			GridBagLayout l = new GridBagLayout();
+			l.setConstraints(panel,c);
+			panel.setLayout(l);
+			
+			// gold ontology instances
+			goldOntology = new JTextField(30);
+			JButton browse = new JButton("Browse");
+			browse.addActionListener(this);
+			browse.setActionCommand("g_browser");
+			
+			panel.add(new JLabel("Gold Instantiated Ontology"),c);c.gridx++;
+			panel.add(goldOntology,c);c.gridx++;
+			panel.add(browse,c);c.gridx=0;c.gridy++;
+	
+			goldWeights = new JTextField(30);
+			browse = new JButton("Browse");
+			browse.addActionListener(this);
+			browse.setActionCommand("w_browser");
+			
+			panel.add(new JLabel("Gold Weights File"),c);c.gridx++;
+			panel.add(goldWeights,c);c.gridx++;
+			panel.add(browse,c);c.gridx=0;c.gridy++;
+			
+			
+			systemOntology = new JTextField(30);
+			browse = new JButton("Browse");
+			browse.addActionListener(this);
+			browse.setActionCommand("s_browser");
+		
+			panel.add(new JLabel("System Instantiated Ontology "),c);c.gridx++;
+			panel.add(systemOntology,c);c.gridx++;
+			panel.add(browse,c);c.gridx=0;c.gridy++;
+			panel.add(Box.createRigidArea(new Dimension(10,10)),c);
+			
+			JPanel conp = new JPanel();
+			conp.setLayout(new BorderLayout());
+			conp.setBorder(new TitledBorder("Output Results"));
+			console = new JTextArea(10,40);
+			//console.setLineWrap(true);
+			console.setEditable(false);
+			conp.add(new JScrollPane(console),BorderLayout.CENTER);
+			//c.gridwidth=3;		
+			//panel.add(conp,c);c.gridy++;c.gridx=0;
+			
+			buttonPanel = new JPanel();
+			buttonPanel.setLayout(new GridLayout(1,2,10,10));
+			buttonPanel.setBorder(new EmptyBorder(10,30,10,30));
+			
+			JButton generate = new JButton("Generate Weights");
+			generate.addActionListener(this);
+			generate.setActionCommand("weights");
+			
+			JButton run = new JButton("Evaluate");
+			run.addActionListener(this);
+			run.setActionCommand("evaluate");
+			buttonPanel.add(generate);
+			buttonPanel.add(run);
+			//panel.add(buttonPanel,c);
+			
+			progress = new JProgressBar();
+			progress.setIndeterminate(true);
+			progress.setString("Please Wait. It may take a while ...");
+			progress.setStringPainted(true);
+			
+			JPanel p = new JPanel();
+			p.setLayout(new BorderLayout());
+			p.add(panel,BorderLayout.NORTH);
+			p.add(conp,BorderLayout.CENTER);
+			p.add(buttonPanel,BorderLayout.SOUTH);
+			
+				
+			// wrap up, and display
+			dialog.setContentPane(p);
+			dialog.pack();
+		
+			//center on screen
+			Dimension d = dialog.getSize();
+			Dimension s = Toolkit.getDefaultToolkit().getScreenSize();
+			dialog.setLocation(new Point((s.width-d.width)/2,(s.height-d.height)/2));
+			
+		}
+		return dialog;	
+	}
+	
+	/**
+	 * set busy .
+	 *
+	 * @param b the new busy
+	 */
+	private void setBusy(boolean b){
+		final boolean busy = b;
+		SwingUtilities.invokeLater(new Runnable(){
+			public void run(){
+				if(busy){
+					progress.setIndeterminate(true);
+					progress.setString("Please Wait. It may take a while ...");
+					progress.setStringPainted(true);
+					getDialog().getContentPane().remove(buttonPanel);
+					getDialog().getContentPane().add(progress,BorderLayout.SOUTH);
+					console.setText("");
+				}else{
+					getDialog().getContentPane().remove(progress);
+					getDialog().getContentPane().add(buttonPanel,BorderLayout.SOUTH);
+				}
+				getDialog().getContentPane().revalidate();
+				getDialog().pack();
+				
+			}
+		});
+	}
+
+	public void setSystemInstanceOntlogy(String text){
+		systemOntology.setText(text);
+	}
+	
+	public void actionPerformed(ActionEvent e) {
+		String cmd = e.getActionCommand();
+		if("evaluate".equals(cmd)){
+			doEvaluate();
+		}else if("g_browser".equals(cmd)){
+			doBrowse(goldOntology);
+		}else if("w_browser".equals(cmd)){
+			doBrowse(goldWeights);
+		}else if("s_browser".equals(cmd)){
+			doBrowse(systemOntology);
+		}else if("exit".equals(cmd)){
+			System.exit(0);
+		}else if("weights".equals(cmd)){
+			doWeights();
+		}	
+	}
+	
+	private void doWeights() {
+		new Thread(new Runnable() {
+			public void run() {
+				File gold = new File(goldOntology.getText());
+				File weights = new File(goldWeights.getText());
+				if(!gold.exists()){
+					JOptionPane.showMessageDialog(getDialog(),"Can't find gold instance ontology: "+gold,"Error",JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+				if(!weights.getParentFile().canWrite()){
+					JOptionPane.showMessageDialog(getDialog(),"Can't save gold weights file to "+weights.getParentFile(),"Error",JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+				
+				setBusy(true);
+				try{
+				
+					AttributeWeights pe = new AttributeWeights();
+					Map<String,Double> weightMap = pe.computeWeights(gold);
+					pe.writeWeights(weightMap, weights);
+					final String text = pe.getWeightsAsText(weightMap);
+					SwingUtilities.invokeLater(new Runnable(){
+						public void run(){
+							console.setText(text);
+							console.repaint();
+						}
+					});
+					
+				}catch(Exception ex){
+					JOptionPane.showMessageDialog(getDialog(),"There was a prolbem with evaluation: "+ex.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+					ex.printStackTrace();
+					return;
+				}finally {
+					setBusy(false);
+				}
+			}
+		}).start();
+		
+	}
+
+	private void doEvaluate() {
+		new Thread(new Runnable() {
+			public void run() {
+				File gold = new File(goldOntology.getText());
+				File weights = new File(goldWeights.getText());
+				File candidate = new File(systemOntology.getText());
+				if(!gold.exists()){
+					UITools.showErrorDialog(getDialog(),"Can't find gold instance ontology: "+gold);
+					return;
+				}
+				if(!candidate.exists()){
+					UITools.showErrorDialog(getDialog(),"Can't find system instance ontology: "+candidate);
+					return;
+				}
+				if(goldWeights.getText().length() > 0 && !weights.exists()){
+					UITools.showErrorDialog(getDialog(),"Can't find gold weights file: "+weights);
+					return;
+				}
+				
+				setBusy(true);
+				try{
+					if(weights.exists())
+						loadWeights(weights);
+					evaluate(gold,candidate);
+					outputHTML(candidate.getParentFile());
+					outputTSV(candidate.getParentFile());
+					
+					// output result
+					final String text = getAnalysis().getResultTableAsText();
+					SwingUtilities.invokeLater(new Runnable(){
+						public void run(){
+							console.setText(text);
+							console.repaint();
+						}
+					});
+					
+					// open in browser
+					try{
+						UITools.browseURLInSystemBrowser(new File(candidate.getParentFile().getAbsolutePath()+File.separator+ANALYSIS_HTML).toURI().toString());
+					}catch(Exception ex){
+						UITools.showErrorDialog(getDialog(),ex);
+					}
+					
+				}catch(Exception ex){
+					UITools.showErrorDialog(getDialog(),"There was a prolbem with evaluation: ",ex);
+					return;
+				}finally {
+					setBusy(false);
+				}
+			}
+
+		
+		}).start();
+	}
+
+	/**
+	 * Do browse.
+	 *
+	 * @param text the text
+	 */
+	private void doBrowse(JTextField text){
+		File file = text.getText().length() > 0? new File(text.getText()):lastFile;
+		JFileChooser fc = new JFileChooser(file);
+		fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+		fc.addChoosableFileFilter(new FileFilter() {
+			public String getDescription() {
+				return "Text files (.txt)";
+			}
+			public boolean accept(File f) {
+				return f.isDirectory() || f.getName().endsWith(".txt");
+			}
+		});
+	
+		int r = fc.showOpenDialog(getDialog());
+		if(r == JFileChooser.APPROVE_OPTION){
+			file = fc.getSelectedFile();
+			text.setText(file.getAbsolutePath());
+			lastFile = file;
+		}
+	}
 
 }

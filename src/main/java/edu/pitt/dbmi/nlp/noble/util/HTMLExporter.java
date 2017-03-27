@@ -19,6 +19,7 @@ import edu.pitt.dbmi.nlp.noble.coder.model.Modifier;
 import edu.pitt.dbmi.nlp.noble.coder.model.Section;
 import edu.pitt.dbmi.nlp.noble.coder.model.Sentence;
 import edu.pitt.dbmi.nlp.noble.eval.Analysis;
+import edu.pitt.dbmi.nlp.noble.eval.AnnotationEvaluation;
 import edu.pitt.dbmi.nlp.noble.extract.InformationExtractor;
 import edu.pitt.dbmi.nlp.noble.extract.model.ItemInstance;
 import edu.pitt.dbmi.nlp.noble.extract.model.Template;
@@ -1054,18 +1055,20 @@ public class HTMLExporter {
 				"<head><title>"+title+"</title>\n"+(includeJavaScript?getJavaScript():"")+"</head>\n";
 	}
 
+
+	
 	/**
 	 * export analysis object to HTML
 	 * @param analysis
 	 */
 	public void export(Analysis analysis) throws IOException{
-		File out = new File(outputDirectory,"analysis.html");
+		File out = new File(outputDirectory,AnnotationEvaluation.ANALYSIS_HTML);
 		BufferedWriter htmlWriter = new BufferedWriter(new FileWriter(out));
 
 		// create analysis HTML
 		htmlWriter.write(createHTMLHeader("Analysis",false));
-		htmlWriter.write("<body><center>");
-		htmlWriter.write("<h2>"+analysis.getTitle()+"</h2>");
+		htmlWriter.write("<body style=\"overflow: hidden;\" bgcolor=\"#EEEEFF\" onload=\"l();\" onresize=\"l();\"><center>");
+		htmlWriter.write("<h3>"+analysis.getTitle()+" [<a href=\""+AnnotationEvaluation.ANALYSIS_TSV+"\">TSV</a>]</h3>");
 		htmlWriter.write(analysis.getResultTableAsHTML());
 		htmlWriter.write("</center></body></html>\n");
 		htmlWriter.flush();
@@ -1079,16 +1082,16 @@ public class HTMLExporter {
 			htmlWriter = new BufferedWriter(new FileWriter(out));
 
 			// create analysis HTML
-			htmlWriter.write(createHTMLHeader(label,false));
-			htmlWriter.write("<body>");
+			htmlWriter.write(createHTMLHeader(label,true));
+			htmlWriter.write("<body onload=\"l();\" onresize=\"l();\""); 
 			htmlWriter.write("<center><h2>"+label+"</h2></center>");
 			htmlWriter.write("<center><table bgcolor=\"#FFFFF\" width=\"100%\" height=\"95%\" border=0>\n");
 			htmlWriter.write("<tr><td align=\"left\" valign=\"top\" width=\"400px\" style=\"white-space: nowrap\">\n");
-			htmlWriter.write("<div id=\"d1\" style=\"overflow: auto; max-height: 800px;\"><div style=\"border-style:solid; border-color: #EEEEFF; padding:10px 10px;\">");
+			htmlWriter.write("<div id=\"d1\" style=\"overflow: auto; max-height: 800px; max-width: 400px;\"><div style=\"border-style:solid; border-color: #EEEEFF; padding:10px 10px;\">");
 
 			htmlWriter.write(analysis.getErrorsAsHTML(label));
 
-			htmlWriter.write("</div></div></td><td valign=top><iframe bgcolor=white frameborder=\"0\" scrolling=\"auto\" name=\"frame\" width=\"100%\" height=\"100%\"></iframe>\n");
+			htmlWriter.write("</div></div></td><td valign=top width=\"100%\" height=\"100%\"><iframe bgcolor=white frameborder=\"0\" scrolling=\"auto\" name=\"frame\" width=\"100%\" height=\"100%\"></iframe>\n");
 			htmlWriter.write("</td></tr></table></center></body></html>\n");
 
 			htmlWriter.flush();
