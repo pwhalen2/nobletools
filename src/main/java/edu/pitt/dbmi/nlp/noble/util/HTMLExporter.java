@@ -1067,7 +1067,7 @@ public class HTMLExporter {
 
 		// create analysis HTML
 		htmlWriter.write(createHTMLHeader("Analysis",false));
-		htmlWriter.write("<body style=\"overflow: hidden;\" bgcolor=\"#EEEEFF\" onload=\"l();\" onresize=\"l();\"><center>");
+		htmlWriter.write("<body bgcolor=\"#EEEEFF\" ><center>");
 		htmlWriter.write("<h3>"+analysis.getTitle()+" [<a href=\""+AnnotationEvaluation.ANALYSIS_TSV+"\">TSV</a>]</h3>");
 		htmlWriter.write(analysis.getResultTableAsHTML());
 		htmlWriter.write("</center></body></html>\n");
