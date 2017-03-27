@@ -7,22 +7,25 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import static edu.pitt.dbmi.nlp.noble.mentions.model.DomainOntology.*;
-
 import edu.pitt.dbmi.nlp.noble.ontology.IClass;
 import edu.pitt.dbmi.nlp.noble.ontology.IInstance;
 import edu.pitt.dbmi.nlp.noble.ontology.IOntology;
 import edu.pitt.dbmi.nlp.noble.ontology.IOntologyException;
 import edu.pitt.dbmi.nlp.noble.ontology.OntologyUtils;
 import edu.pitt.dbmi.nlp.noble.ontology.owl.OOntology;
+import edu.pitt.dbmi.nlp.noble.terminology.Concept;
+import edu.pitt.dbmi.nlp.noble.terminology.Terminology;
+import edu.pitt.dbmi.nlp.noble.terminology.TerminologyException;
+import edu.pitt.dbmi.nlp.noble.terminology.impl.NobleCoderTerminology;
 import edu.pitt.dbmi.nlp.noble.tools.TextTools;
 import edu.pitt.dbmi.nlp.noble.util.FileTools;
 import edu.pitt.dbmi.nlp.noble.util.XMLUtils;
@@ -35,6 +38,35 @@ import edu.pitt.dbmi.nlp.noble.util.XMLUtils;
  */
 public class AnaforaToInstances {
 	private final String DEFAULT_DOCUMENT_SUFFIX = ".txt"; 
+	private Map<String,IClass> schemaMap;
+	private IOntology ontology;
+	private Terminology terminology;
+	
+	
+	
+	public static final String HAS_POLARITY = "hasPolarity";
+	public static final String HAS_TEMPORALITY = "hasTemporality";
+	public static final String HAS_EXPERIENCER = "hasExperiencer";
+	public static final String HAS_CERTAINTY = "hasCertainty";
+	
+	public static final String HAS_CONTEXTUAL_MODALITY = "hasContextualModality";
+	public static final String POLARITY_POSITIVE = "Positive_Polarity";
+	public static final String POLARITY_NEGATIVE = "Negative_Polarity";
+	public static final String EXPERIENCER_PATIENT = "Patient_Experiencer";
+	public static final String EXPERIENCER_FAMILY_MEMBER = "FamilyMember_Experiencer";
+	public static final String EXPERIENCER_DONOR_FAMILY_MEMBER = "DonorFamilyMember_Experiencer";
+	public static final String EXPERIENCER_DONOR_OTHER_MEMBER = "DonorOtherMember_Experiencer";
+	public static final String EXPERIENCER_OTHER_MEMBER = "OtherMember_Experiencer";
+	
+	public static final String TEMPORALITY_BEFORE = "Before_DocTimeRel";
+	public static final String TEMPORALITY_BEFORE_OVERLAP = "Before-Overlap_DocTimeRel";
+	public static final String TEMPORALITY_OVERLAP = "Overlap_DocTimeRel";
+	public static final String TEMPORALITY_AFTER = "After_DocTimeRel";
+	public static final String MODALITY_ACTUAL = "Actual_ContextualModality";
+	public static final String MODALITY_GENERIC = "Generic_ContextualModality";
+	public static final String MODALITY_HEDGED = "Hedged_ContextualModality";
+	public static final String MODALITY_HYPOTHETICAL = "Hypothetical_ContextualModality";
+	
 	
 	public static void main(String [] args) throws Exception{
 		if(args.length > 3){
@@ -78,11 +110,12 @@ public class AnaforaToInstances {
 	 * @param instances - instantiated ontology where we'll write the output
 	 * @throws IOntologyException 
 	 * @throws IOException 
+	 * @throws TerminologyException 
 	 */
-	public void convert(String anaforaDirectory, String anaforaSuffix, String ontolgyLocation, String outputFile) throws IOntologyException, IOException {
+	public void convert(String anaforaDirectory, String anaforaSuffix, String ontolgyLocation, String outputFile) throws IOntologyException, IOException, TerminologyException {
 		System.out.println("loading ontology .. "+ontolgyLocation);
 		File parentOntology = new File(ontolgyLocation);
-		IOntology ontology = OOntology.createOntology(createOntologyInstanceURI(parentOntology), parentOntology);
+		ontology = OOntology.createOntology(createOntologyInstanceURI(parentOntology), parentOntology);
 		// go over anafora directory
 		for(File docDir : new File(anaforaDirectory).listFiles()){
 			if(docDir.isDirectory()){
@@ -156,6 +189,10 @@ public class AnaforaToInstances {
 				vals.iterator().next();
 			return null;
 		}
+		public boolean hasProperty(String name){
+			return properties.containsKey(name);
+		}
+		
 		public Set<String> getProperties(String name) {
 			Set<String> vals = properties.get(name);
 			if(vals != null)
@@ -187,8 +224,9 @@ public class AnaforaToInstances {
 	 * @param ontology - ontology that we are mapping things to
 	 * @throws IOException 
 	 * @throws FileNotFoundException 
+	 * @throws TerminologyException 
 	 */
-	private void addDocumentInstance(File docFile, File xmlFile, IOntology ontology) throws FileNotFoundException, IOException {
+	private void addDocumentInstance(File docFile, File xmlFile, IOntology ontology) throws FileNotFoundException, IOException, TerminologyException {
 		String documentTitle = docFile.getName();
 		// add .txt suffix to align on name
 		if(!documentTitle.endsWith(DEFAULT_DOCUMENT_SUFFIX))
@@ -207,66 +245,270 @@ public class AnaforaToInstances {
 		// process annotations
 		for(String id: annotations.keySet()){
 			Entity entity = annotations.get(id);
-			//if(schemaMap.containsKey(entity.type)){
-				IInstance mentionAnnotation = getInstance(entity,annotations,ontology);
+			IClass cls = getClass(entity);
+			if(cls !=  null && cls.hasSuperClass(ontology.getClass(ANNOTATION))){
+				IInstance mentionAnnotation = getInstance(cls,entity,annotations);
 				// add annotations
 				if(mentionAnnotation != null && ontology.getClass(ANNOTATION).hasSubClass(mentionAnnotation.getDirectTypes()[0])){
 					composition.addPropertyValue(ontology.getProperty(HAS_MENTION_ANNOTATION),mentionAnnotation);
 				}
-			//}
+			}
 		}
 		
 	}
 
+	/**
+	 * get class for a given entity
+	 * @param entity
+	 * @return
+	 * @throws TerminologyException 
+	 */
+	private IClass getClass(Entity entity) throws TerminologyException {
+		IClass cls = getSchemaMap().get(entity.type);
+		String code = entity.getProperty("associatedCode");
+		
+		// try to get more specific for procedures
+		if("Procedure".equals(entity.type)){
+			Concept c = getTerminology().lookupConcept(code);
+			if(c == null){
+				System.out.println("\texcluding Procedure "+code);
+				return null;
+			}else{
+				if(c.getRelationMap().containsKey(IS_ANCHOR_OF)){
+					for(String annotoationName: c.getRelationMap().get(IS_ANCHOR_OF)){
+						IClass annotationCls = ontology.getClass(annotoationName);
+						return annotationCls;
+					}
+				}
+				return null;
+			}
+		}else if("Medications/Drugs".equals(entity.type)){
+			Concept c = getTerminology().lookupConcept(code);
+			if(c == null){
+				System.out.println("\texcluding Medication "+code);
+				return null;
+			}
+		}
+		
+		return cls;
+	}
+
+	public Terminology getTerminology(){
+		if(terminology == null){
+			try {
+				terminology = new NobleCoderTerminology(ontology);
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (TerminologyException e) {
+				e.printStackTrace();
+			} catch (IOntologyException e) {
+				e.printStackTrace();
+			}
+		}
+		return terminology;
+	}
+	
+	
 	/**
 	 * create annotation instance variable if possible
 	 * @param entity - Anafaro entity
 	 * @param annotations - list of anafora entities
 	 * @param ontology - ontology
 	 * @return instance
+	 * @throws TerminologyException 
 	 */
-	private IInstance getInstance(Entity entity, Map<String, Entity> annotations, IOntology ontology) {
+	private IInstance getInstance(IClass cls, Entity entity, Map<String, Entity> annotations) throws TerminologyException {
 		// get instances if already defined
 		String name = OntologyUtils.toResourceName(entity.id);
 		if(ontology.hasResource(name))
 			return ontology.getInstance(name);
 		
 		// need to find annotation class first
-		IClass typeClass = getSchemaMap(ontology).get(entity.type);
+		IInstance inst = cls.createInstance(name);
 		String code = entity.getProperty("associatedCode");
-		if(code != null && typeClass != null){
-			IClass cls = findMatchingClass(typeClass,code);
-			if(cls != null){
-				IInstance inst = cls.createInstance(name);
-				
-				
-				return inst;
+		
+		// add anchor
+		if(code != null){
+			Concept c = getTerminology().lookupConcept(code);
+			if(c != null){
+				IClass anchor = ontology.getClass(c.getCode());
+				IInstance a = anchor.createInstance(name+"_anchor");
+				inst.addPropertyValue( ontology.getProperty("hasAnchor"),a);
 			}
 		}
-		return null;
+		// add span
+		inst.addPropertyValue( ontology.getProperty("hasSpan"),entity.span.replace(',',':'));
+		inst.addPropertyValue( ontology.getProperty("hasAnnotationType"),getDefaultInstance(ontology.getClass("MentionAnnotation")));
+		
+		
+		// get linguistic attributes
+		Map<String,String> linguistics = convertLinguisticProperties(entity,annotations);
+		for(String prop : linguistics.keySet()){
+			IClass val = ontology.getClass(linguistics.get(prop));
+			inst.addPropertyValue(ontology.getProperty(prop),getDefaultInstance(val));
+		}
+		
+		
+		// add body location
+		if(entity.hasProperty("body_location")){
+			Entity relatedEntity = annotations.get(entity.getProperty("body_location"));
+			String bodyCode = relatedEntity.getProperty("associatedCode");
+			if(bodyCode != null){
+				Concept c = getTerminology().lookupConcept(bodyCode);
+				if(c != null){
+					IClass location = ontology.getClass(c.getCode());
+					inst.addPropertyValue( ontology.getProperty("hasBodySite"),getDefaultInstance(location));
+				}
+			}
+		}
+		
+		// add receptor value
+		if(entity.hasProperty("receptor_value")){
+			Entity relatedEntity = annotations.get(entity.getProperty("receptor_value"));
+			IClass valCls = getReceptorCode(relatedEntity.getProperty("receptor_value_code"));
+			if(valCls != null){
+				inst.addPropertyValue(ontology.getProperty("hasInterpretation"), getDefaultInstance(valCls));
+			}
+		}
+		
+		// add receptor value
+		if(entity.hasProperty("associated_test")){
+			Entity relatedEntity = annotations.get(entity.getProperty("associated_test"));
+			IClass test = getClass(relatedEntity);
+			if(test != null){
+				IInstance relatedInst = getInstance(test, relatedEntity, annotations);
+				inst.addPropertyValue(ontology.getProperty("result_of"), relatedInst);
+			}
+		}
+		
+		// add receptor value
+		if(entity.hasProperty("associated_neoplasm")){
+			/*Entity relatedEntity = annotations.get(entity.getProperty("associated_neoplasm"));
+			IClass neoplasm = getClass(relatedEntity);
+			if(neoplasm != null){
+				IInstance relatedInst = getInstance(neoplasm, relatedEntity, annotations);
+				inst.addPropertyValue(ontology.getProperty(name), relatedInst);
+			}*/
+		}
+
+		// add neoplasm stage
+		if(entity.hasProperty("stage_value")){
+			//Entity relatedEntity = annotations.get(entity.getProperty("stage_value"));
+			// do I need it
+		}
+		
+		// add size 
+		if(entity.hasProperty("dimension")){
+			//Entity relatedEntity = annotations.get(entity.getProperty("stage_value"));
+			// do I need it
+		}
+		
+		return inst;
 	}
 
+	private IInstance getDefaultInstance(IClass cls){
+		IInstance a = ontology.getInstance(cls.getName()+"_default");
+		if(a == null)
+			a = cls.createInstance(cls.getName()+"_default");
+		return a;
+	}
+	
+	private IClass getReceptorCode(String code){
+		if("positive".equals(code)){
+			return ontology.getClass("Positive_OrdinalInterpretation");
+		}else if("negative".equals(code)){
+			return ontology.getClass("Negative_OrdinalInterpretation");
+		}else if("equivocal".equals(code)){
+			return ontology.getClass("Indeterminate_OrdinalInterpretation");
+		}else if("unknown".equals(code)){
+			return ontology.getClass("Indeterminate_OrdinalInterpretation");
+		}
+		return ontology.getClass("Indeterminate_OrdinalInterpretation");
+	}
+
+	private Map<String, IClass> getSchemaMap() {
+		if(schemaMap == null){
+			schemaMap = new HashMap<String, IClass>();
+			schemaMap.put("Disease_Disorder",ontology.getClass("neoplasm_mention"));
+			schemaMap.put("Finding_TNM",ontology.getClass("tnm_mention"));
+			schemaMap.put("LabResult_Receptor",ontology.getClass("receptors_mention"));
+			schemaMap.put("Medications/Drugs",ontology.getClass("medications_mention"));
+			schemaMap.put("Metastasis",ontology.getClass("metastasis_mention"));
+			schemaMap.put("Neoplasm_Stage",ontology.getClass("stage_mention"));
+			schemaMap.put("size_class",ontology.getClass("size_mention"));
+			schemaMap.put("Procedure",ontology.getClass("procedure_mention"));
+		}
+		return schemaMap;
+	}
+
+	
+	private static Map<String, String> convertLinguisticProperties(Entity entity,Map<String,Entity> annotations) {
+		Map<String,String> map = new LinkedHashMap<String,String>();
+		
+		map.put(HAS_CERTAINTY,getCertainty(entity));
+		map.put(HAS_TEMPORALITY,getTemporality(entity));
+		map.put(HAS_EXPERIENCER,getExperiencer(entity,annotations));
+	
+	
+		return map;
+	}
+	
+	public static String getTemporality(Entity entity) {
+		String val = entity.getProperty("DocTimeRel");
+		if(val != null){
+			if("BEFORE".equals(val))
+				return TEMPORALITY_BEFORE;
+			if("OVERLAP".equals(val))
+				return TEMPORALITY_OVERLAP;
+			if("BEFORE/OVERLAP".equals(val))
+				return TEMPORALITY_BEFORE_OVERLAP;
+			if("AFTER".equals(val))
+				return TEMPORALITY_AFTER;
+			}
+		return TEMPORALITY_OVERLAP;
+	}
+	
+	public static String getCertainty(Entity entity) {
+		String negationStr = entity.getProperty("negation_indicator");
+		String uncertaintyStr = entity.getProperty("uncertainty_indicator");
+		boolean negation = negationStr != null && negationStr.length() > 0;
+		boolean uncertainty = 	uncertaintyStr != null && uncertaintyStr.length() > 0;
+		if(negation && !uncertainty)
+			return "DefiniteNegatedExistence_Certainty";
+		if(negation && uncertainty)
+			return "ProbableNegatedExistence_Certainty";
+		if(!negation && uncertainty)
+			return "ProbableExistence_Certainty";
+		return "DefiniteExistence_Certainty";
+	}
+	
 	/*
-	 
-	 
-	 
-	 
-	 
-	 */
-	
-	
-	
-	
-	
-	
-	private IClass findMatchingClass(IClass typeClass, String code) {
-		// TODO Auto-generated method stub
-		return null;
+	private static String getPolarity(Map<String, String> properties) {
+		String val = properties.get(LANGUAGE_ASPECT_NEGATED_URL);
+		return val != null && Boolean.parseBoolean(val)?POLARITY_NEGATIVE:POLARITY_POSITIVE;
 	}
-
-	private Map<String, IClass> getSchemaMap(IOntology ontology) {
-		// TODO Auto-generated method stub
-		return null;
+	*/
+	
+	private static String getExperiencer(Entity entity,Map<String,Entity> annotations) {
+		// convert experiencer
+		String val = entity.getProperty("subject");
+		if(val != null){
+			Entity related = annotations.get(val);
+			if(related != null){
+				val = related.getProperty("subject_normalization");
+				if("patient".equals(val))
+					return EXPERIENCER_PATIENT;
+				if("family_member".equals(val))
+					return EXPERIENCER_FAMILY_MEMBER;
+				if("donor_family_member".equals(val))
+					return EXPERIENCER_DONOR_FAMILY_MEMBER;
+				if("donor_other".equals(val))
+					return EXPERIENCER_DONOR_OTHER_MEMBER;
+				if("other".equals(val))
+					return EXPERIENCER_OTHER_MEMBER;
+			}
+		}
+		return EXPERIENCER_PATIENT;
 	}
 
 	
