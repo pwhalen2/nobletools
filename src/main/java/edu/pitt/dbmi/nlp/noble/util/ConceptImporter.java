@@ -30,6 +30,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import edu.pitt.dbmi.nlp.noble.ontology.IClass;
+import edu.pitt.dbmi.nlp.noble.ontology.IInstance;
 import edu.pitt.dbmi.nlp.noble.ontology.IOntology;
 import edu.pitt.dbmi.nlp.noble.ontology.IOntologyException;
 import edu.pitt.dbmi.nlp.noble.ontology.IResourceIterator;
@@ -376,24 +377,50 @@ public class ConceptImporter {
 	 * @return concept object from this class
 	 */
 	public Concept createConcept(IClass cls){
-		String code = getCode(cls,false);
+		String code = cls.getName();
 		
 		Concept concept = cls.getConcept();
 		concept.setCode(code);
 		concept.addCode(""+cls.getURI(),Source.URI);
 		
 		// fix sources
-		for(Source sr: concept.getSources())
-			sr.setCode(getCode(sr.getCode(),false));
+		//for(Source sr: concept.getSources())
+		//	sr.setCode(getCode(sr.getCode(),false));
 		
 		// add relations to concept
 		for(IClass c: cls.getDirectSuperClasses()){
-			concept.addRelatedConcept(Relation.BROADER,getCode(c,false));
+			concept.addRelatedConcept(Relation.BROADER,c.getName());
 		}
 		
 		// add relations to concept
 		for(IClass c: cls.getDirectSubClasses()){
-			concept.addRelatedConcept(Relation.NARROWER,getCode(c,false));
+			concept.addRelatedConcept(Relation.NARROWER,c.getName());
+		}
+		
+		// add relations to concept
+		for(IInstance c: cls.getDirectInstances()){
+			concept.addRelatedConcept(Relation.NARROWER,c.getName());
+		}
+		
+		return concept;
+	}
+	
+	
+	/**
+	 * craate a concept object for a given class 
+	 * @param cls - class in the ontology
+	 * @return concept object from this class
+	 */
+	public Concept createConcept(IInstance inst){
+		String code = inst.getName();
+		
+		Concept concept = new Concept(inst);
+		concept.setCode(code);
+		concept.addCode(""+inst.getURI(),Source.URI);
+		
+		// add relations to concept
+		for(IClass c: inst.getDirectTypes()){
+			concept.addRelatedConcept(Relation.BROADER,c.getName());
 		}
 		
 		return concept;
@@ -415,7 +442,6 @@ public class ConceptImporter {
 	}
 
 	
-	
 	/**
 	 * load index finder tables from an IOntology object.
 	 *
@@ -427,6 +453,36 @@ public class ConceptImporter {
 	 * @throws IOntologyException the i ontology exception
 	 */
 	public void loadOntology(NobleCoderTerminology term, IOntology ontology, String name) throws IOException, TerminologyException, IOntologyException {
+		loadOntology(term, ontology.getRoot(), name);
+	}
+	
+	/**
+	 * load index finder tables from an IOntology object.
+	 *
+	 * @param term the term
+	 * @param root class
+	 * @param name the name
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws TerminologyException the terminology exception
+	 * @throws IOntologyException the i ontology exception
+	 */
+	public void loadOntology(NobleCoderTerminology term, IClass root, String name) throws IOException, TerminologyException, IOntologyException {
+		loadOntology(term,root,name,true);
+	}
+	
+	
+	/**
+	 * load index finder tables from an IOntology object.
+	 *
+	 * @param term the term
+	 * @param root class
+	 * @param name the name
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws TerminologyException the terminology exception
+	 * @throws IOntologyException the i ontology exception
+	 */
+	public void loadOntology(NobleCoderTerminology term, IClass root, String name, boolean includeInstances) throws IOException, TerminologyException, IOntologyException {
+		IOntology ontology = root.getOntology();
 		boolean inmemory = isInMemory();
 		name = (name != null)?name:ontology.getName();
 		
@@ -468,18 +524,14 @@ public class ConceptImporter {
 		
 		// get all classes
 		pcs.firePropertyChange(LOADING_MESSAGE,null,"Iterating Over Ontology Classes ...");
-		IResourceIterator it = ontology.getAllClasses();
-		pcs.firePropertyChange(LOADING_TOTAL,null,it.getTotal());
+		//IResourceIterator it = ontology.getAllClasses();
+		IClass [] classes = root.getSubClasses();
+		pcs.firePropertyChange(LOADING_TOTAL,null,classes.length);
 		
-		int i = 0;
-		while(it.hasNext()){
-			i++;
+		for(int i=0;i<classes.length;i++){
+			IClass cls = classes[i];
 			
-			IClass cls = (IClass)it.next();
-			if(cls == null)
-				continue;
-			
-			String code = getCode(cls,false);
+			String code = cls.getName();
 			if(storage.getConceptMap().containsKey(code))
 				continue;
 			
@@ -488,6 +540,12 @@ public class ConceptImporter {
 					
 			// add concept
 			addConcept(term,concept,!inmemory);
+			
+			if(includeInstances){
+				for(IInstance inst: cls.getDirectInstances()){
+					addConcept(term,createConcept(inst),!inmemory);
+				}
+			}
 			
 			// commit ever so often
 			pcs.firePropertyChange(LOADING_PROGRESS,null,i);
@@ -504,7 +562,7 @@ public class ConceptImporter {
 		
 		// load roots		
 		for(IClass r: ontology.getRootClasses())
-			storage.getRootMap().put(getCode(r,false),"");
+			storage.getRootMap().put(r.getName(),"");
 		
 		// if need to compact, then compact, else create a blacklist
 		if(!compact){
@@ -536,25 +594,25 @@ public class ConceptImporter {
 	 * @param cls the cls
 	 * @param truncateURI the truncate URI
 	 * @return the code
-	 */
+	 *
 	private String getCode(IClass cls, boolean truncateURI){
 		return getCode(cls.getConcept().getCode(),truncateURI);
 	}
-	
+	*/
 	/**
 	 * Gets the code.
 	 *
 	 * @param uri the uri
 	 * @param truncateURI the truncate URI
 	 * @return the code
-	 */
+	 *
 	private String getCode(String uri, boolean truncateURI){
 		if(truncateURI){
 			return StringUtils.getAbbreviatedURI(uri);
 		}
 		return uri;
 	}
-	
+	*/
 	
 	/**
 	 * load terms file.

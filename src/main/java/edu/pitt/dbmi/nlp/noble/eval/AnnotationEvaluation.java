@@ -247,9 +247,6 @@ public class AnnotationEvaluation implements ActionListener {
 		List<IInstance> systemVariables = getAnnotationVariables(system,system.getOntology().getProperty(prop));
 		Set<IInstance> usedSystemCandidates = new HashSet<IInstance>();
 		
-		boolean includeInTotal = getAnnotationFilter().contains(system.getDirectTypes()[0]);
-		
-		
 		for(IInstance goldInst: goldVariables){
 			Analysis.ConfusionMatrix varConfusion = getConfusionMatrix(goldInst);
 			List<IInstance> sysInstances = getMatchingAnnotationVaiables(systemVariables,goldInst);
@@ -275,12 +272,13 @@ public class AnnotationEvaluation implements ActionListener {
 			if(!usedSystemCandidates.contains(inst)){
 				// there could be some annotations that we simply don't evaluate because
 				// GOLD didn't bother to annotate them
-				if(includeInTotal){
+				if(getAnnotationFilter().contains(inst.getDirectTypes()[0])){
 					confusion.FP ++;
 					getAnalysis().addError(confusion.getLabelFP(),docTitle,inst);
+					getConfusionMatrix(inst).FP++;
+					getAnalysis().addError(getConfusionMatrix(inst).getLabelFP(),docTitle,inst);
 				}
-				getConfusionMatrix(inst).FP++;
-				getAnalysis().addError(getConfusionMatrix(inst).getLabelFP(),docTitle,inst);
+				
 			}
 		}
 	}

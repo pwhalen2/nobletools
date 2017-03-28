@@ -43,6 +43,7 @@ import edu.pitt.dbmi.nlp.noble.coder.model.Mention;
 import edu.pitt.dbmi.nlp.noble.coder.model.Processor;
 import edu.pitt.dbmi.nlp.noble.coder.model.Sentence;
 import edu.pitt.dbmi.nlp.noble.ontology.DefaultRepository;
+import edu.pitt.dbmi.nlp.noble.ontology.IClass;
 import edu.pitt.dbmi.nlp.noble.ontology.IOntology;
 import edu.pitt.dbmi.nlp.noble.ontology.IOntologyException;
 import edu.pitt.dbmi.nlp.noble.terminology.AbstractTerminology;
@@ -587,6 +588,20 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 	}
 	
 	/**
+	 * initialize empty in-memory terminology that has to be
+	 * filled up manual using Terminology.addConcept()
+	 *
+	 * @param ont the ont
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws TerminologyException the terminology exception
+	 * @throws IOntologyException the i ontology exception
+	 */
+	public NobleCoderTerminology(IClass root) throws IOException, TerminologyException, IOntologyException{
+		init();
+		loadOntology(root,null,true);
+	}
+	
+	/**
 	 * initialize with in memory maps.
 	 */
 	public void init(){
@@ -918,6 +933,21 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 	public void loadOntology(IOntology ontology, String name, boolean inmemory) throws IOException, TerminologyException, IOntologyException {
 		ConceptImporter.getInstance().setInMemory(inmemory);
 		ConceptImporter.getInstance().loadOntology(this, ontology, name);
+	}
+	
+	/**
+	 * load index finder tables from an IOntology object.
+	 *
+	 * @param root the root class to import from
+	 * @param name the name
+	 * @param inmemory the inmemory
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws TerminologyException the terminology exception
+	 * @throws IOntologyException the i ontology exception
+	 */
+	public void loadOntology(IClass root, String name, boolean inmemory) throws IOException, TerminologyException, IOntologyException {
+		ConceptImporter.getInstance().setInMemory(inmemory);
+		ConceptImporter.getInstance().loadOntology(this, root, name);
 	}
 	
 	/**
