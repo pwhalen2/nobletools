@@ -309,7 +309,7 @@ public class AnnotationEvaluation implements ActionListener {
 		List<IInstance> matchedInstances = new ArrayList<IInstance>();
 		IProperty prop = null; 
 		String goldSpan = ""+goldInst.getPropertyValue(goldInst.getOntology().getProperty(DomainOntology.HAS_SPAN));
-		IClass goldType = goldInst.getDirectTypes()[0];
+		IClass goldType = null;
 		
 		// set to the percent of overlap of gold 
 		double overlapThreshold = 0;
@@ -319,6 +319,8 @@ public class AnnotationEvaluation implements ActionListener {
 		for(IInstance inst: candidateVariables){
 			if(prop == null)
 				prop = inst.getOntology().getProperty(DomainOntology.HAS_SPAN);
+			if(goldType == null)
+				goldType = inst.getOntology().getClass(goldInst.getDirectTypes()[0].getName());
 			String span = ""+inst.getPropertyValue(prop);
 			IClass type = inst.getDirectTypes()[0];
 			// if candidate type is identical to gold or more specific

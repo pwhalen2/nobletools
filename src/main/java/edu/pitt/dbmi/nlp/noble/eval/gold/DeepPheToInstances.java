@@ -327,10 +327,11 @@ public class DeepPheToInstances {
 		String code = entity.getProperty("associatedCode");
 		Concept c = getTerminology().lookupConcept(code);
 		if(c == null){
+			//System.out.println("\tCould not find CODE "+code+" for type: "+entity.type+" text: "+entity.text);
 			for(Concept cc: getTerminology().search(entity.text)){
 				return cc;
 			}
-			System.out.println("\tCould not find a code "+code+" for type: "+entity.type+" text: "+entity.text);
+			System.out.println("\tCould not find code or text "+code+" for type: "+entity.type+" text: "+entity.text);
 		}
 		return c;
 	}
@@ -379,6 +380,9 @@ public class DeepPheToInstances {
 			Concept c = getConcept(entity);
 			if(c != null){
 				inst.addPropertyValue( ontology.getProperty("hasAnchor"),getDefaultInstance(ontology.getResource(c.getCode())));
+			}else{
+				System.out.println("\tNo anchor for "+cls.getName()+" type: "+entity.type+" text: "+entity.text);
+				
 			}
 		}
 		// add span
@@ -440,8 +444,14 @@ public class DeepPheToInstances {
 
 		// add neoplasm stage
 		if(entity.hasProperty("stage_value")){
-			//Entity relatedEntity = annotations.get(entity.getProperty("stage_value"));
-			// do I need it
+			Entity relatedEntity = annotations.get(entity.getProperty("stage_value"));
+			if(relatedEntity != null && relatedEntity.text != null){
+				String text = entity.text.trim()+" "+relatedEntity.text.trim();
+				for(Concept c: getTerminology().search(text)){
+					inst.addPropertyValue( ontology.getProperty("hasAnchor"),getDefaultInstance(ontology.getResource(c.getCode())));
+					break;
+				}
+			}
 		}
 		
 		// add size 
