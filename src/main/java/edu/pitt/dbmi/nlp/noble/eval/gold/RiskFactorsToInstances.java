@@ -339,8 +339,11 @@ public class RiskFactorsToInstances {
 		IInstance inst = cls.createInstance(cls.getName()+"_"+entity.getID());
 		IProperty hasSpan = ontology.getProperty("hasSpan");
 		
+		// don't create annotation if you got no span
 		if(entity.get("start") != null && entity.get("end") != null)
 			inst.addPropertyValue(hasSpan,entity.get("start")+":"+entity.get("end"));
+		else
+			return null;
 		if(entity.get("time") != null){
 			IClass time = getSchemaMap().get(entity.get("time"));
 			if(time != null){

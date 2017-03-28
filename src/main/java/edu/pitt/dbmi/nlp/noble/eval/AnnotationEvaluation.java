@@ -186,7 +186,7 @@ public class AnnotationEvaluation implements ActionListener {
 		loadAnnotationFilter(goldInstances);
 		
 		// init confusionMatrix
-		Analysis analysis = getAnalysis();
+		analysis = new Analysis();
 		analysis.setTitle("Results for "+file1.getName()+" on "+new Date());
 		Analysis.ConfusionMatrix mentionConfusion = analysis.getConfusionMatrix(" Overall Mention");
 		//Analysis.ConfusionMatrix documentConfusion = analysis.getConfusionMatrix(" Document");

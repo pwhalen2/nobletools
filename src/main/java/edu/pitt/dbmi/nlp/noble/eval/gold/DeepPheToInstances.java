@@ -6,6 +6,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -20,6 +22,7 @@ import edu.pitt.dbmi.nlp.noble.ontology.IClass;
 import edu.pitt.dbmi.nlp.noble.ontology.IInstance;
 import edu.pitt.dbmi.nlp.noble.ontology.IOntology;
 import edu.pitt.dbmi.nlp.noble.ontology.IOntologyException;
+import edu.pitt.dbmi.nlp.noble.ontology.IResource;
 import edu.pitt.dbmi.nlp.noble.ontology.OntologyUtils;
 import edu.pitt.dbmi.nlp.noble.ontology.owl.OOntology;
 import edu.pitt.dbmi.nlp.noble.terminology.Concept;
@@ -147,13 +150,13 @@ public class DeepPheToInstances {
 		
 		public int start(){
 			if(span != null && start == -1){
-				start = Integer.parseInt(span.split(",")[0]);
+				start = Integer.parseInt(span.split("[,:;]")[0]);
 			}
 			return start;
 		}
 		public int end(){
 			if(span != null && end == -1){
-				end = Integer.parseInt(span.split(",")[1]);
+				end = Integer.parseInt(span.split("[,:;]")[1]);
 			}
 			return end;
 		}
@@ -236,7 +239,7 @@ public class DeepPheToInstances {
 		for(Element el: XMLUtils.getChildElements(annotations,"entity")){
 			Entity entity = Entity.load(el);
 			if(entity.hasSpan() && docText.length() > entity.end()){
-				entity.text = docText.substring(entity.start(),entity.end());
+				entity.text = docText.substring(entity.start(),entity.end()+1);
 			}
 			map.put(entity.id,entity);
 		}
@@ -260,7 +263,9 @@ public class DeepPheToInstances {
 			documentTitle = documentTitle+DEFAULT_DOCUMENT_SUFFIX;
 		
 		// get document text
-		String docText = FileTools.getText(new FileInputStream(docFile));
+		//String docText = FileTools.getText(new FileInputStream(docFile),"\r\n");
+		String docText = new String(Files.readAllBytes(Paths.get(docFile.toURI())));
+		
 		Document dom = XMLUtils.parseXML(new FileInputStream(xmlFile));
 		Map<String,Entity> annotations = parseAnnotations(dom,docText);
 		//Map<String,IClass> schemaMap = getSchemaMap(ontology);
@@ -373,12 +378,11 @@ public class DeepPheToInstances {
 		if(code != null){
 			Concept c = getConcept(entity);
 			if(c != null){
-				IClass anchor = ontology.getClass(c.getCode());
-				inst.addPropertyValue( ontology.getProperty("hasAnchor"),getDefaultInstance(anchor));
+				inst.addPropertyValue( ontology.getProperty("hasAnchor"),getDefaultInstance(ontology.getResource(c.getCode())));
 			}
 		}
 		// add span
-		inst.addPropertyValue( ontology.getProperty("hasSpan"),entity.span.replace(',',':'));
+		inst.addPropertyValue( ontology.getProperty("hasSpan"),entity.start()+":"+entity.end());
 		inst.addPropertyValue( ontology.getProperty("hasAnnotationType"),getDefaultInstance(ontology.getClass("MentionAnnotation")));
 		
 		
@@ -396,8 +400,7 @@ public class DeepPheToInstances {
 			if(relatedEntity != null){
 				Concept c = getConcept(relatedEntity);
 				if(c != null){
-					IClass location = ontology.getClass(c.getCode());
-					inst.addPropertyValue( ontology.getProperty("hasBodySite"),getDefaultInstance(location));
+					inst.addPropertyValue( ontology.getProperty("hasBodySite"),getDefaultInstance(ontology.getResource(c.getCode())));
 				}
 			}
 		}
@@ -450,11 +453,17 @@ public class DeepPheToInstances {
 		return inst;
 	}
 
-	private IInstance getDefaultInstance(IClass cls){
-		IInstance a = ontology.getInstance(cls.getName()+"_default");
-		if(a == null)
-			a = cls.createInstance(cls.getName()+"_default");
-		return a;
+	private IInstance getDefaultInstance(IResource r){
+		if(r instanceof IInstance)
+			return (IInstance) r;
+		if(r instanceof IClass){
+			IClass cls = (IClass) r;
+			IInstance a = ontology.getInstance(cls.getName()+"_default");
+			if(a == null)
+				a = cls.createInstance(cls.getName()+"_default");
+			return a;
+		}
+		return null;
 	}
 	
 	private IClass getReceptorCode(String code){
