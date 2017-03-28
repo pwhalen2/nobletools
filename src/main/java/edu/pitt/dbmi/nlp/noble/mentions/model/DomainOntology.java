@@ -991,6 +991,43 @@ public class DomainOntology {
 			prop = ontology.getProperty("has"+name);
 		return prop;
 	}
+	
+	private Map<IClass,IProperty> propertyRanges;
+	private Map<IClass,IProperty> getPropertyRanges(){
+		if(propertyRanges == null){
+			propertyRanges = new HashMap<IClass, IProperty>();
+			for(IProperty p: ontology.getProperty(HAS_MODIFIER).getSubProperties()){
+				for(Object o: p.getRange()){
+					if(o instanceof IClass){
+						IClass c = (IClass) o;
+						propertyRanges.put(c,p);
+						for(IClass cc: c.getSubClasses()){
+							propertyRanges.put(cc,p);
+						}
+					}
+				}
+			}
+		}
+		return propertyRanges;
+	}
+	
+	/**
+	 * get property for a given modifier 
+	 * @param m
+	 * @return
+	 */
+	public IProperty getProperty(Modifier m){
+		IProperty prop = getProperty(m.getType());
+		if(prop == null){
+			IClass cls = ontology.getClass(m.getType());
+			if(cls != null && getPropertyRanges().containsKey(cls)){
+				return getPropertyRanges().get(cls);
+			}
+		}
+		return prop;
+	}
+	
+	
 
 	/**
 	 * get a property that a given mention can be related as
@@ -1139,6 +1176,15 @@ public class DomainOntology {
 		LogicExpression exp = new LogicExpression(ILogicExpression.OR,prop.getRange());
 		return exp.evaluate(inst);
 	}
+	
+	public Set<IProperty> getProperties(IClass cls){
+		Set<IProperty> props = new HashSet<IProperty>();
+		for(IRestriction r: getRestrictions(cls)){
+			props.add(r.getProperty());
+		}
+		return props;
+	}
+	
 	
 	/**
 	 * get all restrictions equivalent and necessary as a flat list
@@ -1493,5 +1539,16 @@ public class DomainOntology {
 			}
 		}
 		return relatedAnnotations;
+	}
+
+	/**
+	 * is the property the same as modifier type
+	 * @param prop
+	 * @param modifier
+	 * @return
+	 */
+	public boolean isSameProperty(IProperty prop, Modifier modifier) {
+		System.out.println(prop.getName()+" "+modifier.getType()+" "+prop.getName().endsWith(modifier.getType()));
+		return prop.getName().endsWith(modifier.getType());
 	}
 }

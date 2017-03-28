@@ -94,16 +94,28 @@ public class AnnotationVariable extends Instance {
 			List<Instance> modifierInstances = createModifierInstanceList();
 			
 			// go over all restrictions
-			for(IRestriction r: domainOntology.getRestrictions(cls)){
+			/*for(IRestriction r: domainOntology.getRestrictions(cls)){
 				IProperty prop = r.getProperty();
 				for(Instance modifierInstance: modifierInstances){
 					IInstance modInstance = modifierInstance.getInstance();
-					if(modInstance != null && domainOntology.isPropertyRangeSatisfied(prop,modInstance)){
+					if(modInstance != null && domainOntology.isSameProperty(prop,modifierInstance.getModifier()) && domainOntology.isPropertyRangeSatisfied(prop,modInstance)){
 						//instance.addPropertyValue(prop, modInstance);
 						addModifierInstance(prop.getName(),modifierInstance);
 					}
 				}
 			}
+			*/
+			Set<IProperty> props = domainOntology.getProperties(cls);
+			for(Instance modifierInstance: modifierInstances){
+				IInstance modInstance = modifierInstance.getInstance();
+				if(modInstance != null){
+					IProperty prop = domainOntology.getProperty(modifierInstance.getModifier());
+					if(prop != null && props.contains(prop) && domainOntology.isPropertyRangeSatisfied(prop,  modifierInstance.getInstance())){
+						addModifierInstance(prop.getName(),modifierInstance);
+					}
+				}
+			}
+			
 			
 			// now just add span
 			instance.setPropertyValue(ont.getProperty(DomainOntology.HAS_SPAN),getInstanceSpan());
