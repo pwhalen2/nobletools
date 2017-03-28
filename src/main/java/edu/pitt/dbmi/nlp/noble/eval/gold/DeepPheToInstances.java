@@ -27,6 +27,7 @@ import edu.pitt.dbmi.nlp.noble.terminology.Terminology;
 import edu.pitt.dbmi.nlp.noble.terminology.TerminologyException;
 import edu.pitt.dbmi.nlp.noble.terminology.impl.NobleCoderTerminology;
 import edu.pitt.dbmi.nlp.noble.tools.TextTools;
+import edu.pitt.dbmi.nlp.noble.ui.TerminologyBrowser;
 import edu.pitt.dbmi.nlp.noble.util.FileTools;
 import edu.pitt.dbmi.nlp.noble.util.XMLUtils;
 
@@ -36,7 +37,7 @@ import edu.pitt.dbmi.nlp.noble.util.XMLUtils;
  * @author tseytlin
  *
  */
-public class AnaforaToInstances {
+public class DeepPheToInstances {
 	private final String DEFAULT_DOCUMENT_SUFFIX = ".txt"; 
 	private Map<String,IClass> schemaMap;
 	private IOntology ontology;
@@ -75,11 +76,11 @@ public class AnaforaToInstances {
 			String ontology = args[2];
 			String instances = args[3];
 			
-			AnaforaToInstances a2i = new AnaforaToInstances();
+			DeepPheToInstances a2i = new DeepPheToInstances();
 			a2i.convert(anaforaDirectory,anaforaSuffix,ontology,instances);
 			
 		}else{
-			System.err.println("Usage: "+AnaforaToInstances.class.getSimpleName()+" <anafora directory> <annotation suffix> <ontology> <instances>");
+			System.err.println("Usage: "+DeepPheToInstances.class.getSimpleName()+" <anafora directory> <annotation suffix> <ontology> <instances>");
 		}
 	}
 
@@ -140,8 +141,26 @@ public class AnaforaToInstances {
 	 * @author tseytlin
 	 */
 	private static class Entity {
-		public String id,span,type,parentsType;
+		public String id,span,type,parentsType,text;
+		public int start = -1, end = -1;
 		public Map<String,Set<String>> properties;
+		
+		public int start(){
+			if(span != null && start == -1){
+				start = Integer.parseInt(span.split(",")[0]);
+			}
+			return start;
+		}
+		public int end(){
+			if(span != null && end == -1){
+				end = Integer.parseInt(span.split(",")[1]);
+			}
+			return end;
+		}
+		public boolean hasSpan(){
+			return start() > -1;
+		}
+		
 		/**
 		 * load entity form XML element
 		 * @param el - DOM element for Anafora entity
@@ -184,13 +203,18 @@ public class AnaforaToInstances {
 			set.add(value);
 		}
 		public String getProperty(String name) {
+			if(properties == null)
+				return null;
 			Set<String> vals = properties.get(name);
-			if(vals != null)
-				vals.iterator().next();
+			if(vals != null){
+				for(String v: vals){
+					return v;
+				}
+			}
 			return null;
 		}
 		public boolean hasProperty(String name){
-			return properties.containsKey(name);
+			return properties != null && properties.containsKey(name);
 		}
 		
 		public Set<String> getProperties(String name) {
@@ -206,11 +230,14 @@ public class AnaforaToInstances {
 	 * @param dom
 	 * @return
 	 */
-	private Map<String, Entity> parseAnnotations(Document dom) {
-		Map<String,Entity> map = new LinkedHashMap<String, AnaforaToInstances.Entity>();
+	private Map<String, Entity> parseAnnotations(Document dom,String docText) {
+		Map<String,Entity> map = new LinkedHashMap<String, DeepPheToInstances.Entity>();
 		Element annotations = XMLUtils.getElementByTagName(dom.getDocumentElement(),"annotations");
 		for(Element el: XMLUtils.getChildElements(annotations,"entity")){
 			Entity entity = Entity.load(el);
+			if(entity.hasSpan() && docText.length() > entity.end()){
+				entity.text = docText.substring(entity.start(),entity.end());
+			}
 			map.put(entity.id,entity);
 		}
 		return map;
@@ -233,9 +260,9 @@ public class AnaforaToInstances {
 			documentTitle = documentTitle+DEFAULT_DOCUMENT_SUFFIX;
 		
 		// get document text
-		//String docText = FileTools.getText(new FileInputStream(docFile));
+		String docText = FileTools.getText(new FileInputStream(docFile));
 		Document dom = XMLUtils.parseXML(new FileInputStream(xmlFile));
-		Map<String,Entity> annotations = parseAnnotations(dom);
+		Map<String,Entity> annotations = parseAnnotations(dom,docText);
 		//Map<String,IClass> schemaMap = getSchemaMap(ontology);
 		
 		// create an instance
@@ -265,13 +292,12 @@ public class AnaforaToInstances {
 	 */
 	private IClass getClass(Entity entity) throws TerminologyException {
 		IClass cls = getSchemaMap().get(entity.type);
-		String code = entity.getProperty("associatedCode");
+		//String code = entity.getProperty("associatedCode");
 		
 		// try to get more specific for procedures
 		if("Procedure".equals(entity.type)){
-			Concept c = getTerminology().lookupConcept(code);
+			Concept c = getConcept(entity);
 			if(c == null){
-				System.out.println("\texcluding Procedure "+code);
 				return null;
 			}else{
 				if(c.getRelationMap().containsKey(IS_ANCHOR_OF)){
@@ -283,20 +309,36 @@ public class AnaforaToInstances {
 				return null;
 			}
 		}else if("Medications/Drugs".equals(entity.type)){
-			Concept c = getTerminology().lookupConcept(code);
+			Concept c = getConcept(entity);
 			if(c == null){
-				System.out.println("\texcluding Medication "+code);
 				return null;
 			}
 		}
 		
 		return cls;
 	}
+	
+	private Concept getConcept(Entity entity) throws TerminologyException{
+		String code = entity.getProperty("associatedCode");
+		Concept c = getTerminology().lookupConcept(code);
+		if(c == null){
+			for(Concept cc: getTerminology().search(entity.text)){
+				return cc;
+			}
+			System.out.println("\tCould not find a code "+code+" for type: "+entity.type+" text: "+entity.text);
+		}
+		return c;
+	}
+	
+	
 
 	public Terminology getTerminology(){
 		if(terminology == null){
 			try {
-				terminology = new NobleCoderTerminology(ontology);
+				terminology = new NobleCoderTerminology(ontology.getClass("Lexicon"));
+				/*TerminologyBrowser broswer = new TerminologyBrowser();
+				broswer.setTerminologies(new Terminology []  {terminology});
+				broswer.showDialog(null, "");*/
 			} catch (IOException e) {
 				e.printStackTrace();
 			} catch (TerminologyException e) {
@@ -329,11 +371,10 @@ public class AnaforaToInstances {
 		
 		// add anchor
 		if(code != null){
-			Concept c = getTerminology().lookupConcept(code);
+			Concept c = getConcept(entity);
 			if(c != null){
 				IClass anchor = ontology.getClass(c.getCode());
-				IInstance a = anchor.createInstance(name+"_anchor");
-				inst.addPropertyValue( ontology.getProperty("hasAnchor"),a);
+				inst.addPropertyValue( ontology.getProperty("hasAnchor"),getDefaultInstance(anchor));
 			}
 		}
 		// add span
@@ -352,9 +393,8 @@ public class AnaforaToInstances {
 		// add body location
 		if(entity.hasProperty("body_location")){
 			Entity relatedEntity = annotations.get(entity.getProperty("body_location"));
-			String bodyCode = relatedEntity.getProperty("associatedCode");
-			if(bodyCode != null){
-				Concept c = getTerminology().lookupConcept(bodyCode);
+			if(relatedEntity != null){
+				Concept c = getConcept(relatedEntity);
 				if(c != null){
 					IClass location = ontology.getClass(c.getCode());
 					inst.addPropertyValue( ontology.getProperty("hasBodySite"),getDefaultInstance(location));
@@ -365,19 +405,23 @@ public class AnaforaToInstances {
 		// add receptor value
 		if(entity.hasProperty("receptor_value")){
 			Entity relatedEntity = annotations.get(entity.getProperty("receptor_value"));
-			IClass valCls = getReceptorCode(relatedEntity.getProperty("receptor_value_code"));
-			if(valCls != null){
-				inst.addPropertyValue(ontology.getProperty("hasInterpretation"), getDefaultInstance(valCls));
+			if(relatedEntity != null){
+				IClass valCls = getReceptorCode(relatedEntity.getProperty("receptor_value_code"));
+				if(valCls != null){
+					inst.addPropertyValue(ontology.getProperty("hasInterpretation"), getDefaultInstance(valCls));
+				}
 			}
 		}
 		
 		// add receptor value
 		if(entity.hasProperty("associated_test")){
 			Entity relatedEntity = annotations.get(entity.getProperty("associated_test"));
-			IClass test = getClass(relatedEntity);
-			if(test != null){
-				IInstance relatedInst = getInstance(test, relatedEntity, annotations);
-				inst.addPropertyValue(ontology.getProperty("result_of"), relatedInst);
+			if(relatedEntity != null){
+				IClass test = getClass(relatedEntity);
+				if(test != null){
+					IInstance relatedInst = getInstance(test, relatedEntity, annotations);
+					inst.addPropertyValue(ontology.getProperty("result_of"), relatedInst);
+				}
 			}
 		}
 		
@@ -468,7 +512,7 @@ public class AnaforaToInstances {
 		return TEMPORALITY_OVERLAP;
 	}
 	
-	public static String getCertainty(Entity entity) {
+	private static String getCertainty(Entity entity) {
 		String negationStr = entity.getProperty("negation_indicator");
 		String uncertaintyStr = entity.getProperty("uncertainty_indicator");
 		boolean negation = negationStr != null && negationStr.length() > 0;

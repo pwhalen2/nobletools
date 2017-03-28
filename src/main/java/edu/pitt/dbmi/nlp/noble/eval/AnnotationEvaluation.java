@@ -216,7 +216,8 @@ public class AnnotationEvaluation implements ActionListener {
 	private void loadAnnotationFilter(IOntology ontology) {
 		validAnnotations = new HashSet<IClass>();
 		for(IClass cls: ontology.getClass(DomainOntology.ANNOTATION).getSubClasses()){
-			validAnnotations.add(cls);
+			if(cls.getDirectInstances().length > 0)
+				validAnnotations.add(cls);	
 		}
 	}
 
