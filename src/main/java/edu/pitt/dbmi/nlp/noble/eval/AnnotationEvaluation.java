@@ -266,6 +266,12 @@ public class AnnotationEvaluation implements ActionListener {
 					varConfusion.TPP ++;
 					varConfusion.TP += score;
 
+					// add errors for scores that are TP, but not good enought
+					if(score < 1.0){
+						getAnalysis().addError(confusion.getLabelTP(),docTitle,goldInst);
+						getAnalysis().addError(varConfusion.getLabelTP(),docTitle,goldInst);
+					}
+					
 				}
 			}
 		}

@@ -80,10 +80,14 @@ public class Analysis {
         public String getLabelFN(){
             return getLabel()+".FN";
         }
+        public String getLabelTP(){
+            return getLabel()+".TP";
+        }
 
         public String getRowAsHTML(String label) {
             String fpErrors = "href=\""+ HTMLExporter.HTML_ERROR_LOCATION+"/"+getLabelFP()+".html\" target=\"_blank\"";
             String fnErrors = "href=\""+ HTMLExporter.HTML_ERROR_LOCATION+"/"+getLabelFN()+".html\" target=\"_blank\"";
+            String tpErrors = "href=\""+ HTMLExporter.HTML_ERROR_LOCATION+"/"+getLabelTP()+".html\" target=\"_blank\"";
             String labelText = label;
             if(labelText.startsWith(" "))
             	labelText = "<b>"+label+"</b>";
@@ -91,7 +95,10 @@ public class Analysis {
             StringBuilder str = new StringBuilder();
             str.append("<tr>");
             str.append("<td>"+labelText+"</td>");
-            str.append("<td>"+TextTools.toString(TP)+"</td>");
+            if(TP > 0)
+            	 str.append("<td><a "+tpErrors+">"+TextTools.toString(TP)+"</a></td>");
+            else
+            	str.append("<td>"+TextTools.toString(TP)+"</td>");
             str.append("<td>"+TextTools.toString(TPP)+"</td>");
             if(FP > 0)
                 str.append("<td><a "+fpErrors+">"+TextTools.toString(FP)+"</a></td>");

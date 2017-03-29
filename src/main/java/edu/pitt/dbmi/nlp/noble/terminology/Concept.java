@@ -3,6 +3,7 @@ import java.io.Externalizable;
 import java.io.PrintStream;
 import java.io.Serializable;
 import java.util.*;
+import java.util.regex.Matcher;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -259,7 +260,15 @@ public class Concept implements  Serializable, Comparable<Concept> {
 			}else if(pname.matches("(?i).*(cui|code|id)")){
 				for(Object o: cls.getPropertyValues(p)){
 					if(o.toString().trim().length() > 0){
+						// is there a source embeded in the code???
 						Source src = Source.getSource(pname);
+						String code = o.toString();
+						Matcher mt = Source.CODE_FROM_SOURCE_PATTERN.matcher(code);
+						if(mt.matches()){
+							code = mt.group(1).trim();
+							src = Source.getSource(mt.group(2).trim());
+						}
+						
 						if(getCode(src) != null){
 							addCode(o.toString(),Source.getSource(o.toString()));
 						}else{
@@ -271,7 +280,6 @@ public class Concept implements  Serializable, Comparable<Concept> {
 		}
 		setInitialized(true);
 	}
-	
 	
 	/**
 	 * get concept definitions.

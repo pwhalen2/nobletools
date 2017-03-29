@@ -18,7 +18,7 @@ public class Source implements Serializable, Comparable {
 	private String code,name,description;
 	private transient String version;
 	public static final Source URI = getSource("URI");
-	
+	public static final Pattern CODE_FROM_SOURCE_PATTERN = Pattern.compile("(.*)\\s*\\[(.*)\\]");
 	
 	/**
 	 * Create empty source.
@@ -159,6 +159,7 @@ public class Source implements Serializable, Comparable {
 	public static Source getSource(String text){
 		return new Source(text);
 	}
+	
 	
 	/**
 	 * get instance of definition class.

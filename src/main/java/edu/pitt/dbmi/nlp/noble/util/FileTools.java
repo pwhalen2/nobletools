@@ -4,6 +4,7 @@ import java.awt.Desktop;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -103,6 +104,18 @@ public class FileTools {
 	 */
 	public static String getText(InputStream in) throws IOException {
 		return getText(in, "\n");
+	}
+	
+	/**
+	 * This method gets a text file (HTML too) from input stream from given map.
+	 *
+	 * @param in the in
+	 * @return String that was produced
+	 * @throws IOException             if something is wrong WARNING!!! if you use this to read HTML
+	 *             text and want to put it somewhere you should delete newlines
+	 */
+	public static String getText(File in) throws IOException {
+		return getText(new FileInputStream(in), "\n");
 	}
 
 	/**

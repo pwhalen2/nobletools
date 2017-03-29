@@ -305,7 +305,7 @@ public class DomainOntology {
 					
 					// set some options
 					terminology.setStemWords(isNormalizeAnchorTerms());
-					
+					//terminology.setHandlePossibleAcronyms(false);
 					
 					//TODO: maybe custom params
 					// set language filter to only return English values

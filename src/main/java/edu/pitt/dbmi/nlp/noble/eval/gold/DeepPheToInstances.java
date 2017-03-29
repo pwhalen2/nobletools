@@ -8,10 +8,13 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.w3c.dom.Document;
@@ -23,6 +26,7 @@ import edu.pitt.dbmi.nlp.noble.ontology.IInstance;
 import edu.pitt.dbmi.nlp.noble.ontology.IOntology;
 import edu.pitt.dbmi.nlp.noble.ontology.IOntologyException;
 import edu.pitt.dbmi.nlp.noble.ontology.IResource;
+import edu.pitt.dbmi.nlp.noble.ontology.IRestriction;
 import edu.pitt.dbmi.nlp.noble.ontology.OntologyUtils;
 import edu.pitt.dbmi.nlp.noble.ontology.owl.OOntology;
 import edu.pitt.dbmi.nlp.noble.terminology.Concept;
@@ -164,6 +168,10 @@ public class DeepPheToInstances {
 			return start() > -1;
 		}
 		
+		public String toString(){
+			return id+" type: "+type+" text: "+text+" "+properties;
+		}
+		
 		/**
 		 * load entity form XML element
 		 * @param el - DOM element for Anafora entity
@@ -281,9 +289,10 @@ public class DeepPheToInstances {
 		IInstance composition = ontology.getClass(COMPOSITION).createInstance(OntologyUtils.toResourceName(documentTitle));
 		composition.addPropertyValue(ontology.getProperty(HAS_TITLE),documentTitle);
 		
+		
+		
 		// process annotations
-		for(String id: annotations.keySet()){
-			Entity entity = annotations.get(id);
+		for(Entity entity: getUsefulAnnotations(annotations)){
 			IClass cls = getClass(entity);
 			if(cls !=  null && cls.hasSuperClass(ontology.getClass(ANNOTATION))){
 				IInstance mentionAnnotation = getInstance(cls,entity,annotations);
@@ -296,6 +305,28 @@ public class DeepPheToInstances {
 		
 	}
 
+	private Set<Entity> getUsefulAnnotations(Map<String,Entity> annotations){
+		// create a list of all annotations except tumors that have associations
+		Set<Entity> includedAnnotations = new LinkedHashSet<Entity>();
+		for(Entity e: annotations.values()){
+			if(!"Disease_Disorder".equals(e.type) && !"size_class".equals(e.type)){
+				includedAnnotations.add(e);
+				if(e.hasProperty("associated_neoplasm") && annotations.containsKey(e.getProperty("associated_neoplasm"))){
+					includedAnnotations.add(annotations.get(e.getProperty("associated_neoplasm")));
+				}
+			}else if(e.hasProperty("sizes")){
+				for(String id: e.getProperties("sizes")){
+					Entity ee = annotations.get(id);
+					if(ee != null){
+						ee.addProperty("associated_neoplasm",e.id);
+						includedAnnotations.add(ee);
+					}
+				}
+			}
+		}
+		return includedAnnotations;
+	}
+	
 	/**
 	 * get class for a given entity
 	 * @param entity
@@ -386,15 +417,25 @@ public class DeepPheToInstances {
 		if(code != null){
 			Concept c = getConcept(entity);
 			if(c != null){
-				inst.addPropertyValue( ontology.getProperty("hasAnchor"),getDefaultInstance(ontology.getResource(c.getCode())));
-			}else{
-				System.out.println("\tNo anchor for "+cls.getName()+" type: "+entity.type+" text: "+entity.text);
+				// make sure that the anchor is within the scope of the annotation class
+				IResource anchor = ontology.getResource(c.getCode());
+				for(Object o: cls.getEquivalentRestrictions()){
+					if(o instanceof IRestriction){
+						IRestriction r = (IRestriction) o;
+						if(r.getProperty().getName().equals("hasAnchor") && !r.getParameter().evaluate(anchor)){
+							System.out.println("\tAnchor "+anchor.getName()+" ("+code+" ) doesn't fit the annotation "+cls.getName());
+							return null;
+						}
+					}
+				}
 				
+				inst.addPropertyValue( ontology.getProperty("hasAnchor"),getDefaultInstance(anchor));
 			}
 		}
 		// add span
 		inst.addPropertyValue( ontology.getProperty("hasSpan"),entity.start()+":"+entity.end());
 		inst.addPropertyValue( ontology.getProperty("hasAnnotationType"),getDefaultInstance(ontology.getClass("MentionAnnotation")));
+		inst.addPropertyValue( ontology.getProperty("hasAnnotationText"),entity.text);
 		
 		
 		// get linguistic attributes
@@ -441,12 +482,18 @@ public class DeepPheToInstances {
 		
 		// add receptor value
 		if(entity.hasProperty("associated_neoplasm")){
-			/*Entity relatedEntity = annotations.get(entity.getProperty("associated_neoplasm"));
-			IClass neoplasm = getClass(relatedEntity);
-			if(neoplasm != null){
-				IInstance relatedInst = getInstance(neoplasm, relatedEntity, annotations);
-				inst.addPropertyValue(ontology.getProperty(name), relatedInst);
-			}*/
+			Entity relatedEntity = annotations.get(entity.getProperty("associated_neoplasm"));
+			if(relatedEntity != null){
+				IInstance i = getInstance(getClass(relatedEntity), relatedEntity, annotations);
+				if(i != null){
+					// if this is a tumor size, then the tumor is an anchor
+					if("size_mention".equals(cls.getName())){
+						inst.addPropertyValue( ontology.getProperty("hasAnchor"),getDefaultInstance(ontology.getClass("Tumor_Size")));
+					}else{
+						inst.addPropertyValue(ontology.getProperty("associated_with"),i);
+					}
+				}
+			}
 		}
 
 		// add neoplasm stage
@@ -461,11 +508,20 @@ public class DeepPheToInstances {
 			}
 		}
 		
-		// add size 
+		/*// add tumor size 
 		if(entity.hasProperty("dimension")){
-			//Entity relatedEntity = annotations.get(entity.getProperty("stage_value"));
+			Entity relatedEntity = annotations.get(entity.getProperty("dimension"));
+			System.out.println(relatedEntity);
 			// do I need it
 		}
+		*/
+		
+		//check that we have an anchor
+		if(!Arrays.asList(inst.getProperties()).contains(ontology.getProperty("hasAnchor"))){
+			System.out.println("\tNo anchor for "+cls.getName()+" type: "+entity.type+" text: "+entity.text);
+			return null;
+		}
+		
 		
 		return inst;
 	}
@@ -499,7 +555,7 @@ public class DeepPheToInstances {
 	private Map<String, IClass> getSchemaMap() {
 		if(schemaMap == null){
 			schemaMap = new HashMap<String, IClass>();
-			schemaMap.put("Disease_Disorder",ontology.getClass("neoplasm_mention"));
+			schemaMap.put("Disease_Disorder",ontology.getClass("associated_neoplasm_mention"));
 			schemaMap.put("Finding_TNM",ontology.getClass("tnm_mention"));
 			schemaMap.put("LabResult_Receptor",ontology.getClass("receptors_mention"));
 			schemaMap.put("Medications/Drugs",ontology.getClass("medications_mention"));
