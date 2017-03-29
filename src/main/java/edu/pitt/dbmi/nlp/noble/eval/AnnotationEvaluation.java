@@ -618,8 +618,36 @@ public class AnnotationEvaluation implements ActionListener {
 			Dimension s = Toolkit.getDefaultToolkit().getScreenSize();
 			dialog.setLocation(new Point((s.width-d.width)/2,(s.height-d.height)/2));
 			
+			// load prior values
+			loadSettings();
+			
 		}
 		return dialog;	
+	}
+	
+	/**
+	 * save UI settings
+	 */
+	private void saveSettings(){
+		Properties p = new Properties();
+		p.setProperty("goldOntology",goldOntology.getText());
+		p.setProperty("goldWeights",goldWeights.getText());
+		p.setProperty("systemOntology",systemOntology.getText());
+		UITools.saveSettings(p,getClass());
+	}
+	
+	/**
+	 * save UI settings
+	 */
+	private void loadSettings(){
+		Properties p = UITools.loadSettings(getClass());
+		if(p.containsKey("goldOntology"))
+			goldOntology.setText(p.getProperty("goldOntology"));
+		if(p.containsKey("goldWeights"))
+			goldWeights.setText(p.getProperty("goldWeights"));
+		if(p.containsKey("systemOntology")){
+			systemOntology.setText(p.getProperty("systemOntology"));
+		}
 	}
 	
 	/**
@@ -729,6 +757,10 @@ public class AnnotationEvaluation implements ActionListener {
 					return;
 				}
 				
+
+				// save settings
+				saveSettings();
+				
 				setBusy(true);
 				try{
 					if(weights.exists())
@@ -752,7 +784,7 @@ public class AnnotationEvaluation implements ActionListener {
 					}catch(Exception ex){
 						UITools.showErrorDialog(getDialog(),ex);
 					}
-					
+						
 				}catch(Exception ex){
 					UITools.showErrorDialog(getDialog(),"There was a prolbem with evaluation: ",ex);
 					return;

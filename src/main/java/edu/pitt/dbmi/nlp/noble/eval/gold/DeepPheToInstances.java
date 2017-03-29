@@ -239,12 +239,19 @@ public class DeepPheToInstances {
 		for(Element el: XMLUtils.getChildElements(annotations,"entity")){
 			Entity entity = Entity.load(el);
 			if(entity.hasSpan() && docText.length() > entity.end()){
-				entity.text = docText.substring(entity.start(),entity.end()+1);
+				// get text first
+				entity.text = docText.substring(entity.start(),entity.end());
+				// then convert offsets
+				entity.start = TextTools.convertCRLF_Offset(docText, entity.start());
+				entity.end =   TextTools.convertCRLF_Offset(docText, entity.end());
+				
+				//System.out.println("TEXT: "+entity.text+"\t"+docText.equals(docText2)+"\t"+docText2.substring(entity.start,entity.end));
 			}
 			map.put(entity.id,entity);
 		}
 		return map;
 	}
+	
 	
 	
 	/**
@@ -263,7 +270,7 @@ public class DeepPheToInstances {
 			documentTitle = documentTitle+DEFAULT_DOCUMENT_SUFFIX;
 		
 		// get document text
-		//String docText = FileTools.getText(new FileInputStream(docFile),"\r\n");
+		//String docText2 = FileTools.getText(new FileInputStream(docFile));
 		String docText = new String(Files.readAllBytes(Paths.get(docFile.toURI())));
 		
 		Document dom = XMLUtils.parseXML(new FileInputStream(xmlFile));

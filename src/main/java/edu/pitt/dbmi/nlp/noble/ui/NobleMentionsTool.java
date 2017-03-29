@@ -28,6 +28,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import javax.swing.Box;
@@ -227,10 +228,44 @@ public class NobleMentionsTool implements ActionListener{
 			frame.setVisible(true);
 			// load defaults
 			loadDeafaults();
+			loadSettings();
 		}else{
 			frame.setVisible(true);
 		}
 	}	
+	
+	/**
+	 * save UI settings
+	 */
+	private void saveSettings(){
+		Properties p = new Properties();
+		p.setProperty("ontology",templateList.getSelectedValue().toString());
+		p.setProperty("input",input.getText());
+		p.setProperty("output",output.getText());
+		UITools.saveSettings(p,getClass());
+	}
+	
+	/**
+	 * save UI settings
+	 */
+	private void loadSettings(){
+		Properties p = UITools.loadSettings(getClass());
+		if(p.containsKey("input"))
+			input.setText(p.getProperty("input"));
+		if(p.containsKey("output"))
+			output.setText(p.getProperty("output"));
+		if(p.containsKey("ontology")){
+			String ont = p.getProperty("ontology");
+			int index = -1;
+			for(int i=0;i<templateList.getModel().getSize();i++){
+				if(templateList.getModel().getElementAt(i).toString().equals(ont)){
+					index = i; break;
+				}
+			}
+			if(index > -1)
+				templateList.setSelectedIndex(index);
+		}
+	}
 	
 	/**
 	 * Load deafaults.
@@ -483,6 +518,9 @@ public class NobleMentionsTool implements ActionListener{
 				}
 				setBusy(true);
 				
+				// save settings
+				saveSettings();
+				
 				DomainOntology ontology = templateList.getSelectedValue();
 				final String ontName = ontology.getName();
 				
@@ -529,6 +567,8 @@ public class NobleMentionsTool implements ActionListener{
 				}catch(Exception ex){
 					UITools.showErrorDialog(frame,ex);
 				}
+				
+			
 				
 			}
 		})).start();

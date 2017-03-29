@@ -308,6 +308,7 @@ public class NobleCoderTool implements ActionListener{
 		terminologies.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 				loadDefaults();
+				loadSettings();
 			}
 		});
 	
@@ -338,7 +339,7 @@ public class NobleCoderTool implements ActionListener{
 	 */
 	private void saveSettings(){
 		Properties p = new Properties();
-		p.setProperty("ontology",terminologies.getSelectedItem().toString());
+		p.setProperty("terminology",terminologies.getSelectedItem().toString());
 		p.setProperty("input",input.getText());
 		p.setProperty("output",output.getText());
 		UITools.saveSettings(p,getClass());
@@ -353,8 +354,8 @@ public class NobleCoderTool implements ActionListener{
 			input.setText(p.getProperty("input"));
 		if(p.containsKey("output"))
 			output.setText(p.getProperty("output"));
-		if(p.containsKey("ontology")){
-			String ont = p.getProperty("ontology");
+		if(p.containsKey("terminology")){
+			String ont = p.getProperty("terminology");
 			int index = -1;
 			for(int i=0;i<terminologies.getModel().getSize();i++){
 				if(terminologies.getModel().getElementAt(i).toString().equals(ont)){
@@ -1255,6 +1256,9 @@ public class NobleCoderTool implements ActionListener{
 				if(openHTML != null && openHTML.isSelected()){
 					browseURLInSystemBrowser(new File(output.getText()+File.separator+"index.html").toURI().toString());
 				}
+				
+				// save last ran settings
+				saveSettings();
 				
 			}
 		})).start();

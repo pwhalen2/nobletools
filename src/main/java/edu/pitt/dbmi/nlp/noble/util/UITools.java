@@ -2,11 +2,18 @@ package edu.pitt.dbmi.nlp.noble.util;
 
 import java.awt.Component;
 import java.awt.Desktop;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Date;
 import java.util.Properties;
 
 import javax.swing.JOptionPane;
 
 public class UITools {
+	public static final File DEFAULT_PROPERTIES_LOCATION = new File(System.getProperty("user.home")+File.separator+".noble"+File.separator+"properties");
+	
 	/**
      * Display a lastFile in the system browser. If you want to display a lastFile, you
      * must include the absolute path name.
@@ -61,8 +68,17 @@ public class UITools {
       * @param p - property map of settings
       * @param cls - class that this belongs to
       */
-	public static void saveSettings(Properties p, Class cls) {
-		
+	public static void saveSettings(Properties p, Class cls){
+		File file = new File(DEFAULT_PROPERTIES_LOCATION,cls.getSimpleName()+".properties");
+		if(!file.getParentFile().exists())
+			file.getParentFile().mkdirs();
+		try{
+			FileOutputStream fos = new FileOutputStream(file);
+			p.store(fos,cls.getSimpleName()+" GUI properties on "+new Date());
+			fos.close();
+		}catch(IOException ex){
+			ex.printStackTrace();
+		}
 		
 	}
 	
@@ -72,8 +88,18 @@ public class UITools {
 	 * @return - properties
 	 */
 	
-	public static Properties loadSettings(Class cls) {
-		
-		return null;
+	public static Properties loadSettings(Class cls){
+		Properties p = new Properties();
+		File file = new File(DEFAULT_PROPERTIES_LOCATION,cls.getSimpleName()+".properties");
+		if(file.exists()){
+			try{
+				FileInputStream fis = new FileInputStream(file);
+				p.load(fis);
+				fis.close();
+			}catch(IOException ex){
+				ex.printStackTrace();
+			}
+		}
+		return p;
 	}
 }

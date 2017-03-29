@@ -1086,6 +1086,18 @@ public class TextTools {
 		return count;
 	}
 	
+	/**
+	 * convert an offset in text that has CRLF line seprators (Windows/DOS)
+	 * to a Unix LF seperator offset
+	 * @param text - full text of the document
+	 * @param offset - offset within the document text
+	 * @return new offset withing the document with Unix newlines (LF)
+	 */
+	public static int convertCRLF_Offset(String text, int offset){
+		int delta = charCount(text.substring(0,offset),'\r');
+		return offset - delta;
+	}
+	
 	
 	/**
 	 * for each character in the target strings sets case in the source string.
