@@ -2,6 +2,7 @@ package edu.pitt.dbmi.nlp.noble.util;
 
 import java.awt.Component;
 import java.awt.Desktop;
+import java.util.Properties;
 
 import javax.swing.JOptionPane;
 
@@ -54,4 +55,25 @@ public class UITools {
     	 JOptionPane.showMessageDialog(owner,msg,"Error",JOptionPane.ERROR_MESSAGE);
 
      }
+     
+     /**
+      * save UI settings map for a given class
+      * @param p - property map of settings
+      * @param cls - class that this belongs to
+      */
+	public static void saveSettings(Properties p, Class cls) {
+		
+		
+	}
+	
+	/**
+	 * load UI settings map for a given class
+	 * @param cls - class that has the mapping
+	 * @return - properties
+	 */
+	
+	public static Properties loadSettings(Class cls) {
+		
+		return null;
+	}
 }

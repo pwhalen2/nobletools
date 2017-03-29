@@ -26,7 +26,9 @@ public class NobleMentions implements Processor<Composition>{
 	private long time;
 	private DomainOntology domainOntology;
 	private NobleCoder coder;
-	
+	// some switches
+	private boolean codeSectionHeadersWithAnchors = false;
+	private boolean codeSectionHeadersWithModifiers = true;
 
 	
 	/**
@@ -113,6 +115,10 @@ public class NobleMentions implements Processor<Composition>{
 		Map<String,AnnotationVariable> variables = new HashMap<String, AnnotationVariable>();
 		
 		for(Sentence sentence: doc.getSentences()){
+			// skip section header sentences
+			if(!codeSectionHeadersWithAnchors && Sentence.TYPE_HEADER.equals(sentence.getSentenceType()))
+				continue;
+			// get anchors from a sentence
 			for(Instance anchor: domainOntology.getAnchors(sentence.getMentions())){
 				for(AnnotationVariable var : domainOntology.getAnnotationVariables(anchor)){
 					// associate with global modifiers
@@ -218,6 +224,9 @@ public class NobleMentions implements Processor<Composition>{
 		List<Mention> globalModifiers = new ArrayList<Mention>();
 		for(Mention m: doc.getMentions()){
 			if(domainOntology.isTypeOf(m,DomainOntology.MODIFIER)){
+				// skip modifiers that are found in section headers
+				if(!codeSectionHeadersWithModifiers && Sentence.TYPE_HEADER.equals(m.getSentence().getSentenceType()))
+					continue;
 				globalModifiers.add(m);
 			}
 		}

@@ -79,6 +79,7 @@ import edu.pitt.dbmi.nlp.noble.tools.TextTools;
 import edu.pitt.dbmi.nlp.noble.util.CSVExporter;
 import edu.pitt.dbmi.nlp.noble.util.FileTools;
 import edu.pitt.dbmi.nlp.noble.util.HTMLExporter;
+import edu.pitt.dbmi.nlp.noble.util.UITools;
 
 
 /**
@@ -332,6 +333,38 @@ public class NobleCoderTool implements ActionListener{
 		}
 	}
 	
+	/**
+	 * save UI settings
+	 */
+	private void saveSettings(){
+		Properties p = new Properties();
+		p.setProperty("ontology",terminologies.getSelectedItem().toString());
+		p.setProperty("input",input.getText());
+		p.setProperty("output",output.getText());
+		UITools.saveSettings(p,getClass());
+	}
+	
+	/**
+	 * save UI settings
+	 */
+	private void loadSettings(){
+		Properties p = UITools.loadSettings(getClass());
+		if(p.containsKey("input"))
+			input.setText(p.getProperty("input"));
+		if(p.containsKey("output"))
+			output.setText(p.getProperty("output"));
+		if(p.containsKey("ontology")){
+			String ont = p.getProperty("ontology");
+			int index = -1;
+			for(int i=0;i<terminologies.getModel().getSize();i++){
+				if(terminologies.getModel().getElementAt(i).toString().equals(ont)){
+					index = i; break;
+				}
+			}
+			if(index > -1)
+				terminologies.setSelectedIndex(index);
+		}
+	}
 
 	/**
 	 * Gets the menu bar.

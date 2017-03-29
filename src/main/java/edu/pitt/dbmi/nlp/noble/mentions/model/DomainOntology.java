@@ -107,9 +107,8 @@ public class DomainOntology {
 	private File ontologyLocation;
 	private Map<String,String> defaultValues;
 	private static int instanceCounter = 1;
-	private boolean stemAnchorTerms = false;
 	private Map<IClass,List<IInstance>> classInstanceMap;
-	
+	private boolean normalizeAnchors, normalizeModifiers;
 	
 	/**
 	 * File or URL location of the domain ontology
@@ -158,12 +157,20 @@ public class DomainOntology {
 	
 	
 	
-	public boolean isStemAnchorTerms() {
-		return stemAnchorTerms;
+	public boolean isNormalizeAnchorTerms() {
+		return normalizeAnchors;
 	}
 
-	public void setStemAnchorTerms(boolean stemAnchorTerms) {
-		this.stemAnchorTerms = stemAnchorTerms;
+	public void setNormalizeAnchorTerms(boolean stemAnchorTerms) {
+		this.normalizeAnchors = stemAnchorTerms;
+	}
+
+	public boolean isNormalizeModifierTerms() {
+		return normalizeModifiers;
+	}
+
+	public void setNormalizeModifierTerms(boolean normalizeModifiers) {
+		this.normalizeModifiers = normalizeModifiers;
 	}
 
 	/**
@@ -297,7 +304,7 @@ public class DomainOntology {
 					}
 					
 					// set some options
-					terminology.setStemWords(isStemAnchorTerms());
+					terminology.setStemWords(isNormalizeAnchorTerms());
 					
 					
 					//TODO: maybe custom params
@@ -375,8 +382,8 @@ public class DomainOntology {
 					terminology.setScoreConcepts(false);
 					terminology.setHandlePossibleAcronyms(false);
 					terminology.setLanguageFilter(new String [] {LANGUAGE});
-					terminology.setStemWords(false);
-					terminology.setStripStopWords(false);
+					terminology.setStemWords(isNormalizeModifierTerms());
+					terminology.setStripStopWords(isNormalizeModifierTerms());
 					terminology.setIgnoreSmallWords(false);
 					terminology.setIgnoreDigits(false);
 					terminology.setSemanticTypeFilter(SEMTYPE_INSTANCE);
@@ -515,7 +522,9 @@ public class DomainOntology {
 	 * @return class that represents this mention
 	 */
 	public IClass getConceptClass(Modifier modifier){
-		return getConceptClass(modifier.getMention());
+		if(modifier.getMention() != null)
+			return getConceptClass(modifier.getMention());
+		return ontology.getClass(modifier.getValue());
 	}
 	/**
 	 * get concept class for a given mention
@@ -1383,6 +1392,9 @@ public class DomainOntology {
 
 			// if modifier1 is more specific, it is better specified	
 			}else if(mod1.hasSuperClass(mod2)){
+				return true;
+			// if modifier1 is non-default, it is better then default one
+			}else if(!modifier1.isDefaultValue() && modifier2.isDefaultValue()){
 				return true;
 			}
 		}
