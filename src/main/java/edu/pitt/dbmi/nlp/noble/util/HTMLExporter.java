@@ -18,6 +18,7 @@ import edu.pitt.dbmi.nlp.noble.mentions.model.DomainOntology;
 import edu.pitt.dbmi.nlp.noble.mentions.model.Instance;
 import edu.pitt.dbmi.nlp.noble.ontology.IInstance;
 import edu.pitt.dbmi.nlp.noble.ontology.IOntology;
+import edu.pitt.dbmi.nlp.noble.ontology.IProperty;
 import edu.pitt.dbmi.nlp.noble.terminology.Annotation;
 import edu.pitt.dbmi.nlp.noble.terminology.Concept;
 import edu.pitt.dbmi.nlp.noble.tools.ConText;
@@ -450,14 +451,25 @@ public class HTMLExporter {
 		for(Annotation a: annnotations){
 			ids.add("'"+a.getOffset()+"'");
 		}
+		return codeEntity(label,code,tip, color,ids);
+	}
+	
+	/**
+	 * create a coded entity
+	 * @param label
+	 * @param code
+	 * @param tip
+	 * @param color
+	 * @param annnotations
+	 * @return
+	 */
+	private String codeEntity(String label, String id, String tip, String color,List<String> associatedIds){
 		StringBuilder out = new StringBuilder();
-		out.append("<span style=\"color:"+color+";\" onmouseover=\"h("+ids+");t=setTimeout(function(){j("+ids+");},2000);\" ");
-		out.append(	"onmouseout=\"u("+ids+"); clearTimeout(t);\" id=\""+code+"\"");
-		//out.append(" href=\""+terminologySerlvet+"?action=lookup_concept&term="+term+"&code="+code+"\" target=\"_blank\"");
+		out.append("<span style=\"color:"+color+";\" onmouseover=\"h("+associatedIds+");t=setTimeout(function(){j("+associatedIds+");},2000);\" ");
+		out.append(	"onmouseout=\"u("+associatedIds+"); clearTimeout(t);\" id=\""+id+"\"");
 		out.append(" title=\""+TextTools.escapeHTML(tip)+"\">"+TextTools.escapeHTML(label)+"</span> ");
 		return out.toString();
 	}
-	
 	
 	
 	/**
@@ -619,7 +631,7 @@ public class HTMLExporter {
 	 * @throws Exception the exception
 	 */
 	private BufferedWriter getIndex() throws Exception {
-		return getIndex("index.html");
+		return getIndex("index.html",true);
 	}
 
 	/**
@@ -628,19 +640,27 @@ public class HTMLExporter {
 	 * @return the index
 	 * @throws Exception the exception
 	 */
-	private BufferedWriter getIndex(String outFile) throws Exception {
+	private BufferedWriter getIndex(String outFile,boolean includeHeader) throws Exception {
 		if(htmlIndexWriter == null){
 			// write header 
+			String delta = "10";
+			if(includeHeader)
+				delta= "100";
 			htmlIndexWriter = new BufferedWriter(new FileWriter(new File(outputDirectory,outFile)));
 			htmlIndexWriter.write("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
 			htmlIndexWriter.write("<head><title>"+title+"</title>\n");
 			htmlIndexWriter.write("<script type=\"text/javascript\">function l(){var h=800;if(!window.innerWidth){\n");
 			htmlIndexWriter.write("if(!(document.documentElement.clientWidth == 0)){\n h = document.documentElement.clientHeight;\n");
-			htmlIndexWriter.write("}else{h = document.body.clientHeight;}}else{ h = window.innerHeight;} var hd = (h-100)+\"px\";\n");
+			htmlIndexWriter.write("}else{h = document.body.clientHeight;}}else{ h = window.innerHeight;} var hd = (h-"+delta+")+\"px\";\n");
 			htmlIndexWriter.write("document.getElementById(\"d1\").style.maxHeight=hd;}</script>\n");
-			htmlIndexWriter.write("</head><body style=\"overflow: hidden;\" bgcolor=\"#EEEEFF\" onload=\"l();\" onresize=\"l();\"><center><h3>"+title+" Output [");
-			htmlIndexWriter.write("<a href=\""+resultFileName+"\" title=\"Download the entire result in Tab Seperated Values (.tsv) format \">TSV</a>]</h3></center>\n");
-			htmlIndexWriter.write("<center><table bgcolor=\"#FFFFF\" width=\"100%\" height=\"95%\" border=0>\n");
+			htmlIndexWriter.write("</head><body style=\"overflow: hidden;\" bgcolor=\"#EEEEFF\" onload=\"l();\" onresize=\"l();\">\n");
+			String height = "95%";
+			if(includeHeader){
+				htmlIndexWriter.write("<center><h3>"+title+" Output [<a href=\""+resultFileName+"\" ");
+				htmlIndexWriter.write("title=\"Download the entire result in Tab Seperated Values (.tsv) format \">TSV</a>]</h3></center>\n");
+				height = "100%";
+			}
+			htmlIndexWriter.write("<center><table bgcolor=\"#FFFFF\" width=\"100%\" height=\""+height+"\" border=0>\n");
 			htmlIndexWriter.write("<tr><td align=\"left\" valign=\"top\" width=\"200px\" style=\"white-space: nowrap\">\n");
 			htmlIndexWriter.write("<div id=\"d1\" style=\"overflow: auto; max-height: 800px;\"><div style=\"border-style:solid; border-color: #EEEEFF; padding:10px 10px;\">");
 		}
@@ -1033,7 +1053,7 @@ public class HTMLExporter {
 				"function l(){var h=800;if(!window.innerWidth){\n"+
 				"if(!(document.documentElement.clientWidth == 0)){\n h = document.documentElement.clientHeight;\n"+
 				"}else{h = document.body.clientHeight;}}else{ h = window.innerHeight;} var hd = (h-100)+\"px\";\n"+
-				"document.getElementById(\"d1\").style.maxHeight=hd;document.getElementById(\"d2\").style.maxHeight=hd;}"+
+				"document.getElementById(\"d1\").style.maxHeight=hd;document.getElementById(\"d2\").style.maxHeight=hd;document.getElementById(\"d0\").style.maxHeight=hd;}"+
 				
 				// show/hide element
 				"function showHide(id){ var a = \"hidden\"; if(document.getElementById(id).style.visibility == \"hidden\"){ a = \"visible\";}"+
@@ -1109,13 +1129,15 @@ public class HTMLExporter {
 		String name = FileTools.stripExtension(textFile.getName());
 
 		File out = new File(outputDirectory.getAbsolutePath()+File.separator+HTML_EVAL_LOCATION+File.separator+name+".html");
+		if(!out.getParentFile().exists())
+			out.getParentFile().mkdirs();
 		BufferedWriter htmlWriter = new BufferedWriter(new FileWriter(out));
 
 
 		// build report
 		TreeMap<Span,Set<String>> spanMap =new TreeMap<Span,Set<String>>();
-		addAnnotationSpans(goldInst,spanMap);
-		addAnnotationSpans(sysInst,spanMap);
+		addAnnotationSpans(goldInst,spanMap,"g_");
+		addAnnotationSpans(sysInst,spanMap,"s_");
 
 		// get report representation and cap protocol
 		String content = FileTools.getText(textFile);
@@ -1124,12 +1146,12 @@ public class HTMLExporter {
 		// build up results
 		StringBuilder goldResult = new StringBuilder();
 		goldResult.append("<p><b>Gold Annotations</b><p>");
-		goldResult.append(codeCompositionInstance(goldInst));
+		goldResult.append(codeCompositionInstance(goldInst,"green"));
 		goldResult.append("</p>");
 
 		StringBuilder sysResult = new StringBuilder();
 		sysResult.append("<p><b>System Annotations</b><p>");
-		sysResult.append(codeCompositionInstance(sysInst));
+		sysResult.append(codeCompositionInstance(sysInst,"blue"));
 		sysResult.append("</p>");
 
 		htmlWriter.write(createHTMLHeader("Evaluation Output",true));
@@ -1137,9 +1159,9 @@ public class HTMLExporter {
 		htmlWriter.write("<table width=\"100%\" style=\"table-layout:fixed; \" cellspacing=\"5\">\n"); //word-wrap:break-word;
 		htmlWriter.write("<tr><td colspan=3 align=center><h3>"+name+"</h3></td></tr>\n");
 
-		htmlWriter.write("<tr><td width=\"25%\" valign=top><div id=\"d0\" style=\"overflow: auto; max-height: 800px;\">"+goldResult+"</div></td>\n");
-		htmlWriter.write("<td width=\"50%\" valign=middle><div id=\"d1\" style=\"overflow: auto; max-height: 800px; \">"+report+"</div></td>");
-		htmlWriter.write("<td width=\"25%\" valign=top><div id=\"d2\" style=\"overflow: auto; max-height: 800px;\">"+sysResult+"</div></td></tr>\n");
+		htmlWriter.write("<tr><td width=\"300px\" valign=top><div id=\"d0\" style=\"overflow: auto; max-height: 800px;\">"+goldResult+"</div></td>\n");
+		htmlWriter.write("<td width=\"60%\" valign=middle><div id=\"d1\" style=\"overflow: auto; max-height: 800px; \">"+report+"</div></td>\n");
+		htmlWriter.write("<td width=\"300px\" valign=top><div id=\"d2\" style=\"overflow: auto; max-height: 800px;\">"+sysResult+"</div></td></tr>\n");
 		htmlWriter.write("<tr><td colspan=3 align=center></td></tr>\n");
 		htmlWriter.write("</table></body></html>\n");
 		htmlWriter.flush();
@@ -1147,65 +1169,182 @@ public class HTMLExporter {
 
 		// add link to index
 		if(createIndex){
-			getIndex(eval).write("<span style=\"max-width: 190px; font-size: 90%; overflow: hidden; display:block;\">");
-			getIndex(eval).write("<a href=\""+HTML_EVAL_LOCATION+"/"+name+".html\" target=\"frame\">"+name+"</a></span>\n");
-			getIndex(eval).flush();
+			getIndex(eval,false).write("<span style=\"max-width: 190px; font-size: 90%; overflow: hidden; display:block;\">");
+			getIndex(eval,false).write("<a href=\""+HTML_EVAL_LOCATION+"/"+name+".html\" target=\"frame\">"+name+"</a></span>\n");
+			getIndex(eval,false).flush();
 		}
 	}
 
-	private void addAnnotationSpans(IInstance inst, TreeMap<Span, Set<String>> spanMap) {
+	/**
+	 * given an instanceo of a Composition, get spans for all mention level annotations
+	 * @param inst - composition instance
+	 * @param spanMap - span map to add to
+	 */
+	private void addAnnotationSpans(IInstance inst, TreeMap<Span, Set<String>> spanMap, String prefix) {
 		// add mention level values
 		IOntology ont = inst.getOntology();
 		for(Object o: inst.getPropertyValues(ont.getProperty(DomainOntology.HAS_MENTION_ANNOTATION))){
 			if(o instanceof IInstance){
 				IInstance var = (IInstance) o;
-				for(Object oo : var.getPropertyValues(ont.getProperty(DomainOntology.HAS_SPAN))){
-					for(String sp: oo.toString().split("\\s+")) {
-						Span span = Span.getSpan(sp);
-						// insert span
-						if(spanMap.containsKey(span)){
-							spanMap.get(span).add(var.getName());
-						}else{
-							boolean inserted = false;
-							for(Span spn: spanMap.keySet()){
-								if(spn.overlaps(span)){
-									inserted = true;
-									// break up existing span
-								}
-							}
-							if(!inserted){
-								Set<String> set = new HashSet<String>();
-								set.add(var.getName());
-								spanMap.put(span,set);
+				for(Span span : getVariableSpans(var)){
+					// insert span
+					if(spanMap.containsKey(span)){
+						spanMap.get(span).add(prefix+var.getName());
+					}else{
+						Span overlappingSpan = null;
+						
+						// find overlapping span
+						for(Span spn: spanMap.keySet()){
+							if(spn.overlaps(span)){
+								overlappingSpan = spn;
+								break;
 							}
 						}
-
+						// if overlapping span is null, just insert the new one
+						if(overlappingSpan == null){
+							Set<String> set = new HashSet<String>();
+							set.add(prefix+var.getName());
+							spanMap.put(span,set);
+						// else try to split up existing span	
+						}else{
+							Span spn = overlappingSpan;
+							Set<String> ids = spanMap.get(spn);
+							List<Span> overlapSpans = new ArrayList<Span>();
+							
+							// break up existing spans into parts
+							if(spn.start() ==  span.start()){
+								overlapSpans.add(new Span(spn.start(),Math.min(span.end(),spn.end())));
+								overlapSpans.add(new Span(Math.min(span.end(),spn.end()),Math.max(span.end(),spn.end())));
+							}else if(spn.end() == span.end()){
+								overlapSpans.add(new Span(Math.min(span.start(),spn.start()),Math.max(span.start(),spn.start())));
+								overlapSpans.add(new Span(Math.max(span.start(),spn.start()),span.end()));
+							}else{
+								overlapSpans.add(new Span(Math.min(span.start(),spn.start()),Math.max(span.start(),spn.start())));
+								overlapSpans.add(new Span(Math.max(span.start(),spn.start()),Math.min(span.end(),spn.end())));
+								overlapSpans.add(new Span(Math.min(span.end(),spn.end()),Math.max(span.end(),spn.end())));
+							}
+							
+							// remove original span
+							spanMap.remove(spn);
+							// add new span
+							for(Span s: overlapSpans){
+								Set<String> nids = new HashSet<String>(ids);
+								if(span.contains(s)){
+									nids.add(prefix+var.getName());
+								}
+								spanMap.put(s,nids);
+							}	
+						}
 					}
 				}
 			}
 		}
 	}
 
-	private String codeCompositionInstance(IInstance composition){
+	private List<Span> getVariableSpans(IInstance var){
+		List<Span> spans = new ArrayList<Span>();
+		for(Object oo : var.getPropertyValues(var.getOntology().getProperty(DomainOntology.HAS_SPAN))){
+			for(String sp: oo.toString().split("\\s+")) {
+				spans.add(Span.getSpan(sp));
+			}
+		}
+		return spans;
+	}
+	
+	
+	private String codeCompositionInstance(IInstance composition,String color){
+		IOntology ont = composition.getOntology();
 		StringBuilder str = new StringBuilder();
+		str.append("<ol><p>");
+		List<IInstance> vars = new ArrayList<IInstance>();
+		for(Object oa: composition.getPropertyValues(ont.getProperty(DomainOntology.HAS_MENTION_ANNOTATION))){
+			if(oa instanceof IInstance){
+				vars.add(((IInstance)oa));
+			}
+		}
+		Collections.sort(vars,new Comparator<IInstance>() {
+			public int compare(IInstance o1, IInstance o2) {
+				List<Span> l1 = getVariableSpans(o1);
+				List<Span> l2 = getVariableSpans(o2);
+				return l1.get(0).compareTo(l2.get(0));
+			}
+		});
+		for(IInstance i: vars)
+			str.append(codeVariable(i,color)+"\n");
+        str.append("</ol></p>");
 		return str.toString();
 	}
+
+	/**
+	 * code individual concept.
+	 *
+	 * @param c the c
+	 * @param color the color
+	 * @param aa the aa
+	 * @return the string
+	 */
+	private String codeVariable(IInstance inst,String color){
+		StringBuilder str = new StringBuilder();
+		List<String> ids = new ArrayList<String>();
+		for(Span span: getVariableSpans(inst)){
+			ids.add("'"+span.start()+"'");
+			ids.add("'"+span.end()+"'");
+		}
+		str.append("<li>"+codeEntity(inst.getDirectTypes()[0].getName(), inst.getName(), "",color,ids)+"<ul>");
+		for(IProperty p: inst.getProperties()){
+		    str.append("<li>"+p.getName()+": ");
+		    for(Object o: inst.getPropertyValues(p)){
+		        if(o instanceof IInstance){
+		            str.append(((IInstance)o).getDirectTypes()[0].getName()+" ");
+		        }else{
+		            str.append(o+" ");
+		        }
+		    }
+		    str.append("</li>");
+		}
+		str.append("</ul></li>");
+		return str.toString();
+	}
+	
+	
+	
+	/**
+	 * convert TEXT to html with highlighted spans
+	 * @param text - original text document
+	 * @param spanMap - sorted map of non-overlapping spans
+	 * @return HTML document
+	 */
 	private String convertToHTML(String text, TreeMap<Span,Set<String>> spanMap){
 		StringBuilder str = new StringBuilder();
 		int offs = 0;
-
-		/*
-				StringBuilder text = new StringBuilder();
-		int offs = 0;
-		for(Sentence s: doc.getSentences()){
-			int o = s.getOffset();
-			text.append(content.substring(offs,o).replaceAll("\n","<br>"));
-			text.append(codeSentence(s));
-			offs = o+s.getLength();
+		for(Span s: spanMap.keySet()){
+			str.append(text.substring(0,s.start()).replaceAll("\n","<br>"));
+			str.append(codeSpan(s.start(),text.substring(s.start(),s.end()),spanMap.get(s)));
+			offs = s.end();
 		}
-		if(offs < content.length())
-			text.append(content.substring(offs).replaceAll("\n", "<br>"));
-		 */
+		if(offs < text.length()){
+			str.append(text.substring(offs).replaceAll("\n", "<br>"));
+		}
 		return str.toString();
+	}
+
+	private String codeSpan(int offset, String text, Set<String> ids) {
+		String lid = ""+offset;
+		List<String> codes = new ArrayList<String>();
+		StringBuilder tip = new StringBuilder();
+		
+		String color = null;
+		for(String id: ids){
+			// strip suffix
+			if(id.startsWith("g_")){
+				id = id.substring(2);
+				color = (color == null || "green".equals(color))?"green":"#FF8C00";
+			}else if(id.startsWith("s_")){
+				id = id.substring(2);
+				color = (color == null || "blue".equals(color))?"blue":"#FF8C00";
+			}
+			codes.add("'"+id+"'");
+		}
+		return "<label id=\""+lid+"\" style=\"color:"+color+";\" onmouseover=\"h("+codes+");\" onmouseout=\"u("+codes+");\" title=\""+TextTools.escapeHTML(tip.toString())+"\">"+text+"</label>";
 	}
 }

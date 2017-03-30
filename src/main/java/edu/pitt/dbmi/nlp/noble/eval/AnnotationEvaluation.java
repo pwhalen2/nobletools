@@ -769,10 +769,10 @@ public class AnnotationEvaluation implements ActionListener {
 					UITools.showErrorDialog(getDialog(),"Can't input document directory "+input);
 					return;
 				}
-
+				saveSettings();
 				setBusy(true);
 				try {
-					outputAnnotationsAsHTML(input.getParentFile(), input, gold, system);
+					outputAnnotationsAsHTML(system.getParentFile(), input, gold, system);
 					UITools.browseURLInSystemBrowser(new File(system.getParentFile().getAbsolutePath()+File.separator+EVALUATION_HTML).toURI().toString());
 
 				}catch(Exception ex){
@@ -980,16 +980,36 @@ public class AnnotationEvaluation implements ActionListener {
 	 */
 	public void outputAnnotationsAsHTML(File outputDir, File inputDir, File goldOntology, File systemOntology) throws Exception {
 		HTMLExporter exporter = new HTMLExporter(outputDir);
+		progress("loading gold instances ..\n");
 		IOntology gold = OOntology.loadOntology(goldOntology);
+		progress("loading system instances ..\n");
 		IOntology system = OOntology.loadOntology(systemOntology);
 		List<File> files = FileTools.getFilesInDirectory(inputDir,".txt");
 
 		for(File file: files){
 			IInstance g = getComposition(gold,file.getName());
 			IInstance s = getComposition(system,file.getName());
+			progress("processing "+file.getName()+" ..\n");
 			exporter.export(file,g,s);
 		}
 		exporter.flush();
 	}
-
+	
+	/**
+	 * Progress.
+	 *
+	 * @param str the str
+	 */
+	private void progress(String str){
+		System.out.print(str);
+		if(console != null){
+			final String s = str;
+			SwingUtilities.invokeLater(new Runnable(){
+				public void run(){
+					console.append(s);
+				}
+			});
+			
+		}
+	}
 }

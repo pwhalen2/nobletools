@@ -21,6 +21,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import static edu.pitt.dbmi.nlp.noble.mentions.model.DomainOntology.*;
+
+import edu.pitt.dbmi.nlp.noble.mentions.model.DomainOntology;
 import edu.pitt.dbmi.nlp.noble.ontology.IClass;
 import edu.pitt.dbmi.nlp.noble.ontology.IInstance;
 import edu.pitt.dbmi.nlp.noble.ontology.IOntology;
@@ -343,13 +345,17 @@ public class DeepPheToInstances {
 			if(c == null){
 				return null;
 			}else{
-				if(c.getRelationMap().containsKey(IS_ANCHOR_OF)){
-					for(String annotoationName: c.getRelationMap().get(IS_ANCHOR_OF)){
-						IClass annotationCls = ontology.getClass(annotoationName);
-						return annotationCls;
+				IClass annotationCls = ontology.getClass(c.getCode());
+				if(annotationCls != null){
+					for(IRestriction r: annotationCls.getRestrictions(ontology.getProperty(DomainOntology.IS_ANCHOR_OF))){
+						for(Object o: r.getParameter()){
+							if(o instanceof IClass){
+								return (IClass) o;
+							}
+						}
 					}
 				}
-				return null;
+				return cls;
 			}
 		}else if("Medications/Drugs".equals(entity.type)){
 			Concept c = getConcept(entity);
@@ -367,7 +373,14 @@ public class DeepPheToInstances {
 		if(c == null){
 			//System.out.println("\tCould not find CODE "+code+" for type: "+entity.type+" text: "+entity.text);
 			for(Concept cc: getTerminology().search(entity.text)){
-				return cc;
+				IClass ccc = ontology.getClass(cc.getCode());
+				if(ccc != null && ccc.hasSuperClass(ontology.getClass(DomainOntology.ANCHOR)))
+					return cc;
+				IInstance iii = ontology.getInstance(cc.getCode());
+				if(iii != null && iii.getDirectTypes()[0].hasSuperClass(ontology.getClass(DomainOntology.MODIFIER)))
+					return cc;
+				
+				
 			}
 			System.out.println("\tCould not find code or text "+code+" for type: "+entity.type+" text: "+entity.text);
 		}
@@ -475,7 +488,8 @@ public class DeepPheToInstances {
 				IClass test = getClass(relatedEntity);
 				if(test != null){
 					IInstance relatedInst = getInstance(test, relatedEntity, annotations);
-					inst.addPropertyValue(ontology.getProperty("result_of"), relatedInst);
+					if(relatedInst != null)
+						inst.addPropertyValue(ontology.getProperty("result_of"), relatedInst);
 				}
 			}
 		}
