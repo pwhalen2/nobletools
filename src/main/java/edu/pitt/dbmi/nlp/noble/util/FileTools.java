@@ -185,5 +185,16 @@ public class FileTools {
 		}
 		return list;
 	}
-	
+
+	/**
+	 * strip filename extension if the file has it
+	 * @param name - filename with extension
+	 * @return filename without extension
+	 */
+    public static String stripExtension(String name) {
+		int x = name.lastIndexOf('.');
+		if(x > -1)
+			return name.substring(0,x);
+		return name;
+    }
 }

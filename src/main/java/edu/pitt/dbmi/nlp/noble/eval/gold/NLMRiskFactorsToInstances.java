@@ -109,7 +109,7 @@ public class NLMRiskFactorsToInstances {
 		for(File d: new File(bratDir).listFiles()){
 			if(d.isDirectory()){
 				for(File f: d.listFiles()){
-					list.add(stripSuffix(f.getName()));
+					list.add(FileTools.stripExtension(f.getName()));
 				}
 			}
 		}
@@ -228,7 +228,7 @@ public class NLMRiskFactorsToInstances {
 	
 	
 	private void addDocumentInstance(String documentTitle, String bratDir, IOntology ontology) throws FileNotFoundException, IOException, TerminologyException, IOntologyException {
-		String documentName=stripSuffix(documentTitle);
+		String documentName = FileTools.stripExtension(documentTitle);
 		
 		// add .txt suffix to align on name
 		if(!documentTitle.endsWith(DEFAULT_DOCUMENT_SUFFIX))
@@ -378,13 +378,7 @@ public class NLMRiskFactorsToInstances {
 		}
 		return annotations;
 	}
-	
-	private String stripSuffix(String name){
-		int x = name.lastIndexOf('.');
-		if(x > -1)
-			return name.substring(0,x);
-		return name;
-	}
+
 	
 	private Collection<Entity> parseAnnotations(File file) throws IOException {
 		Map<String,Entity> annotations = new LinkedHashMap<String,Entity>();
@@ -392,7 +386,7 @@ public class NLMRiskFactorsToInstances {
 		String text = FileTools.getText(file);
 		for(String l: text.split("\n")){
 			Entity e = Entity.parseLine(l);
-			e.put("document",stripSuffix(file.getName()));
+			e.put("document",FileTools.stripExtension(file.getName()));
 			e.put("tag",tag);
 			if(e.isAttribute()){
 				Entity f  = annotations.get(e.getFeatureId());

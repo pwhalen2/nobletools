@@ -381,8 +381,11 @@ public class NobleMentionsTool implements ActionListener{
 		AnnotationEvaluation ae = new AnnotationEvaluation();
 		JDialog dialog = ae.getDialog(frame);
 		DomainOntology ontology = templateList.getSelectedValue();
-		String name = ontology.getName()+"Instances.owl";;
-		ae.setSystemInstanceOntlogy(output.getText()+File.separator+name);
+		if(ontology != null) {
+			String name = ontology.getName() + "Instances.owl";
+			ae.setSystemInstanceOntlogy(output.getText() + File.separator + name);
+		}
+		ae.setInputDocuments(input.getText());
 		dialog.setVisible(true);
 	}
 

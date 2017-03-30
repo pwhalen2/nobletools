@@ -1,5 +1,6 @@
 package edu.pitt.dbmi.nlp.noble.eval;
 
+import java.io.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -50,20 +51,12 @@ import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.PrintStream;
 
 public class AnnotationEvaluation implements ActionListener {
 	public static final String DISJOINT_SPANS = "\\s+"; // span seperate
 	public static final String SPAN_SEPERATOR = ":";    //within a span Ex: 12:45
 	public static final String ANALYSIS_HTML = "analysis.html";
+	public static final String EVALUATION_HTML = "evaluation.html";
 	public static final String ANALYSIS_TSV = "analysis.tsv";
 	public static boolean STRICT_VALUE_CALCULATION = false;
 	public static boolean PRINT_RECORD_LEVEL_STATS = false;
@@ -73,41 +66,14 @@ public class AnnotationEvaluation implements ActionListener {
 	
 	// UI components
 	private JDialog dialog;
-	private JTextField goldOntology, systemOntology, goldWeights;
+	private JTextField goldOntology, inputDocuments,systemOntology, goldWeights;
 	private JTextArea console;
 	private JPanel buttonPanel;
 	private JProgressBar progress;
 	private File lastFile;
 	
 	public static void main(String[] args) throws Exception {
-		// compare two files
-		if(args.length >= 2){
-			File gold = null, candidate = null, weights = null;
-			for(String s: args){
-				if("-strict".equals(s)){
-					STRICT_VALUE_CALCULATION = true;
-				}else if("-print".equals(s)){
-					PRINT_RECORD_LEVEL_STATS = true;
-				}else if(gold  == null){
-					gold = new File(s);
-				}else if(candidate == null){
-					candidate = new File(s);
-				}else if(weights == null){
-					weights = new File(s);
-				}
-			}
-			
-			AnnotationEvaluation pe = new AnnotationEvaluation();
-			pe.getDialog().setVisible(true);
-			/*
-			pe.loadWeights(weights);
-			pe.evaluate(gold,candidate);
-			pe.outputHTML(candidate.getParentFile());
-			*/
-		}else{
-			
-			System.err.println("Usage: java "+AnnotationEvaluation.class.getSimpleName()+" [-print|-strict] <gold instance owl file> <system instance owl file> [weights file]");
-		}
+		new AnnotationEvaluation().getDialog().setVisible(true);
 	}
 
 	/**
@@ -129,6 +95,8 @@ public class AnnotationEvaluation implements ActionListener {
 		getAnalysis().printResultTable(fos);
 		fos.close();
 	}
+
+
 	
 	/**
 	 * get analysis object for a given evaluation
@@ -530,7 +498,20 @@ public class AnnotationEvaluation implements ActionListener {
 		}
 		return list;
 	}
-	
+
+	/**
+	 * get composition instances
+	 * @param ont - ontology
+	 * @return list of composition instances
+	 */
+	private IInstance getComposition(IOntology ont, String title) {
+		for(IInstance inst: ont.getClass(DomainOntology.COMPOSITION).getInstances()){
+			if(title.equals(inst.getPropertyValue(ont.getProperty(DomainOntology.HAS_TITLE)))){
+				return inst;
+			}
+		}
+		return null;
+	}
 	
 	public JDialog getDialog(){
 		return getDialog(null);
@@ -566,8 +547,8 @@ public class AnnotationEvaluation implements ActionListener {
 			panel.add(new JLabel("Gold Weights File"),c);c.gridx++;
 			panel.add(goldWeights,c);c.gridx++;
 			panel.add(browse,c);c.gridx=0;c.gridy++;
-			
-			
+
+
 			systemOntology = new JTextField(30);
 			browse = new JButton("Browse");
 			browse.addActionListener(this);
@@ -577,7 +558,18 @@ public class AnnotationEvaluation implements ActionListener {
 			panel.add(systemOntology,c);c.gridx++;
 			panel.add(browse,c);c.gridx=0;c.gridy++;
 			panel.add(Box.createRigidArea(new Dimension(10,10)),c);
-			
+
+
+			inputDocuments = new JTextField(30);
+			browse = new JButton("Browse");
+			browse.addActionListener(this);
+			browse.setActionCommand("i_browser");
+
+			panel.add(new JLabel("Input Documents"),c);c.gridx++;
+			panel.add(inputDocuments,c);c.gridx++;
+			panel.add(browse,c);c.gridx=0;c.gridy++;
+
+
 			JPanel conp = new JPanel();
 			conp.setLayout(new BorderLayout());
 			conp.setBorder(new TitledBorder("Output Results"));
@@ -589,17 +581,23 @@ public class AnnotationEvaluation implements ActionListener {
 			//panel.add(conp,c);c.gridy++;c.gridx=0;
 			
 			buttonPanel = new JPanel();
-			buttonPanel.setLayout(new GridLayout(1,2,10,10));
+			buttonPanel.setLayout(new GridLayout(1,3,10,10));
 			buttonPanel.setBorder(new EmptyBorder(10,30,10,30));
 			
 			JButton generate = new JButton("Generate Weights");
 			generate.addActionListener(this);
 			generate.setActionCommand("weights");
-			
+
+			JButton explore = new JButton("Visualize");
+			explore.addActionListener(this);
+			explore.setActionCommand("explore");
+
+
 			JButton run = new JButton("Evaluate");
 			run.addActionListener(this);
 			run.setActionCommand("evaluate");
 			buttonPanel.add(generate);
+			buttonPanel.add(explore);
 			buttonPanel.add(run);
 			//panel.add(buttonPanel,c);
 			
@@ -639,6 +637,7 @@ public class AnnotationEvaluation implements ActionListener {
 		p.setProperty("goldOntology",goldOntology.getText());
 		p.setProperty("goldWeights",goldWeights.getText());
 		p.setProperty("systemOntology",systemOntology.getText());
+		p.setProperty("inputDocuments",inputDocuments.getText());
 		UITools.saveSettings(p,getClass());
 	}
 	
@@ -651,9 +650,10 @@ public class AnnotationEvaluation implements ActionListener {
 			goldOntology.setText(p.getProperty("goldOntology"));
 		if(p.containsKey("goldWeights"))
 			goldWeights.setText(p.getProperty("goldWeights"));
-		if(p.containsKey("systemOntology")){
+		if(p.containsKey("systemOntology"))
 			systemOntology.setText(p.getProperty("systemOntology"));
-		}
+		if(p.containsKey("inputDocuments"))
+			inputDocuments.setText(p.getProperty("inputDocuments"));
 	}
 	
 	/**
@@ -686,6 +686,9 @@ public class AnnotationEvaluation implements ActionListener {
 	public void setSystemInstanceOntlogy(String text){
 		systemOntology.setText(text);
 	}
+	public void setInputDocuments(String text){
+		inputDocuments.setText(text);
+	}
 	
 	public void actionPerformed(ActionEvent e) {
 		String cmd = e.getActionCommand();
@@ -697,6 +700,10 @@ public class AnnotationEvaluation implements ActionListener {
 			doBrowse(goldWeights);
 		}else if("s_browser".equals(cmd)){
 			doBrowse(systemOntology);
+		}else if("i_browser".equals(cmd)){
+			doBrowse(inputDocuments);
+		}else if("explore".equals(cmd)){
+			doExplore();
 		}else if("exit".equals(cmd)){
 			System.exit(0);
 		}else if("weights".equals(cmd)){
@@ -721,10 +728,9 @@ public class AnnotationEvaluation implements ActionListener {
 				setBusy(true);
 				try{
 				
-					AttributeWeights pe = new AttributeWeights();
-					Map<String,Double> weightMap = pe.computeWeights(gold);
-					pe.writeWeights(weightMap, weights);
-					final String text = pe.getWeightsAsText(weightMap);
+					Map<String,Double> weightMap = computeWeights(gold);
+					writeWeights(weightMap, weights);
+					final String text = getWeightsAsText(weightMap);
 					SwingUtilities.invokeLater(new Runnable(){
 						public void run(){
 							console.setText(text);
@@ -743,6 +749,43 @@ public class AnnotationEvaluation implements ActionListener {
 		}).start();
 		
 	}
+
+	private void doExplore() {
+		new Thread(new Runnable() {
+			public void run() {
+				File gold = new File(goldOntology.getText());
+				File system = new File(systemOntology.getText());
+				File input = new File(inputDocuments.getText());
+
+				if(!gold.exists()){
+					UITools.showErrorDialog(getDialog(),"Can't find gold instance ontology: "+gold);
+					return;
+				}
+				if(!system.exists()){
+					UITools.showErrorDialog(getDialog(),"Can't find system instance ontology: "+system);
+					return;
+				}
+				if(!input.exists()){
+					UITools.showErrorDialog(getDialog(),"Can't input document directory "+input);
+					return;
+				}
+
+				setBusy(true);
+				try {
+					outputAnnotationsAsHTML(input.getParentFile(), input, gold, system);
+					UITools.browseURLInSystemBrowser(new File(system.getParentFile().getAbsolutePath()+File.separator+EVALUATION_HTML).toURI().toString());
+
+				}catch(Exception ex){
+					UITools.showErrorDialog(getDialog(),"Problem saving annotations as HTML",ex);
+				}finally {
+					setBusy(false);
+
+				}
+			}
+		}).start();
+
+	}
+
 
 	private void doEvaluate() {
 		new Thread(new Runnable() {
@@ -827,6 +870,126 @@ public class AnnotationEvaluation implements ActionListener {
 			text.setText(file.getAbsolutePath());
 			lastFile = file;
 		}
+	}
+
+	/**
+	 * print weights matrix
+	 * @param computeWeights - weight matrix
+	 * @param out - print stream
+	 */
+	public void printWeights(Map<String,Double> computeWeights, PrintStream out) {
+		for(String key: computeWeights.keySet()){
+			out.println(key+"\t"+TextTools.toString(computeWeights.get(key)));
+		}
+	}
+
+	/**
+	 * get weights as string
+	 * @param computeWeights - weight matrix
+	 * @return String representation of them
+	 */
+	public String getWeightsAsText(Map<String,Double> computeWeights){
+		StringBuilder str = new StringBuilder();
+		for(String key: computeWeights.keySet()){
+			str.append(key+"\t"+TextTools.toString(computeWeights.get(key))+"\n");
+		}
+		return str.toString();
+	}
+
+	/**
+	 * write weights to a file
+	 * @param computeWeights - matrix of weights
+	 * @param outFile - output file
+	 * @throws IOException exception to be thrown
+	 */
+	public void writeWeights(Map<String,Double> computeWeights,File outFile) throws IOException{
+		BufferedWriter writer = new BufferedWriter(new FileWriter(outFile));
+		writer.write(getWeightsAsText(computeWeights));
+		writer.close();
+	}
+
+
+	/**
+	 * compute weights matrix
+	 * @param gold
+	 * @return
+	 * @throws IOntologyException
+	 */
+	public Map<String,Double> computeWeights(File gold) throws IOntologyException {
+		Map<String,Double> weights = new LinkedHashMap<String, Double>();
+		Map<String,Map<String,Double>> counts = new LinkedHashMap<String, Map<String,Double>>();
+		IOntology ont = OOntology.loadOntology(gold);
+		for(IClass cls: ont.getClass("Annotation").getSubClasses()){
+			for(IInstance inst: cls.getDirectInstances()){
+				for(IProperty prop : inst.getProperties()){
+					if(prop.isObjectProperty()){
+						countModifier(inst,prop,counts);
+					}
+				}
+			}
+		}
+		// now compute weights
+		for(String prop: counts.keySet()){
+			Map<String,Double> map = counts.get(prop);
+			double total = 0;
+			// compute total
+			for(String modifier: map.keySet()){
+				total +=  map.get(modifier);
+			}
+			// compute weights
+			for(String modifier: map.keySet()){
+				double count =  map.get(modifier);
+				double weight = 1-(count/total);
+				weights.put(modifier,weight);
+			}
+		}
+
+		return weights;
+
+	}
+
+	/**
+	 * count modifiers for a given annotation instance on a given property
+	 * @param inst - annotation instance
+	 * @param prop - modifier property
+	 * @param counts - counts map
+	 */
+	private void countModifier(IInstance inst, IProperty prop, Map<String, Map<String, Double>> counts) {
+		Map<String,Double> map = counts.get(prop.getName());
+		if(map == null){
+			map = new HashMap<String, Double>();
+			counts.put(prop.getName(),map);
+		}
+		for(Object obj: inst.getPropertyValues(prop)){
+			if(obj instanceof IInstance){
+				IClass modifierCls = ((IInstance) obj).getDirectTypes()[0];
+				Double num = map.get(modifierCls.getName());
+				if(num == null)
+					num = new Double(0);
+				map.put(modifierCls.getName(),num.doubleValue()+1);
+			}
+		}
+	}
+
+	/**
+	 * output gold and system annotations as HTML files
+	 * @param outputDir - HTML directory
+	 * @param inputDir - input text files
+	 * @param goldOntology - instantiated gold file
+	 * @param systemOntology - instantiated system file
+	 */
+	public void outputAnnotationsAsHTML(File outputDir, File inputDir, File goldOntology, File systemOntology) throws Exception {
+		HTMLExporter exporter = new HTMLExporter(outputDir);
+		IOntology gold = OOntology.loadOntology(goldOntology);
+		IOntology system = OOntology.loadOntology(systemOntology);
+		List<File> files = FileTools.getFilesInDirectory(inputDir,".txt");
+
+		for(File file: files){
+			IInstance g = getComposition(gold,file.getName());
+			IInstance s = getComposition(system,file.getName());
+			exporter.export(file,g,s);
+		}
+		exporter.flush();
 	}
 
 }

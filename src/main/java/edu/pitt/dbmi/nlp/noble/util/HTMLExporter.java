@@ -13,11 +13,7 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import edu.pitt.dbmi.nlp.noble.coder.NobleCoder;
-import edu.pitt.dbmi.nlp.noble.coder.model.Document;
-import edu.pitt.dbmi.nlp.noble.coder.model.Mention;
-import edu.pitt.dbmi.nlp.noble.coder.model.Modifier;
-import edu.pitt.dbmi.nlp.noble.coder.model.Section;
-import edu.pitt.dbmi.nlp.noble.coder.model.Sentence;
+import edu.pitt.dbmi.nlp.noble.coder.model.*;
 import edu.pitt.dbmi.nlp.noble.eval.Analysis;
 import edu.pitt.dbmi.nlp.noble.eval.AnnotationEvaluation;
 import edu.pitt.dbmi.nlp.noble.extract.InformationExtractor;
@@ -29,6 +25,7 @@ import edu.pitt.dbmi.nlp.noble.mentions.model.AnnotationVariable;
 import edu.pitt.dbmi.nlp.noble.mentions.model.Composition;
 import edu.pitt.dbmi.nlp.noble.mentions.model.DomainOntology;
 import edu.pitt.dbmi.nlp.noble.mentions.model.Instance;
+import edu.pitt.dbmi.nlp.noble.ontology.IInstance;
 import edu.pitt.dbmi.nlp.noble.terminology.Annotation;
 import edu.pitt.dbmi.nlp.noble.terminology.Concept;
 import edu.pitt.dbmi.nlp.noble.tools.ConText;
@@ -41,6 +38,7 @@ public class HTMLExporter {
 	public static final String TERM_SERVLET = "http://slidetutor.upmc.edu/term/servlet/TerminologyServlet";
 	public static final String HTML_REPORT_LOCATION = "reports";
 	public static final String HTML_ERROR_LOCATION = "errors";
+	public static final String HTML_EVAL_LOCATION = "evaluation";
 	private String title = "";
 	private File outputDirectory;
 	private String resultFileName;
@@ -620,9 +618,7 @@ public class HTMLExporter {
 		str.append("</ol>");
 		return str.toString();
 	}
-	
-	
-	
+
 
 	/**
 	 * get index buffer.
@@ -631,9 +627,19 @@ public class HTMLExporter {
 	 * @throws Exception the exception
 	 */
 	private BufferedWriter getIndex() throws Exception {
+		return getIndex("index.html");
+	}
+
+	/**
+	 * get index buffer.
+	 *
+	 * @return the index
+	 * @throws Exception the exception
+	 */
+	private BufferedWriter getIndex(String outFile) throws Exception {
 		if(htmlIndexWriter == null){
 			// write header 
-			htmlIndexWriter = new BufferedWriter(new FileWriter(new File(outputDirectory,"index.html")));
+			htmlIndexWriter = new BufferedWriter(new FileWriter(new File(outputDirectory,outFile)));
 			htmlIndexWriter.write("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
 			htmlIndexWriter.write("<head><title>"+title+"</title>\n");
 			htmlIndexWriter.write("<script type=\"text/javascript\">function l(){var h=800;if(!window.innerWidth){\n");
@@ -1098,5 +1104,86 @@ public class HTMLExporter {
 			htmlWriter.close();
 		}
 
+	}
+
+	/**
+	 * export annotation comparison between gold and system composition instances
+	 * @param textFile - file that has original text
+	 * @param goldInst - gold composition instance
+	 * @param sysInst - system composition instance
+	 */
+	public void export(File textFile, IInstance goldInst, IInstance sysInst) throws Exception{
+		String eval = AnnotationEvaluation.EVALUATION_HTML;
+		String name = FileTools.stripExtension(textFile.getName());
+
+		File out = new File(outputDirectory.getAbsolutePath()+File.separator+HTML_EVAL_LOCATION+File.separator+name+".html");
+		BufferedWriter htmlWriter = new BufferedWriter(new FileWriter(out));
+
+
+		// build report
+		TreeMap<Span,Set<String>> spanMap =new TreeMap<>();
+		addAnnotationSpans(goldInst,spanMap);
+		addAnnotationSpans(sysInst,spanMap);
+
+		// get report representation and cap protocol
+		String content = FileTools.getText(textFile);
+		String report = convertToHTML(content,spanMap);
+
+		// build up results
+		StringBuilder goldResult = new StringBuilder();
+		goldResult.append("<p><b>Gold Annotations</b><p>");
+		goldResult.append(codeCompositionInstance(goldInst));
+		goldResult.append("</p>");
+
+		StringBuilder sysResult = new StringBuilder();
+		sysResult.append("<p><b>System Annotations</b><p>");
+		sysResult.append(codeCompositionInstance(sysInst));
+		sysResult.append("</p>");
+
+		htmlWriter.write(createHTMLHeader("Evaluation Output",true));
+		htmlWriter.write("<body onload=\"l();\" onresize=\"l();\">");
+		htmlWriter.write("<table width=\"100%\" style=\"table-layout:fixed; \" cellspacing=\"5\">\n"); //word-wrap:break-word;
+		htmlWriter.write("<tr><td colspan=3 align=center><h3>"+name+"</h3></td></tr>\n");
+
+		htmlWriter.write("<tr><td width=\"25%\" valign=top><div id=\"d0\" style=\"overflow: auto; max-height: 800px;\">"+goldResult+"</div></td>\n");
+		htmlWriter.write("<td width=\"50%\" valign=middle><div id=\"d1\" style=\"overflow: auto; max-height: 800px; \">"+report+"</div></td>");
+		htmlWriter.write("<td width=\"25%\" valign=top><div id=\"d2\" style=\"overflow: auto; max-height: 800px;\">"+sysResult+"</div></td></tr>\n");
+		htmlWriter.write("<tr><td colspan=3 align=center></td></tr>\n");
+		htmlWriter.write("</table></body></html>\n");
+		htmlWriter.flush();
+		htmlWriter.close();
+
+		// add link to index
+		if(createIndex){
+			getIndex(eval).write("<span style=\"max-width: 190px; font-size: 90%; overflow: hidden; display:block;\">");
+			getIndex(eval).write("<a href=\""+HTML_EVAL_LOCATION+"/"+name+".html\" target=\"frame\">"+name+"</a></span>\n");
+			getIndex(eval).flush();
+		}
+	}
+
+	private void addAnnotationSpans(IInstance goldInst, TreeMap<Span, Set<String>> spanMap) {
+	}
+
+	private String codeCompositionInstance(IInstance composition){
+		StringBuilder str = new StringBuilder();
+		return str.toString();
+	}
+	private String convertToHTML(String text, TreeMap<Span,Set<String>> spanMap){
+		StringBuilder str = new StringBuilder();
+		int offs = 0;
+
+		/*
+				StringBuilder text = new StringBuilder();
+		int offs = 0;
+		for(Sentence s: doc.getSentences()){
+			int o = s.getOffset();
+			text.append(content.substring(offs,o).replaceAll("\n","<br>"));
+			text.append(codeSentence(s));
+			offs = o+s.getLength();
+		}
+		if(offs < content.length())
+			text.append(content.substring(offs).replaceAll("\n", "<br>"));
+		 */
+		return str.toString();
 	}
 }

@@ -1145,9 +1145,24 @@ public class TextTools {
 		}
 		return list;
 	}
-	
-	
-	
+
+	/**
+	 * get a sequence of integer numbers from a string of text
+	 * @param text - input text
+	 * @return list of double objects
+	 */
+	public static List<Integer> parseIntegerValues(String text){
+		List<Integer> list = new ArrayList<Integer>();
+		Pattern pt = Pattern.compile("\\d+");
+		Matcher mt = pt.matcher(text);
+		while(mt.find()){
+			list.add(new Integer(mt.group()));
+		}
+		return list;
+	}
+
+
+
 	/**
 	 * This function attempts to convert vaires types of input into numerical
 	 * equivalent.
