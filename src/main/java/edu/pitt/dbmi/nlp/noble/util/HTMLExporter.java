@@ -1,16 +1,7 @@
 package edu.pitt.dbmi.nlp.noble.util;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 
 import edu.pitt.dbmi.nlp.noble.coder.NobleCoder;
 import edu.pitt.dbmi.nlp.noble.coder.model.*;
@@ -26,6 +17,7 @@ import edu.pitt.dbmi.nlp.noble.mentions.model.Composition;
 import edu.pitt.dbmi.nlp.noble.mentions.model.DomainOntology;
 import edu.pitt.dbmi.nlp.noble.mentions.model.Instance;
 import edu.pitt.dbmi.nlp.noble.ontology.IInstance;
+import edu.pitt.dbmi.nlp.noble.ontology.IOntology;
 import edu.pitt.dbmi.nlp.noble.terminology.Annotation;
 import edu.pitt.dbmi.nlp.noble.terminology.Concept;
 import edu.pitt.dbmi.nlp.noble.tools.ConText;
@@ -1161,7 +1153,37 @@ public class HTMLExporter {
 		}
 	}
 
-	private void addAnnotationSpans(IInstance goldInst, TreeMap<Span, Set<String>> spanMap) {
+	private void addAnnotationSpans(IInstance inst, TreeMap<Span, Set<String>> spanMap) {
+		// add mention level values
+		IOntology ont = inst.getOntology();
+		for(Object o: inst.getPropertyValues(ont.getProperty(DomainOntology.HAS_MENTION_ANNOTATION))){
+			if(o instanceof IInstance){
+				IInstance var = (IInstance) o;
+				for(Object oo : var.getPropertyValues(ont.getProperty(DomainOntology.HAS_SPAN))){
+					for(String sp: oo.toString().split("\\s+")) {
+						Span span = Span.getSpan(sp);
+						// insert span
+						if(spanMap.containsKey(span)){
+							spanMap.get(span).add(var.getName());
+						}else{
+							boolean inserted = false;
+							for(Span spn: spanMap.keySet()){
+								if(spn.overlaps(span)){
+									inserted = true;
+									// break up existing span
+								}
+							}
+							if(!inserted){
+								Set<String> set = new HashSet<>();
+								set.add(var.getName());
+								spanMap.put(span,set);
+							}
+						}
+
+					}
+				}
+			}
+		}
 	}
 
 	private String codeCompositionInstance(IInstance composition){
