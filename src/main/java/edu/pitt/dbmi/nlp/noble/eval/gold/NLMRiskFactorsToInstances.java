@@ -251,9 +251,11 @@ public class NLMRiskFactorsToInstances {
 				// add annotations
 				if(mentionAnnotation != null){
 					composition.addPropertyValue(ontology.getProperty(HAS_MENTION_ANNOTATION),mentionAnnotation);
+				}else{
+					System.out.println("WARNING: couln't create instance, skipped "+entity);
 				}
 			}else{
-				System.out.println("WARNING: skipped "+entity);
+				System.out.println("WARNING: couln't find class, skipped "+entity);
 			}
 		}
 	}
@@ -286,10 +288,14 @@ public class NLMRiskFactorsToInstances {
 		inst.addPropertyValue(ontology.getProperty("hasCertainty"),getDefaultInstance(certainty));
 		
 		// add modality
-		IClass modality  =ontology.getClass("Actual_ContextualModality");
-		if(entity.getModality() != null)
-			modality = getSchemaMap().get(entity.getModality());
-		inst.addPropertyValue(ontology.getProperty("hasContextualModality"),getDefaultInstance(modality));
+		//IClass modality  =ontology.getClass("Actual_ContextualModality");
+		if(entity.getModality() != null){
+			//skip Invalid modality
+			if("Invalid".equals(entity.getModality()))
+				return null;
+			//modality = getSchemaMap().get(entity.getModality());
+		}
+		//inst.addPropertyValue(ontology.getProperty("hasContextualModality"),getDefaultInstance(modality));
 		
 		
 		if(entity.get("text") != null){
@@ -314,7 +320,7 @@ public class NLMRiskFactorsToInstances {
 			
 			schemaMap.put("A1C",ontology.getClass("High_A1c_mention"));
 			schemaMap.put("BloodPressure",ontology.getClass("High_blood_pressure_over_140_over_90_mm_per_hg"));
-			schemaMap.put("BMI",ontology.getClass("BMI_over_30_mention"));
+			schemaMap.put("BMI",ontology.getClass("BMI_over_18_mention"));
 			schemaMap.put("CADEvent",ontology.getClass("CAD_event_mention"));
 			schemaMap.put("CADMention",ontology.getClass("CAD_mention"));
 			schemaMap.put("CADSymptom",ontology.getClass("CAD_symptom"));
