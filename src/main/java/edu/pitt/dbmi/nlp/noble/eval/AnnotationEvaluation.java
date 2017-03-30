@@ -676,7 +676,7 @@ public class AnnotationEvaluation implements ActionListener {
 					getDialog().getContentPane().remove(progress);
 					getDialog().getContentPane().add(buttonPanel,BorderLayout.SOUTH);
 				}
-				getDialog().getContentPane().revalidate();
+				getDialog().getContentPane().validate();
 				getDialog().pack();
 				
 			}

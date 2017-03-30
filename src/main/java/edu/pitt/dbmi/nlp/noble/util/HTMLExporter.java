@@ -1113,7 +1113,7 @@ public class HTMLExporter {
 
 
 		// build report
-		TreeMap<Span,Set<String>> spanMap =new TreeMap<>();
+		TreeMap<Span,Set<String>> spanMap =new TreeMap<Span,Set<String>>();
 		addAnnotationSpans(goldInst,spanMap);
 		addAnnotationSpans(sysInst,spanMap);
 
@@ -1174,7 +1174,7 @@ public class HTMLExporter {
 								}
 							}
 							if(!inserted){
-								Set<String> set = new HashSet<>();
+								Set<String> set = new HashSet<String>();
 								set.add(var.getName());
 								spanMap.put(span,set);
 							}

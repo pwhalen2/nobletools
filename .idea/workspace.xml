@@ -2,9 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a37f4458-0304-45b2-88b1-c0f9e019c671" name="Default" comment="HTML export of Analysis result">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/nobletools.iml" afterPath="$PROJECT_DIR$/nobletools.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/eval/AnnotationEvaluation.java" afterPath="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/eval/AnnotationEvaluation.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/util/HTMLExporter.java" afterPath="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/util/HTMLExporter.java" />
     </list>
     <list id="f191e77f-c034-4898-98d8-9b33493655f9" name="re-organization" comment="" />
     <list id="7862b3a0-d48e-4dc8-ac80-1d4226692b0a" name="Failed commit: re-organization" comment="re-organization" />
@@ -35,11 +36,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="AnnotationEvaluation.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="AnnotationEvaluation.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/eval/AnnotationEvaluation.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="7905">
-              <caret line="583" column="52" lean-forward="false" selection-start-line="583" selection-start-column="52" selection-end-line="583" selection-end-column="52" />
+            <state relative-caret-position="227">
+              <caret line="678" column="45" lean-forward="false" selection-start-line="678" selection-start-column="45" selection-end-line="678" selection-end-column="45" />
               <folding />
             </state>
           </provider>
@@ -51,6 +52,9 @@
             <state relative-caret-position="1125">
               <caret line="111" column="54" lean-forward="false" selection-start-line="111" selection-start-column="54" selection-end-line="111" selection-end-column="54" />
               <folding>
+                <element signature="imports" expanded="false" />
+                <element signature="e#4028#4036#0" expanded="false" />
+                <element signature="e#4390#4405#0" expanded="false" />
                 <element signature="e#4462#4463#0" expanded="false" />
                 <element signature="e#4498#4499#0" expanded="false" />
                 <element signature="e#4541#4542#0" expanded="false" />
@@ -73,6 +77,8 @@
                 <element signature="e#5987#5988#0" expanded="false" />
                 <element signature="e#12371#12372#0" expanded="false" />
                 <element signature="e#12420#12421#0" expanded="false" />
+                <element signature="e#12734#12742#0" expanded="false" />
+                <element signature="e#13136#13151#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -81,52 +87,24 @@
       <file leaf-file-name="FileTools.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/util/FileTools.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2475">
+            <state relative-caret-position="2805">
               <caret line="200" column="0" lean-forward="false" selection-start-line="200" selection-start-column="0" selection-end-line="200" selection-end-column="0" />
               <folding>
+                <element signature="imports" expanded="false" />
                 <marker date="1490881509000" expanded="false" signature="46:51" ph="..." />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="HTMLExporter.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="HTMLExporter.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/util/HTMLExporter.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="15825">
-              <caret line="1114" column="36" lean-forward="false" selection-start-line="1114" selection-start-column="28" selection-end-line="1114" selection-end-column="36" />
+            <state relative-caret-position="171">
+              <caret line="1172" column="61" lean-forward="false" selection-start-line="1172" selection-start-column="61" selection-end-line="1172" selection-end-column="61" />
               <folding>
-                <element signature="imports" expanded="false" />
-                <element signature="e#2749#2750#0" expanded="false" />
-                <element signature="e#2773#2774#0" expanded="false" />
-                <element signature="e#2905#2906#0" expanded="false" />
-                <element signature="e#2940#2941#0" expanded="false" />
-                <element signature="e#3055#3056#0" expanded="false" />
-                <element signature="e#3079#3080#0" expanded="false" />
-                <element signature="e#3211#3212#0" expanded="false" />
-                <element signature="e#3246#3247#0" expanded="false" />
-                <element signature="e#3377#3378#0" expanded="false" />
-                <element signature="e#3406#3407#0" expanded="false" />
-                <element signature="e#3565#3566#0" expanded="false" />
-                <element signature="e#3610#3611#0" expanded="false" />
-                <element signature="e#3736#3737#0" expanded="false" />
-                <element signature="e#3768#3769#0" expanded="false" />
-                <element signature="e#3939#3940#0" expanded="false" />
-                <element signature="e#3990#3991#0" expanded="false" />
-                <element signature="e#4126#4127#0" expanded="false" />
-                <element signature="e#4154#4155#0" expanded="false" />
-                <element signature="e#4327#4328#0" expanded="false" />
-                <element signature="e#4370#4371#0" expanded="false" />
-                <element signature="e#4501#4502#0" expanded="false" />
-                <element signature="e#4526#4527#0" expanded="false" />
-                <element signature="e#4673#4674#0" expanded="false" />
-                <element signature="e#4710#4711#0" expanded="false" />
-                <element signature="e#4822#4823#0" expanded="false" />
-                <element signature="e#4851#4852#0" expanded="false" />
-                <element signature="e#8322#8323#0" expanded="false" />
-                <element signature="e#8372#8373#0" expanded="false" />
-                <element signature="e#11316#11317#0" expanded="false" />
-                <element signature="e#11358#11359#0" expanded="false" />
+                <element signature="e#36304#36322#0" expanded="true" />
+                <element signature="e#39028#39036#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -187,7 +165,33 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="1545">
               <caret line="129" column="104" lean-forward="false" selection-start-line="129" selection-start-column="104" selection-end-line="129" selection-end-column="104" />
-              <folding />
+              <folding>
+                <element signature="imports" expanded="false" />
+                <element signature="e#736#737#0" expanded="false" />
+                <element signature="e#763#764#0" expanded="false" />
+                <element signature="e#802#803#0" expanded="false" />
+                <element signature="e#834#835#0" expanded="false" />
+                <element signature="e#859#860#0" expanded="false" />
+                <element signature="e#887#888#0" expanded="false" />
+                <element signature="e#910#911#0" expanded="false" />
+                <element signature="e#936#937#0" expanded="false" />
+                <element signature="e#973#974#0" expanded="false" />
+                <element signature="e#1001#1002#0" expanded="false" />
+                <element signature="e#1036#1037#0" expanded="false" />
+                <element signature="e#1062#1063#0" expanded="false" />
+                <element signature="e#1093#1094#0" expanded="false" />
+                <element signature="e#1151#1152#0" expanded="false" />
+                <element signature="e#2003#2004#0" expanded="false" />
+                <element signature="e#2039#2040#0" expanded="false" />
+                <element signature="e#2519#2520#0" expanded="false" />
+                <element signature="e#2582#2583#0" expanded="false" />
+                <element signature="e#2763#2764#0" expanded="false" />
+                <element signature="e#2826#2827#0" expanded="false" />
+                <element signature="e#2926#2927#0" expanded="false" />
+                <element signature="e#2962#2963#0" expanded="false" />
+                <element signature="e#3209#3210#0" expanded="false" />
+                <element signature="e#3253#3254#0" expanded="false" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -195,45 +199,34 @@
       <file leaf-file-name="TextTools.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/tools/TextTools.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="16650">
+            <state relative-caret-position="17040">
               <caret line="1175" column="8" lean-forward="false" selection-start-line="1175" selection-start-column="8" selection-end-line="1175" selection-end-column="8" />
               <folding>
                 <element signature="imports" expanded="false" />
+                <element signature="e#3689#3704#0" expanded="false" />
                 <element signature="e#4887#4888#0" expanded="false" />
                 <element signature="e#4934#4935#0" expanded="false" />
+                <element signature="e#5168#5176#0" expanded="false" />
                 <element signature="e#6112#6113#0" expanded="false" />
                 <element signature="e#6147#6148#0" expanded="false" />
+                <element signature="e#9154#9162#0" expanded="false" />
+                <element signature="e#10316#10324#0" expanded="false" />
                 <element signature="e#14282#14283#0" expanded="false" />
                 <element signature="e#14317#14318#0" expanded="false" />
                 <element signature="e#23601#23602#0" expanded="false" />
                 <element signature="e#23640#23641#0" expanded="false" />
                 <element signature="e#23890#23891#0" expanded="false" />
                 <element signature="e#23935#23936#0" expanded="false" />
-                <marker date="1490881509000" expanded="true" signature="36192:36343" ph="/**...*/" />
-                <marker date="1490881509000" expanded="true" signature="36397:36734" ph="{...}" />
-                <marker date="1490881509000" expanded="true" signature="36737:36885" ph="/**...*/" />
-                <marker date="1490881509000" expanded="true" signature="36936:38494" ph="{...}" />
-                <marker date="1490881509000" expanded="true" signature="38501:38593" ph="/**...*/" />
-                <marker date="1490881509000" expanded="false" signature="38638:38643" ph=" { " />
-                <marker date="1490881509000" expanded="false" signature="38681:38684" ph=" }" />
-                <marker date="1490881509000" expanded="true" signature="38687:38856" ph="/**...*/" />
-                <marker date="1490881509000" expanded="true" signature="38909:39087" ph="{...}" />
-                <marker date="1490881509000" expanded="true" signature="39090:39212" ph="/**...*/" />
-                <marker date="1490881509000" expanded="true" signature="39267:39534" ph="{...}" />
-                <marker date="1490881509000" expanded="true" signature="39540:39647" ph="/**...*/" />
-                <marker date="1490881509000" expanded="false" signature="39701:39705" ph=" { " />
-                <marker date="1490881509000" expanded="false" signature="39736:39739" ph=" }" />
-                <marker date="1490881509000" expanded="true" signature="39743:39877" ph="/**...*/" />
-                <marker date="1490881509000" expanded="true" signature="39942:40628" ph="{...}" />
-                <marker date="1490881509000" expanded="true" signature="40634:40854" ph="/**...*/" />
-                <marker date="1490881509000" expanded="false" signature="40907:40912" ph=" { " />
-                <marker date="1490881509000" expanded="false" signature="40954:40957" ph=" }" />
-                <marker date="1490881509000" expanded="true" signature="40961:41100" ph="/**...*/" />
-                <marker date="1490881509000" expanded="true" signature="41152:41237" ph="{...}" />
-                <marker date="1490881509000" expanded="true" signature="41241:41353" ph="/**...*/" />
-                <marker date="1490881509000" expanded="true" signature="41408:42031" ph="{...}" />
-                <marker date="1490881509000" expanded="true" signature="42035:42177" ph="/**...*/" />
-                <marker date="1490881509000" expanded="true" signature="42220:44241" ph="{...}" />
+                <element signature="e#26473#26481#0" expanded="false" />
+                <element signature="e#35611#35619#0" expanded="false" />
+                <element signature="e#36022#36031#0" expanded="false" />
+                <element signature="e#38639#38640#0" expanded="false" />
+                <element signature="e#38683#38684#0" expanded="false" />
+                <element signature="e#39701#39702#0" expanded="false" />
+                <element signature="e#39738#39739#0" expanded="false" />
+                <element signature="e#39981#39989#0" expanded="false" />
+                <element signature="e#40908#40909#0" expanded="false" />
+                <element signature="e#40956#40957#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -282,8 +275,8 @@
         <option value="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/eval/gold/NLMRiskFactorsToInstances.java" />
         <option value="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/tools/TextTools.java" />
         <option value="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/coder/model/Span.java" />
-        <option value="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/util/HTMLExporter.java" />
         <option value="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/eval/AnnotationEvaluation.java" />
+        <option value="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/util/HTMLExporter.java" />
       </list>
     </option>
   </component>
@@ -572,10 +565,23 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="ProjectPane">
+        <subPane>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="nobletools" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="nobletools" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
       <pane id="PackagesPane" />
-      <pane id="ProjectPane" />
-      <pane id="Scope" />
       <pane id="Scratches" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -866,6 +872,7 @@
       <option name="presentableId" value="Default" />
       <updated>1472138288084</updated>
       <workItem from="1490896489826" duration="289000" />
+      <workItem from="1490896827131" duration="246000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit of NobleTools to github">
       <created>1472141506419</created>
@@ -948,7 +955,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="289000" />
+    <option name="totallyTimeSpent" value="535000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="64" y="23" width="1748" height="851" extended-state="0" />
@@ -957,13 +964,13 @@
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32846716" sideWeight="0.50511074" order="10" side_tool="true" content_ui="tabs" />
-      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32942554" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Maven Projects" active="true" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32942554" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.329927" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32742155" sideWeight="0.49488926" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.21805392" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.22039859" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.16119578" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24957842" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="true" content_ui="tabs" />
@@ -1352,9 +1359,10 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/util/FileTools.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2475">
+        <state relative-caret-position="2805">
           <caret line="200" column="0" lean-forward="false" selection-start-line="200" selection-start-column="0" selection-end-line="200" selection-end-column="0" />
           <folding>
+            <element signature="imports" expanded="false" />
             <marker date="1490881509000" expanded="false" signature="46:51" ph="..." />
           </folding>
         </state>
@@ -1365,6 +1373,9 @@
         <state relative-caret-position="1125">
           <caret line="111" column="54" lean-forward="false" selection-start-line="111" selection-start-column="54" selection-end-line="111" selection-end-column="54" />
           <folding>
+            <element signature="imports" expanded="false" />
+            <element signature="e#4028#4036#0" expanded="false" />
+            <element signature="e#4390#4405#0" expanded="false" />
             <element signature="e#4462#4463#0" expanded="false" />
             <element signature="e#4498#4499#0" expanded="false" />
             <element signature="e#4541#4542#0" expanded="false" />
@@ -1387,6 +1398,8 @@
             <element signature="e#5987#5988#0" expanded="false" />
             <element signature="e#12371#12372#0" expanded="false" />
             <element signature="e#12420#12421#0" expanded="false" />
+            <element signature="e#12734#12742#0" expanded="false" />
+            <element signature="e#13136#13151#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1401,45 +1414,34 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/tools/TextTools.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="16650">
+        <state relative-caret-position="17040">
           <caret line="1175" column="8" lean-forward="false" selection-start-line="1175" selection-start-column="8" selection-end-line="1175" selection-end-column="8" />
           <folding>
             <element signature="imports" expanded="false" />
+            <element signature="e#3689#3704#0" expanded="false" />
             <element signature="e#4887#4888#0" expanded="false" />
             <element signature="e#4934#4935#0" expanded="false" />
+            <element signature="e#5168#5176#0" expanded="false" />
             <element signature="e#6112#6113#0" expanded="false" />
             <element signature="e#6147#6148#0" expanded="false" />
+            <element signature="e#9154#9162#0" expanded="false" />
+            <element signature="e#10316#10324#0" expanded="false" />
             <element signature="e#14282#14283#0" expanded="false" />
             <element signature="e#14317#14318#0" expanded="false" />
             <element signature="e#23601#23602#0" expanded="false" />
             <element signature="e#23640#23641#0" expanded="false" />
             <element signature="e#23890#23891#0" expanded="false" />
             <element signature="e#23935#23936#0" expanded="false" />
-            <marker date="1490881509000" expanded="true" signature="36192:36343" ph="/**...*/" />
-            <marker date="1490881509000" expanded="true" signature="36397:36734" ph="{...}" />
-            <marker date="1490881509000" expanded="true" signature="36737:36885" ph="/**...*/" />
-            <marker date="1490881509000" expanded="true" signature="36936:38494" ph="{...}" />
-            <marker date="1490881509000" expanded="true" signature="38501:38593" ph="/**...*/" />
-            <marker date="1490881509000" expanded="false" signature="38638:38643" ph=" { " />
-            <marker date="1490881509000" expanded="false" signature="38681:38684" ph=" }" />
-            <marker date="1490881509000" expanded="true" signature="38687:38856" ph="/**...*/" />
-            <marker date="1490881509000" expanded="true" signature="38909:39087" ph="{...}" />
-            <marker date="1490881509000" expanded="true" signature="39090:39212" ph="/**...*/" />
-            <marker date="1490881509000" expanded="true" signature="39267:39534" ph="{...}" />
-            <marker date="1490881509000" expanded="true" signature="39540:39647" ph="/**...*/" />
-            <marker date="1490881509000" expanded="false" signature="39701:39705" ph=" { " />
-            <marker date="1490881509000" expanded="false" signature="39736:39739" ph=" }" />
-            <marker date="1490881509000" expanded="true" signature="39743:39877" ph="/**...*/" />
-            <marker date="1490881509000" expanded="true" signature="39942:40628" ph="{...}" />
-            <marker date="1490881509000" expanded="true" signature="40634:40854" ph="/**...*/" />
-            <marker date="1490881509000" expanded="false" signature="40907:40912" ph=" { " />
-            <marker date="1490881509000" expanded="false" signature="40954:40957" ph=" }" />
-            <marker date="1490881509000" expanded="true" signature="40961:41100" ph="/**...*/" />
-            <marker date="1490881509000" expanded="true" signature="41152:41237" ph="{...}" />
-            <marker date="1490881509000" expanded="true" signature="41241:41353" ph="/**...*/" />
-            <marker date="1490881509000" expanded="true" signature="41408:42031" ph="{...}" />
-            <marker date="1490881509000" expanded="true" signature="42035:42177" ph="/**...*/" />
-            <marker date="1490881509000" expanded="true" signature="42220:44241" ph="{...}" />
+            <element signature="e#26473#26481#0" expanded="false" />
+            <element signature="e#35611#35619#0" expanded="false" />
+            <element signature="e#36022#36031#0" expanded="false" />
+            <element signature="e#38639#38640#0" expanded="false" />
+            <element signature="e#38683#38684#0" expanded="false" />
+            <element signature="e#39701#39702#0" expanded="false" />
+            <element signature="e#39738#39739#0" expanded="false" />
+            <element signature="e#39981#39989#0" expanded="false" />
+            <element signature="e#40908#40909#0" expanded="false" />
+            <element signature="e#40956#40957#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1486,55 +1488,52 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1545">
           <caret line="129" column="104" lean-forward="false" selection-start-line="129" selection-start-column="104" selection-end-line="129" selection-end-column="104" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/util/HTMLExporter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="15825">
-          <caret line="1114" column="36" lean-forward="false" selection-start-line="1114" selection-start-column="28" selection-end-line="1114" selection-end-column="36" />
           <folding>
             <element signature="imports" expanded="false" />
-            <element signature="e#2749#2750#0" expanded="false" />
-            <element signature="e#2773#2774#0" expanded="false" />
-            <element signature="e#2905#2906#0" expanded="false" />
-            <element signature="e#2940#2941#0" expanded="false" />
-            <element signature="e#3055#3056#0" expanded="false" />
-            <element signature="e#3079#3080#0" expanded="false" />
-            <element signature="e#3211#3212#0" expanded="false" />
-            <element signature="e#3246#3247#0" expanded="false" />
-            <element signature="e#3377#3378#0" expanded="false" />
-            <element signature="e#3406#3407#0" expanded="false" />
-            <element signature="e#3565#3566#0" expanded="false" />
-            <element signature="e#3610#3611#0" expanded="false" />
-            <element signature="e#3736#3737#0" expanded="false" />
-            <element signature="e#3768#3769#0" expanded="false" />
-            <element signature="e#3939#3940#0" expanded="false" />
-            <element signature="e#3990#3991#0" expanded="false" />
-            <element signature="e#4126#4127#0" expanded="false" />
-            <element signature="e#4154#4155#0" expanded="false" />
-            <element signature="e#4327#4328#0" expanded="false" />
-            <element signature="e#4370#4371#0" expanded="false" />
-            <element signature="e#4501#4502#0" expanded="false" />
-            <element signature="e#4526#4527#0" expanded="false" />
-            <element signature="e#4673#4674#0" expanded="false" />
-            <element signature="e#4710#4711#0" expanded="false" />
-            <element signature="e#4822#4823#0" expanded="false" />
-            <element signature="e#4851#4852#0" expanded="false" />
-            <element signature="e#8322#8323#0" expanded="false" />
-            <element signature="e#8372#8373#0" expanded="false" />
-            <element signature="e#11316#11317#0" expanded="false" />
-            <element signature="e#11358#11359#0" expanded="false" />
+            <element signature="e#736#737#0" expanded="false" />
+            <element signature="e#763#764#0" expanded="false" />
+            <element signature="e#802#803#0" expanded="false" />
+            <element signature="e#834#835#0" expanded="false" />
+            <element signature="e#859#860#0" expanded="false" />
+            <element signature="e#887#888#0" expanded="false" />
+            <element signature="e#910#911#0" expanded="false" />
+            <element signature="e#936#937#0" expanded="false" />
+            <element signature="e#973#974#0" expanded="false" />
+            <element signature="e#1001#1002#0" expanded="false" />
+            <element signature="e#1036#1037#0" expanded="false" />
+            <element signature="e#1062#1063#0" expanded="false" />
+            <element signature="e#1093#1094#0" expanded="false" />
+            <element signature="e#1151#1152#0" expanded="false" />
+            <element signature="e#2003#2004#0" expanded="false" />
+            <element signature="e#2039#2040#0" expanded="false" />
+            <element signature="e#2519#2520#0" expanded="false" />
+            <element signature="e#2582#2583#0" expanded="false" />
+            <element signature="e#2763#2764#0" expanded="false" />
+            <element signature="e#2826#2827#0" expanded="false" />
+            <element signature="e#2926#2927#0" expanded="false" />
+            <element signature="e#2962#2963#0" expanded="false" />
+            <element signature="e#3209#3210#0" expanded="false" />
+            <element signature="e#3253#3254#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/eval/AnnotationEvaluation.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="7905">
-          <caret line="583" column="52" lean-forward="false" selection-start-line="583" selection-start-column="52" selection-end-line="583" selection-end-column="52" />
+        <state relative-caret-position="227">
+          <caret line="678" column="45" lean-forward="false" selection-start-line="678" selection-start-column="45" selection-end-line="678" selection-end-column="45" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/util/HTMLExporter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="171">
+          <caret line="1172" column="61" lean-forward="false" selection-start-line="1172" selection-start-column="61" selection-end-line="1172" selection-end-column="61" />
+          <folding>
+            <element signature="e#36304#36322#0" expanded="true" />
+            <element signature="e#39028#39036#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
