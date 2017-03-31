@@ -270,9 +270,9 @@ public class Concept implements  Serializable, Comparable<Concept> {
 						}
 						
 						if(getCode(src) != null){
-							addCode(o.toString(),Source.getSource(o.toString()));
+							addCode(code,Source.getSource(o.toString()));
 						}else{
-							addCode(o.toString(),src);
+							addCode(code,src);
 						}
 					}
 				}
