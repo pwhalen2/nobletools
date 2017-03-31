@@ -109,9 +109,10 @@ public class AnnotationVariable extends Instance {
 			for(Instance modifierInstance: modifierInstances){
 				IInstance modInstance = modifierInstance.getInstance();
 				if(modInstance != null){
-					IProperty prop = domainOntology.getProperty(modifierInstance.getModifier());
-					if(prop != null && props.contains(prop) && domainOntology.isPropertyRangeSatisfied(prop,  modifierInstance.getInstance())){
-						addModifierInstance(prop.getName(),modifierInstance);
+					for(IProperty prop : domainOntology.getProperties(modifierInstance.getModifier())){
+						if(props.contains(prop) && domainOntology.isPropertyRangeSatisfied(prop,  modifierInstance.getInstance())){
+							addModifierInstance(prop.getName(),modifierInstance);
+						}
 					}
 				}
 			}

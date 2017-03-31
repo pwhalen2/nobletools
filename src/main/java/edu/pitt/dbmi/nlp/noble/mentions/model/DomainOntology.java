@@ -1001,17 +1001,17 @@ public class DomainOntology {
 		return prop;
 	}
 	
-	private Map<IClass,IProperty> propertyRanges;
-	private Map<IClass,IProperty> getPropertyRanges(){
+	private Map<IClass,Set<IProperty>> propertyRanges;
+	private Map<IClass,Set<IProperty>> getPropertyRanges(){
 		if(propertyRanges == null){
-			propertyRanges = new HashMap<IClass, IProperty>();
+			propertyRanges = new HashMap<IClass,Set<IProperty>>();
 			for(IProperty p: ontology.getProperty(HAS_MODIFIER).getSubProperties()){
 				for(Object o: p.getRange()){
 					if(o instanceof IClass){
 						IClass c = (IClass) o;
-						propertyRanges.put(c,p);
+						put(propertyRanges,c,p);
 						for(IClass cc: c.getSubClasses()){
-							propertyRanges.put(cc,p);
+							put(propertyRanges,cc,p);
 						}
 					}
 				}
@@ -1019,13 +1019,21 @@ public class DomainOntology {
 		}
 		return propertyRanges;
 	}
+	private void put(Map<IClass,Set<IProperty>> map, IClass key, IProperty val){
+		Set<IProperty> set = map.get(key);
+		if(set == null){
+			set = new LinkedHashSet<IProperty>();
+			map.put(key,set);
+		}
+		set.add(val);
+	}
 	
 	/**
 	 * get property for a given modifier 
 	 * @param m
 	 * @return
 	 */
-	public IProperty getProperty(Modifier m){
+	public Set<IProperty> getProperties(Modifier m){
 		IProperty prop = getProperty(m.getType());
 		if(prop == null){
 			IClass cls = ontology.getClass(m.getType());
@@ -1033,7 +1041,7 @@ public class DomainOntology {
 				return getPropertyRanges().get(cls);
 			}
 		}
-		return prop;
+		return Collections.singleton(prop);
 	}
 	
 	

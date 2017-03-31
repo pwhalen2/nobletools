@@ -1271,6 +1271,10 @@ public class HTMLExporter {
 			public int compare(IInstance o1, IInstance o2) {
 				List<Span> l1 = getVariableSpans(o1);
 				List<Span> l2 = getVariableSpans(o2);
+				if(l1.isEmpty())
+					return -1;
+				if(l2.isEmpty())
+					return 1;
 				return l1.get(0).compareTo(l2.get(0));
 			}
 		});
