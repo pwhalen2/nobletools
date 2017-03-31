@@ -654,11 +654,11 @@ public class HTMLExporter {
 			htmlIndexWriter.write("}else{h = document.body.clientHeight;}}else{ h = window.innerHeight;} var hd = (h-"+delta+")+\"px\";\n");
 			htmlIndexWriter.write("document.getElementById(\"d1\").style.maxHeight=hd;}</script>\n");
 			htmlIndexWriter.write("</head><body style=\"overflow: hidden;\" bgcolor=\"#EEEEFF\" onload=\"l();\" onresize=\"l();\">\n");
-			String height = "95%";
+			String height = "100%";
 			if(includeHeader){
 				htmlIndexWriter.write("<center><h3>"+title+" Output [<a href=\""+resultFileName+"\" ");
 				htmlIndexWriter.write("title=\"Download the entire result in Tab Seperated Values (.tsv) format \">TSV</a>]</h3></center>\n");
-				height = "100%";
+				height = "96%";
 			}
 			htmlIndexWriter.write("<center><table bgcolor=\"#FFFFF\" width=\"100%\" height=\""+height+"\" border=0>\n");
 			htmlIndexWriter.write("<tr><td align=\"left\" valign=\"top\" width=\"200px\" style=\"white-space: nowrap\">\n");
@@ -1156,12 +1156,12 @@ public class HTMLExporter {
 
 		htmlWriter.write(createHTMLHeader("Evaluation Output",true));
 		htmlWriter.write("<body onload=\"l();\" onresize=\"l();\">");
-		htmlWriter.write("<table width=\"100%\" style=\"table-layout:fixed; \" cellspacing=\"5\">\n"); //word-wrap:break-word;
+		htmlWriter.write("<table width=\"100%\" style=\"table-layout:fixed;  display:inline-block;\" cellspacing=\"5\">\n"); //word-wrap:break-word;
 		htmlWriter.write("<tr><td colspan=3 align=center><h3>"+name+"</h3></td></tr>\n");
 
-		htmlWriter.write("<tr><td width=\"300px\" valign=top><div id=\"d0\" style=\"overflow: auto; max-height: 800px;\">"+goldResult+"</div></td>\n");
+		htmlWriter.write("<tr><td width=\"20%\" valign=top><div id=\"d0\" style=\"overflow: auto; max-height: 800px;\">"+goldResult+"</div></td>\n");
 		htmlWriter.write("<td width=\"60%\" valign=middle><div id=\"d1\" style=\"overflow: auto; max-height: 800px; \">"+report+"</div></td>\n");
-		htmlWriter.write("<td width=\"300px\" valign=top><div id=\"d2\" style=\"overflow: auto; max-height: 800px;\">"+sysResult+"</div></td></tr>\n");
+		htmlWriter.write("<td width=\"20%\" valign=top><div id=\"d2\" style=\"overflow: auto; max-height: 800px;\">"+sysResult+"</div></td></tr>\n");
 		htmlWriter.write("<tr><td colspan=3 align=center></td></tr>\n");
 		htmlWriter.write("</table></body></html>\n");
 		htmlWriter.flush();
@@ -1181,6 +1181,9 @@ public class HTMLExporter {
 	 * @param spanMap - span map to add to
 	 */
 	private void addAnnotationSpans(IInstance inst, TreeMap<Span, Set<String>> spanMap, String prefix) {
+		if(inst == null)
+			return;
+		
 		// add mention level values
 		IOntology ont = inst.getOntology();
 		for(Object o: inst.getPropertyValues(ont.getProperty(DomainOntology.HAS_MENTION_ANNOTATION))){
@@ -1253,6 +1256,8 @@ public class HTMLExporter {
 	
 	
 	private String codeCompositionInstance(IInstance composition,String color){
+		if(composition == null)
+			return "";
 		IOntology ont = composition.getOntology();
 		StringBuilder str = new StringBuilder();
 		str.append("<ol><p>");
