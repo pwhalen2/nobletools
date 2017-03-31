@@ -88,12 +88,13 @@ import edu.pitt.dbmi.nlp.noble.util.UITools;
  */
 public class NobleMentionsTool implements ActionListener{
 	private final URL LOGO_ICON = getClass().getResource("/icons/NobleLogo256.png");
+	private final URL CANCEL_ICON = getClass().getResource("/icons/cancel24.png");
 	private JFrame frame;
 	private JTextField input,output;
 	private JList<DomainOntology> templateList;
 	private JTextArea console;
 	private JProgressBar progress;
-	private JPanel buttonPanel;
+	private JPanel buttonPanel,progressPanel;
 	private JButton run;
 	private File lastFile;
 	private long totalTime;
@@ -102,7 +103,7 @@ public class NobleMentionsTool implements ActionListener{
 	private CSVExporter csvExporter;
 	private static boolean statandlone = false;
 	private DefaultRepository repository = new DefaultRepository();
-	
+	private boolean cancelRun;
 	
 	/**
 	 * What .
@@ -204,10 +205,21 @@ public class NobleMentionsTool implements ActionListener{
 			buttonPanel.add(run,BorderLayout.CENTER);
 			//panel.add(buttonPanel,c);
 			
+			JButton cancel = new JButton(new ImageIcon(CANCEL_ICON));
+			cancel.setToolTipText("Cancel Run");
+			cancel.addActionListener(this);
+			cancel.setActionCommand("cancel");
+			
 			progress = new JProgressBar();
 			progress.setIndeterminate(true);
 			progress.setString("Please Wait. It will take a while ...");
 			progress.setStringPainted(true);
+			
+			progressPanel = new JPanel();
+			progressPanel.setLayout(new BorderLayout());
+			progressPanel.add(progress,BorderLayout.CENTER);
+			progressPanel.add(cancel,BorderLayout.EAST);
+			
 			
 			JPanel p = new JPanel();
 			p.setLayout(new BorderLayout());
@@ -323,7 +335,7 @@ public class NobleMentionsTool implements ActionListener{
 					progress.setIndeterminate(true);
 					progress.setString("Please Wait. It may take a while ...");
 					progress.setStringPainted(true);
-					buttonPanel.add(progress,BorderLayout.CENTER);
+					buttonPanel.add(progressPanel,BorderLayout.CENTER);
 					console.setText("");
 				}else{
 					buttonPanel.add(run,BorderLayout.CENTER);
@@ -358,6 +370,8 @@ public class NobleMentionsTool implements ActionListener{
 		String cmd = e.getActionCommand();
 		if("run".equals(cmd)){
 			doRun();
+		}else if("cancel".equals(cmd)){
+			cancelRun = true;
 		}else if("i_browser".equals(cmd)){
 			doBrowse(input);
 		}else if("d_browser".equals(cmd)){
@@ -520,6 +534,7 @@ public class NobleMentionsTool implements ActionListener{
 					return;
 				}
 				setBusy(true);
+				cancelRun = false;
 				
 				// save settings
 				saveSettings();
@@ -682,6 +697,11 @@ public class NobleMentionsTool implements ActionListener{
 		for(int i=0;i<files.size();i++){
 			try {
 				process(noble,files.get(i));
+				
+				// cancel processing
+				if(cancelRun)
+					break;
+				
 			} catch (Exception e) {
 				progress("Error: "+e.getMessage());
 				e.printStackTrace();

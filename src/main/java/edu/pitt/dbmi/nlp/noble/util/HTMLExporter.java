@@ -1323,7 +1323,10 @@ public class HTMLExporter {
 		StringBuilder str = new StringBuilder();
 		int offs = 0;
 		for(Span s: spanMap.keySet()){
-			str.append(text.substring(0,s.start()).replaceAll("\n","<br>"));
+			//if we fucked up, just skip the span
+			if(s.start() < offs)
+				continue;
+			str.append(text.substring(offs,s.start()).replaceAll("\n","<br>"));
 			str.append(codeSpan(s.start(),text.substring(s.start(),s.end()),spanMap.get(s)));
 			offs = s.end();
 		}
@@ -1339,14 +1342,15 @@ public class HTMLExporter {
 		StringBuilder tip = new StringBuilder();
 		
 		String color = null;
+		String commonColor = "#9e2bef";// "#4f989e";
 		for(String id: ids){
 			// strip suffix
 			if(id.startsWith("g_")){
 				id = id.substring(2);
-				color = (color == null || "green".equals(color))?"green":"#FF8C00";
+				color = (color == null || "green".equals(color))?"green":commonColor;
 			}else if(id.startsWith("s_")){
 				id = id.substring(2);
-				color = (color == null || "blue".equals(color))?"blue":"#FF8C00";
+				color = (color == null || "blue".equals(color))?"blue":commonColor;
 			}
 			codes.add("'"+id+"'");
 		}
