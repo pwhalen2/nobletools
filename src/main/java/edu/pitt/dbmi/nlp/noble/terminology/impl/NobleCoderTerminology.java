@@ -1166,7 +1166,7 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 				// insert concept concept into a set
 				Set<String> codeList = new HashSet<String>();
 				codeList.add(c.getCode());
-				// add concept codes thate were already in a set
+				// add concept codes that were already in a set
 				if (storage.getTermMap().containsKey(term)) {
 					codeList.addAll(storage.getTermMap().get(term));
 				}

@@ -88,7 +88,7 @@ import edu.pitt.dbmi.nlp.noble.util.StringUtils;
  *
  * @author tseytlin
  */
-public class OOntology extends OResource implements IOntology{
+public class OOntology extends OResource implements IOntology {
 	private PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 	private OWLOntologyManager manager;
 	private OWLOntology ontology;
@@ -103,13 +103,13 @@ public class OOntology extends OResource implements IOntology{
 	private String location;
 	private IRI locationIRI;
 	private List<String> languageFilter;
-	
+
 	/**
 	 * create new ow.
 	 *
 	 * @param ont the ont
 	 */
-	private OOntology(OWLOntology ont){
+	private OOntology(OWLOntology ont) {
 		super(ont);
 		manager = ont.getOWLOntologyManager();
 		ontology = ont;
@@ -119,23 +119,21 @@ public class OOntology extends OResource implements IOntology{
 		prefixManager = new DefaultPrefixManager(prefixManager);
 		ontologyLoaderConfig = new OWLOntologyLoaderConfiguration();
 	}
-	
-	
+
+
 	/**
 	 * Instantiates a new o ontology.
 	 *
 	 * @param location the location
 	 */
-	public OOntology(String location){
+	public OOntology(String location) {
 		super(null);
 		this.location = location;
 	}
-	
-	
-	
-	
+
+
 	public String getLocation() {
-		return location == null?super.getLocation():location;
+		return location == null ? super.getLocation() : location;
 	}
 
 
@@ -144,48 +142,48 @@ public class OOntology extends OResource implements IOntology{
 	 *
 	 * @return the prefix manager
 	 */
-	PrefixManager getPrefixManager(){
+	PrefixManager getPrefixManager() {
 		return prefixManager;
 	}
-	
+
 	/**
 	 * Lazy load.
 	 */
-	private void lazyLoad(){
+	private void lazyLoad() {
 		try {
 			load();
 		} catch (IOntologyException e) {
-			throw new IOntologyError("Unable to load ontology "+location,e);
+			throw new IOntologyError("Unable to load ontology " + location, e);
 		}
 	}
-	
-	
+
+
 	/* (non-Javadoc)
 	 * @see edu.pitt.dbmi.nlp.noble.ontology.IOntology#load()
 	 */
 	public void load() throws IOntologyException {
-		if(!isLoaded() && location != null){
-			try{
+		if (!isLoaded() && location != null) {
+			try {
 				manager = OWLManager.createOWLOntologyManager();
 				File f = new File(location);
 				// this is file
-				if(f.exists()){
+				if (f.exists()) {
 					ontology = manager.loadOntologyFromOntologyDocument(f);
-				// this is URL	
-				}else if(location.matches("[a-zA-Z]+://(.*)")){
+					// this is URL
+				} else if (location.matches("[a-zA-Z]+://(.*)")) {
 					ontology = manager.loadOntologyFromOntologyDocument(IRI.create(location));
 				}
 				obj = ontology;
 				data = manager.getOWLDataFactory();
 				setOntology(this);
 				prefixManager = manager.getOntologyFormat(ontology).asPrefixOWLOntologyFormat();
-				
+
 			} catch (OWLOntologyCreationException e) {
-				throw new IOntologyException("Unable to create ontology "+location,e);
+				throw new IOntologyException("Unable to create ontology " + location, e);
 			}
 		}
 	}
-	
+
 
 	/**
 	 * Infer IRI.
@@ -194,28 +192,28 @@ public class OOntology extends OResource implements IOntology{
 	 * @return the iri
 	 */
 	private IRI inferIRI(String loc) {
-		if(loc.matches("[a-zA-Z]+://(.*)"))
+		if (loc.matches("[a-zA-Z]+://(.*)"))
 			return IRI.create(loc);
 		File f = new File(location);
 		// this is file
-		if(f.exists()){
+		if (f.exists()) {
 			try {
 				String url = null;
 				Pattern p = Pattern.compile("(ontologyIRI|xml:base)=\"(.*?)\"");
 				BufferedReader r = new BufferedReader(new FileReader(f));
-				for(String l = r.readLine(); l != null; l = r.readLine()){
+				for (String l = r.readLine(); l != null; l = r.readLine()) {
 					Matcher m = p.matcher(l);
-					if(m.find()){
+					if (m.find()) {
 						url = m.group(2);
-						break; 
+						break;
 					}
 				}
 				r.close();
 				return IRI.create(url);
 			} catch (FileNotFoundException e) {
-				throw new IOntologyError("Error reading ontology from "+location,e);
+				throw new IOntologyError("Error reading ontology from " + location, e);
 			} catch (IOException e) {
-				throw new IOntologyError("Error reading ontology from "+location,e);
+				throw new IOntologyError("Error reading ontology from " + location, e);
 			}
 		}
 		return null;
@@ -230,35 +228,36 @@ public class OOntology extends OResource implements IOntology{
 	 */
 	public static OOntology loadOntology(File file) throws IOntologyException {
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-		setupLocalIRImapper(manager,file);
-		try{
+		setupLocalIRImapper(manager, file);
+		try {
 			return new OOntology(manager.loadOntologyFromOntologyDocument(file));
 		} catch (OWLOntologyCreationException e) {
-			throw new IOntologyException("Unable to create ontology "+file,e);
+			throw new IOntologyException("Unable to create ontology " + file, e);
 		}
 	}
 
 	/**
 	 * setup local IRI mapper from an local ontology file
+	 *
 	 * @param manager
 	 * @param dir
 	 */
-	private static void setupLocalIRImapper(OWLOntologyManager manager, File file){
-		for(File f: file.getParentFile().listFiles()){
-			if(f.getName().endsWith(".owl") && !file.equals(f)){
+	private static void setupLocalIRImapper(OWLOntologyManager manager, File file) {
+		for (File f : file.getParentFile().listFiles()) {
+			if (f.getName().endsWith(".owl") && !file.equals(f)) {
 				URI uri = null;
 				try {
 					uri = OntologyUtils.getOntologyURI(f);
 				} catch (IOException e) {
-					new IOntologyException("Error: unable to extract URI from file "+f,e);
+					new IOntologyException("Error: unable to extract URI from file " + f, e);
 				}
-				if(uri != null)
+				if (uri != null)
 					manager.addIRIMapper(new SimpleIRIMapper(IRI.create(uri), IRI.create(f)));
 			}
 		}
 	}
 
-	
+
 	/**
 	 * load ontology from file.
 	 *
@@ -268,19 +267,19 @@ public class OOntology extends OResource implements IOntology{
 	 */
 	public static OOntology loadOntology(String url) throws IOntologyException {
 		File f = new File(url);
-		if(f.exists())
+		if (f.exists())
 			return loadOntology(f);
-		if(url.startsWith("http://")){
+		if (url.startsWith("http://")) {
 			try {
 				return loadOntology(new URL(url));
 			} catch (MalformedURLException e) {
-				throw new IOntologyError("This is not a valid URL: "+url,e);
+				throw new IOntologyError("This is not a valid URL: " + url, e);
 			}
 		}
-		throw new IOntologyException("Unable to load ontology "+url);
+		throw new IOntologyException("Unable to load ontology " + url);
 	}
-	
-	
+
+
 	/**
 	 * create new ontology with this URI.
 	 *
@@ -291,38 +290,56 @@ public class OOntology extends OResource implements IOntology{
 	public static OOntology createOntology(URI uri) throws IOntologyException {
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 		//manager.addOntologyStorer(new OWLXMLOntologyStorer());
-		try{
+		try {
 			return new OOntology(manager.createOntology(IRI.create(uri)));
 		} catch (OWLOntologyCreationException e) {
-			throw new IOntologyException("Unable to create ontology "+uri,e);
+			throw new IOntologyException("Unable to create ontology " + uri, e);
 		}
 	}
-	
-	
+
+
 	/**
 	 * create new ontology with this URI.
 	 *
 	 * @param ontologyURI the uri of future ontology
-	 * @param parentURI the uri of parent ontology
+	 * @param parentURI   the uri of parent ontology
 	 * @return the o ontology
 	 * @throws IOntologyException the i ontology exception
 	 */
 	public static OOntology createOntology(URI ontologyURI, URI parentURI) throws IOntologyException {
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 		//manager.addOntologyStorer(new OWLXMLOntologyStorer());
-		try{
-			
+		try {
+
 			OWLOntology ont = manager.createOntology(IRI.create(ontologyURI));
 			OWLImportsDeclaration importDeclaraton = manager.getOWLDataFactory().getOWLImportsDeclaration(IRI.create(parentURI));
-			manager.makeLoadImportRequest(importDeclaraton,new OWLOntologyLoaderConfiguration());
-			manager.applyChange(new AddImport(ont,importDeclaraton));
-			
+			manager.makeLoadImportRequest(importDeclaraton, new OWLOntologyLoaderConfiguration());
+			manager.applyChange(new AddImport(ont, importDeclaraton));
+
 			return new OOntology(ont);
 		} catch (OWLOntologyCreationException e) {
-			throw new IOntologyException("Unable to create ontology "+ontologyURI,e);
+			throw new IOntologyException("Unable to create ontology " + ontologyURI, e);
 		}
 	}
-	
+
+	/**
+	 * create new ontology with this URI and parent location
+	 *
+	 * @param ontologyURI    the uri of future ontology
+	 * @param location the file or URL of parent ontology
+	 * @return the o ontology
+	 * @throws IOntologyException the i ontology exception
+	 */
+	public static OOntology createOntology(URI ontologyURI, String location) throws IOntologyException {
+		File f = new File(location);
+		if (f.exists()) {
+			return createOntology(ontologyURI, f);
+		} else if (location.startsWith("http:")){
+			return createOntology(ontologyURI,URI.create(location));
+		}else{
+			throw new IOntologyException("Unable to identify ontology schema location "+location);
+		}
+	}
 	
 	
 	/**

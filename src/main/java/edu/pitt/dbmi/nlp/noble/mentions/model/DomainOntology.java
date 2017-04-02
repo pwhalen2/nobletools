@@ -117,25 +117,13 @@ public class DomainOntology {
 	 */
 	public DomainOntology(String location) throws IOntologyException{
 		//	this(OOntology.loadOntology(location));
+		URI ontologyURI = OntologyUtils.createOntologyInstanceURI(location);
 		File file = new File(location);
 		if(file.exists()){
-			String ontologyURI = null;
-			try {
-				ontologyURI = ""+OntologyUtils.getOntologyURI(file);
-			} catch (IOException e) {
-				throw new IOntologyException("Unable get parent ontology URL "+location);
-			}
-			if(ontologyURI.endsWith(".owl"))
-				ontologyURI = ontologyURI.substring(0,ontologyURI.length()-4);
-			ontologyURI += "Instances.owl";
-			setOntology(OOntology.createOntology(URI.create(ontologyURI),file));
+			setOntology(OOntology.createOntology(ontologyURI,file));
 			ontologyLocation = file;
 		}else if (location.startsWith("http")){
-			String ontologyURI = location;
-			if(ontologyURI.endsWith(".owl"))
-				ontologyURI = ontologyURI.substring(0,ontologyURI.length()-4);
-			ontologyURI += "Instances.owl";
-			setOntology(OOntology.createOntology(URI.create(ontologyURI),URI.create(location)));
+			setOntology(OOntology.createOntology(ontologyURI,URI.create(location)));
 		}else{
 			throw new IOntologyException("Unable to identify ontology schema location "+location);
 		}

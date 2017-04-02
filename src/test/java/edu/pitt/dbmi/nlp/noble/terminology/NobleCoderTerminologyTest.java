@@ -3,6 +3,8 @@ package edu.pitt.dbmi.nlp.noble.terminology;
 import java.io.IOException;
 import java.util.*;
 
+import edu.pitt.dbmi.nlp.noble.ontology.IOntology;
+import edu.pitt.dbmi.nlp.noble.ontology.owl.OOntology;
 import edu.pitt.dbmi.nlp.noble.terminology.Concept;
 import edu.pitt.dbmi.nlp.noble.terminology.ConceptPath;
 import edu.pitt.dbmi.nlp.noble.terminology.TerminologyException;
@@ -112,8 +114,18 @@ public class NobleCoderTerminologyTest {
 		return terminoloy;
 	}
 	
-	public static void main(String[] args) throws IOException, TerminologyException {
+	public static void main(String[] args) throws Exception {
 		//String termFile = "/home/tseytlin/TestRepository2/NCI_Thesaurus.term";
+
+		NobleCoderTerminology term = new NobleCoderTerminology();
+		IOntology ont = OOntology.loadOntology("/Users/tseytlin/Work/domains/Pitt/heartDiseaseInDiabetics.owl");
+		term.addConcept(ont.getClass("Stress_Electrocardiography").getConcept());
+
+		for(Concept c: term.search("I see ETT here.")){
+			c.printInfo(System.out);
+		}
+
+		/*
 		String termFile = "NCI_Thesaurus";
 		NobleCoderTerminology term = new NobleCoderTerminology(termFile);
 		term.setSemanticTypeFilter("Neoplastic Process");
@@ -130,7 +142,7 @@ public class NobleCoderTerminologyTest {
 				}
 			}
 		}
-		
+		*/
 		//NobleCoderTerminologyTest test = new NobleCoderTerminologyTest(term);
 		//test.testTerminologyTerms();
 	}

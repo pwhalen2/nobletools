@@ -88,7 +88,7 @@ import edu.pitt.dbmi.nlp.noble.util.UITools;
  */
 public class NobleMentionsTool implements ActionListener{
 	private final URL LOGO_ICON = getClass().getResource("/icons/NobleLogo256.png");
-	private final URL CANCEL_ICON = getClass().getResource("/icons/cancel24.png");
+	private final URL CANCEL_ICON = getClass().getResource("/icons/cancel16.png");
 	private JFrame frame;
 	private JTextField input,output;
 	private JList<DomainOntology> templateList;

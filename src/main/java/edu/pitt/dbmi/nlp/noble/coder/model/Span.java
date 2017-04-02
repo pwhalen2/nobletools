@@ -28,6 +28,14 @@ public class Span implements  Spannable , Comparable<Spannable> {
         }
         return null;
     }
+    /**
+     * get span from a string that has integers range defined
+     * @param string
+     * @return
+     */
+    public static Span getSpan(String start, String end){
+        return new Span(Integer.parseInt(start),Integer.parseInt(end));
+     }
 
     public String getText() {
         return text;

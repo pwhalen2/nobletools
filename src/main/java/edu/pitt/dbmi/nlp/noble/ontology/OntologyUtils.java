@@ -331,4 +331,33 @@ public class OntologyUtils {
 		
 		
 	}*/
+
+	/**
+	 * create ontology instance URI (URI of ontology file + Instances.owl
+	 * @param file - the file of the parent ontology
+	 * @return URI that the new instance ontology needs to be called
+	 * @throws IOntologyException
+	 */
+	public static URI createOntologyInstanceURI(String location) throws IOntologyException{
+		String ontologyURI;
+		File file = new File(location);
+		if(file.exists()) {
+			try {
+				ontologyURI = "" + OntologyUtils.getOntologyURI(file);
+			}catch (IOException ex){
+				throw new IOntologyException("Unable to read ontology "+file,ex);
+			}
+			if (ontologyURI.endsWith(".owl"))
+				ontologyURI = ontologyURI.substring(0, ontologyURI.length() - 4);
+			ontologyURI += "Instances.owl";
+		}else if (location.startsWith("http:")){
+			ontologyURI = location;
+			if(ontologyURI.endsWith(".owl"))
+				ontologyURI = ontologyURI.substring(0,ontologyURI.length()-4);
+			ontologyURI += "Instances.owl";
+		}else{
+			throw new IOntologyException("Unable to identify ontology schema location "+location);
+		}
+		return URI.create(ontologyURI);
+	}
 }
