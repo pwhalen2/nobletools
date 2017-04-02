@@ -2,17 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a37f4458-0304-45b2-88b1-c0f9e019c671" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/eval/gold/KnowtatorToInstances.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/coder/model/Span.java" afterPath="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/coder/model/Span.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/mentions/model/DomainOntology.java" afterPath="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/mentions/model/DomainOntology.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/ontology/OntologyUtils.java" afterPath="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/ontology/OntologyUtils.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/ontology/owl/OOntology.java" afterPath="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/ontology/owl/OOntology.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/terminology/impl/NobleCoderTerminology.java" afterPath="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/terminology/impl/NobleCoderTerminology.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/terminology/impl/NobleCoderUtils.java" afterPath="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/terminology/impl/NobleCoderUtils.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/ui/NobleMentionsTool.java" afterPath="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/ui/NobleMentionsTool.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/java/edu/pitt/dbmi/nlp/noble/terminology/NobleCoderTerminologyTest.java" afterPath="$PROJECT_DIR$/src/test/java/edu/pitt/dbmi/nlp/noble/terminology/NobleCoderTerminologyTest.java" />
     </list>
     <list id="f191e77f-c034-4898-98d8-9b33493655f9" name="re-organization" comment="" />
     <list id="7862b3a0-d48e-4dc8-ac80-1d4226692b0a" name="Failed commit: re-organization" comment="re-organization" />
@@ -1205,7 +1195,14 @@
       <option name="project" value="LOCAL" />
       <updated>1490879825881</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="Added KnowtatorToInstances converter">
+      <created>1491177409378</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1491177409378</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -1292,7 +1289,8 @@
     <MESSAGE value="implemented AnnotationEvaluation weighted score&#10;NobleMentions should now process headers as well&#10;NobleMentions now tries to re-validate failed variables if they contain an equivalent annotation relation&#10;Added Analysis object for storing analysis" />
     <MESSAGE value="HTML export of Analysis result" />
     <MESSAGE value="Integrated AttributeWeights into AnnotationEvaluation&#10;Added visualization option to AnnotationEvaluation&#10;Added useful Span object" />
-    <option name="LAST_COMMIT_MESSAGE" value="Integrated AttributeWeights into AnnotationEvaluation&#10;Added visualization option to AnnotationEvaluation&#10;Added useful Span object" />
+    <MESSAGE value="Added KnowtatorToInstances converter" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added KnowtatorToInstances converter" />
     <option name="PRESELECT_EXISTING_CHANGELIST" value="false" />
   </component>
   <component name="XDebuggerManager">
@@ -1507,6 +1505,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2070">
           <caret line="150" column="0" selection-start-line="150" selection-start-column="0" selection-end-line="150" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
