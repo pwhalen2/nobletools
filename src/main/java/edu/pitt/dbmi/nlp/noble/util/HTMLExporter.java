@@ -265,7 +265,7 @@ public class HTMLExporter {
 	 */
 	private String codeLabel(Annotation l, Set<Mention> mentions){
 		String lid = ""+l.getOffset();
-		String word = l.getText();
+		String word = l.getText().replaceAll("\n","<br>");
 		List<String> codes = new ArrayList<String>();
 		StringBuilder tip = new StringBuilder();
 		String color = "green";
@@ -1352,6 +1352,9 @@ public class HTMLExporter {
 		String lid = ""+offset;
 		List<String> codes = new ArrayList<String>();
 		StringBuilder tip = new StringBuilder();
+		
+		// replace newlines
+		text = text.replaceAll("\n","<br>");
 		
 		String color = null;
 		String commonColor = "#9e2bef";// "#4f989e";

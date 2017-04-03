@@ -240,6 +240,7 @@ public class NobleMentionsTool implements ActionListener{
 			frame.setVisible(true);
 			// load defaults
 			loadDeafaults();
+			loadSettings();
 		}else{
 			frame.setVisible(true);
 		}
@@ -260,22 +261,27 @@ public class NobleMentionsTool implements ActionListener{
 	 * save UI settings
 	 */
 	private void loadSettings(){
-		Properties p = UITools.loadSettings(getClass());
-		if(p.containsKey("input"))
-			input.setText(p.getProperty("input"));
-		if(p.containsKey("output"))
-			output.setText(p.getProperty("output"));
-		if(p.containsKey("ontology")){
-			String ont = p.getProperty("ontology");
-			int index = -1;
-			for(int i=0;i<templateList.getModel().getSize();i++){
-				if(templateList.getModel().getElementAt(i).toString().equals(ont)){
-					index = i; break;
+		final Properties p = UITools.loadSettings(getClass());
+		SwingUtilities.invokeLater(new Runnable(){
+			public void run(){
+				if(p.containsKey("input"))
+					input.setText(p.getProperty("input"));
+				if(p.containsKey("output"))
+					output.setText(p.getProperty("output"));
+				if(p.containsKey("ontology")){
+					String ont = p.getProperty("ontology");
+					int index = -1;
+					for(int i=0;i<templateList.getModel().getSize();i++){
+						if(templateList.getModel().getElementAt(i).toString().equals(ont)){
+							index = i; break;
+						}
+					}
+					if(index > -1)
+						templateList.setSelectedIndex(index);
 				}
 			}
-			if(index > -1)
-				templateList.setSelectedIndex(index);
-		}
+		});
+	
 	}
 	
 	/**
@@ -313,8 +319,6 @@ public class NobleMentionsTool implements ActionListener{
 					}
 				}
 				templateList.validate();
-				loadSettings();
-
 			}
 		});
 	}
