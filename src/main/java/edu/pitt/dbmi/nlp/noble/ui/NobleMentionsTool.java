@@ -240,7 +240,6 @@ public class NobleMentionsTool implements ActionListener{
 			frame.setVisible(true);
 			// load defaults
 			loadDeafaults();
-			loadSettings();
 		}else{
 			frame.setVisible(true);
 		}
@@ -287,8 +286,6 @@ public class NobleMentionsTool implements ActionListener{
 			public void run(){
 				setBusy(true);
 				refreshTemplateList();
-				//input.setText("/home/tseytlin/Data/Reports/ReportProcessorInput/");
-				//output.setText("/home/tseytlin/Data/Reports/Output/ReportProcessorInput/");
 				setBusy(false);
 			}
 		})).start();
@@ -316,6 +313,8 @@ public class NobleMentionsTool implements ActionListener{
 					}
 				}
 				templateList.validate();
+				loadSettings();
+
 			}
 		});
 	}

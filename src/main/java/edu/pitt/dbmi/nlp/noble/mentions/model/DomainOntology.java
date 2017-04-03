@@ -96,7 +96,7 @@ public class DomainOntology {
 	public static final String HAS_SECTION = "hasSection";
 	public static final String DOCUMENT_SECTION = "DocumentSection";
 	public static final String HAS_SPAN = "hasSpan";
-	
+    public static final String HAS_ANNOTATION_TEXT = "hasAnnotationText";
 	
 	
 	private IOntology ontology;

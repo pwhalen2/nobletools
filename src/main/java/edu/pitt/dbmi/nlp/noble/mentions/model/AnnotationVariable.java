@@ -120,7 +120,9 @@ public class AnnotationVariable extends Instance {
 			
 			// now just add span
 			instance.setPropertyValue(ont.getProperty(DomainOntology.HAS_SPAN),getInstanceSpan());
-			
+			instance.setPropertyValue(ont.getProperty(DomainOntology.HAS_ANNOTATION_TEXT),getText());
+
+
 		}
 		return instance;
 	}
@@ -151,5 +153,37 @@ public class AnnotationVariable extends Instance {
 		}
 		str.append("\thasText: "+getAnnotations());
 		return str.toString();
+	}
+
+
+	public void findReasonForFail(){
+		for(Object o: getConceptClass().getEquivalentRestrictions()){
+			if(o instanceof  IRestriction){
+				IRestriction r = (IRestriction) o;
+				for(String prop: getModifierInstances().keySet()){
+					if(prop.equals(r.getProperty().getName())){
+						for(Instance i: getModifierInstances().get(prop)) {
+							if(!r.getParameter().evaluate(i.getConceptClass())){
+								i.setReasonForFail(true);
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	public Set<String> findMissingDefinedProperties(){
+		Set<String> props = new LinkedHashSet<String>();
+		Set<String> foundProps = getModifierInstances().keySet();
+		for(Object o: getConceptClass().getEquivalentRestrictions()){
+			if(o instanceof  IRestriction){
+				IRestriction r = (IRestriction) o;
+				String p = r.getProperty().getName();
+				if(!foundProps.contains(p)){
+					props.add(p);
+				}
+			}
+		}
+		return props;
 	}
 }

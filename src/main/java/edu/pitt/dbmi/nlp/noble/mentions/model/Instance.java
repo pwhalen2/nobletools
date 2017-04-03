@@ -31,7 +31,7 @@ public class Instance {
 	protected Map<String,Set<Instance>> modifierInstances;
 	protected Set<Annotation> annotations;
 	protected List<Mention> compoundComponents;
-	
+	protected boolean reasonForFail;
 	
 	/**
 	 * initilize an instance
@@ -65,6 +65,7 @@ public class Instance {
 	public Instance(DomainOntology ontology,Mention m, IInstance inst){
 		setDomainOntology(ontology);
 		setMention(m);
+		cls = inst.getDirectTypes()[0];
 		instance = inst;
 	}
 	
@@ -247,6 +248,14 @@ public class Instance {
 		StringBuilder str = new StringBuilder();
 		for(Annotation a: getAnnotations()){
 			str.append(a.getStartPosition()+":"+a.getEndPosition()+" ");
+		}
+		return str.toString().trim();
+	}
+
+	public String getText(){
+		StringBuilder str = new StringBuilder();
+		for(Annotation a: getAnnotations()){
+			str.append(a.getText()+" ");
 		}
 		return str.toString().trim();
 	}
@@ -475,6 +484,14 @@ public class Instance {
 		}
 		
 		return annotations;
+	}
+
+	public boolean isReasonForFail() {
+		return reasonForFail;
+	}
+
+	public void setReasonForFail(boolean reasonForFail) {
+		this.reasonForFail = reasonForFail;
 	}
 
 	public int hashCode() {

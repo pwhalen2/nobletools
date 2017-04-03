@@ -159,6 +159,7 @@ public class NobleMentions implements Processor<Composition>{
 						}
 						
 					}else{
+						var.findReasonForFail();
 						failedVariables.add(var);
 					}
 				}

@@ -386,6 +386,7 @@ public class HTMLExporter {
 		
 		Map<String,Set<Instance>> modifiers = var.getModifierInstances();
 		for(String prop: modifiers.keySet()){
+			String pc = "black";
 			Set<Instance> instances = modifiers.get(prop);
 			// don't include components for an anchor
 			boolean includeComponents = !DomainOntology.HAS_ANCHOR.equals(prop);
@@ -393,12 +394,19 @@ public class HTMLExporter {
 			for(Instance i: instances){
 				if(i instanceof AnnotationVariable)
 					includeComponents = false;
+				if(i.isReasonForFail())
+					pc = "red";
 			}
-			
 			String val =  codeEntities(instances,includeComponents);
-			out.append("<tr><td>&nbsp;</td><td>"+prop);
+			out.append("<tr><td>&nbsp;</td><td><span style=\" color:"+pc+";\">"+prop+"</span>");
 			out.append("</td><td>"+val+"</td></tr>");
 		}
+		// find properties that are missing
+		for(String prop: var.findMissingDefinedProperties()){
+			out.append("<tr><td>&nbsp;</td><td><span style=\" color:red;\">"+prop+"</span>");
+			out.append("</td><td> not found </td></tr>");
+		}
+
 		out.append("</table>");
 		
 		return out.toString();
