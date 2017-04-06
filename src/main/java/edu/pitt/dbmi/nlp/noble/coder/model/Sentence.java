@@ -11,6 +11,7 @@ import java.util.*;
 public class Sentence extends Text {
 	public static final String TYPE_PROSE = "Prose";
 	public static final String TYPE_LINE  = "Line";
+	public static final String TYPE_BULLET  = "Bullet";
 	public static final String TYPE_WORKSHEET = "Worksheet";
 	public static final String TYPE_HEADER = "Header";
 	public static final String TYPE_DIVIDER = "Divider";

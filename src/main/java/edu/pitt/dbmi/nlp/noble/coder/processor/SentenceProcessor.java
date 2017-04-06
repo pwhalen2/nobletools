@@ -14,13 +14,12 @@ import edu.pitt.dbmi.nlp.noble.tools.SynopticReportDetector;
 
 public class SentenceProcessor implements Processor<Document> {
 	private static final String PROSE_PATTERN = ".*\\b[a-z]+(\\.|\\?|!)\\s+[A-Z][a-z]+\\b.*";
-	private static final String BULLET_PATTERN = "^(([A-Z]?[0-9-\\)]{0,2}\\.?)?\\s+)\\w.*";
+	private static final String BULLET_PATTERN =  	"^(\\s*(?:[A-Z][0-9]?|[0-9]{1,2}|[\\*\\-])(?:[\\.:\\)]\\s+|\\s{2,}))\\w.*"; //"^\\s*(([A-Z]?[0-9-\\)\\*]{1,2}\\.?:?)\\s+)\\w.*";
 	private static final String DIVIDER_PATTERN = "(\\-{5,}|_{5,}|={5,})" ;
 	private static final String PROPERTIES_PATTERN = "([A-Z][A-Za-z /]{3,25})(?:\\.{2,}|\\:)(.{2,25})";
-	private static final String PROSE_SENTENCE_END = ".+\\s([A-Z]?[a-z]+|\\d+),?";
-	private static final String PROSE_SENTENCE_START = "\\s*([A-Z]?[a-z]+)\\b.+";
-
-	
+	private static final String PROSE_SENTENCE_END = ".+\\s([A-Z]?[a-z]+|\\d+),?\\s*";
+	private static final String PROSE_SENTENCE_START = "\\s*([a-z]+|\\d+)\\b.+"; //[A-Z]? 
+		
 	private long time;
 	
 	
@@ -33,7 +32,16 @@ public class SentenceProcessor implements Processor<Document> {
 		int offset = 0, strOffset = 0;
 		StringBuilder str = new StringBuilder();
 		String last = null;
+		boolean doubleSpace = true;
 		for(String s: doc.getText().split("\n")){
+			// skip blank lines for the purpose of merging them
+			if(s.trim().length() == 0 && doubleSpace){
+				str.append(s+"\n");
+				offset += s.length()+1;
+				doubleSpace = false;
+				continue;
+			}
+			
 			// check if this sentence does not need to be merged
 			// with the previous one, lets save it
 			if(!mergeLines(last,s)){
@@ -54,6 +62,7 @@ public class SentenceProcessor implements Processor<Document> {
 			str.append(s+"\n");
 			offset += s.length()+1;
 			last  = s;
+			doubleSpace = true;
 		}
 		// take care of the last sentence
 		if(str.length() > 0){
@@ -81,11 +90,13 @@ public class SentenceProcessor implements Processor<Document> {
 		// if sentence starts with lots of spaces or bullets 
 		// old pattern
 		Pattern p = Pattern.compile(BULLET_PATTERN,Pattern.DOTALL|Pattern.MULTILINE);
-	
+		boolean bullet = false;
+		
 		Matcher m = p.matcher(text);
 		if(m.matches()){
 			String prefix = m.group(1);
 			if(prefix.length()>0){
+				bullet = true;
 				text = text.substring(prefix.length());
 				offset = offset + prefix.length();
 			}
@@ -95,8 +106,14 @@ public class SentenceProcessor implements Processor<Document> {
 		List<Sentence> sentences = new ArrayList<Sentence>();
 		if(Sentence.TYPE_PROSE.equals(type)){
 			sentences = SentenceDetector.getSentences(text,offset);
+			if(bullet && !sentences.isEmpty()){
+				sentences.get(0).setSentenceType(Sentence.TYPE_BULLET);
+			}
+			
 		}else{
 			Sentence s = new Sentence(text,offset,Sentence.TYPE_LINE);
+			if(bullet)
+				s.setSentenceType(Sentence.TYPE_BULLET);
 			if(isDivider(s))
 				s.setSentenceType(Sentence.TYPE_DIVIDER);
 			
@@ -172,7 +189,11 @@ public class SentenceProcessor implements Processor<Document> {
 		if(last == null)
 			return false;
 		// if previous item is worksheet ..
-		if(SynopticReportDetector.detect(last))
+		if(!last.matches(BULLET_PATTERN) && SynopticReportDetector.detect(last))
+			return false;
+		
+		// if current line is a bullet, then it is irrelevant of what the last line is
+		if(s.matches(BULLET_PATTERN))
 			return false;
 		
 		// if previous sentence ends with a lower case word or digit or comma
@@ -180,6 +201,7 @@ public class SentenceProcessor implements Processor<Document> {
 		if(last.matches(PROSE_SENTENCE_END) && s.matches(PROSE_SENTENCE_START)){
 			return true;
 		}
+
 		return false;
 	}
 

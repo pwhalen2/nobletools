@@ -8,9 +8,12 @@ import edu.pitt.dbmi.nlp.noble.terminology.TerminologyException;
 
 public class ParagraphProcessor implements Processor<Document> {
 	private static final String PARAGRAPH = "\\n{2,}";
+	private static final String DSPACE_PARAGRAPH = "\\n{3,}";
 	private static final String DIVS = "\\-{5,}|_{5,}|={5,}";
 	private static final String PARTS = "PARTS?\\s+\\d+(\\s+AND\\s+\\d+)?:?";
 	private static final Pattern PATTERN = Pattern.compile("("+PARAGRAPH+"|"+DIVS+"|"+PARTS+")",Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
+	private static final Pattern DSPACE_PATTERN = Pattern.compile("("+DSPACE_PARAGRAPH+"|"+DIVS+"|"+PARTS+")",Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
+	private static final Pattern SINGLE_SPACE = Pattern.compile("^[^\\n]{5,}\\n[^\\n]{5,}$",Pattern.MULTILINE|Pattern.DOTALL); 
 	private long time;
 	
 	
@@ -55,7 +58,7 @@ public class ParagraphProcessor implements Processor<Document> {
 			return;
 		
 		int offs = 0;
-		Matcher mt = PATTERN.matcher(text);
+		Matcher mt = isDoubleSpace(text)?DSPACE_PATTERN.matcher(text):PATTERN.matcher(text);
 		String delim = null;
 		while(mt.find()){
 			delim = mt.group();
@@ -77,6 +80,10 @@ public class ParagraphProcessor implements Processor<Document> {
 	
 	
 	
+	private boolean isDoubleSpace(String text) {
+		return !SINGLE_SPACE.matcher(text).find();
+	}
+
 	public long getProcessTime() {
 		return time;
 	}

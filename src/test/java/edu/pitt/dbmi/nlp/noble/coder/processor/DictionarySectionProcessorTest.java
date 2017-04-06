@@ -44,7 +44,7 @@ public class DictionarySectionProcessorTest {
 	public void testSectionProcessor(File dir) throws Exception{
 		List<Processor<Document>> list = new ArrayList<Processor<Document>>();
 		list.add(new DictionarySectionProcessor());
-		new ReportProcessor(list).processFile(dir);
+		//new ReportProcessor(list).processFile(dir);
 	}
 
 

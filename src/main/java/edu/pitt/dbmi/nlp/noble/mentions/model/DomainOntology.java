@@ -293,6 +293,9 @@ public class DomainOntology {
 					
 					// set some options
 					terminology.setStemWords(isNormalizeAnchorTerms());
+					terminology.setScoreConcepts(false);
+					terminology.setSelectBestCandidate(false);
+				
 					//terminology.setHandlePossibleAcronyms(false);
 					
 					//TODO: maybe custom params

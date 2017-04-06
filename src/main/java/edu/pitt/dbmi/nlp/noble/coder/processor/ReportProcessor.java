@@ -61,51 +61,6 @@ public class ReportProcessor implements Processor<Document> {
 		processors = proc;
 	}
 	
-
-	/**
-	 * process document.
-	 *
-	 * @param f the f
-	 * @throws Exception the exception
-	 */
-	public void processFile(File f) throws Exception {
-		if(f.isDirectory()){
-			for(File c: f.listFiles()){
-				processFile(c);
-			}
-		}else if(f.getName().endsWith(".txt")){
-			System.out.print(f.getName() +" .. ");
-			Document d = process(f);
-			System.out.println(d.getProcessTime());
-			// debug sections
-			BufferedWriter bf = new BufferedWriter(new FileWriter(new File(f.getAbsolutePath()+".sectioned")));
-			bf.write("=========\n");
-			for(Section s: d.getSections()){
-				bf.write(s.getTitle()+"\n");
-			}
-			bf.write("=========\n");
-			for(Section s: d.getSections()){
-				bf.write("-------<\n["+s.getTitle()+"]\n"+s.getBody()+">-------\n");
-			}
-			bf.close();
-			
-			// debug sentences
-			bf = new BufferedWriter(new FileWriter(new File(f.getAbsolutePath()+".sentences")));
-			for(Sentence s: d.getSentences()){
-				bf.write(s.getText().trim()+"\t|\t"+s.getSentenceType()+"\n");
-			}
-			bf.close();
-			
-			// debug paragraphs
-			bf = new BufferedWriter(new FileWriter(new File(f.getAbsolutePath()+".paragraphs")));
-			for(Paragraph s: d.getParagraphs()){
-				bf.write("-------<"+s.getPart()+">-------<\n"+s.getText().trim()+"\n>--------\n");
-			}
-			bf.close();
-			
-			
-		}
-	}
 	
 	/**
 	 * parse document into Sections and Sentences.

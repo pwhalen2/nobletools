@@ -484,7 +484,7 @@ public class ConText implements Processor<Sentence> {
 				continue;
 			
 			// looking forward, if modifier is before target and target is before termination point
-			if(forward && modifier.getStartPosition() <= target.getStartPosition() && target.getStartPosition() <= end){
+			if(forward && (modifier.getStartPosition() <= target.getStartPosition() ||  modifier.getEndPosition() < target.getEndPosition()) && target.getStartPosition() <= end){
 				add = true;
 			}
 			// looking backward, if modifier is after target and target is after termination point

@@ -409,29 +409,6 @@ public class Mention implements Spannable, Comparable<Mention> {
 	 * @param m the m
 	 */
 	public void addModifier(Modifier m) {
-		/*
-		boolean add = false;
-		if(getModifierMap().containsKey(m.getType())){
-			Modifier oldM = getModifierMap().get(m.getType());
-			// replace default modifier, with non default modifier
-			if(oldM.isDefaultValue() && !m.isDefaultValue()){
-				add = true;
-			}
-			// if new modifier is longer, then replace the old one
-			if(m.getMention() != null && oldM.getMention() != null && m.getMention().contains(oldM.getMention())){
-				add = true;
-			}
-		}else{
-			// if no modifier of that type was defined
-			add = true;
-		}
-
-		// add modifier
-		if(add)
-			getModifiers().put(m.getType(),m);
-		*/
-
-
 		// get existing values
 		List<Modifier> list = getModifierMap().get(m.getType());
 		// if nothing there, then just add

@@ -16,7 +16,9 @@ public class SentenceDetector {
 	// list of known exceptions where period is allowed 
 	static {
 		exceptionList.add(".*\\W(vs|Fig|al|etc)\\."); // vs. Fig. al.
-		exceptionList.add(".*\\W[A-Z][a-z]?\\."); // A.B. Dr. Mr. etc... 
+		exceptionList.add(".*\\W[A-Z][a-z]?\\."); // A.B. Dr. Mr. etc...
+		exceptionList.add(".*\\W[a-z]\\."); // single letter lower case abbreviation s.a. q.d. 
+
 	}
 
 	
@@ -111,7 +113,8 @@ public class SentenceDetector {
 			else
 				s.append(tc[i]);
 			
-			if(tc[i] == '.' || tc[i] == '!' || tc[i] == '?'){
+			// TODO: just added ; as a sentence seperator, not sure if it is good or not yet.
+			if(tc[i] == '.' || tc[i] == '!' || tc[i] == '?'  || tc[i] == ';'){  
 				// get candidate sentence
 				//String s = txt.substring(st,i+1);
 				

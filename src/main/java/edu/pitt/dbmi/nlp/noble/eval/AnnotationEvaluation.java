@@ -282,7 +282,7 @@ public class AnnotationEvaluation implements ActionListener {
 	private List<IInstance> getMatchingAnnotationVaiables(List<IInstance> candidateVariables, IInstance goldInst) {
 		List<IInstance> matchedInstances = new ArrayList<IInstance>();
 		IProperty prop = null; 
-		String goldSpan = ""+goldInst.getPropertyValue(goldInst.getOntology().getProperty(DomainOntology.HAS_SPAN));
+		String goldSpan = getPropertyValue(goldInst.getOntology().getProperty(DomainOntology.HAS_SPAN),goldInst);
 		IClass goldType = null;
 		
 		// set to the percent of overlap of gold 
@@ -295,7 +295,7 @@ public class AnnotationEvaluation implements ActionListener {
 				prop = inst.getOntology().getProperty(DomainOntology.HAS_SPAN);
 			if(goldType == null)
 				goldType = inst.getOntology().getClass(goldInst.getDirectTypes()[0].getName());
-			String span = ""+inst.getPropertyValue(prop);
+			String span = getPropertyValue(prop,inst);
 			IClass type = inst.getDirectTypes()[0];
 			// if candidate type is identical to gold or more specific
 			if(type.equals(goldType) || type.hasSuperClass(goldType)){
@@ -308,6 +308,15 @@ public class AnnotationEvaluation implements ActionListener {
 		}
 		return matchedInstances;
 	}
+	
+	private String getPropertyValue(IProperty prop, IInstance inst){
+		StringBuilder str = new StringBuilder();
+		for(Object o: inst.getPropertyValues(prop)){
+			str.append(o+" ");
+		}
+		return str.toString();
+	}
+	
 
 	/**
 	 * do spans overlap on anchor
