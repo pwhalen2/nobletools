@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -269,15 +271,20 @@ public class NobleMentionsTool implements ActionListener{
 				if(p.containsKey("output"))
 					output.setText(p.getProperty("output"));
 				if(p.containsKey("ontology")){
-					String ont = p.getProperty("ontology");
-					int index = -1;
-					for(int i=0;i<templateList.getModel().getSize();i++){
-						if(templateList.getModel().getElementAt(i).toString().equals(ont)){
-							index = i; break;
+					final String ont = p.getProperty("ontology");
+					SwingUtilities.invokeLater(new Runnable() {
+						public void run() {
+							int index = -1;
+							for(int i=0;i<templateList.getModel().getSize();i++){
+								if(templateList.getModel().getElementAt(i).toString().equals(ont)){
+									index = i; break;
+								}
+							}
+							if(index > -1)
+								templateList.setSelectedIndex(index);
 						}
-					}
-					if(index > -1)
-						templateList.setSelectedIndex(index);
+					});
+					
 				}
 			}
 		});
@@ -498,7 +505,7 @@ public class NobleMentionsTool implements ActionListener{
 							ex.printStackTrace();
 						}
 						refreshTemplateList();
-						setDefaultOutputLocation();
+						//setDefaultOutputLocation();
 						setBusy(false);
 					}
 				}).start();
@@ -537,6 +544,7 @@ public class NobleMentionsTool implements ActionListener{
 					return;
 				}
 				setBusy(true);
+				updateOutputLocation();
 				cancelRun = false;
 				
 				// save settings
@@ -630,6 +638,7 @@ public class NobleMentionsTool implements ActionListener{
 	 * set default output location, based on input file
 	 */
 	private void setDefaultOutputLocation(){
+		// derive output from input
 		File file = new File(input.getText());
 		if(file.exists()){
 			String prefix = file.getName();
@@ -637,6 +646,19 @@ public class NobleMentionsTool implements ActionListener{
 				prefix = prefix.substring(0,prefix.length()-4);
 			prefix = prefix+File.separator+(new SimpleDateFormat("yyyy-MM-dd HH.mm.ss").format(new Date(System.currentTimeMillis())));
 			output.setText(new File(file.getParent()+File.separator+"Output"+File.separator+prefix).getAbsolutePath());
+		}
+	}
+	
+	/**
+	 * set default output location, based latest date time
+	 */
+	private void updateOutputLocation(){
+		File file = new File(output.getText());
+		Pattern pt = Pattern.compile("\\d{4}-\\d{2}-\\d{2} \\d{2}\\.\\d{2}\\.\\d{2}");
+		Matcher mt = pt.matcher(file.getName());
+		if(mt.matches()){
+			String date = (new SimpleDateFormat("yyyy-MM-dd HH.mm.ss").format(new Date(System.currentTimeMillis())));
+			output.setText(new File(file.getParentFile(),date).getAbsolutePath());
 		}
 	}
 	
