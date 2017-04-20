@@ -2,6 +2,8 @@ package edu.pitt.dbmi.nlp.noble.ontology;
 
 import java.util.*;
 
+import org.omg.CORBA.OMGVMCID;
+
 import edu.pitt.dbmi.nlp.noble.ontology.owl.OFacetRestriction;
 
 /**
@@ -225,5 +227,59 @@ public class LogicExpression extends ArrayList implements ILogicExpression {
 			}
 		}
 		return false;
+	}
+	
+	
+	
+	/**
+	 * get all restrictions that are contained in an expression
+	 * This method is recursive
+	 * @param includeNested - include nested classes
+	 * @return a list of restrictions
+	 */
+	public List<IRestriction> getRestrictionOperands(boolean includeNested) {
+		List<IRestriction> list = new ArrayList<IRestriction>();
+		for(Object o: this){
+			if(o instanceof IRestriction){
+				list.add((IRestriction)o);
+			}else if(o instanceof LogicExpression && includeNested){
+				list.addAll(((LogicExpression)o).getRestrictionOperands(includeNested));
+			}
+		}
+		return list;
+	}
+	
+	/**
+	 * get all restrictions that are contained in an expression
+	 * This method is recursive
+	 * @return a list of restrictions
+	 */
+	public List<IRestriction> getRestrictionOperands() {
+		return getRestrictionOperands(true);
+	}
+	
+	/**
+	 * get all classes contained in the expression
+	 * @return list of classes
+	 */
+	public List<IClass> getClassOperands(){
+		return getClassOperands(true);
+	}
+	
+	/**
+	 * get all classes contained in the expression
+	 * @param includeNested - include nested classes
+	 * @return list of classes
+	 */
+	public List<IClass> getClassOperands(boolean includeNested){
+		List<IClass> list = new ArrayList<IClass>();
+		for(Object o: this){
+			if(o instanceof IClass){
+				list.add((IClass)o);
+			}else if(o instanceof LogicExpression && includeNested){
+				list.addAll(((LogicExpression)o).getClassOperands(includeNested));
+			}
+		}
+		return list;
 	}
 }
