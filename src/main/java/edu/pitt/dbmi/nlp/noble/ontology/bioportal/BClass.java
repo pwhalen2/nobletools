@@ -452,6 +452,14 @@ public class BClass extends BResource implements IClass {
 		return new IRestriction [0];
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IClass#getRestrictions(edu.pitt.dbmi.nlp.noble.ontology.IProperty)
+	 */
+	public IRestriction[] getRestrictions() {
+		return new IRestriction [0];
+	}
+
+	
 	/**
 	 * get all subclasses.
 	 *

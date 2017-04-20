@@ -236,6 +236,13 @@ public class OClass extends OResource implements IClass{
 		return list.toArray(new IRestriction [0]);
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.pitt.dbmi.nlp.noble.ontology.IClass#getRestrictions(edu.pitt.dbmi.nlp.noble.ontology.IProperty)
+	 */
+	public IRestriction[] getRestrictions() {
+		return getRestrictions(null);
+	}
+	
 	/**
 	 * Adds the restriction.
 	 *
@@ -247,7 +254,7 @@ public class OClass extends OResource implements IClass{
 		for(Object o: source){
 			if(o instanceof IRestriction){
 				IRestriction r = (IRestriction)o;
-				if(r.getProperty().equals(p) || r.getProperty().hasSuperProperty(p))
+				if(p == null || r.getProperty().equals(p) || r.getProperty().hasSuperProperty(p))
 					target.add(r);
 			}else if(o instanceof List){
 				addRestriction(p, (List) o, target);

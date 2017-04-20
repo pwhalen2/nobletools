@@ -227,6 +227,11 @@ public interface IClass extends IResource {
 	 */
 	public IRestriction [] getRestrictions(IProperty p);
 	
+	/**
+	 * get all restrictions associated with a class either equivalent or necessary.
+	 * @return the restrictions
+	 */
+	public IRestriction [] getRestrictions();
 	
 	/**
 	 * get all necessary  restrictions associated with a given class
