@@ -1,5 +1,6 @@
 package edu.pitt.dbmi.nlp.noble.ontology;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -65,4 +66,35 @@ public interface ILogicExpression extends List {
 	 * @return true if object passes this expression, false otherwise
 	 */
 	public boolean evaluate(Object obj);
+	
+	
+	
+	/**
+	 * get all restrictions that are contained in an expression
+	 * This method is recursive
+	 * @param includeNested - include nested classes
+	 * @return a list of restrictions
+	 */
+	public List<IRestriction> getRestrictions(boolean includeNested);
+	
+	/**
+	 * get all restrictions that are contained in an expression
+	 * This method is recursive
+	 * @return a list of restrictions
+	 */
+	public List<IRestriction> getRestrictions();
+	
+	/**
+	 * get all classes contained in the expression
+	 * @return list of classes
+	 */
+	public List<IClass> getClasses();
+	
+	/**
+	 * get all classes contained in the expression
+	 * @param includeNested - include nested classes
+	 * @return list of classes
+	 */
+	public List<IClass> getClasses(boolean includeNested);
+	
 }

@@ -237,13 +237,13 @@ public class LogicExpression extends ArrayList implements ILogicExpression {
 	 * @param includeNested - include nested classes
 	 * @return a list of restrictions
 	 */
-	public List<IRestriction> getRestrictionOperands(boolean includeNested) {
+	public List<IRestriction> getRestrictions(boolean includeNested) {
 		List<IRestriction> list = new ArrayList<IRestriction>();
 		for(Object o: this){
 			if(o instanceof IRestriction){
 				list.add((IRestriction)o);
 			}else if(o instanceof LogicExpression && includeNested){
-				list.addAll(((LogicExpression)o).getRestrictionOperands(includeNested));
+				list.addAll(((LogicExpression)o).getRestrictions(includeNested));
 			}
 		}
 		return list;
@@ -254,16 +254,16 @@ public class LogicExpression extends ArrayList implements ILogicExpression {
 	 * This method is recursive
 	 * @return a list of restrictions
 	 */
-	public List<IRestriction> getRestrictionOperands() {
-		return getRestrictionOperands(true);
+	public List<IRestriction> getRestrictions() {
+		return getRestrictions(true);
 	}
 	
 	/**
 	 * get all classes contained in the expression
 	 * @return list of classes
 	 */
-	public List<IClass> getClassOperands(){
-		return getClassOperands(true);
+	public List<IClass> getClasses(){
+		return getClasses(true);
 	}
 	
 	/**
@@ -271,13 +271,13 @@ public class LogicExpression extends ArrayList implements ILogicExpression {
 	 * @param includeNested - include nested classes
 	 * @return list of classes
 	 */
-	public List<IClass> getClassOperands(boolean includeNested){
+	public List<IClass> getClasses(boolean includeNested){
 		List<IClass> list = new ArrayList<IClass>();
 		for(Object o: this){
 			if(o instanceof IClass){
 				list.add((IClass)o);
 			}else if(o instanceof LogicExpression && includeNested){
-				list.addAll(((LogicExpression)o).getClassOperands(includeNested));
+				list.addAll(((LogicExpression)o).getClasses(includeNested));
 			}
 		}
 		return list;
