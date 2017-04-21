@@ -244,7 +244,7 @@ public class Instance {
 	 * create a string representation of instance span
 	 * @return
 	 */
-	protected String getInstanceSpan() {
+	public String getInstanceSpan() {
 		StringBuilder str = new StringBuilder();
 		for(Annotation a: getAnnotations()){
 			str.append(a.getStartPosition()+":"+a.getEndPosition()+" ");

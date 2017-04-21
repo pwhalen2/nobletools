@@ -242,4 +242,23 @@ public class Text implements Spannable {
 		String sub = search.getText().substring(s-search.getStartPosition(),e-search.getStartPosition());
 		return sub.replaceAll("\\w+","").length()-1;
 	}
+	
+	/**
+	 * get a distance between two spannable objects in a same search string
+	 * in a number of words.
+	 *
+	 * @param search the search
+	 * @param a the a
+	 * @param b the b
+	 * @return 0 - if one span contains or intersects the other, or distance in words, -1 something went wrong
+	 */
+	public static int getOffsetDistance(Spannable a, Spannable b){
+		if(a.contains(b) || a.intersects(b))
+			return 0;
+		
+		int s = a.getStartPosition() < b.getStartPosition()?a.getEndPosition():b.getEndPosition();
+		int e = a.getStartPosition() < b.getStartPosition()?b.getStartPosition():a.getStartPosition();
+		
+		return e - s;
+	}
 }

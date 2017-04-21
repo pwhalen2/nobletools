@@ -383,7 +383,11 @@ public class HTMLExporter {
 		out.append("<table><tr><th colspan=3 align=left>");
 		out.append(codeEntity(var.getLabel(),code, tip, color,var.getAnnotations()));
 		out.append("</th></tr>");
-		
+	
+		// add text and span
+		out.append("<tr><td>&nbsp;</td><td><span style=\" color:black;\">"+DomainOntology.HAS_ANNOTATION_TEXT+"</span></td><td>"+var.getText()+"</td></tr>");
+		out.append("<tr><td>&nbsp;</td><td><span style=\" color:black;\">"+DomainOntology.HAS_SPAN+"</span></td><td>"+var.getInstanceSpan()+"</td></tr>");
+	
 		Map<String,Set<Instance>> modifiers = var.getModifierInstances();
 		for(String prop: modifiers.keySet()){
 			String pc = "black";
@@ -401,6 +405,7 @@ public class HTMLExporter {
 			out.append("<tr><td>&nbsp;</td><td><span style=\" color:"+pc+";\">"+prop+"</span>");
 			out.append("</td><td>"+val+"</td></tr>");
 		}
+		
 		// find properties that are missing
 		for(String prop: var.findMissingDefinedProperties()){
 			out.append("<tr><td>&nbsp;</td><td><span style=\" color:red;\">"+prop+"</span>");
@@ -568,9 +573,10 @@ public class HTMLExporter {
 					str.append(codeLabel(l,annotations.get(l)));
 					offs = o+l.getLength();
 				}catch(StringIndexOutOfBoundsException ex){
-					System.err.print("Error: "+ex.getMessage()+"\t");
+					//THIS SHIT HAPPENS, IT IS OK
+					/*System.err.print("Error: "+ex.getMessage()+"\t");
 					System.err.print("Sentence:\t"+content.trim()+"/"+s.getOffset()+"\t");
-					System.err.println("Label:\t"+l);
+					System.err.println("Label:\t"+l);*/
 					//ex.printStackTrace();
 				}
 			}
