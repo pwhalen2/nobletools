@@ -76,6 +76,7 @@ public class ConText implements Processor<Sentence> {
 	public static final int DEFAULT_WINDOW_SIZE = 8;
 	public static final String QUALIFIER = "Qualifier";
 	public static final String LEXICON = "Lexicon";
+	public static final String QUANTITY = "Quantity";
 	
 	public static final String MODIFIER_TYPE_POLARITY = "Polarity";
 	public static final String MODIFIER_TYPE_EXPERIENCER = "Experiencer";
@@ -340,9 +341,21 @@ public class ConText implements Processor<Sentence> {
 	public Sentence process(Sentence sentence) throws TerminologyException {
 		time = System.currentTimeMillis();
 		
+		
+		// if the sentence is a section header and it has concepts that were found,
+		// then entire section is a source of attributes for this mention
+		Sentence newSentence = null;
+		if(Sentence.TYPE_HEADER.equals(sentence.getSentenceType()) && !sentence.getMentions().isEmpty() && sentence.getSection() != null){
+			Section section = sentence.getSection();
+			newSentence = new Sentence(section.getText(),section.getOffset(),Sentence.TYPE_PROSE);
+		}else{
+			newSentence = new Sentence(sentence);
+		}
+		
+		
 		// get mentions for this sentence, make a copy of since we don't add mentions
 		// to the original sentence
-		Sentence text = terminology.process(new Sentence(sentence));
+		Sentence text = terminology.process(newSentence);
 		
 		
 		// assign qualifiers to modifiers: Ex: Units to Quality or Laterality to BodySite
@@ -731,6 +744,11 @@ public class ConText implements Processor<Sentence> {
 	 */
 	public static String getModifierValue(String type, Mention m) {
 		Concept c = m.getConcept();
+		
+		// if quantity, then text is its value
+		if(isTypeOf(m,QUANTITY))
+			return m.getText();
+		
 		String val = c.getProperty(type);
 		if(val == null)
 			val = m.getText();

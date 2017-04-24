@@ -124,8 +124,9 @@ public class Instance {
 	public void setModifier(Modifier modifier) {
 		this.modifier = modifier;
 		setMention(modifier.getMention());
-		if(mention == null)
+		if(mention == null){
 			cls = domainOntology.getOntology().getClass(modifier.getValue());
+		}
 		reset();
 	}
 	
@@ -181,7 +182,6 @@ public class Instance {
 		if(instance == null){
 			// check if we have an actual mention or some generic default value w/out a mention
 			if(mention != null){
-				
 				// if instance is DocumentSection, just make a default one
 				if(domainOntology.isTypeOf(cls,DomainOntology.DOCUMENT_SECTION)){
 					instance = domainOntology.getDefaultInstance(cls);
@@ -194,33 +194,11 @@ public class Instance {
 					// instantiate available modifiers
 					List<Instance> modifierInstances = createModifierInstanceList();
 					
-					// go over all restrictions
-					/*
-					for(IRestriction r: domainOntology.getRestrictions(cls)){
-						IProperty prop = r.getProperty();
-						for(Instance modifierInstance: modifierInstances){
-							IInstance modInstance = modifierInstance.getInstance();
-							if(modInstance != null && domainOntology.isPropertyRangeSatisfied(prop,modInstance)){
-								addModifierInstance(prop.getName(),modifierInstance);
-							}else if(modifierInstance.getModifier() != null && prop.getName().equals(modifierInstance.getModifier().getType())){
-								// check if this is a number
-								IProperty p = cls.getOntology().getProperty(modifierInstance.getModifier().getType());
-								if(p != null && p.hasSuperProperty(cls.getOntology().getProperty(DomainOntology.HAS_VALUE))){
-									addModifierInstance(prop.getName(),modifierInstance);
-								}
-							}
-						}
-					}
-					*/
-					
 					Set<IProperty> props = domainOntology.getProperties(cls);
 					for(Instance modifierInstance: modifierInstances){
-						IInstance modInstance = modifierInstance.getInstance();
-						if(modInstance != null){
-							for(IProperty prop : domainOntology.getProperties(modifierInstance.getModifier())){
-								if(props.contains(prop) && domainOntology.isPropertyRangeSatisfied(prop,  modifierInstance.getInstance())){
-									addModifierInstance(prop.getName(),modifierInstance);
-								}
+						for(IProperty prop : domainOntology.getProperties(modifierInstance.getModifier())){
+							if(props.contains(prop) && isPropertyRangeSatisfied(prop,  modifierInstance)){
+								addModifierInstance(prop.getName(),modifierInstance);
 							}
 						}
 					}
@@ -231,14 +209,36 @@ public class Instance {
 				
 				
 			}else if(modifier != null){
-				instance = domainOntology.getOntology().getInstance(cls.getName()+"_default");
-				if(instance == null)
-					instance = cls.createInstance(cls.getName()+"_default");
+				if(DomainOntology.HAS_QUANTITY_VALUE.equals(modifier.getType())){
+					return null;
+				}else{
+					// get default instance of something
+					instance = domainOntology.getOntology().getInstance(cls.getName()+"_default");
+					if(instance == null)
+						instance = cls.createInstance(cls.getName()+"_default");
+				}
 				
 			}
 		}
 		return instance;
 	}
+	
+	/**
+	 * is property range satisfied for a given instance
+	 * @param prop
+	 * @param modifierInstance
+	 * @return
+	 */
+	protected boolean isPropertyRangeSatisfied(IProperty prop, Instance modifierInstance){
+		if(modifierInstance.getInstance() != null)
+			return domainOntology.isPropertyRangeSatisfied(prop, modifierInstance.getInstance());
+		if(DomainOntology.HAS_QUANTITY_VALUE.equals(modifierInstance.getModifier().getType())){
+			Number num = new Double(modifierInstance.getModifier().getValue());
+			return domainOntology.isPropertyRangeSatisfied(prop, num);
+		}
+		return false;
+	}
+	
 	
 	/**
 	 * create a string representation of instance span
@@ -418,7 +418,7 @@ public class Instance {
 
         // check if this number instance is too general for THIS instance
         IClass vc = inst.getConceptClass();
-        if(vc != null && vc.hasSuperClass(number) && !isSatisfied(getConceptClass(),prop,vc)) {
+        if(vc != null && vc.hasSuperClass(number) && !prop.isDatatypeProperty() && !isSatisfied(getConceptClass(),prop,vc)) {
             return;
         }
 

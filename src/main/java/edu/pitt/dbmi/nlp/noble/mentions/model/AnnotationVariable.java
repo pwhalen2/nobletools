@@ -92,27 +92,12 @@ public class AnnotationVariable extends Instance {
 			
 			// instantiate available modifiers
 			List<Instance> modifierInstances = createModifierInstanceList();
-			
-			// go over all restrictions
-			/*for(IRestriction r: domainOntology.getRestrictions(cls)){
-				IProperty prop = r.getProperty();
-				for(Instance modifierInstance: modifierInstances){
-					IInstance modInstance = modifierInstance.getInstance();
-					if(modInstance != null && domainOntology.isSameProperty(prop,modifierInstance.getModifier()) && domainOntology.isPropertyRangeSatisfied(prop,modInstance)){
-						//instance.addPropertyValue(prop, modInstance);
-						addModifierInstance(prop.getName(),modifierInstance);
-					}
-				}
-			}
-			*/
+		
 			Set<IProperty> props = domainOntology.getProperties(cls);
 			for(Instance modifierInstance: modifierInstances){
-				IInstance modInstance = modifierInstance.getInstance();
-				if(modInstance != null){
-					for(IProperty prop : domainOntology.getProperties(modifierInstance.getModifier())){
-						if(props.contains(prop) && domainOntology.isPropertyRangeSatisfied(prop,  modifierInstance.getInstance())){
-							addModifierInstance(prop.getName(),modifierInstance);
-						}
+				for(IProperty prop : domainOntology.getProperties(modifierInstance.getModifier())){
+					if(props.contains(prop) && isPropertyRangeSatisfied(prop,  modifierInstance)){
+						addModifierInstance(prop.getName(),modifierInstance);
 					}
 				}
 			}

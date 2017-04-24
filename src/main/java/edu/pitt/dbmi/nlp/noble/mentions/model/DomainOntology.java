@@ -1155,6 +1155,7 @@ public class DomainOntology {
 		m.setConcept(concept);
 		m.setAnnotations(mention.getAnnotations());
 		m.addModifiers(mention.getModifierMap());
+		m.setSentence(mention.getSentence());
 		
 		return m;
 	}
@@ -1184,6 +1185,20 @@ public class DomainOntology {
 		LogicExpression exp = new LogicExpression(ILogicExpression.OR,prop.getRange());
 		return exp.evaluate(inst);
 	}
+	
+	/**
+	 * is property range satisfied with a given class?
+	 * @param prop- property in question
+	 * @param inst - instance in question
+	 * @return true or false
+	 */
+	public boolean isPropertyRangeSatisfied(IProperty prop, Number num){
+		if(num == null)
+			return false;
+		LogicExpression exp = new LogicExpression(ILogicExpression.OR,prop.getRange());
+		return exp.evaluate(num);
+	}
+	
 	
 	public Set<IProperty> getProperties(IClass cls){
 		Set<IProperty> props = new HashSet<IProperty>();
