@@ -97,7 +97,8 @@ public class DomainOntology {
 	public static final String DOCUMENT_SECTION = "DocumentSection";
 	public static final String HAS_SPAN = "hasSpan";
     public static final String HAS_ANNOTATION_TEXT = "hasAnnotationText";
-	
+	public static final String PARAGRAPH_SCOPE = "paragraph";
+	public static final String SECTION_SCOPE = "section";
 	
 	private IOntology ontology;
 	private Terminology anchorTerminology, modifierTerminology,sectionTerminology;
@@ -108,7 +109,8 @@ public class DomainOntology {
 	private Map<String,String> defaultValues;
 	private static int instanceCounter = 1;
 	private Map<IClass,List<IInstance>> classInstanceMap;
-	private boolean normalizeAnchors, normalizeModifiers;
+	private boolean normalizeAnchors, normalizeModifiers, scoreConcepts;
+	private String annotatioRelationSkope = PARAGRAPH_SCOPE;
 	
 	/**
 	 * File or URL location of the domain ontology
@@ -159,6 +161,23 @@ public class DomainOntology {
 
 	public void setNormalizeModifierTerms(boolean normalizeModifiers) {
 		this.normalizeModifiers = normalizeModifiers;
+	}
+	
+	public String getAnnotatioRelationSkope() {
+		return annotatioRelationSkope;
+	}
+
+	public void setAnnotatioRelationSkope(String annotatioRelationSkope) {
+		this.annotatioRelationSkope = annotatioRelationSkope;
+	}
+	
+	
+	public boolean isScoreAnchors() {
+		return scoreConcepts;
+	}
+
+	public void setScoreAnchors(boolean scoreConcepts) {
+		this.scoreConcepts = scoreConcepts;
 	}
 
 	/**
@@ -221,6 +240,15 @@ public class DomainOntology {
 		return null;
 	}
 	
+	
+	/**
+	 * get locations of terminology cache
+	 * @param ontologyLocation - location of ontology file
+	 * @return File directory location
+	 */
+	public File getTerminologyCacheLocation(){
+		return getTerminologyCacheLocation(ontologyLocation);
+	}
 	
 	private File getAnchorTerminologyFile(){
 		if(ontologyLocation != null){
@@ -293,10 +321,8 @@ public class DomainOntology {
 					
 					// set some options
 					terminology.setStemWords(isNormalizeAnchorTerms());
-					terminology.setScoreConcepts(false);
+					terminology.setScoreConcepts(isScoreAnchors());
 					terminology.setSelectBestCandidate(false);
-				
-					//terminology.setHandlePossibleAcronyms(false);
 					
 					//TODO: maybe custom params
 					// set language filter to only return English values
@@ -1245,16 +1271,6 @@ public class DomainOntology {
 	 */
 	public List<AnnotationVariable> getAnnotationVariables(Instance anchor){
 		List<AnnotationVariable> list = new ArrayList<AnnotationVariable>();
-		// go over all annotation classes and find ones that have this anchor defined
-		/*
-		IProperty hasAnchor = ontology.getProperty(HAS_ANCHOR);
-		IClass cls = anchor.getConceptClass();
-		for(IClass annotation: ontology.getClass(ANNOTATION).getSubClasses()){
-			if(isDefinedInDomain(annotation) && hasDefinedRelation(annotation, hasAnchor, cls)){
-				list.add(new AnnotationVariable(annotation,anchor));
-			}
-		}
-		*/
 		// find annotations that anchor points to
 		IProperty isAnchorOf = ontology.getProperty(IS_ANCHOR_OF);
 		for(IClass annotation: getContainedClasses(anchor.getConceptClass().getRestrictions(isAnchorOf))){
@@ -1453,10 +1469,21 @@ public class DomainOntology {
 		// create vraiable lists 
 		List<AnnotationVariable> before =  new Stack<AnnotationVariable>();
 		List<AnnotationVariable> after  =  new ArrayList<AnnotationVariable>();
-		Spannable span = var.getMention().getSentence().getSection();
-		if(span == null)
-			span = var.getMention().getSentence().getDocument();
 		
+		// get the span that constraints the relationship
+		Spannable span = null;
+		if(PARAGRAPH_SCOPE.equals(getAnnotatioRelationSkope()))
+			span = var.getMention().getSentence().getParagraph();
+		else if(SECTION_SCOPE.equals(getAnnotatioRelationSkope()))
+			span = var.getMention().getSentence().getSection();
+		
+		// default to the entire document 
+		if(span == null){
+			// if you can't figure out this out, don't do anything
+			//span = var.getMention().getSentence().getDocument();
+			return Collections.EMPTY_MAP;
+		}
+			
 		// create a before and after list
 		for(AnnotationVariable v: variables){
 			if(span.contains(v.getMention())){
@@ -1467,17 +1494,7 @@ public class DomainOntology {
 				}
 			}
 		}
-
 		
-	/*	int i = variables.indexOf(var);
-		if(i > -1){
-			// search for variables before this instance
-			List<AnnotationVariable> before = variables.subList(0,i);
-			List<AnnotationVariable> after  = variables.subList(i+1,variables.size());
-
-			// reverse the before variables
-			Collections.reverse(before);
-	 		*/
 		// go over relations that apply
 		for (String relation : relatedAnnotations.keySet()) {
 			// go over  both candidate lists: before and after

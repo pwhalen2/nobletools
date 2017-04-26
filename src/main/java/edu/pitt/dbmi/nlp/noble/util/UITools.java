@@ -69,12 +69,22 @@ public class UITools {
       * @param cls - class that this belongs to
       */
 	public static void saveSettings(Properties p, Class cls){
-		File file = new File(DEFAULT_PROPERTIES_LOCATION,cls.getSimpleName()+".properties");
+		saveSettings(p, new File(DEFAULT_PROPERTIES_LOCATION,cls.getSimpleName()+".properties"));
+		
+	}
+     
+     
+     /**
+      * save UI settings map for a given class
+      * @param p - property map of settings
+      * @param file - file that contains the settings
+      */
+	public static void saveSettings(Properties p, File file){
 		if(!file.getParentFile().exists())
 			file.getParentFile().mkdirs();
 		try{
 			FileOutputStream fos = new FileOutputStream(file);
-			p.store(fos,cls.getSimpleName()+" GUI properties on "+new Date());
+			p.store(fos,file.getName());
 			fos.close();
 		}catch(IOException ex){
 			ex.printStackTrace();
@@ -89,8 +99,17 @@ public class UITools {
 	 */
 	
 	public static Properties loadSettings(Class cls){
+		return loadSettings(new File(DEFAULT_PROPERTIES_LOCATION,cls.getSimpleName()+".properties"));	
+	}
+	
+	/**
+	 * load UI settings map for a given class
+	 * @param file - file that contains the properties
+	 * @return - properties
+	 */
+	
+	public static Properties loadSettings(File file){
 		Properties p = new Properties();
-		File file = new File(DEFAULT_PROPERTIES_LOCATION,cls.getSimpleName()+".properties");
 		if(file.exists()){
 			try{
 				FileInputStream fis = new FileInputStream(file);

@@ -82,6 +82,22 @@ public class NobleMentions implements Processor<Composition>{
 	
 	
 	
+	public boolean isProcessAnchorsInHeader() {
+		return codeSectionHeadersWithAnchors;
+	}
+
+	public void setProcessAnchorsInHeader(boolean codeSectionHeadersWithAnchors) {
+		this.codeSectionHeadersWithAnchors = codeSectionHeadersWithAnchors;
+	}
+
+	public boolean isProcessModifiersInHeader() {
+		return codeSectionHeadersWithModifiers;
+	}
+
+	public void setProcessModifiersInHeader(boolean codeSectionHeadersWithModifiers) {
+		this.codeSectionHeadersWithModifiers = codeSectionHeadersWithModifiers;
+	}
+
 	/**
 	 * process document represented as a string.
 	 *
@@ -100,6 +116,11 @@ public class NobleMentions implements Processor<Composition>{
 	}
 	
 	
+	/**
+	 * process composition
+	 * @param doc - composition document
+	 * @return the document
+	 */
 	public Composition process(Composition doc) throws TerminologyException {
 		time = System.currentTimeMillis();
 		

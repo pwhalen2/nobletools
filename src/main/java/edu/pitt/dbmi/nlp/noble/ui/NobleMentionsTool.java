@@ -1,10 +1,12 @@
 package edu.pitt.dbmi.nlp.noble.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Toolkit;
@@ -35,9 +37,11 @@ import java.util.regex.Pattern;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
@@ -50,11 +54,15 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.text.html.HTMLDocument;
@@ -96,7 +104,7 @@ public class NobleMentionsTool implements ActionListener{
 	private JList<DomainOntology> templateList;
 	private JTextArea console;
 	private JProgressBar progress;
-	private JPanel buttonPanel,progressPanel;
+	private JPanel buttonPanel,progressPanel,optionsPanel;
 	private JButton run;
 	private File lastFile;
 	private long totalTime;
@@ -106,6 +114,17 @@ public class NobleMentionsTool implements ActionListener{
 	private static boolean statandlone = false;
 	private DefaultRepository repository = new DefaultRepository();
 	private boolean cancelRun;
+	
+	// options
+	private ButtonGroup annotationScope ;
+	private JCheckBox processHeaderAnchor;
+	private JCheckBox processHeaderModifier;
+	private JCheckBox normalizeAnchors ;
+	private JCheckBox scoreAnchors;
+	private JCheckBox ignoreLabels;
+	private JRadioButton sectionScope,paragraphScope; 
+	
+	
 	
 	/**
 	 * What .
@@ -151,9 +170,9 @@ public class NobleMentionsTool implements ActionListener{
 			browse.setActionCommand("i_browser");
 		
 			
-			JButton export = new JButton("Export");
-			export.setActionCommand("export");
-			export.addActionListener(this);
+			JButton options = new JButton("Options");
+			options.setActionCommand("options");
+			options.addActionListener(this);
 			JButton add = new JButton("Import");
 			add.setActionCommand("import");
 			add.addActionListener(this);
@@ -170,8 +189,8 @@ public class NobleMentionsTool implements ActionListener{
 			panel.add(new JLabel("Input Schema"),c);c.gridx++;c.gridheight=4;
 			panel.add(scroll,c);c.gridx++;c.gridheight=1;
 			panel.add(add,c);c.gridy++;
-			panel.add(export,c);c.gridy++;
 			panel.add(info,c);c.gridy++;
+			panel.add(options,c);c.gridy++;
 			panel.add(eval,c);c.gridy++;
 			c.gridx = 0;
 			panel.add(new JLabel("Input Directory "),c);c.gridx++;
@@ -258,6 +277,52 @@ public class NobleMentionsTool implements ActionListener{
 		p.setProperty("output",output.getText());
 		UITools.saveSettings(p,getClass());
 	}
+	
+	/**
+	 * save UI settings
+	 */
+	private void saveOptionsSettings(){
+		DomainOntology ontology = templateList.getSelectedValue();
+		if(ontology != null){
+			Properties p = new Properties();
+			p.setProperty("annotation.relation.scope",annotationScope.getSelection().getActionCommand());
+			p.setProperty("process.header.anchors",""+processHeaderAnchor.isSelected());
+			p.setProperty("process.header.modifiers",""+processHeaderModifier.isSelected());
+			p.setProperty("normalize.anchors",""+normalizeAnchors.isSelected());
+			p.setProperty("score.anchors",""+scoreAnchors.isSelected());
+			p.setProperty("ignore.labels",""+ignoreLabels.isSelected());
+			UITools.saveSettings(p,new File(ontology.getTerminologyCacheLocation(),"ontology.properties"));
+		}
+	}
+	
+	
+	/**
+	 * save UI settings
+	 */
+	private void loadOptionsSettings(){
+		getOptionsPanel();
+		DomainOntology ontology = templateList.getSelectedValue();
+		if(ontology != null){
+			final Properties p = UITools.loadSettings(new File(ontology.getTerminologyCacheLocation(),"ontology.properties"));
+			sectionScope.setSelected("section".equals(p.getProperty("annotation.relation.scope")));
+			processHeaderAnchor.setSelected(Boolean.parseBoolean(p.getProperty("process.header.anchors")));
+			processHeaderModifier.setSelected(Boolean.parseBoolean(p.getProperty("process.header.modifiers")));
+			normalizeAnchors.setSelected(Boolean.parseBoolean(p.getProperty("normalize.anchors")));
+			scoreAnchors.setSelected(Boolean.parseBoolean(p.getProperty("score.anchors")));
+			ignoreLabels.setSelected(Boolean.parseBoolean(p.getProperty("ignore.labels")));
+		}
+	}
+	
+	private void loadOptions(NobleMentions nobleMentions) {
+		getOptionsPanel();
+		nobleMentions.setProcessAnchorsInHeader(processHeaderAnchor.isSelected());
+		nobleMentions.setProcessModifiersInHeader(processHeaderModifier.isSelected());	
+		nobleMentions.getDomainOntology().setAnnotatioRelationSkope(annotationScope.getSelection().getActionCommand());
+		nobleMentions.getDomainOntology().setNormalizeAnchorTerms(normalizeAnchors.isSelected());
+		nobleMentions.getDomainOntology().setScoreAnchors(scoreAnchors.isSelected());
+		saveOptionsSettings();
+	}
+	
 	
 	/**
 	 * save UI settings
@@ -392,6 +457,8 @@ public class NobleMentionsTool implements ActionListener{
 			System.exit(0);
 		}else if("export".equals(cmd)){
 			doExport();
+		}else if("options".equals(cmd)){
+			doOptions();
 		}else if("import".equals(cmd)){
 			doImport();
 		}else if("preview".equals(cmd)){
@@ -401,6 +468,99 @@ public class NobleMentionsTool implements ActionListener{
 		}
 	}
 	
+	private JPanel getOptionsPanel(){
+		if(optionsPanel == null){
+			optionsPanel = new JPanel();
+			
+			optionsPanel.setLayout(new BorderLayout());
+			optionsPanel.setBorder(new CompoundBorder(new BevelBorder(BevelBorder.RAISED),new EmptyBorder(10, 10, 10, 10)));
+			Color blue = new Color(100,100,255);
+			
+			// runtime options
+			JPanel panel1 = new JPanel();
+		
+			TitledBorder border = new TitledBorder(new LineBorder(blue),"Runtime options");
+			border.setTitleColor(blue);
+			
+			panel1.setBorder(new CompoundBorder(new EmptyBorder(0, 0, 5, 0),border));
+			GridBagConstraints c = new GridBagConstraints(0,0,1,1,1,1,GridBagConstraints.CENTER,GridBagConstraints.HORIZONTAL,new Insets(0,0,0,0),0,0);
+			GridBagLayout l = new GridBagLayout();
+			l.setConstraints(panel1,c);
+			panel1.setLayout(l);
+			
+			// init controls
+			sectionScope = new JRadioButton("Section",false);
+			sectionScope.setActionCommand(DomainOntology.SECTION_SCOPE);
+			paragraphScope = new JRadioButton("Paragraph",true);
+			paragraphScope.setActionCommand(DomainOntology.PARAGRAPH_SCOPE);
+			annotationScope = new ButtonGroup();
+			annotationScope.add(sectionScope);
+			annotationScope.add(paragraphScope);
+			
+			processHeaderAnchor = new JCheckBox("Anchors");
+			processHeaderModifier = new JCheckBox("Modifiers");
+			
+			panel1.add(new JLabel("Scope of annotation to annotation relation"),c);c.gridx++;
+			panel1.add(sectionScope,c);c.gridx++;
+			panel1.add(paragraphScope,c);c.gridy++;c.gridx = 0;
+			
+			panel1.add(new JLabel("Process section header for"),c);c.gridx++;
+			panel1.add(processHeaderAnchor,c);c.gridx++;
+			panel1.add(processHeaderModifier,c);c.gridy++;c.gridx = 0;
+			
+			// set dictionary options
+			normalizeAnchors = new JCheckBox("Normalize anchor terms");
+			scoreAnchors = new JCheckBox("Score matched anchor terms");
+			ignoreLabels = new JCheckBox("Ignore class labels as valid terms");
+			
+			JPanel panel2 = new JPanel();
+			border = new TitledBorder(new LineBorder(blue),"Dictionary building options");
+			border.setTitleColor(blue);
+			panel2.setLayout(new BoxLayout(panel2,BoxLayout.Y_AXIS));
+			panel2.setBorder(border);
+			panel2.add(normalizeAnchors);
+			panel2.add(scoreAnchors);
+			panel2.add(ignoreLabels);
+			
+			optionsPanel.add(panel1,BorderLayout.CENTER);
+			optionsPanel.add(panel2,BorderLayout.SOUTH);		
+			
+			
+		}
+		return optionsPanel;
+	}
+	
+	private void doOptions() {
+		loadOptionsSettings();
+		boolean na = normalizeAnchors.isSelected();
+		boolean sa = scoreAnchors.isSelected();
+		boolean il = ignoreLabels.isSelected();
+		
+		int r = JOptionPane.showConfirmDialog(frame,getOptionsPanel(),"Runtime Options",JOptionPane.OK_CANCEL_OPTION,JOptionPane.PLAIN_MESSAGE);
+		if(JOptionPane.OK_OPTION == r){
+			DomainOntology ont = templateList.getSelectedValue();
+			// if terminolgy rebuilding options changed, warn about them
+			if(ont != null && ont.getTerminologyCacheLocation().exists() && (na != normalizeAnchors.isSelected() || sa != scoreAnchors.isSelected() ||  il != ignoreLabels.isSelected())){
+				int rr = JOptionPane.showConfirmDialog(frame,
+						"<html>You have changed one of the <font color=blue>Dictionary building options</font> <br>"+
+						"Are you sure want to re-generate cached terminologies?<br>"+
+						"It will take additional time to do.","Warning",JOptionPane.YES_NO_OPTION,JOptionPane.WARNING_MESSAGE);
+				if(rr == JOptionPane.YES_OPTION){
+					FileTools.deleteDirectory(ont.getTerminologyCacheLocation());
+					saveOptionsSettings();
+				}else{
+					loadOptionsSettings();
+				}
+			}else{
+				saveOptionsSettings();
+			}
+		}else{
+			//roll back the settings
+			loadOptionsSettings();
+		}
+	}
+
+
 	private void doEvaluate() {
 		AnnotationEvaluation ae = new AnnotationEvaluation();
 		JDialog dialog = ae.getDialog(frame);
@@ -600,6 +760,8 @@ public class NobleMentionsTool implements ActionListener{
 			
 				
 			}
+
+			
 		})).start();
 	}
 	
@@ -690,6 +852,10 @@ public class NobleMentionsTool implements ActionListener{
 		// start a new instance of noble mentions
 		NobleMentions noble = new NobleMentions(ontology);
 		
+		// load options
+		loadOptions(noble);
+		
+		
 		// process lastFile
 		List<File> files = FileTools.getFilesInDirectory(new File(in),".txt");
 		if(progress != null){
@@ -773,13 +939,7 @@ public class NobleMentionsTool implements ActionListener{
 		
 		// read in the report, do first level proce
 		Composition doc = noble.process(reportFile);
-		
-		// temp system.out
-		/*for(AnnotationVariable var: doc.getAnnotationVariables()){
-			System.out.println(var);
-		}*/
-		
-		
+	
 		processCount ++;
 			
 		// now output HTML for this report
