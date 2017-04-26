@@ -542,9 +542,9 @@ public class NobleMentionsTool implements ActionListener{
 			// if terminolgy rebuilding options changed, warn about them
 			if(ont != null && ont.getTerminologyCacheLocation().exists() && (na != normalizeAnchors.isSelected() || sa != scoreAnchors.isSelected() ||  il != ignoreLabels.isSelected())){
 				int rr = JOptionPane.showConfirmDialog(frame,
-						"<html>You have changed one of the <font color=blue>Dictionary building options</font> <br>"+
-						"Are you sure want to re-generate cached terminologies?<br>"+
-						"It will take additional time to do.","Warning",JOptionPane.YES_NO_OPTION,JOptionPane.WARNING_MESSAGE);
+						"<html>You have changed one of the <font color=blue>dictionary building options</font>. <br>"+
+						"Are you sure want to re-generate cached dictionaries for <font color=red> "+ont.getName()+"</font> domain?<br>"+
+						"It will take additional time to re-generate dictionaries.","Warning",JOptionPane.YES_NO_OPTION,JOptionPane.WARNING_MESSAGE);
 				if(rr == JOptionPane.YES_OPTION){
 					FileTools.deleteDirectory(ont.getTerminologyCacheLocation());
 					saveOptionsSettings();
