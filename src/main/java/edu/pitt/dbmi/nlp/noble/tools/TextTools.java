@@ -1143,6 +1143,16 @@ public class TextTools {
 		while(mt.find()){
 			list.add(new Double(mt.group()));
 		}
+		
+		// check if we can get numbers that are spelled out
+		if(list.isEmpty()){
+			int n = parseIntegerValue(text);
+			if(n != NO_VALUE){
+				list.add(new Double(n));
+			}
+		}
+				
+		
 		return list;
 	}
 
@@ -1158,6 +1168,16 @@ public class TextTools {
 		while(mt.find()){
 			list.add(new Integer(mt.group()));
 		}
+		
+		// check if we can get numbers that are spelled out
+		if(list.isEmpty()){
+			int n = parseIntegerValue(text);
+			if(n != NO_VALUE){
+				list.add(new Integer(n));
+			}
+		}
+					
+		
 		return list;
 	}
 
