@@ -234,8 +234,9 @@ public class ConTextHelper {
 		for(IProperty p:  inst.getProperties()){
 			for(Object o: inst.getPropertyValues(p)){
 				if(o instanceof IResource){
-					//concept.addRelatedConcept(Relation.getRelation(p.getName()),((IResource)o).getName());
 					concept.addProperty(p.getName(),((IResource)o).getName());
+				}else{
+					concept.addProperty(p.getName(),o.toString());
 				}
 			}
 		}
