@@ -336,20 +336,7 @@ public class NobleMentionsTool implements ActionListener{
 				if(p.containsKey("output"))
 					output.setText(p.getProperty("output"));
 				if(p.containsKey("ontology")){
-					final String ont = p.getProperty("ontology");
-					SwingUtilities.invokeLater(new Runnable() {
-						public void run() {
-							int index = -1;
-							for(int i=0;i<templateList.getModel().getSize();i++){
-								if(templateList.getModel().getElementAt(i).toString().equals(ont)){
-									index = i; break;
-								}
-							}
-							if(index > -1)
-								templateList.setSelectedIndex(index);
-						}
-					});
-					
+					selectOntology(p.getProperty("ontology"));
 				}
 			}
 		});
@@ -649,11 +636,13 @@ public class NobleMentionsTool implements ActionListener{
 			
 				new Thread(new Runnable(){
 					public void run(){
+						String ont = null;
 						setBusy(true);
 						try{
 							lastFile = chooser.getSelectedFile();
 							File newLocation = new File(repository.getOntologyLocation(),lastFile.getName());
 							Files.copy(lastFile.toPath(),newLocation.toPath(),StandardCopyOption.REPLACE_EXISTING);
+							ont = FileTools.stripExtension(newLocation.getName());
 							
 							// remove terminology cache
 							File termCache = DomainOntology.getTerminologyCacheLocation(newLocation);
@@ -665,7 +654,8 @@ public class NobleMentionsTool implements ActionListener{
 							ex.printStackTrace();
 						}
 						refreshTemplateList();
-						//setDefaultOutputLocation();
+						selectOntology(ont);
+						
 						setBusy(false);
 					}
 				}).start();
@@ -673,8 +663,24 @@ public class NobleMentionsTool implements ActionListener{
 		}
 	}
 
-	
-	
+	/**
+	 * select ontology
+	 * @param ont
+	 */
+	private void selectOntology(final String ont){
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				int index = -1;
+				for(int i=0;i<templateList.getModel().getSize();i++){
+					if(templateList.getModel().getElementAt(i).toString().equals(ont)){
+						index = i; break;
+					}
+				}
+				if(index > -1)
+					templateList.setSelectedIndex(index);
+			}
+		});
+	}
 
 	
      /**
@@ -684,7 +690,7 @@ public class NobleMentionsTool implements ActionListener{
       */
     private boolean checkInputs(){
  		if(templateList.getSelectedValuesList().isEmpty()){
-			JOptionPane.showMessageDialog(frame,"Please Select Templates");
+			JOptionPane.showMessageDialog(frame,"Please Select the Ontology");
 			return false;
 		}
 		if(!new File(input.getText()).exists()){
