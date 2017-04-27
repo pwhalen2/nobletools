@@ -273,11 +273,14 @@ public class HTMLExporter {
 			Concept c = m.getConcept();
 			String p = (m.isNegated())?"N":(m.isHedged()?"U":"");
 			codes.add("'"+p+m.getConcept().getCode()+"'");
-			tip.append(c.getName()+" ("+c.getCode()+")\n"+Arrays.toString(c.getSemanticTypes())+"\n");
+			tip.append(c.getName()+" ("+c.getCode()+")\n  "+Arrays.toString(c.getSemanticTypes())+"\n");
 			
 			// add modifiers
 			tip.append(getModifiers(m));
 
+			// add span
+			tip.append("  Span: "+l.getStartPosition()+":"+l.getEndPosition());
+			
 			if("green".equals(color)) {
 				if (isModifiers(m)) {
 					color = "#FF8C00";
@@ -1358,6 +1361,7 @@ public class HTMLExporter {
 		String lid = ""+offset;
 		List<String> codes = new ArrayList<String>();
 		StringBuilder tip = new StringBuilder();
+		tip.append("span: "+offset+":"+(offset+text.length()));
 		
 		// replace newlines
 		text = text.replaceAll("\n","<br>");
