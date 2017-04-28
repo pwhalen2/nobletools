@@ -64,6 +64,7 @@ import org.semanticweb.owlapi.util.OWLEntityRemover;
 import org.semanticweb.owlapi.util.OWLEntityRenamer;
 import org.semanticweb.owlapi.util.SimpleIRIMapper;
 
+import edu.pitt.dbmi.nlp.noble.ontology.DefaultRepository;
 import edu.pitt.dbmi.nlp.noble.ontology.IClass;
 import edu.pitt.dbmi.nlp.noble.ontology.IInstance;
 import edu.pitt.dbmi.nlp.noble.ontology.ILogicExpression;
@@ -243,16 +244,20 @@ public class OOntology extends OResource implements IOntology {
 	 * @param dir
 	 */
 	private static void setupLocalIRImapper(OWLOntologyManager manager, File file) {
-		for (File f : file.getParentFile().listFiles()) {
-			if (f.getName().endsWith(".owl") && !file.equals(f)) {
-				URI uri = null;
-				try {
-					uri = OntologyUtils.getOntologyURI(f);
-				} catch (IOException e) {
-					new IOntologyException("Error: unable to extract URI from file " + f, e);
+		for(File dir: Arrays.asList(file.getParentFile(),DefaultRepository.DEFAULT_ONTOLOGY_LOCATION)){
+			if(dir.exists()){
+				for (File f : dir.listFiles()) {
+					if (f.getName().endsWith(".owl") && !file.equals(f)) {
+						URI uri = null;
+						try {
+							uri = OntologyUtils.getOntologyURI(f);
+						} catch (IOException e) {
+							new IOntologyException("Error: unable to extract URI from file " + f, e);
+						}
+						if (uri != null)
+							manager.addIRIMapper(new SimpleIRIMapper(IRI.create(uri), IRI.create(f)));
+					}
 				}
-				if (uri != null)
-					manager.addIRIMapper(new SimpleIRIMapper(IRI.create(uri), IRI.create(f)));
 			}
 		}
 	}

@@ -660,16 +660,10 @@ public class HTMLExporter {
 	private BufferedWriter getIndex(String outFile,boolean includeHeader) throws Exception {
 		if(htmlIndexWriter == null){
 			// write header 
-			String delta = "10";
-			if(includeHeader)
-				delta= "100";
 			htmlIndexWriter = new BufferedWriter(new FileWriter(new File(outputDirectory,outFile)));
 			htmlIndexWriter.write("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
 			htmlIndexWriter.write("<head><title>"+title+"</title>\n");
-			htmlIndexWriter.write("<script type=\"text/javascript\">function l(){var h=800;if(!window.innerWidth){\n");
-			htmlIndexWriter.write("if(!(document.documentElement.clientWidth == 0)){\n h = document.documentElement.clientHeight;\n");
-			htmlIndexWriter.write("}else{h = document.body.clientHeight;}}else{ h = window.innerHeight;} var hd = (h-"+delta+")+\"px\";\n");
-			htmlIndexWriter.write("document.getElementById(\"d1\").style.maxHeight=hd;}</script>\n");
+			htmlIndexWriter.write(getJavaScript(includeHeader));
 			htmlIndexWriter.write("</head><body style=\"overflow: hidden;\" bgcolor=\"#EEEEFF\" onload=\"l();\" onresize=\"l();\">\n");
 			String height = "100%";
 			if(includeHeader){
@@ -679,7 +673,7 @@ public class HTMLExporter {
 			}
 			htmlIndexWriter.write("<center><table bgcolor=\"#FFFFF\" width=\"100%\" height=\""+height+"\" border=0>\n");
 			htmlIndexWriter.write("<tr><td align=\"left\" valign=\"top\" width=\"200px\" style=\"white-space: nowrap\">\n");
-			htmlIndexWriter.write("<div id=\"d1\" style=\"overflow: auto; max-height: 800px;\"><div style=\"border-style:solid; border-color: #EEEEFF; padding:10px 10px;\">");
+			htmlIndexWriter.write("<div class=\"container\" style=\"overflow: auto; max-height: 800px;\"><div style=\"border-style:solid; border-color: #EEEEFF; padding:10px 10px;\">");
 		}
 		return htmlIndexWriter;
 	}
@@ -779,9 +773,9 @@ public class HTMLExporter {
 			sz = "100%";
 		
 		if(showReport)
-			htmlWriter.write("<tr><td width=\""+sz+"\" valign=middle><div id=\"d1\" style=\"overflow: auto; max-height: 800px; \">"+report+"</div></td>");
+			htmlWriter.write("<tr><td width=\""+sz+"\" valign=middle><div class=\"container\" style=\"overflow: auto; max-height: 800px; \">"+report+"</div></td>");
 		if(showConceptList)
-			htmlWriter.write("<td width=\""+sz+"\" valign=top><div id=\"d2\" style=\"overflow: auto; max-height: 800px;\">"+result+"</div></td></tr>\n");
+			htmlWriter.write("<td width=\""+sz+"\" valign=top><div class=\"container\" style=\"overflow: auto; max-height: 800px;\">"+result+"</div></td></tr>\n");
 		if(showFooter)
 			htmlWriter.write("<tr><td colspan=2 align=center>"+info+"</td></tr>\n");
 		htmlWriter.write("<tr><td colspan=2 align=center></td></tr>\n");
@@ -850,8 +844,8 @@ public class HTMLExporter {
 		htmlWriter.write(createHTMLHeader("Report Processor Output",true));
 		htmlWriter.write("<body onload=\"l();\" onresize=\"l();\"><table width=\"100%\" style=\"table-layout:fixed; \" cellspacing=\"5\">\n"); //word-wrap:break-word;
 		htmlWriter.write("<tr><td colspan=2 align=center><h3>"+name+"</h3></td></tr>\n");
-		htmlWriter.write("<tr><td width=\"50%\" valign=middle><div id=\"d1\" style=\"overflow: auto; max-height: 800px; \">"+report+"</div></td>");
-		htmlWriter.write("<td width=\"50%\" valign=top><div id=\"d2\" style=\"overflow: auto; max-height: 800px;\">"+cap+"</div></td></tr>\n");
+		htmlWriter.write("<tr><td width=\"50%\" valign=middle><div class=\"container\" style=\"overflow: auto; max-height: 800px; \">"+report+"</div></td>");
+		htmlWriter.write("<td width=\"50%\" valign=top><div class=\"container\" style=\"overflow: auto; max-height: 800px;\">"+cap+"</div></td></tr>\n");
 		htmlWriter.write("<tr><td colspan=2 align=center>"+info+"</td></tr>\n");
 		htmlWriter.write("<tr><td colspan=2 align=center></td></tr>\n");
 		htmlWriter.flush();
@@ -936,9 +930,9 @@ public class HTMLExporter {
 			sz = "100%";
 		
 		if(showReport)
-			htmlWriter.write("<tr><td width=\""+sz+"\" valign=middle><div id=\"d1\" style=\"overflow: auto; max-height: 800px; \">"+report+"</div></td>");
+			htmlWriter.write("<tr><td width=\""+sz+"\" valign=middle><div class=\"container\" style=\"overflow: auto; max-height: 800px; \">"+report+"</div></td>");
 		if(showConceptList)
-			htmlWriter.write("<td width=\""+sz+"\" valign=top><div id=\"d2\" style=\"overflow: auto; max-height: 800px;\">"+result+"</div></td></tr>\n");
+			htmlWriter.write("<td width=\""+sz+"\" valign=top><div class=\"container\" style=\"overflow: auto; max-height: 800px;\">"+result+"</div></td></tr>\n");
 		if(showFooter)
 			htmlWriter.write("<tr><td colspan=2 align=center>"+info+"</td></tr>\n");
 		htmlWriter.write("<tr><td colspan=2 align=center></td></tr>\n");
@@ -1047,6 +1041,19 @@ public class HTMLExporter {
 	 */
 	
 	private String getJavaScript(){
+		return getJavaScript(true);
+	}
+	
+	/**
+	 * get javascript definitions
+	 * @return javascript definitions
+	 */
+	
+	private String getJavaScript(boolean includeHeader){
+		String delta = "10";
+		if(includeHeader)
+			delta= "100";
+		
 		return "<script type=\"text/javascript\">"+
 				// hightlight annotations
 				"function h(id){ for(i=0;i<id.length;i++){if(document.getElementById(id[i])!=null){document.getElementById(id[i]).style.backgroundColor=\"yellow\";}}}\n"+
@@ -1069,8 +1076,14 @@ public class HTMLExporter {
 				// resize viewport 
 				"function l(){var h=800;if(!window.innerWidth){\n"+
 				"if(!(document.documentElement.clientWidth == 0)){\n h = document.documentElement.clientHeight;\n"+
-				"}else{h = document.body.clientHeight;}}else{ h = window.innerHeight;} var hd = (h-100)+\"px\";\n"+
-				"document.getElementById(\"d1\").style.maxHeight=hd;document.getElementById(\"d2\").style.maxHeight=hd;document.getElementById(\"d0\").style.maxHeight=hd;}"+
+				"}else{h = document.body.clientHeight;}}else{ h = window.innerHeight;} var hd = (h-"+delta+")+\"px\";\n"+
+				//"document.getElementById(\"d1\").style.maxHeight=hd;document.getElementById(\"d2\").style.maxHeight=hd;document.getElementById(\"d0\").style.maxHeight=hd;"+
+				"var cont = document.getElementsByClassName(\"container\");\n" + 
+				"	for(i = 0; i < cont.length; i++) {\n" + 
+				"		cont[i].style.maxHeight=hd;\n" + 
+				"		cont[i].style.height=hd;\n" + 
+				"	}"+
+				"}"+
 				
 				// show/hide element
 				"function showHide(id){ var a = \"hidden\"; if(document.getElementById(id).style.visibility == \"hidden\"){ a = \"visible\";}"+
@@ -1122,7 +1135,7 @@ public class HTMLExporter {
 			htmlWriter.write("<center><h2>"+label+"</h2></center>");
 			htmlWriter.write("<center><table bgcolor=\"#FFFFF\" width=\"100%\" height=\"95%\" border=0>\n");
 			htmlWriter.write("<tr><td align=\"left\" valign=\"top\" width=\"400px\" style=\"white-space: nowrap\">\n");
-			htmlWriter.write("<div id=\"d1\" style=\"overflow: auto; max-height: 800px; max-width: 400px;\"><div style=\"border-style:solid; border-color: #EEEEFF; padding:10px 10px;\">");
+			htmlWriter.write("<div class=\"container\" style=\"overflow: auto; max-height: 800px; max-width: 400px;\"><div style=\"border-style:solid; border-color: #EEEEFF; padding:10px 10px;\">");
 
 			htmlWriter.write(analysis.getErrorsAsHTML(label));
 
@@ -1176,9 +1189,9 @@ public class HTMLExporter {
 		htmlWriter.write("<table width=\"100%\" style=\"table-layout:fixed;  display:inline-block;\" cellspacing=\"5\">\n"); //word-wrap:break-word;
 		htmlWriter.write("<tr><td colspan=3 align=center><h3>"+name+"</h3></td></tr>\n");
 
-		htmlWriter.write("<tr><td width=\"20%\" valign=top><div id=\"d0\" style=\"overflow: auto; max-height: 800px;\">"+goldResult+"</div></td>\n");
-		htmlWriter.write("<td width=\"60%\" valign=middle><div id=\"d1\" style=\"overflow: auto; max-height: 800px; \">"+report+"</div></td>\n");
-		htmlWriter.write("<td width=\"20%\" valign=top><div id=\"d2\" style=\"overflow: auto; max-height: 800px;\">"+sysResult+"</div></td></tr>\n");
+		htmlWriter.write("<tr><td width=\"20%\" valign=top><div class=\"container\" style=\"overflow: auto; max-height: 800px;\">"+goldResult+"</div></td>\n");
+		htmlWriter.write("<td width=\"60%\" valign=middle><div class=\"container\" style=\"overflow: auto; max-height: 800px; \">"+report+"</div></td>\n");
+		htmlWriter.write("<td width=\"20%\" valign=top><div class=\"container\" style=\"overflow: auto; max-height: 800px;\">"+sysResult+"</div></td></tr>\n");
 		htmlWriter.write("<tr><td colspan=3 align=center></td></tr>\n");
 		htmlWriter.write("</table></body></html>\n");
 		htmlWriter.flush();

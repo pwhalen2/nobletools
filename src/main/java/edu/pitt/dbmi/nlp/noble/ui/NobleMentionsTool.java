@@ -80,6 +80,7 @@ import edu.pitt.dbmi.nlp.noble.ontology.IRepository;
 import edu.pitt.dbmi.nlp.noble.terminology.CompositTerminology;
 import edu.pitt.dbmi.nlp.noble.terminology.TerminologyError;
 import edu.pitt.dbmi.nlp.noble.terminology.TerminologyException;
+import edu.pitt.dbmi.nlp.noble.tools.ConText;
 import edu.pitt.dbmi.nlp.noble.tools.TextTools;
 import edu.pitt.dbmi.nlp.noble.util.CSVExporter;
 import edu.pitt.dbmi.nlp.noble.util.FileTools;
@@ -101,7 +102,7 @@ public class NobleMentionsTool implements ActionListener{
 	private final URL CANCEL_ICON = getClass().getResource("/icons/cancel16.png");
 	private JFrame frame;
 	private JTextField input,output;
-	private JList<DomainOntology> templateList;
+	private JList<DomainOntology> ontologyList;
 	private JTextArea console;
 	private JProgressBar progress;
 	private JPanel buttonPanel,progressPanel,optionsPanel;
@@ -164,7 +165,7 @@ public class NobleMentionsTool implements ActionListener{
 			panel.setLayout(l);
 			
 			input = new JTextField(30);
-			templateList = new JList(new DefaultListModel<DomainOntology>());
+			ontologyList = new JList(new DefaultListModel<DomainOntology>());
 			JButton browse = new JButton("Browse");
 			browse.addActionListener(this);
 			browse.setActionCommand("i_browser");
@@ -179,7 +180,7 @@ public class NobleMentionsTool implements ActionListener{
 			JButton info = new JButton("Preview");
 			info.setActionCommand("preview");
 			info.addActionListener(this);
-			JScrollPane scroll = new JScrollPane(templateList);
+			JScrollPane scroll = new JScrollPane(ontologyList);
 			scroll.setPreferredSize(new Dimension(100,130));
 			
 			JButton eval = new JButton("Evaluate");
@@ -272,7 +273,7 @@ public class NobleMentionsTool implements ActionListener{
 	 */
 	private void saveSettings(){
 		Properties p = new Properties();
-		p.setProperty("ontology",templateList.getSelectedValue().toString());
+		p.setProperty("ontology",ontologyList.getSelectedValue().toString());
 		p.setProperty("input",input.getText());
 		p.setProperty("output",output.getText());
 		UITools.saveSettings(p,getClass());
@@ -282,7 +283,7 @@ public class NobleMentionsTool implements ActionListener{
 	 * save UI settings
 	 */
 	private void saveOptionsSettings(){
-		DomainOntology ontology = templateList.getSelectedValue();
+		DomainOntology ontology = ontologyList.getSelectedValue();
 		if(ontology != null){
 			Properties p = new Properties();
 			p.setProperty("annotation.relation.scope",annotationScope.getSelection().getActionCommand());
@@ -301,7 +302,7 @@ public class NobleMentionsTool implements ActionListener{
 	 */
 	private void loadOptionsSettings(){
 		getOptionsPanel();
-		DomainOntology ontology = templateList.getSelectedValue();
+		DomainOntology ontology = ontologyList.getSelectedValue();
 		if(ontology != null){
 			final Properties p = UITools.loadSettings(new File(ontology.getTerminologyCacheLocation(),"ontology.properties"));
 			sectionScope.setSelected("section".equals(p.getProperty("annotation.relation.scope")));
@@ -363,7 +364,7 @@ public class NobleMentionsTool implements ActionListener{
 		SwingUtilities.invokeLater(new Runnable(){
 			public void run(){
 				repository.reset();
-				((DefaultListModel<DomainOntology>)templateList.getModel()).removeAllElements();
+				((DefaultListModel<DomainOntology>)ontologyList.getModel()).removeAllElements();
 				IOntology [] ontologies = repository.getOntologies();
 				Arrays.sort(ontologies,new Comparator<IOntology>() {
 					public int compare(IOntology o1, IOntology o2) {
@@ -371,13 +372,16 @@ public class NobleMentionsTool implements ActionListener{
 					}
 				});
 				for(IOntology t: ontologies){
+					// filter out ontologies that are dependency
+					if(ConText.IMPORTED_ONTOLOGIES.contains(t.getName()))
+						continue;					
 					try {
-						((DefaultListModel<DomainOntology>)templateList.getModel()).addElement(new DomainOntology(t));
+						((DefaultListModel<DomainOntology>)ontologyList.getModel()).addElement(new DomainOntology(t));
 					} catch (IOntologyException e) {
 						e.printStackTrace();
 					}
 				}
-				templateList.validate();
+				ontologyList.validate();
 			}
 		});
 	}
@@ -525,7 +529,7 @@ public class NobleMentionsTool implements ActionListener{
 		
 		int r = JOptionPane.showConfirmDialog(frame,getOptionsPanel(),"Runtime Options",JOptionPane.OK_CANCEL_OPTION,JOptionPane.PLAIN_MESSAGE);
 		if(JOptionPane.OK_OPTION == r){
-			DomainOntology ont = templateList.getSelectedValue();
+			DomainOntology ont = ontologyList.getSelectedValue();
 			// if terminolgy rebuilding options changed, warn about them
 			if(ont != null && ont.getTerminologyCacheLocation().exists() && (na != normalizeAnchors.isSelected() || sa != scoreAnchors.isSelected() ||  il != ignoreLabels.isSelected())){
 				int rr = JOptionPane.showConfirmDialog(frame,
@@ -551,7 +555,7 @@ public class NobleMentionsTool implements ActionListener{
 	private void doEvaluate() {
 		AnnotationEvaluation ae = new AnnotationEvaluation();
 		JDialog dialog = ae.getDialog(frame);
-		DomainOntology ontology = templateList.getSelectedValue();
+		DomainOntology ontology = ontologyList.getSelectedValue();
 		if(ontology != null) {
 			String name = ontology.getName() + "Instances.owl";
 			ae.setSystemInstanceOntlogy(output.getText() + File.separator + name);
@@ -565,7 +569,7 @@ public class NobleMentionsTool implements ActionListener{
 	 * do preview.
 	 */
 	private void doPreview() {
-		final DomainOntology t = templateList.getSelectedValue();
+		final DomainOntology t = ontologyList.getSelectedValue();
 		if(t == null)
 			return;
 		new Thread(new Runnable() {
@@ -587,7 +591,7 @@ public class NobleMentionsTool implements ActionListener{
 	 * do export of highlighted template.
 	 */
 	private void doExport() {
-		DomainOntology template = templateList.getSelectedValue();
+		DomainOntology template = ontologyList.getSelectedValue();
 		if(template != null){
 			JFileChooser chooser = new JFileChooser();
 			chooser.setFileFilter(new FileFilter(){
@@ -671,13 +675,13 @@ public class NobleMentionsTool implements ActionListener{
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				int index = -1;
-				for(int i=0;i<templateList.getModel().getSize();i++){
-					if(templateList.getModel().getElementAt(i).toString().equals(ont)){
+				for(int i=0;i<ontologyList.getModel().getSize();i++){
+					if(ontologyList.getModel().getElementAt(i).toString().equals(ont)){
 						index = i; break;
 					}
 				}
 				if(index > -1)
-					templateList.setSelectedIndex(index);
+					ontologyList.setSelectedIndex(index);
 			}
 		});
 	}
@@ -689,7 +693,7 @@ public class NobleMentionsTool implements ActionListener{
       * @return true, if successful
       */
     private boolean checkInputs(){
- 		if(templateList.getSelectedValuesList().isEmpty()){
+ 		if(ontologyList.getSelectedValuesList().isEmpty()){
 			JOptionPane.showMessageDialog(frame,"Please Select the Ontology");
 			return false;
 		}
@@ -716,7 +720,7 @@ public class NobleMentionsTool implements ActionListener{
 				// save settings
 				saveSettings();
 				
-				DomainOntology ontology = templateList.getSelectedValue();
+				DomainOntology ontology = ontologyList.getSelectedValue();
 				final String ontName = ontology.getName();
 				
 				// setup progress bar
@@ -736,7 +740,16 @@ public class NobleMentionsTool implements ActionListener{
 					ontology = new DomainOntology(ontology.getOntology().getLocation());
 					progress((System.currentTimeMillis()-t)+ " ms\n");
 				} catch (IOntologyException e1) {
+					UITools.showErrorDialog(frame,
+							"<html>Could not load imported ontologies.<br>"
+							+ "To procede in offline mode, please add imported ontologies to the local cache.<br> "
+							+ "Please see documentation for details.");
+					progress("\n"+e1.getMessage()+"\n");
+					if(e1.getCause() != null)
+						progress(e1.getCause().getMessage());
 					e1.printStackTrace();
+					setBusy(false);
+					return;
 				}
 				
 				

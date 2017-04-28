@@ -48,6 +48,7 @@ public class TextTools {
 	private static Map<String,String> stopWords,prepostionWords,commonWords;
 	private static Map<String,String> timePatterns;
 	private Sender sender;
+	public static final String NUMBER_PATTERN = "(\\d*\\.\\d+|\\d+)";
 	
 	/**
 	 * The Class StringStats.
@@ -1138,7 +1139,7 @@ public class TextTools {
 	 */
 	public static List<Double> parseNumericValues(String text){
 		List<Double> list = new ArrayList<Double>();
-		Pattern pt = Pattern.compile("(\\d*\\.\\d+|\\d+)");
+		Pattern pt = Pattern.compile(NUMBER_PATTERN);
 		Matcher mt = pt.matcher(text);
 		while(mt.find()){
 			list.add(new Double(mt.group()));

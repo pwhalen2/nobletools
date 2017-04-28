@@ -940,7 +940,7 @@ public class DomainOntology {
 						IClass modifierCls = getConceptClass(m);
 						if(isTypeOf(modifierCls,NUMERIC_MODIFER)){
 							// parse numeric component
-							List<Double> numbers = TextTools.parseNumericValues(m.getText());
+							List<Double> numbers = parseNumbers(m);
 							
 							// skip if there are no numbers
 							if(numbers.isEmpty())
@@ -970,38 +970,6 @@ public class DomainOntology {
 								}
 							}
 							
-							// now go over potential specific instances
-							//TODO: perhaps do this not here, but elsewhere in Instance.isSatisfy()
-							/*
-							for(IInstance inst: getSpecificInstances(modifierCls)){
-								// clear values
-								inst.removePropertyValues();
-							
-								
-								// set data properties
-								for(String prop: m.getModifierMap().keySet()){
-									IProperty property = getProperty(prop);
-									if(property == null)
-										continue;
-									// add all values
-									for(Modifier mod : m.getModifiers(prop)) {
-										if (mod.getMention() != null) {
-											inst.addPropertyValue(property,getConceptInstance(mod.getMention()));
-										} else {
-											inst.addPropertyValue(property, new Double(mod.getValue()));
-										}
-									}
-								}
-								
-								// now check the equivalence
-								IClass parentCls = inst.getDirectTypes()[0];
-								
-								// if instance valid, we found a more specific numeric class
-								if(parentCls.getEquivalentRestrictions().evaluate(inst)){
-									sentence.addMention(getModifierFromClass(parentCls,m));
-								}
-							}
-							*/
 						}
 					}
 				}
@@ -1010,6 +978,21 @@ public class DomainOntology {
 		}
 		return modifierResolver;
 	}
+	
+	/**
+	 * extract numbers from a mention
+	 * @param m - mention
+	 * @return list of numbers
+	 */
+	private List<Double> parseNumbers(Mention m){
+		// first see if the number is defined in the mention
+		String num = m.getConcept().getProperty(HAS_QUANTITY_VALUE);
+		if(num != null && num.matches(TextTools.NUMBER_PATTERN)){
+			return Collections.singletonList(new Double(num));
+		}
+		return TextTools.parseNumericValues(m.getText());
+	}
+	
 	
 	public IProperty getProperty(String name){
 		IProperty prop = ontology.getProperty(name);

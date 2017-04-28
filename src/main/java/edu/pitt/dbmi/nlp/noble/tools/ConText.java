@@ -95,7 +95,7 @@ public class ConText implements Processor<Sentence> {
 	public static final String MODIFIER_VALUE_HISTORICAL = "Before_DocTimeRel";
 	public static final List<String> MODIFIER_TYPES_FILTER =  
 			Arrays.asList(SEMTYPE_INSTANCE,MODIFIER,LINGUISTIC_MODIFIER,NUMERIC_MODIFIER,SEMANTIC_MODIFIER,QUALIFIER,BODY_MODIFIER,LEXICON);
-	
+	public static final List<String> IMPORTED_ONTOLOGIES = Arrays.asList("Schema","ConText","SemanticType","TermMapping");
 	
 	
 	public static final List<String> MODIFIER_TYPES = Arrays.asList(
