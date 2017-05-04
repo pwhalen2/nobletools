@@ -9,6 +9,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.CopyOption;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -94,6 +97,34 @@ public class FileTools {
 		}
 	}
 	
+	/**
+	 * copy recursively the source directory (with content) to
+	 * target directory. 
+	 * @param sourceDir - what you are copying
+	 * @param targetDir - where your directory will be placed
+	 */
+	public static void copyDirectory(File sourceDir, File targetDir) throws IOException{
+		if(!targetDir.exists())
+			targetDir.mkdirs();
+		for(File f: sourceDir.listFiles()){
+			if(f.isFile()){
+				copyFile(f,new File(targetDir,f.getName()));
+			}else if(f.isDirectory()){
+				copyDirectory(f,new File(targetDir,f.getName()));
+			}
+		}
+	}
+	
+	/**
+	 * copy file on file system
+	 * @param source
+	 * @param target
+	 * @throws IOException 
+	 */
+	public static void copyFile(File source, File target) throws IOException {
+		Files.copy(source.toPath(),target.toPath(),StandardCopyOption.REPLACE_EXISTING);
+	}
+
 	/**
 	 * This method gets a text file (HTML too) from input stream from given map.
 	 *

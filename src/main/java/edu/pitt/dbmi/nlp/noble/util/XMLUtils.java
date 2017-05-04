@@ -10,6 +10,7 @@ import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -57,6 +58,70 @@ public class XMLUtils {
         transformer.transform(source, result);
         os.close();
 	}
+	
+	/**
+	 * create new DOM document
+	 * @return empty DOM object
+	 * @throws ParserConfigurationException
+	 */
+	public static Document createDocument() throws ParserConfigurationException{
+		return DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument(); 
+	}
+	
+	/**
+	 * create an element from a document, that has some text content in it
+	 * @param doc - document
+	 * @param name - element name
+	 * @param content - text content
+	 * @return element object
+	 */
+	public static Element createElement(Document doc, String name, String content){
+		Element e = doc.createElement(name);
+		e.appendChild(doc.createTextNode(content));
+		return e;
+	}
+	
+	/**
+	 * create an element from a document, that has some text content in it
+	 * @param doc - document
+	 * @param name - element name
+	 * @param attribute - attribute
+	 * @param value - value
+	 * @return element object
+	 */
+	public static Element createElement(Document doc, String name, String attribute, String value){
+		Element e = doc.createElement(name);
+		e.setAttribute(attribute, value);
+		return e;
+	}
+	
+	/**
+	 * create an element from a document, that has some text content in it
+	 * @param doc - document
+	 * @param name - element name
+	 * @param attributes - attribute map
+	 * @return element object
+	 */
+	public static Element createElement(Document doc, String name, Map<String,String> attributes){
+		Element e = doc.createElement(name);
+		for(String attribute: attributes.keySet())
+			e.setAttribute(attribute,attributes.get(attribute));
+		return e;
+	}
+	
+	/**
+	 * create an element from a document, that has some text content in it
+	 * @param doc - document
+	 * @param name - element name
+	 * @param attributes - attribute map
+	 * @return element object
+	 */
+	public static Element createElement(Document doc, String name, Map<String,String> attributes, String content){
+		Element e = createElement(doc, name, attributes);
+		e.appendChild(doc.createTextNode(content));
+		return e;
+	}
+	
 	
 	/**
 	 * parse XML document.

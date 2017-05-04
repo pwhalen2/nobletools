@@ -82,6 +82,7 @@ public class DomainOntology {
 	public static final String RANGE = "RangeModifier";
 	public static final String RATIO = "Ratio";
 	public static final String DIMENSIONAL_MEASUREMENT = "DimensionalMeasurement";
+	public static final String HAS_NUM_VALUE = "hasNumValue";
 	public static final String HAS_QUANTITY_VALUE = "hasQuantityValue";
 	public static final String HAS_NUMERATOR_VALUE = "hasNumeratorValue";
 	public static final String HAS_DENOMINATOR_VALUE = "hasDenominatorValue";

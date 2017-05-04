@@ -27,6 +27,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.filechooser.FileFilter;
 
 import edu.pitt.dbmi.nlp.noble.coder.model.Spannable;
+import edu.pitt.dbmi.nlp.noble.eval.ehost.InstancesToEhost;
 import edu.pitt.dbmi.nlp.noble.mentions.model.DomainOntology;
 import edu.pitt.dbmi.nlp.noble.ontology.IClass;
 import edu.pitt.dbmi.nlp.noble.ontology.IInstance;
@@ -601,12 +602,16 @@ public class AnnotationEvaluation implements ActionListener {
 			explore.addActionListener(this);
 			explore.setActionCommand("explore");
 
-
+			JButton eHost = new JButton("eHOST");
+			eHost.addActionListener(this);
+			eHost.setActionCommand("ehost");
+			
 			JButton run = new JButton("Evaluate");
 			run.addActionListener(this);
 			run.setActionCommand("evaluate");
 			buttonPanel.add(generate);
 			buttonPanel.add(explore);
+			buttonPanel.add(eHost);
 			buttonPanel.add(run);
 			//panel.add(buttonPanel,c);
 			
@@ -717,9 +722,54 @@ public class AnnotationEvaluation implements ActionListener {
 			System.exit(0);
 		}else if("weights".equals(cmd)){
 			doWeights();
+		}else if("ehost".equals(cmd)){
+			doEHOST();
 		}	
 	}
 	
+	private void doEHOST() {
+		new Thread(new Runnable() {
+			public void run() {
+				File gold = new File(goldOntology.getText());
+				File candidate = new File(systemOntology.getText());
+				File input = new File(inputDocuments.getText());
+				File output = new File(candidate.getParentFile(),"eHOST");
+				
+				if(!gold.exists()){
+					JOptionPane.showMessageDialog(getDialog(),"Can't find gold instance ontology: "+gold,"Error",JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+				if(!candidate.exists()){
+					UITools.showErrorDialog(getDialog(),"Can't find system instance ontology: "+candidate);
+					return;
+				}
+				
+				setBusy(true);
+				try{
+				
+					// load
+					InstancesToEhost i2e = new InstancesToEhost();
+					i2e.setOutputDir(output);
+					i2e.setCorpusDir(input);
+					progress("converting "+gold.getAbsolutePath()+ "..\n");
+					i2e.convert(OOntology.loadOntology(gold));
+					progress("converting "+candidate.getAbsolutePath()+ "..\n");
+					i2e.addAnnotations(OOntology.loadOntology(candidate),"A2");
+					progress("ok");		
+							
+					
+				}catch(Exception ex){
+					JOptionPane.showMessageDialog(getDialog(),"There was a prolbem with evaluation: "+ex.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+					ex.printStackTrace();
+					return;
+				}finally {
+					setBusy(false);
+				}
+			}
+		}).start();
+		
+	}
+
 	private void doWeights() {
 		new Thread(new Runnable() {
 			public void run() {
