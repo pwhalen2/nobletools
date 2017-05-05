@@ -67,7 +67,7 @@ public class AnnotationEvaluation implements ActionListener {
 	
 	// UI components
 	private JDialog dialog;
-	private JTextField goldOntology, inputDocuments,systemOntology, goldWeights;
+	private JTextField goldOntology, inputDocuments,systemOntology, goldWeights, classFilter;
 	private JTextArea console;
 	private JPanel buttonPanel;
 	private JProgressBar progress;
@@ -579,6 +579,17 @@ public class AnnotationEvaluation implements ActionListener {
 			panel.add(inputDocuments,c);c.gridx++;
 			panel.add(browse,c);c.gridx=0;c.gridy++;
 
+			
+			classFilter = new JTextField(30);
+			browse = new JButton("Browse");
+			browse.addActionListener(this);
+			browse.setActionCommand("c_browser");
+
+			panel.add(new JLabel("eHOST class filter"),c);c.gridx++;
+			panel.add(classFilter,c);c.gridx++;
+			panel.add(browse,c);c.gridx=0;c.gridy++;
+			
+			
 
 			JPanel conp = new JPanel();
 			conp.setLayout(new BorderLayout());
@@ -652,6 +663,7 @@ public class AnnotationEvaluation implements ActionListener {
 		p.setProperty("goldWeights",goldWeights.getText());
 		p.setProperty("systemOntology",systemOntology.getText());
 		p.setProperty("inputDocuments",inputDocuments.getText());
+		p.setProperty("classFilter",classFilter.getText());
 		UITools.saveSettings(p,getClass());
 	}
 	
@@ -668,6 +680,8 @@ public class AnnotationEvaluation implements ActionListener {
 			systemOntology.setText(p.getProperty("systemOntology"));
 		if(p.containsKey("inputDocuments"))
 			inputDocuments.setText(p.getProperty("inputDocuments"));
+		if(p.containsKey("classFilter"))
+			classFilter.setText(p.getProperty("classFilter"));
 	}
 	
 	/**
@@ -716,6 +730,8 @@ public class AnnotationEvaluation implements ActionListener {
 			doBrowse(systemOntology);
 		}else if("i_browser".equals(cmd)){
 			doBrowse(inputDocuments);
+		}else if("c_browser".equals(cmd)){
+			doBrowse(classFilter);
 		}else if("explore".equals(cmd)){
 			doExplore();
 		}else if("exit".equals(cmd)){
@@ -734,6 +750,7 @@ public class AnnotationEvaluation implements ActionListener {
 				File candidate = new File(systemOntology.getText());
 				File input = new File(inputDocuments.getText());
 				File output = new File(candidate.getParentFile(),"eHOST");
+				File filter = new File(classFilter.getText());
 				
 				if(!gold.exists()){
 					JOptionPane.showMessageDialog(getDialog(),"Can't find gold instance ontology: "+gold,"Error",JOptionPane.ERROR_MESSAGE);
@@ -751,6 +768,11 @@ public class AnnotationEvaluation implements ActionListener {
 					InstancesToEhost i2e = new InstancesToEhost();
 					i2e.setOutputDir(output);
 					i2e.setCorpusDir(input);
+					
+					if(filter.exists()){
+						i2e.setClassFilter(Arrays.asList(TextTools.getText(new FileInputStream(filter)).split("\n")));
+					}
+					
 					progress("converting "+gold.getAbsolutePath()+ "..\n");
 					i2e.convert(OOntology.loadOntology(gold));
 					progress("converting "+candidate.getAbsolutePath()+ "..\n");

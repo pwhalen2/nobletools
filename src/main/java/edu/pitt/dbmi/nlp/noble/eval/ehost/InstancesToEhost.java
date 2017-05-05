@@ -48,6 +48,8 @@ public class InstancesToEhost {
 	private String annotator;	
 	private Date creationDate;
 	private int instanceCount = 0;
+	private Set<IClass> annotationClasses;
+	private List<String> classFilter;
 	
 	public File getCorpusDir() {
 		return corpusDir;
@@ -61,7 +63,15 @@ public class InstancesToEhost {
 	public void setOutputDir(File outputDir) {
 		this.outputDir = outputDir;
 	}
-
+	
+	public List<String> getClassFilter() {
+		if(classFilter == null)
+			classFilter = new ArrayList<String>();
+		return classFilter;
+	}
+	public void setClassFilter(List<String> classFilter) {
+		this.classFilter = classFilter;
+	}
 	public String getAnnotator() {
 		if(annotator == null)
 			annotator = "A1";
@@ -79,15 +89,16 @@ public class InstancesToEhost {
 	public void setCreationDate(Date creationDate) {
 		this.creationDate = creationDate;
 	}
+
 	/**
-	 * convert instances from ontology to eHOST
-	 * @param ontology - ontology instances
-	 * @throws IOException 
+	 * get valid annotation classes
+	 * @return set of annotation classes
 	 */
-	public void convert(IOntology ontology) throws IOException{
-		convert(ontology,null);
+	public Set<IClass> getAnnotationClasses() {
+		if(annotationClasses == null)
+			annotationClasses = new LinkedHashSet<IClass>();
+		return annotationClasses;
 	}
-	
 	
 	/**
 	 * convert instances from ontology to eHOST
@@ -95,7 +106,7 @@ public class InstancesToEhost {
 	 * @param filter   - only convert classes mentioned in this filter
 	 * @throws IOException 
 	 */
-	public void convert(IOntology ontology,List<String> filter) throws IOException{
+	public void convert(IOntology ontology) throws IOException{
 		if(!outputDir.exists())
 			outputDir.mkdirs();
 		
@@ -113,7 +124,7 @@ public class InstancesToEhost {
 		// generate schema
 		File schemaFile = new File(config,"projectschema.xml");
 		try {
-			XMLUtils.writeXML(createSchema(ontology,filter),new FileOutputStream(schemaFile));
+			XMLUtils.writeXML(createSchema(ontology),new FileOutputStream(schemaFile));
 		} catch (Exception e) {
 			throw new IOException(e);
 		}
@@ -122,7 +133,7 @@ public class InstancesToEhost {
 		for(IInstance composition: getCompositions(ontology)){
 			try {
 				Document dom = XMLUtils.createDocument();  
-				convertComposition(composition,filter,dom); 
+				convertComposition(composition,dom); 
 				XMLUtils.writeXML(dom,new FileOutputStream(new File(saved,getTitle(composition)+KNOWTATOR_SUFFIX)));
 			} catch (Exception e) {
 				throw new IOException(e);
@@ -153,16 +164,7 @@ public class InstancesToEhost {
 	 * @param ontology - ontology instances
 	 * @param annotator - author name
 	 */
-	public void addAnnotations(IOntology ontology,  String annotator) throws IOException{
-		addAnnotations(ontology, Collections.EMPTY_LIST, annotator);
-	}
-	
-	/**
-	 * add additional annotations as a different annotator
-	 * @param ontology - ontology instances
-	 * @param annotator - author name
-	 */
-	public void addAnnotations(IOntology ontology, List<String> filter, String annotator) throws IOException{
+	public void addAnnotations(IOntology ontology, String annotator) throws IOException{
 		setAnnotator(annotator);
 		File saved = new File(outputDir,SAVED_DIR);
 		if(!saved.exists())
@@ -185,7 +187,7 @@ public class InstancesToEhost {
 				}
 				
 				// convert composition
-				convertComposition(composition,filter,dom); 
+				convertComposition(composition,dom); 
 				
 				
 				XMLUtils.writeXML(dom,new FileOutputStream(new File(saved,getTitle(composition)+KNOWTATOR_SUFFIX)));
@@ -213,7 +215,7 @@ public class InstancesToEhost {
 	 * @return
 	 * @throws ParserConfigurationException 
 	 */
-	private void convertComposition(IInstance composition, List<String> filter, Document dom) throws ParserConfigurationException {
+	private void convertComposition(IInstance composition, Document dom) throws ParserConfigurationException {
 		IOntology ont = composition.getOntology();
 		//Document dom = XMLUtils.createDocument(); 
 		Element root = dom.getDocumentElement();
@@ -293,9 +295,29 @@ public class InstancesToEhost {
 	 */
 	private void convertVariable(Document dom, Element root, IInstance var) {
 		// create annotations
+		IClass cls = var.getDirectTypes()[0];
 		String instanceId = var.getName();
-		String classId = var.getDirectTypes()[0].getName();
 		StringBuffer text = new StringBuffer("");
+		
+		// only create variable if class is actually
+		boolean validVar = getAnnotationClasses().contains(cls);
+		if(!validVar){
+			for(IClass c: getAnnotationClasses()){
+				if(c.hasSubClass(cls)){
+					validVar = true;
+					cls = c; 
+					break;
+				}
+			}
+		}
+		
+		// if not valid
+		if(!validVar)
+			return;
+		
+		// get id
+		String classId = cls.getName();
+		
 		
 		for(Span span: getSpans(var)){
 			Map<String,String> spanMap = new LinkedHashMap<String,String>();
@@ -345,7 +367,7 @@ public class InstancesToEhost {
 	 * @return
 	 * @throws ParserConfigurationException 
 	 */
-	private Document createSchema(IOntology ontology,List<String> filter) throws ParserConfigurationException {
+	private Document createSchema(IOntology ontology) throws ParserConfigurationException {
 		// create new document
 		Document dom = XMLUtils.createDocument(); 
 		Element root = dom.createElement("eHOST_Project_Configure");
@@ -383,8 +405,9 @@ public class InstancesToEhost {
 		// get relevant classes
 		Element classDefs = dom.createElement("classDefs");
 		root.appendChild(classDefs);
-		for(IClass cls: getRelevantClasses(ontology,filter)){
+		for(IClass cls: getRelevantClasses(ontology)){
 			classDefs.appendChild(createClassDef(dom,cls));
+			getAnnotationClasses().add(cls);
 		}
 		
 		
@@ -458,7 +481,8 @@ public class InstancesToEhost {
 		return e;
 	}
 	
-	private List<IClass> getRelevantClasses(IOntology ontology, List<String> filter) {
+	private List<IClass> getRelevantClasses(IOntology ontology) {
+		List<String> filter = getClassFilter();
 		List<IClass> list = new ArrayList<IClass>();
 		for(IClass cls: ontology.getClass(DomainOntology.ANNOTATION).getSubClasses()){
 			// check if this is not a system class
@@ -484,7 +508,7 @@ public class InstancesToEhost {
 	
 	private Set<IProperty> getRelevantAttributeProperties(IOntology ontology) {
 		Set<IProperty> list = new LinkedHashSet<IProperty>();
-		for(IClass cls : getRelevantClasses(ontology,null)){
+		for(IClass cls : getRelevantClasses(ontology)){
 			for(IRestriction r: cls.getEquivalentRestrictions().getRestrictions()){
 				if(isRelevantAttributeProperty(r.getProperty())){
 					list.add(r.getProperty());
