@@ -825,13 +825,17 @@ public class DomainOntology {
 	
 	private Set<IClass> getPossibleCompoundAnchorArguments(IClass compoundCls,Set<IClass> mentionsClss){
 		Set<IClass> found = new LinkedHashSet<IClass>();
-		/*for(IClass component: getCompoundAnchorMap().get(compoundCls)){
-			if(mentionsClss.contains(component))
-				found.add(component);
-		}*/
 		for(IClass mention: mentionsClss){
-			if(getCompoundAnchorMap().get(compoundCls).contains(mention))
+			Set<IClass> args = getCompoundAnchorMap().get(compoundCls);
+			if(args.contains(mention))
 				found.add(mention);
+			else{
+				for(IClass i: args){
+					if(i.hasSubClass(mention)){
+						found.add(mention);break;
+					}
+				}
+			}
 		}
 		
 		return found;

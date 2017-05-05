@@ -44,4 +44,13 @@ public interface IInstance extends IResource {
 	 */
 	public boolean hasType(IClass cls);
 	
+	
+	/**
+	 * get values of the given properties.
+	 *
+	 * @param prop the prop
+	 * @param includeSubPropeties - include values for subproperties
+	 * @return list of values
+	 */
+	public Object [] getPropertyValues(IProperty prop, boolean includeSubPropeties);
 }

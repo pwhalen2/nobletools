@@ -65,10 +65,23 @@ public class OInstance extends OResource implements IInstance {
 		return o.length > 0?o[0]:null;
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.pitt.dbmi.nlp.noble.ontology.owl.OResource#getPropertyValues(edu.pitt.dbmi.nlp.noble.ontology.IProperty)
+	/**
+	 * get property values for a given property (doesn't include sub properties)
+	 * @param prop - property
+	 * @return list of objects
 	 */
 	public Object[] getPropertyValues(IProperty prop) {
+		return getPropertyValues(prop, false);
+	}
+	
+	
+	/**
+	 * get property values for a given property
+	 * @param prop - property
+	 * @param includeSubProperties - if true, return values for all sub properties
+	 * @return list of objects
+	 */
+	public Object[] getPropertyValues(IProperty prop, boolean includeSubProperties) {
 		if(prop.isAnnotationProperty())
 			return super.getPropertyValues(prop);
 		else if(prop.isDatatypeProperty()){
@@ -76,6 +89,14 @@ public class OInstance extends OResource implements IInstance {
 			if(getOWLIndividual().isNamed()){
 				for(OWLLiteral l: getOWLReasoner().getDataPropertyValues((OWLNamedIndividual)getOWLIndividual(),(OWLDataProperty)convertOntologyObject(prop))){
 					list.add(convertOWLObject(l));
+				}
+				// optionally include sub properties
+				if(includeSubProperties){
+					for(IProperty p: prop.getSubProperties()){
+						for(OWLLiteral l: getOWLReasoner().getDataPropertyValues((OWLNamedIndividual)getOWLIndividual(),(OWLDataProperty)convertOntologyObject(p))){
+							list.add(convertOWLObject(l));
+						}
+					}
 				}
 			}
 			return list.toArray();
@@ -85,6 +106,15 @@ public class OInstance extends OResource implements IInstance {
 				for(OWLIndividual l: getOWLReasoner().getObjectPropertyValues((OWLNamedIndividual)getOWLIndividual(),
 						(OWLObjectPropertyExpression)convertOntologyObject(prop)).getFlattened()){
 					list.add(convertOWLObject(l));
+				}
+				// optionally include sub properties
+				if(includeSubProperties){
+					for(IProperty p: prop.getSubProperties()){
+						for(OWLIndividual l: getOWLReasoner().getObjectPropertyValues((OWLNamedIndividual)getOWLIndividual(),
+								(OWLObjectPropertyExpression)convertOntologyObject(p)).getFlattened()){
+							list.add(convertOWLObject(l));
+						}
+					}
 				}
 			}
 			return list.toArray();

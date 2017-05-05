@@ -240,7 +240,7 @@ public class ORestriction extends OClass implements IRestriction {
 		if(inst == null)
 			return true;
 		
-		Object [] values = inst.getPropertyValues(prop);
+		Object [] values = inst.getPropertyValues(prop,true);
 		if(values == null)
 			return false;
 		
