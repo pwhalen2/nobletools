@@ -10,6 +10,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -33,6 +34,7 @@ import edu.pitt.dbmi.nlp.noble.ontology.*;
 import edu.pitt.dbmi.nlp.noble.ontology.owl.OOntology;
 import edu.pitt.dbmi.nlp.noble.tools.ConText;
 import edu.pitt.dbmi.nlp.noble.tools.ConTextHelper;
+import edu.pitt.dbmi.nlp.noble.tools.TextTools;
 import edu.pitt.dbmi.nlp.noble.util.ColorTools;
 import edu.pitt.dbmi.nlp.noble.util.FileTools;
 import edu.pitt.dbmi.nlp.noble.util.XMLUtils;
@@ -318,20 +320,22 @@ public class InstancesToEhost {
 		// get id
 		String classId = cls.getName();
 		
+		// add annotation
+		Element annotation = dom.createElement("annotation");
+		annotation.appendChild(XMLUtils.createElement(dom,"mention","id",instanceId));
+		annotation.appendChild(XMLUtils.createElement(dom,"annotator",Collections.singletonMap("id", getAnnotator()),getAnnotator()));
+		annotation.appendChild(XMLUtils.createElement(dom,"creationDate",""+getCreationDate()));
+		root.appendChild(annotation);
+		
 		
 		for(Span span: getSpans(var)){
 			Map<String,String> spanMap = new LinkedHashMap<String,String>();
 			spanMap.put("start",""+span.getStartPosition());
 			spanMap.put("end",""+span.getEndPosition());
 			text.append(span.getText()+" ");
-			
-			Element annotation = dom.createElement("annotation");
-			annotation.appendChild(XMLUtils.createElement(dom,"mention","id",instanceId));
-			annotation.appendChild(XMLUtils.createElement(dom,"annotator",Collections.singletonMap("id", "eHOST_2010"),getAnnotator()));
+	
 			annotation.appendChild(XMLUtils.createElement(dom,"span",spanMap));
 			annotation.appendChild(XMLUtils.createElement(dom,"spannedText",span.getText()));
-			annotation.appendChild(XMLUtils.createElement(dom,"creationDate",""+getCreationDate()));
-			root.appendChild(annotation);
 		}
 		
 		//fill in attributes
@@ -355,7 +359,7 @@ public class InstancesToEhost {
 		//fill in class
 		Element classMention = XMLUtils.createElement(dom,"classMention","id",instanceId);
 		for(String slot: slotsIds){
-			classMention.appendChild(XMLUtils.createElement(dom,"hasSlotMention",slot));
+			classMention.appendChild(XMLUtils.createElement(dom,"hasSlotMention","id",slot));
 		}
 		classMention.appendChild(XMLUtils.createElement(dom,"mentionClass",Collections.singletonMap("id",classId),text.toString()));
 		root.appendChild(classMention);
@@ -427,8 +431,10 @@ public class InstancesToEhost {
 		e.appendChild(XMLUtils.createElement(dom, "Source",cls.getOntology().getName()));
 		
 		// check if there are some custom numeric attributes
-		for(IRestriction r: cls.getRestrictions(cls.getOntology().getProperty(DomainOntology.HAS_NUM_VALUE))){
-			e.appendChild(createAttributeDef(dom,r));
+		for(IRestriction r: cls.getEquivalentRestrictions().getRestrictions()){
+			if(DomainOntology.HAS_NUM_VALUE.equals(r.getProperty())){
+				e.appendChild(createAttributeDef(dom,r));
+			}
 		}
 		
 		return e;
@@ -521,15 +527,18 @@ public class InstancesToEhost {
 	
 	
 	public static void main(String[] args)  throws Exception{
-		File outputDir = new File("/home/tseytlin/Data/NobleMentions/Gold/RiskFactors/eHOST/");
-		File corpusDir = new File("/home/tseytlin/Data/NobleMentions/Gold/RiskFactors/NLM_RiskFactors_Train/");
-		File ontologyFile1 = new File("/home/tseytlin/Data/NobleMentions/Gold/RiskFactors/heartDiseaseInDiabeticsInstances.owl");
-		File ontologyFile2 = new File("/home/tseytlin/Data/NobleMentions/Output/RiskFactors/2017-04-24 15.40.32/heartDiseaseInDiabeticsInstances.owl");
+		File outputDir = new File("/home/tseytlin/RiskFactors_eHOST/");
+		File corpusDir = new File("/home/tseytlin/Data/NobleMentions/NLM_RiskFactors_Train");
+		File listFile = new File("/home/tseytlin/Data/NobleMentions/Gold/HeartDiseaseRiskFactors/heartRiskAnnotationClasses.txt");
+		
+		File ontologyFile1 = new File("/home/tseytlin/Data/NobleMentions/Gold/HeartDiseaseRiskFactors/heartDiseaseInDiabeticsInstances.owl");
+		File ontologyFile2 = new File("/home/tseytlin/Data/NobleMentions/Output/NLM_RiskFactors_Train/2017-05-08 16.25.16/heartDiseaseInDiabeticsInstances.owl");
+	
 		
 		InstancesToEhost i2e = new InstancesToEhost();
 		i2e.setOutputDir(outputDir);
 		i2e.setCorpusDir(corpusDir);
-		
+		i2e.setClassFilter(Arrays.asList(TextTools.getText(new FileInputStream(listFile)).split("\n")));
 		i2e.convert(OOntology.loadOntology(ontologyFile1));
 		i2e.addAnnotations(OOntology.loadOntology(ontologyFile2),"A2");
 		

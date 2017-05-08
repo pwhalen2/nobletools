@@ -477,6 +477,9 @@ public class Instance {
 				annotations.addAll(getMention().getModifierAnnotations());
 			}
 			for(String type: getModifierInstances().keySet()){
+				// skip annotation for section 
+				if(DomainOntology.HAS_SECTION.equals(type))
+					continue;
 				for(Instance modifier:getModifierInstances().get(type)){
 					annotations.addAll(modifier.getAnnotations());
 				}
