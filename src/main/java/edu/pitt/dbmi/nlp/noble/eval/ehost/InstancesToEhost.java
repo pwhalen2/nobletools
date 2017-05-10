@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -132,16 +133,25 @@ public class InstancesToEhost {
 		}
 		
 		// copy saved annotations
+		//Set<String> corpusFiles = new HashSet<String>();
 		for(IInstance composition: getCompositions(ontology)){
 			try {
 				Document dom = XMLUtils.createDocument();  
+				String title = getTitle(composition);
 				convertComposition(composition,dom); 
-				XMLUtils.writeXML(dom,new FileOutputStream(new File(saved,getTitle(composition)+KNOWTATOR_SUFFIX)));
+				XMLUtils.writeXML(dom,new FileOutputStream(new File(saved,title+KNOWTATOR_SUFFIX)));
+				//corpusFiles.add(title);
 			} catch (Exception e) {
 				throw new IOException(e);
 			}
 		}
 		
+		/*// remove extra corpus files
+		for(File f: new File(outputDir,CORPUS_DIR).listFiles()){
+			if(!corpusFiles.contains(f.getName())){
+				f.delete();
+			}
+		}*/
 	}
 	
 	private List<IInstance> getCompositions(IOntology ontology){
@@ -185,7 +195,10 @@ public class InstancesToEhost {
 				if(f.exists()){
 					dom = XMLUtils.parseXML(new FileInputStream(f));
 				}else{
-					dom = XMLUtils.createDocument();
+					//dom = XMLUtils.createDocument();
+					//skip documents that were not annotated
+					//by another annotator
+					continue;
 				}
 				
 				// convert composition

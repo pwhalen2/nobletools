@@ -773,10 +773,11 @@ public class AnnotationEvaluation implements ActionListener {
 						i2e.setClassFilter(Arrays.asList(TextTools.getText(new FileInputStream(filter)).split("\n")));
 					}
 					
-					progress("converting "+gold.getAbsolutePath()+ "..\n");
-					i2e.convert(OOntology.loadOntology(gold));
 					progress("converting "+candidate.getAbsolutePath()+ "..\n");
-					i2e.addAnnotations(OOntology.loadOntology(candidate),"A2");
+					i2e.setAnnotator("A2");
+					i2e.convert(OOntology.loadOntology(candidate));
+					progress("converting "+gold.getAbsolutePath()+ "..\n");
+					i2e.addAnnotations(OOntology.loadOntology(gold),"A1");
 					progress("ok");		
 							
 					
