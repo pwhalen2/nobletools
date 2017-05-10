@@ -19,7 +19,8 @@ public class SentenceProcessor implements Processor<Document> {
 	private static final String PROPERTIES_PATTERN = "([A-Z][A-Za-z /]{3,25})(?:\\.{2,}|\\:)(.{2,25})";
 	private static final String PROSE_SENTENCE_END = ".+\\s([A-Z]?[a-z]+|\\d+),?\\s*";
 	private static final String PROSE_SENTENCE_START = "\\s*([a-z]+|\\d+)\\b.+"; //[A-Z]? 
-		
+	private static final String BULLET_SENTENCE_START = "\\s*([A-Z]{2,}|\\d+)\\b.+"; //[A-Z]? 
+	private static final String BULLET_SENTENCE_END = ".+\\s([A-Z]{2,}|\\d+),?\\s*";
 	private long time;
 	
 	
@@ -44,7 +45,7 @@ public class SentenceProcessor implements Processor<Document> {
 			
 			// check if this sentence does not need to be merged
 			// with the previous one, lets save it
-			if(!mergeLines(last,s)){
+			if(!mergeLines(str,last,s)){
 				// save previous region
 				if(str.toString().trim().length() > 0){
 					// if multiline buffer, then do prose parsing
@@ -185,7 +186,7 @@ public class SentenceProcessor implements Processor<Document> {
 	 * @param s the s
 	 * @return true, if successful
 	 */
-	private boolean mergeLines(String last, String s) {
+	private boolean mergeLines(StringBuilder buf, String last, String s) {
 		if(last == null)
 			return false;
 		// if previous item is worksheet ..
@@ -201,7 +202,11 @@ public class SentenceProcessor implements Processor<Document> {
 		if(last.matches(PROSE_SENTENCE_END) && s.matches(PROSE_SENTENCE_START)){
 			return true;
 		}
-
+		// if last line is a bullet and the following is upper case continuation
+		if(Pattern.compile(BULLET_PATTERN, Pattern.DOTALL|Pattern.MULTILINE).matcher(buf).matches() && last.matches(BULLET_SENTENCE_END) && s.matches(BULLET_SENTENCE_START)){
+			return true;
+		}
+		
 		return false;
 	}
 
