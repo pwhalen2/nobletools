@@ -210,6 +210,8 @@ public class OOntology extends OResource implements IOntology {
 					}
 				}
 				r.close();
+				if(url == null)
+					throw new IOntologyError("Unable to find ontology URI inside "+loc);
 				return IRI.create(url);
 			} catch (FileNotFoundException e) {
 				throw new IOntologyError("Error reading ontology from " + location, e);

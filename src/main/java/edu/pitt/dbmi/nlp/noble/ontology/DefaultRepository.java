@@ -152,7 +152,11 @@ public class DefaultRepository implements IRepository{
 				dir.mkdirs();
 			for(File f: dir.listFiles()){
 				if(f.getName().endsWith(".owl")){
-					addOntology(new OOntology(f.getAbsolutePath()));
+					try{
+						addOntology(new OOntology(f.getAbsolutePath()));
+					}catch(Throwable e){
+						e.printStackTrace();
+					}
 				}
 			}
 			
