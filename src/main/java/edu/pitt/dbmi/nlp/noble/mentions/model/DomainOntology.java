@@ -1290,7 +1290,7 @@ public class DomainOntology {
 	 * @param cls in question
 	 * @return  unique instnace name
 	 */
-	public String createInstanceName(IClass cls){
+	public static String createInstanceName(IClass cls){
 		//return cls.getName()+"-"+System.currentTimeMillis()+"-"+((int)(Math.random()*1000));
 		return cls.getName()+"-"+(instanceCounter++);
 	}
@@ -1300,9 +1300,10 @@ public class DomainOntology {
 	 * @param cls - which instance to return
 	 * @return instance to be returned
 	 */
-	public IInstance getDefaultInstance(IClass cls){
+	public static IInstance getDefaultInstance(IClass cls){
+		IOntology ontology = cls.getOntology();
 		String name = cls.getName()+"_Instance";
-		IInstance instance = ontology. getInstance(name);
+		IInstance instance = ontology.getInstance(name);
 		if(instance == null)
 			instance = cls.createInstance(name);
 		return instance;
@@ -1314,7 +1315,7 @@ public class DomainOntology {
 	 * @param cls - from which to create instance
 	 * @return instance to be returned
 	 */
-	public IInstance createInstance(IClass cls){
+	public static IInstance createInstance(IClass cls){
 		return cls.createInstance(createInstanceName(cls));
 	}
 	
