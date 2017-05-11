@@ -282,10 +282,7 @@ public class InstancesToEhost {
 			IInstance anchor = (IInstance) a;
 			spanVals =  anchor.getPropertyValues(ont.getProperty(DomainOntology.HAS_SPAN));
 			textVals =  anchor.getPropertyValues(ont.getProperty(DomainOntology.HAS_ANNOTATION_TEXT));
-			
 		}
-		
-		
 		
 		// get spans
 		for(Object o: spanVals){
@@ -350,17 +347,16 @@ public class InstancesToEhost {
 		annotation.appendChild(XMLUtils.createElement(dom,"annotator",Collections.singletonMap("id", getAnnotator()),getAnnotator()));
 		annotation.appendChild(XMLUtils.createElement(dom,"creationDate",""+getCreationDate()));
 		root.appendChild(annotation);
-		
-		
 		for(Span span: getSpans(var)){
 			Map<String,String> spanMap = new LinkedHashMap<String,String>();
 			spanMap.put("start",""+span.getStartPosition());
 			spanMap.put("end",""+span.getEndPosition());
 			text.append(span.getText()+" ");
-	
 			annotation.appendChild(XMLUtils.createElement(dom,"span",spanMap));
-			annotation.appendChild(XMLUtils.createElement(dom,"spannedText",span.getText()));
+			
 		}
+		annotation.appendChild(XMLUtils.createElement(dom,"spannedText",text.toString()));
+	
 		
 		//fill in attributes
 		List<String> slotsIds = new ArrayList<String>();
