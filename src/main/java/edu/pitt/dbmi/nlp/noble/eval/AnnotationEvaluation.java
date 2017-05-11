@@ -760,7 +760,7 @@ public class AnnotationEvaluation implements ActionListener {
 					UITools.showErrorDialog(getDialog(),"Can't find system instance ontology: "+candidate);
 					return;
 				}
-				
+				saveSettings();
 				setBusy(true);
 				try{
 				
@@ -806,7 +806,7 @@ public class AnnotationEvaluation implements ActionListener {
 					JOptionPane.showMessageDialog(getDialog(),"Can't save gold weights file to "+weights.getParentFile(),"Error",JOptionPane.ERROR_MESSAGE);
 					return;
 				}
-				
+				saveSettings();
 				setBusy(true);
 				try{
 				

@@ -206,6 +206,7 @@ public class Instance {
 				
 				// now just add span
 				instance.setPropertyValue(cls.getOntology().getProperty(DomainOntology.HAS_SPAN),getInstanceSpan());
+				instance.setPropertyValue(cls.getOntology().getProperty(DomainOntology.HAS_ANNOTATION_TEXT),getText());
 				
 				
 			}else if(modifier != null){

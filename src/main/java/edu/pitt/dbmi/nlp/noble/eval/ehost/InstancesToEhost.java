@@ -276,6 +276,17 @@ public class InstancesToEhost {
 		Object [] spanVals =  var.getPropertyValues(ont.getProperty(DomainOntology.HAS_SPAN));
 		Object [] textVals =  var.getPropertyValues(ont.getProperty(DomainOntology.HAS_ANNOTATION_TEXT));
 		
+		// check if we have an anchor, if so use just the anchor
+		Object a = var.getPropertyValue(ont.getProperty(DomainOntology.HAS_ANCHOR));
+		if(a != null){
+			IInstance anchor = (IInstance) a;
+			spanVals =  anchor.getPropertyValues(ont.getProperty(DomainOntology.HAS_SPAN));
+			textVals =  anchor.getPropertyValues(ont.getProperty(DomainOntology.HAS_ANNOTATION_TEXT));
+			
+		}
+		
+		
+		
 		// get spans
 		for(Object o: spanVals){
 			for(String sp : o.toString().split("\\s+")){
