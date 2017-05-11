@@ -452,7 +452,7 @@ public class InstancesToEhost {
 		
 		// check if there are some custom numeric attributes
 		for(IRestriction r: cls.getEquivalentRestrictions().getRestrictions()){
-			if(DomainOntology.HAS_NUM_VALUE.equals(r.getProperty())){
+			if(DomainOntology.HAS_NUM_VALUE.equals(r.getProperty().getName())){
 				e.appendChild(createAttributeDef(dom,r));
 			}
 		}

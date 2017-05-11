@@ -10,6 +10,7 @@ import edu.pitt.dbmi.nlp.noble.ontology.IInstance;
 import edu.pitt.dbmi.nlp.noble.ontology.IOntology;
 import edu.pitt.dbmi.nlp.noble.ontology.IProperty;
 import edu.pitt.dbmi.nlp.noble.ontology.IRestriction;
+import edu.pitt.dbmi.nlp.noble.terminology.Annotation;
 
 /**
  * This class represents a container for Annotation class inside DomainOntology.owl
@@ -113,7 +114,29 @@ public class AnnotationVariable extends Instance {
 	}
 	
 	
-	
+	/**
+	 * get a set of text annotations associated with this instance
+	 * @return set of annotations
+	 */
+	public Set<Annotation> getAnnotations() {
+		if(annotations == null){
+			annotations = new TreeSet<Annotation>();
+			if(getMention() != null){
+				annotations.addAll(getMention().getAnnotations());
+				annotations.addAll(getMention().getModifierAnnotations());
+			}
+			for(String type: getModifierInstances().keySet()){
+				// skip annotation for section 
+				if(DomainOntology.HAS_SECTION.equals(type))
+					continue;
+				for(Instance modifier:getModifierInstances().get(type)){
+					annotations.addAll(modifier.getAnnotations());
+				}
+			}
+		}
+		
+		return annotations;
+	}
 	
 	/**
 	 * is the current annotation variable satisfied given its linguistic and semantic properties?

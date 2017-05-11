@@ -475,18 +475,8 @@ public class Instance {
 			annotations = new TreeSet<Annotation>();
 			if(getMention() != null){
 				annotations.addAll(getMention().getAnnotations());
-				annotations.addAll(getMention().getModifierAnnotations());
-			}
-			for(String type: getModifierInstances().keySet()){
-				// skip annotation for section 
-				if(DomainOntology.HAS_SECTION.equals(type))
-					continue;
-				for(Instance modifier:getModifierInstances().get(type)){
-					annotations.addAll(modifier.getAnnotations());
-				}
 			}
 		}
-		
 		return annotations;
 	}
 
