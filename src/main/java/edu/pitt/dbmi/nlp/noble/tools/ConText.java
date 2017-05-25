@@ -67,6 +67,10 @@ public class ConText implements Processor<Sentence> {
 	public static final String ACTION_DISCONTINUOUS = "discontinuous";
 	public static final String ACTION_FIRST_MENTION = "first_mention";
 	public static final String ACTION_NEAREST_MENTION = "nearest_mention";;
+	
+	public static final List<String> BEFORE_ACTIONS = Arrays.asList(ACTION_FORWARD,ACTION_BIDIRECTIONAL,ACTION_NEAREST_MENTION,ACTION_FIRST_MENTION);
+	public static final List<String> AFTER_ACTIONS = Arrays.asList(ACTION_BACKWARD,ACTION_BIDIRECTIONAL,ACTION_NEAREST_MENTION);
+	
 	public static final String LINGUISTIC_MODIFIER = "LinguisticModifier";
 	public static final String SEMANTIC_MODIFIER = "SemanticModifier";
 	public static final String NUMERIC_MODIFIER = "NumericModifier";
@@ -800,6 +804,23 @@ public class ConText implements Processor<Sentence> {
 	}
 
 	
+	private void addModifier(Modifier m, String action, String location, Map<String,Map<String,List<Modifier>>> candidateModifiers){
+		Map<String,List<Modifier>> map = candidateModifiers.get(m.getType());
+		if(map == null){
+			map = new HashMap<String, List<Modifier>>();
+			candidateModifiers.put(m.getType(),map);
+		}
+		List<Modifier> list = map.get(location);
+		if(list == null){
+			if(ConText.ACTION_FIRST_MENTION.equals(action)){
+				list = new ArrayList<Modifier>();
+			}else{
+				list = new Stack<Modifier>();
+			}
+			map.put(location,list);
+		}
+		list.add(m);
+	}
 	
 	/**
 	 * find semantically matching modifiers from a given list given a target mention
@@ -835,7 +856,7 @@ public class ConText implements Processor<Sentence> {
 			section = paragraph;
 		
 		// create a mapping of candidate modifiers for each type
-		Map<String,List<Modifier>> candidateModifiers = new HashMap<String, List<Modifier>>();
+		Map<String,Map<String,List<Modifier>>> candidateModifiers = new HashMap<String,Map<String,List<Modifier>>>();
 		for(Mention modifier: globalModifiers){
 			// lets see if this modifier fits the variable semantically
 			if(section.contains(modifier)){
@@ -846,20 +867,19 @@ public class ConText implements Processor<Sentence> {
 				}else{
 					action = modifier.getConcept().getProperties().getProperty(ConText.HAS_SECTION_ACTION);
 				}
-				// check if we have a modifier before the target and within a smaller span
-				if(span.contains(modifier) && modifier.before(target)){
-					for(Modifier mod : Modifier.getModifiers(modifier)){
-						List<Modifier> list = candidateModifiers.get(mod.getType()+"-"+action);
-						if(list == null){
-							if(ConText.ACTION_FIRST_MENTION.equals(action)){
-								list = new ArrayList<Modifier>();
-							}else if(ConText.ACTION_NEAREST_MENTION.equals(action) || ConText.ACTION_BIDIRECTIONAL.equals(action)){
-								list = new Stack<Modifier>();
-							}
+				
+				// check if we have a modifier within the span
+				if(span.contains(modifier)){
+					// if we have a valid before action and the modifier is before
+					if(modifier.before(target) && ConText.BEFORE_ACTIONS.contains(action)){
+						for(Modifier mod : Modifier.getModifiers(modifier)){
+							addModifier(mod, action, "before",candidateModifiers);
 						}
-						//TODO: implement forward and backword actions
-						list.add(mod);
-						candidateModifiers.put(mod.getType()+"-"+action,list);
+					// if we have a valid after action and the modifier is after	
+					}else if(modifier.after(target) && ConText.AFTER_ACTIONS.contains(action)){
+						for(Modifier mod : Modifier.getModifiers(modifier)){
+							addModifier(mod, action, "after",candidateModifiers);
+						}
 					}
 				}
 			}
@@ -868,11 +888,39 @@ public class ConText implements Processor<Sentence> {
 		// add best modifier
 		List<Modifier> modifierList = new ArrayList<Modifier>();
 		for(String type: candidateModifiers.keySet()){
-			for(Modifier modifier: candidateModifiers.get(type)){
-				if(getModifierResolver().isModifierApplicable(modifier.getMention(), target)){
-					modifierList.add(modifier);
-					break;
+			List<Modifier> beforeList = candidateModifiers.get(type).get("before");
+			List<Modifier> afterList = candidateModifiers.get(type).get("after");
+			
+			// get the closest before modifier
+			Modifier before = null;
+			if(beforeList != null){
+				for(Modifier modifier: beforeList){
+					if(getModifierResolver().isModifierApplicable(modifier.getMention(), target)){
+						before = modifier;
+						break;
+					}
 				}
+			}
+			// get the closest after modifier
+			Modifier after = null;
+			if(afterList != null){
+				for(Modifier modifier: afterList){
+					if(getModifierResolver().isModifierApplicable(modifier.getMention(), target)){
+						after = modifier;
+						break;
+					}
+				}
+			}
+
+			// add the best modifier
+			if(before != null && after != null){
+				int bd = target.getStartPosition()-before.getMention().getEndPosition();
+				int ad = after.getMention().getStartPosition() - target.getEndPosition();
+				modifierList.add(bd < ad? before:after);
+			}else if(before != null){
+				modifierList.add(before);
+			}else if(after != null){
+				modifierList.add(after);
 			}
 		}
 		return modifierList;

@@ -7,8 +7,8 @@ import edu.pitt.dbmi.nlp.noble.coder.model.*;
 import edu.pitt.dbmi.nlp.noble.terminology.TerminologyException;
 
 public class ParagraphProcessor implements Processor<Document> {
-	private static final String PARAGRAPH = "(\\s*\\n){2,}";
-	private static final String DSPACE_PARAGRAPH = "\\n{3,}";
+	private static final String PARAGRAPH = "(?:\\s*\\n){2,}";
+	private static final String DSPACE_PARAGRAPH = "(?:\\s*\\n){3,}";
 	private static final String DIVS = "\\-{5,}|_{5,}|={5,}";
 	private static final String PARTS = "PARTS?\\s+\\d+(\\s+AND\\s+\\d+)?:?";
 	private static final Pattern PATTERN = Pattern.compile("("+PARAGRAPH+"|"+DIVS+"|"+PARTS+")",Pattern.MULTILINE|Pattern.CASE_INSENSITIVE);
@@ -58,13 +58,22 @@ public class ParagraphProcessor implements Processor<Document> {
 			return;
 		
 		int offs = 0;
+		Pattern whitespace = Pattern.compile("^\\s+",Pattern.DOTALL|Pattern.MULTILINE);
 		Matcher mt = isDoubleSpace(text)?DSPACE_PATTERN.matcher(text):PATTERN.matcher(text);
 		String delim = null;
 		while(mt.find()){
 			delim = mt.group();
+			
+			//add whitespace buffer at the end
+			int whiteSpaceBufferOffset = 0;
+			Matcher wm = whitespace.matcher(delim);
+			if(wm.find()){
+				whiteSpaceBufferOffset = wm.group().length();
+			}
+				
 			//String txt = text.substring(offs,mt.start());
 			//Paragraph pgh = new Paragraph(txt,offs+section.getBodyOffset());
-			Paragraph pgh = new Paragraph(doc,offs+bodyOffset,mt.start()+bodyOffset);
+			Paragraph pgh = new Paragraph(doc,offs+bodyOffset,mt.start()+bodyOffset+whiteSpaceBufferOffset);
 			if(delim.matches(PARTS))
 				pgh.setPart(delim);
 			doc.addParagraph(pgh);
