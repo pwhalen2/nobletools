@@ -350,8 +350,12 @@ public class ConText implements Processor<Sentence> {
 		// then entire section is a source of attributes for this mention
 		Sentence newSentence = null;
 		if(Sentence.TYPE_HEADER.equals(sentence.getSentenceType()) && !sentence.getMentions().isEmpty() && sentence.getSection() != null){
-			Section section = sentence.getSection();
-			newSentence = new Sentence(section.getText(),section.getOffset(),Sentence.TYPE_PROSE);
+			Spannable span = sentence.getSection();
+			for(Paragraph p : sentence.getSection().getParagraphs()){
+				span = new Paragraph(sentence.getDocument(),sentence.getOffset(),p.getEndPosition()); 
+				break;
+			}
+			newSentence = new Sentence(span.getText(),span.getStartPosition(),Sentence.TYPE_PROSE);
 		}else{
 			newSentence = new Sentence(sentence);
 		}

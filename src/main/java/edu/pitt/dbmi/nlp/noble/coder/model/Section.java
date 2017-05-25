@@ -9,6 +9,7 @@ public class Section extends Text{
 	private String body,title;
 	private int bodyOffset;
 	private List<Sentence> sentences;
+	private List<Paragraph> paragraphs;
 	private Section parent;
 	private List<Section> sections;
 	private Mention header;
@@ -38,6 +39,17 @@ public class Section extends Text{
 		if(sentences == null)
 			sentences = getDocument().getSentences(this);
 		return sentences;
+	}
+
+	/**
+	 * Gets the paragraphs.
+	 *
+	 * @return the paragraphs
+	 */
+	public List<Paragraph> getParagraphs() {
+		if(paragraphs == null)
+			paragraphs = getDocument().getParagraphs(this);
+		return paragraphs;
 	}
 
 
