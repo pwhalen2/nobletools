@@ -1,6 +1,7 @@
 package edu.pitt.dbmi.nlp.noble.tools;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -37,7 +38,15 @@ public class ConTextHelper {
 	 * @return true, if is modifier type
 	 */
 	private static  boolean isSemanticType(IClass cls){
-		return cls.getURI().toString().matches(".*("+CONTEXT_OWL+"|"+SCHEMA_OWL+").*")  && !cls.getName().contains("_");
+		// if defined in context or schema, then it is SemType
+		if(cls.getURI().toString().matches(".*("+CONTEXT_OWL+"|"+SCHEMA_OWL+").*")  && !cls.getName().contains("_"))
+			return true;
+		// else if direct parent is modifier modifier
+		for(IClass p: cls.getDirectSuperClasses()){
+			if(Arrays.asList(ConText.LINGUISTIC_MODIFIER,ConText.SEMANTIC_MODIFIER,ConText.NUMERIC_MODIFIER,ConText.QUALIFIER).contains(p.getName()))
+				return true;
+		}
+		return false;
 	}
 	
 	/**
