@@ -848,18 +848,19 @@ public class ConText implements Processor<Sentence> {
 				}
 				// check if we have a modifier before the target and within a smaller span
 				if(span.contains(modifier) && modifier.before(target)){
-					Modifier mod = Modifier.getModifiers(modifier).get(0);
-					List<Modifier> list = candidateModifiers.get(mod.getType()+"-"+action);
-					if(list == null){
-						if(ConText.ACTION_FIRST_MENTION.equals(action)){
-							list = new ArrayList<Modifier>();
-						}else if(ConText.ACTION_NEAREST_MENTION.equals(action) || ConText.ACTION_BIDIRECTIONAL.equals(action)){
-							list = new Stack<Modifier>();
+					for(Modifier mod : Modifier.getModifiers(modifier)){
+						List<Modifier> list = candidateModifiers.get(mod.getType()+"-"+action);
+						if(list == null){
+							if(ConText.ACTION_FIRST_MENTION.equals(action)){
+								list = new ArrayList<Modifier>();
+							}else if(ConText.ACTION_NEAREST_MENTION.equals(action) || ConText.ACTION_BIDIRECTIONAL.equals(action)){
+								list = new Stack<Modifier>();
+							}
 						}
+						//TODO: implement forward and backword actions
+						list.add(mod);
+						candidateModifiers.put(mod.getType()+"-"+action,list);
 					}
-					//TODO: implement forward and backword actions
-					list.add(mod);
-					candidateModifiers.put(mod.getType()+"-"+action,list);
 				}
 			}
 		}

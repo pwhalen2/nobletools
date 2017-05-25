@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import edu.pitt.dbmi.nlp.noble.terminology.Annotation;
+import edu.pitt.dbmi.nlp.noble.terminology.TerminologyError;
 import edu.pitt.dbmi.nlp.noble.tools.ConText;
 
 /**
@@ -40,6 +41,10 @@ public class Modifier {
 			mod.setMention(m);
 			list.add(mod);
 		}
+		// having an empty list is not OK
+		if(list.isEmpty())
+			throw new TerminologyError("failed to get a list of modifiers from mention: "+m.getName());
+		
 		return list;
 	}
 	

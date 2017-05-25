@@ -45,6 +45,7 @@ public class InstancesToEhost {
 	public static final String CONFIG_DIR = "config";
 	public static final String CORPUS_DIR = "corpus";
 	public static final String SAVED_DIR = "saved";
+	public static final String ADJUDICATION_DIR = "adjudication";
 
 	private File corpusDir;
 	private File outputDir;

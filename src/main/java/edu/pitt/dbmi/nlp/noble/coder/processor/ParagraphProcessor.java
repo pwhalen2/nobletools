@@ -7,7 +7,7 @@ import edu.pitt.dbmi.nlp.noble.coder.model.*;
 import edu.pitt.dbmi.nlp.noble.terminology.TerminologyException;
 
 public class ParagraphProcessor implements Processor<Document> {
-	private static final String PARAGRAPH = "\\n{2,}";
+	private static final String PARAGRAPH = "(\\s*\\n){2,}";
 	private static final String DSPACE_PARAGRAPH = "\\n{3,}";
 	private static final String DIVS = "\\-{5,}|_{5,}|={5,}";
 	private static final String PARTS = "PARTS?\\s+\\d+(\\s+AND\\s+\\d+)?:?";

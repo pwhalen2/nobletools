@@ -25,14 +25,14 @@ import edu.pitt.dbmi.nlp.noble.util.XMLUtils;
 public class EhostToInstances {
 
 	public static void main(String[] args) throws Exception {
-		File inputDir = new File("/home/tseytlin/Data/NobleMentions/Output/Risk/2017-05-11 10.27.52/eHOST");
-		File ontologyFile = new File("/home/tseytlin/Data/NobleMentions/Gold/HeartDiseaseRiskFactors/heartDiseaseInDiabetics.owl");
-		File instanceFile = new File("/home/tseytlin/Data/NobleMentions/Output/Risk/heartDiseaseInDiabeticsInstances.owl");
-		
+		File inputDir = new File("/home/tseytlin/Data/NobleMentions/Gold/MentionRiskFactors/eHOST/batch1/");
+		File ontologyFile = new File("/home/tseytlin/Data/NobleMentions/Gold/MentionRiskFactors/heartDiseaseInDiabetics.owl");
+		File instanceFile = new File("/home/tseytlin/Data/NobleMentions/Gold/MentionRiskFactors/heartDiseaseInDiabeticsInstances.owl");
+		boolean adjudication = true;
 		
 		EhostToInstances i2e = new EhostToInstances();
 		System.out.println("conver: "+ontologyFile.getAbsolutePath()+" ..");
-		i2e.convert(inputDir,ontologyFile,instanceFile);
+		i2e.convert(inputDir,ontologyFile,instanceFile,adjudication);
 		
 		System.out.println("ok");
 
@@ -45,7 +45,17 @@ public class EhostToInstances {
 	 * @param instanceFile - instance ontolgoy
 	 */
 	public void convert(File inputDir, File ontologyFile, File instanceFile) throws Exception {
-		File saved = new File(inputDir,InstancesToEhost.SAVED_DIR);
+		convert(inputDir, ontologyFile, instanceFile,false);
+	}
+	
+	/**
+	 * convert eHOST directory to instances 
+	 * @param inputDir - eHOST directory
+	 * @param ontologyFile - parent ontology
+	 * @param instanceFile - instance ontolgoy
+	 */
+	public void convert(File inputDir, File ontologyFile, File instanceFile, boolean adjudication) throws Exception {
+		File saved = new File(inputDir,adjudication?InstancesToEhost.ADJUDICATION_DIR:InstancesToEhost.SAVED_DIR);
 		if(!saved.exists()){
 			throw new Exception("Directory "+saved.getAbsolutePath()+" doesn't exist ");
 		}
