@@ -43,6 +43,7 @@ public class Sentence extends Text {
 	 */
 	public Sentence(Sentence s){
 		this(s.getText(),s.getOffset(),s.getSentenceType());
+		setDocument(s.getDocument());
 	}
 	
 	

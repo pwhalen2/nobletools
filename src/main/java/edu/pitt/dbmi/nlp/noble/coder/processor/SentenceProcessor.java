@@ -78,7 +78,16 @@ public class SentenceProcessor implements Processor<Document> {
 		return doc;
 	}
 	
-	
+	private int getWhiteSpacePrefixSize(String text){
+		int whitespacePrefix = 0;
+		for(char a: text.toCharArray()){
+			if(a != ' ' &&  a != '\n')
+				break;
+			whitespacePrefix++;
+		}
+		return whitespacePrefix;
+	}
+
 	/**
 	 * parse sentences for a region of text based on type.
 	 *
@@ -102,7 +111,17 @@ public class SentenceProcessor implements Processor<Document> {
 				offset = offset + prefix.length();
 			}
 		}
-		
+
+		// remove leading whitespace
+		int whitespacePrefix = getWhiteSpacePrefixSize(text);
+		if(whitespacePrefix > 0){
+			text = text.substring(whitespacePrefix);
+			offset = offset + whitespacePrefix;
+		}
+
+		// remove following spaces
+		text = text.trim();
+
 		// start adding sentences
 		List<Sentence> sentences = new ArrayList<Sentence>();
 		if(Sentence.TYPE_PROSE.equals(type)){
