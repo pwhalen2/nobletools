@@ -441,10 +441,11 @@ public class Mention implements Spannable, Comparable<Mention> {
 						// old modifier is better as it has a larger span,
 						return;
 					// don't add identical mentions please
-					}else if(nM.equals(oM)){
+					}else if(nM.equals(oM)) {
 						return;
-					// if both are linguistic modifiers, keep the nearest one
-					}else if(ConText.isTypeOf(nM,ConText.LINGUISTIC_MODIFIER) && ConText.isTypeOf(oM,ConText.LINGUISTIC_MODIFIER)){
+						// if both are linguistic modifiers, keep the nearest one
+						//}else if(ConText.isTypeOf(nM,ConText.LINGUISTIC_MODIFIER) && ConText.isTypeOf(oM,ConText.LINGUISTIC_MODIFIER)){
+					}else{
 						int d1 = Text.getOffsetDistance(this,nM);
 						int d2 = Text.getOffsetDistance(this,oM);
 						if(d1 < d2){

@@ -189,6 +189,7 @@ public class NobleMentions implements Processor<Composition>{
 
 		// now go over all satisfied variables and see if we can link them
 		// to other variables that were already satisfied
+
 		for(AnnotationVariable var : goodVariables){
 			Map<String,Instance> relatedVariables = domainOntology.getRelatedVariables(var,goodVariables);
 			for(String relation: relatedVariables.keySet()){

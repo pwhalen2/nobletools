@@ -418,9 +418,17 @@ public class Instance {
         IClass number = ont.getClass(DomainOntology.NUMERIC_MODIFER);
 
         // check if this number instance is too general for THIS instance
-        IClass vc = inst.getConceptClass();
+      	IClass vc = inst.getConceptClass();
         if(vc != null && vc.hasSuperClass(number) && !prop.isDatatypeProperty() && !isSatisfied(getConceptClass(),prop,vc)) {
-            return;
+			//if we don't have a more specific numeric class, skip it
+			boolean skip = false;
+			for(Modifier m: getModifiers()){
+				IClass mc = domainOntology.getConceptClass(m);
+				if(mc.hasSuperClass(vc))
+					skip = true;
+			}
+        	if(skip)
+        		return;
         }
 
         // check that what is in the map doesn't already have the same thing
