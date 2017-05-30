@@ -405,6 +405,7 @@ public class ConText implements Processor<Sentence> {
 		// add modifiers to anchor sentence mentions if it spans beyound sentence boundaries
 		sentence.getMentions().addAll(getGlobalModifierMentions(relevantModifiers));
 		time = System.currentTimeMillis() - time;
+		sentence.getProcessTime().put(getClass().getSimpleName(),time);
 		return sentence;
 	}
 

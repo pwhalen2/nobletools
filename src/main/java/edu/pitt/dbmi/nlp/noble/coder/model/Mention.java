@@ -445,6 +445,7 @@ public class Mention implements Spannable, Comparable<Mention> {
 						return;
 						// if both are linguistic modifiers, keep the nearest one
 						//}else if(ConText.isTypeOf(nM,ConText.LINGUISTIC_MODIFIER) && ConText.isTypeOf(oM,ConText.LINGUISTIC_MODIFIER)){
+					//TODO: decide if this is what we want and possibly refactor
 					}else{
 						int d1 = Text.getOffsetDistance(this,nM);
 						int d2 = Text.getOffsetDistance(this,oM);

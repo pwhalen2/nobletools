@@ -115,6 +115,8 @@ public class NobleMentionsTool implements ActionListener{
 	private static boolean statandlone = false;
 	private DefaultRepository repository = new DefaultRepository();
 	private boolean cancelRun;
+	private Map<String,Long> processTime;
+	
 	
 	// options
 	private ButtonGroup annotationScope ;
@@ -292,7 +294,7 @@ public class NobleMentionsTool implements ActionListener{
 			p.setProperty("normalize.anchors",""+normalizeAnchors.isSelected());
 			p.setProperty("score.anchors",""+scoreAnchors.isSelected());
 			p.setProperty("ignore.labels",""+ignoreLabels.isSelected());
-			UITools.saveSettings(p,new File(ontology.getTerminologyCacheLocation(),"ontology.properties"));
+			UITools.saveSettings(p,new File(ontology.getOntologyLocation().getParentFile(),ontology.getName()+".properties"));
 		}
 	}
 	
@@ -304,7 +306,7 @@ public class NobleMentionsTool implements ActionListener{
 		getOptionsPanel();
 		DomainOntology ontology = ontologyList.getSelectedValue();
 		if(ontology != null){
-			final Properties p = UITools.loadSettings(new File(ontology.getTerminologyCacheLocation(),"ontology.properties"));
+			final Properties p = UITools.loadSettings(new File(ontology.getOntologyLocation().getParentFile(),ontology.getName()+".properties"));
 			sectionScope.setSelected("section".equals(p.getProperty("annotation.relation.scope")));
 			processHeaderAnchor.setSelected(Boolean.parseBoolean(p.getProperty("process.header.anchors")));
 			processHeaderModifier.setSelected(Boolean.parseBoolean(p.getProperty("process.header.modifiers")));

@@ -615,7 +615,6 @@ public class NobleCoderUtils {
 	 */
 	public static void setSearchProperties(NobleCoderTerminology term, Properties p){
 		// load default values
-
 		// lookup default search method
 		if(p.containsKey("default.search.method")){
 			String defaultSearchMethod = NobleCoderTerminology.BEST_MATCH;
@@ -663,12 +662,20 @@ public class NobleCoderUtils {
 			term.setOrderedMode( Boolean.parseBoolean(p.getProperty("ordered.mode")));
 		if(p.containsKey("partial.mode"))
 			term.setPartialMode( Boolean.parseBoolean(p.getProperty("partial.mode")));
-		//if(p.containsKey("enable.search.cache"))
-		//	cachingEnabled = Boolean.parseBoolean(p.getProperty("enable.search.cache"));
 		if(p.containsKey("partial.match.theshold"))
 			term.setPartialMatchThreshold(Double.parseDouble(p.getProperty("partial.match.theshold")));
 		if(p.containsKey("max.words.in.term"))
 			term.setMaximumWordsInTerm(Integer.parseInt(p.getProperty("max.words.in.term")));
+		if(p.containsKey("select.best.candidate"))
+			term.setSelectBestCandidate(Boolean.parseBoolean(p.getProperty("select.best.candidate")));
+		if(p.containsKey("score.concepts"))
+			term.setScoreConcepts(Boolean.parseBoolean(p.getProperty("score.concepts")));
+		if(p.containsKey("ignore.small.words"))
+			term.setIgnoreSmallWords(Boolean.parseBoolean(p.getProperty("ignore.small.words")));
+		if(p.containsKey("handle.possible.acronyms"))
+			term.setHandlePossibleAcronyms(Boolean.parseBoolean(p.getProperty("handle.possible.acronyms")));
+		if(p.containsKey("ignore.digits"))
+			term.setIgnoreDigits(Boolean.parseBoolean(p.getProperty("ignore.digits")));
 		
 		// language filter
 		String v = p.getProperty("language.filter");

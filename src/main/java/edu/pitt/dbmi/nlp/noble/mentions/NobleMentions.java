@@ -139,6 +139,9 @@ public class NobleMentions implements Processor<Composition>{
 			// skip section header sentences
 			if(!codeSectionHeadersWithAnchors && Sentence.TYPE_HEADER.equals(sentence.getSentenceType()))
 				continue;
+			
+			long sentenceTime = System.currentTimeMillis();
+			
 			// get anchors from a sentence
 			for(Instance anchor: domainOntology.getAnchors(sentence.getMentions())){
 				for(AnnotationVariable var : domainOntology.getAnnotationVariables(anchor)){
@@ -185,6 +188,9 @@ public class NobleMentions implements Processor<Composition>{
 					}
 				}
 			}
+			
+			// add sentence 
+			sentence.getProcessTime().put(getClass().getSimpleName(),System.currentTimeMillis()-sentenceTime);
 		}
 
 		// now go over all satisfied variables and see if we can link them
@@ -255,6 +261,8 @@ public class NobleMentions implements Processor<Composition>{
 		}
 		return globalModifiers;
 	}
+	
+	
 	
 	public long getProcessTime() {
 		return time;

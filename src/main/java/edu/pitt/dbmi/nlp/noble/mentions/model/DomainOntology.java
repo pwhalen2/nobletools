@@ -145,7 +145,9 @@ public class DomainOntology {
 			ontologyLocation = file;
 	}
 	
-	
+	public File getOntologyLocation(){
+		return ontologyLocation;
+	}
 	
 	
 	public boolean isNormalizeAnchorTerms() {
