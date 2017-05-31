@@ -114,4 +114,26 @@ public class Composition extends Document {
 		IProperty hasEvent = var.getDomainOntology().getOntology().getProperty(DomainOntology.HAS_MENTION_ANNOTATION);
 		getInstance().addPropertyValue(hasEvent,var.getInstance());
 	}
+	
+	/**
+	 * add all annotation variables
+	 * @param goodVariables - annotation variable list
+	 */
+	public void addAnnotationVariables(Collection<AnnotationVariable> goodVariables) {
+		// add them to a document as good variables
+		for(AnnotationVariable var : goodVariables){
+			addAnnotationVariable(var);
+		}
+	}
+	
+	/**
+	 * add rejected annotation variables to a document
+	 * @param failedVariables - list of failed variables
+	 */
+	public void addRejectedAnnotationVariables(Collection<AnnotationVariable> failedVariables){
+		//TODO: add failed variables as instances of Annotation in ontology
+		//have to make sure that for each anchor mention there is only one generic instance
+		getRejectedAnnotationVariables().addAll(failedVariables);
+	}
+	
 }

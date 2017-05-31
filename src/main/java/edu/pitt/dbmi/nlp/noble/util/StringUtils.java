@@ -245,4 +245,15 @@ public class StringUtils {
 		return count;
 	}
 	
+	/**
+	 * return spacing padding 
+	 * @param n - number of spaces
+	 * @return  padding string
+	 */
+	public static String pad(int n){
+		StringBuilder s = new StringBuilder();
+		for(int i=0;i<n;i++)
+			s.append(" ");
+		return s.toString();
+	}
 }

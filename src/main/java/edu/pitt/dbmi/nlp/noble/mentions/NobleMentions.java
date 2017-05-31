@@ -230,13 +230,8 @@ public class NobleMentions implements Processor<Composition>{
 		Collections.sort(failedVariables,comp);
 		
 		// add them to a document as good variables
-		for(AnnotationVariable var : goodVariables){
-			doc.addAnnotationVariable(var);
-		}
-		
-		
-		// add failed variables
-		doc.getRejectedAnnotationVariables().addAll(failedVariables);
+		doc.addAnnotationVariables(goodVariables);
+		doc.addRejectedAnnotationVariables(failedVariables);
 		
 		time = System.currentTimeMillis() - time;
 		doc.getProcessTime().put(getClass().getSimpleName(),time);

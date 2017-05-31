@@ -78,6 +78,7 @@ import edu.pitt.dbmi.nlp.noble.tools.TextTools;
 import edu.pitt.dbmi.nlp.noble.util.CSVExporter;
 import edu.pitt.dbmi.nlp.noble.util.FileTools;
 import edu.pitt.dbmi.nlp.noble.util.HTMLExporter;
+import edu.pitt.dbmi.nlp.noble.util.StringUtils;
 import edu.pitt.dbmi.nlp.noble.util.UITools;
 
 
@@ -944,23 +945,24 @@ public class NobleMentionsTool implements ActionListener{
 
 	private void addProcessTime(Document doc){
 		if(processTime == null)
-			processTime = new TreeMap<String,Long>();
+			processTime = new LinkedHashMap<String,Long>();
 		if(processTimeCount == null)
 			processTimeCount = new HashMap<String, Long>();
 
+		String suffix = " (Document)";
 		for(String mod: doc.getProcessTime().keySet()){
-			long t = processTime.containsKey(mod)?processTime.get(mod):0;
-			long n = processTimeCount.containsKey(mod)?processTimeCount.get(mod):0;
-			processTime.put(mod,t+doc.getProcessTime().get(mod));
-			processTimeCount.put(mod,n+1);
+			long t = processTime.containsKey(mod+suffix)?processTime.get(mod+suffix):0;
+			long n = processTimeCount.containsKey(mod+suffix)?processTimeCount.get(mod+suffix):0;
+			processTime.put(mod+suffix,t+doc.getProcessTime().get(mod));
+			processTimeCount.put(mod+suffix,n+1);
 		}
-
+		suffix = " (Sentence)";
 		for(Sentence s: doc.getSentences()){
 			for(String mod: s.getProcessTime().keySet()) {
-				long t = processTime.containsKey(mod) ? processTime.get(mod) : 0;
-				long n = processTimeCount.containsKey(mod) ? processTimeCount.get(mod) : 0;
-				processTime.put(mod, t + s.getProcessTime().get(mod));
-				processTimeCount.put(mod, n + 1);
+				long t = processTime.containsKey(mod+suffix)?processTime.get(mod+suffix):0;
+				long n = processTimeCount.containsKey(mod+suffix)?processTimeCount.get(mod+suffix):0;
+				processTime.put(mod+suffix, t + s.getProcessTime().get(mod));
+				processTimeCount.put(mod+suffix, n + 1);
 			}
 		}
 	}
@@ -968,11 +970,12 @@ public class NobleMentionsTool implements ActionListener{
 	private void printProcessTime(){
 		if(processTime != null){
 			System.out.println("\n");
+			final int count = 40;
 			for(String mod: processTime.keySet()){
 				double t = processTime.get(mod);
 				double n = processTimeCount.get(mod);
-
-				System.out.println(mod+":\t"+(t/n)+" ms");
+				String pad = StringUtils.pad(count-mod.length());
+				System.out.println(mod+":"+pad+"  "+TextTools.toString(t/n)+" ms");
 			}
 		}
 	}
