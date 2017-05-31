@@ -13,6 +13,7 @@ import edu.pitt.dbmi.nlp.noble.coder.processor.ParagraphProcessor;
 import edu.pitt.dbmi.nlp.noble.coder.processor.ReportProcessor;
 import edu.pitt.dbmi.nlp.noble.coder.processor.SentenceProcessor;
 import edu.pitt.dbmi.nlp.noble.mentions.model.Instance;
+import edu.pitt.dbmi.nlp.noble.ontology.IClass;
 import edu.pitt.dbmi.nlp.noble.mentions.model.AnnotationVariable;
 import edu.pitt.dbmi.nlp.noble.mentions.model.Composition;
 import edu.pitt.dbmi.nlp.noble.mentions.model.DomainOntology;
@@ -29,6 +30,7 @@ public class NobleMentions implements Processor<Composition>{
 	// some switches
 	private boolean codeSectionHeadersWithAnchors = false;
 	private boolean codeSectionHeadersWithModifiers = true;
+	private boolean removeSubsumedVariables = true;
 
 	
 	/**
@@ -96,6 +98,14 @@ public class NobleMentions implements Processor<Composition>{
 
 	public void setProcessModifiersInHeader(boolean codeSectionHeadersWithModifiers) {
 		this.codeSectionHeadersWithModifiers = codeSectionHeadersWithModifiers;
+	}
+
+	public boolean isRemoveSubsumedVariables() {
+		return removeSubsumedVariables;
+	}
+
+	public void setRemoveSubsumedVariables(boolean removeSubsumedVariables) {
+		this.removeSubsumedVariables = removeSubsumedVariables;
 	}
 
 	/**
@@ -218,6 +228,11 @@ public class NobleMentions implements Processor<Composition>{
 				}
 			}
 		}
+		
+		// remove subsumed variables
+		if(isRemoveSubsumedVariables()){
+			removeSubsumedVariables(goodVariables);
+		}
 
 		
 		// sort the variables
@@ -238,6 +253,43 @@ public class NobleMentions implements Processor<Composition>{
 		return doc;
 	}
 
+	/**
+	 * remove subsumed variables
+	 * @param goodVariables
+	 */
+	private void removeSubsumedVariables(List<AnnotationVariable> goodVariables){
+		List<AnnotationVariable> torem = new ArrayList<AnnotationVariable>();
+		Map<Instance,List<AnnotationVariable>> anchorMap = new HashMap<Instance, List<AnnotationVariable>>();
+		for(AnnotationVariable v: goodVariables){
+			List<AnnotationVariable> list = anchorMap.get(v.getAnchor());
+			if(list == null){
+				list = new ArrayList<AnnotationVariable>();
+				anchorMap.put(v.getAnchor(),list);
+			}
+			list.add(v);
+		}
+		for(Instance anchor: anchorMap.keySet()){
+			List<AnnotationVariable> list = anchorMap.get(anchor);
+			if(list.size() > 1){
+				AnnotationVariable specific = null;
+				for(AnnotationVariable v: list){
+					if(specific == null){
+						specific = v;
+					}else{
+						if(specific.getConceptClass().hasSuperClass(v.getConceptClass())){
+							torem.add(v);
+						}else if(specific.getConceptClass().hasSubClass(v.getConceptClass())){
+							torem.add(specific);
+							specific = v;
+						}
+					}
+				}
+			}
+		}
+		// remove variables
+		goodVariables.removeAll(torem);
+	}
+	
 	
 	/**
 	 * get all global modifiers that can be associated outside sentence boundaries
