@@ -22,16 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -67,6 +58,8 @@ import javax.swing.border.TitledBorder;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.text.html.HTMLDocument;
 
+import edu.pitt.dbmi.nlp.noble.coder.model.Document;
+import edu.pitt.dbmi.nlp.noble.coder.model.Sentence;
 import edu.pitt.dbmi.nlp.noble.eval.AnnotationEvaluation;
 import edu.pitt.dbmi.nlp.noble.mentions.NobleMentions;
 import edu.pitt.dbmi.nlp.noble.mentions.model.AnnotationVariable;
@@ -115,7 +108,7 @@ public class NobleMentionsTool implements ActionListener{
 	private static boolean statandlone = false;
 	private DefaultRepository repository = new DefaultRepository();
 	private boolean cancelRun;
-	private Map<String,Long> processTime;
+	private Map<String,Long> processTime,processTimeCount;
 	
 	
 	// options
@@ -944,9 +937,45 @@ public class NobleMentionsTool implements ActionListener{
 			progress("\nTotal process time for all reports:\t"+totalTime+" ms\n");
 			progress("Average process time per report:\t"+((totalTime)/processCount)+" ms\n");
 		}
+
+		// print detailed run time
+		printProcessTime();
 	}
 
-	
+	private void addProcessTime(Document doc){
+		if(processTime == null)
+			processTime = new TreeMap<String,Long>();
+		if(processTimeCount == null)
+			processTimeCount = new HashMap<String, Long>();
+
+		for(String mod: doc.getProcessTime().keySet()){
+			long t = processTime.containsKey(mod)?processTime.get(mod):0;
+			long n = processTimeCount.containsKey(mod)?processTimeCount.get(mod):0;
+			processTime.put(mod,t+doc.getProcessTime().get(mod));
+			processTimeCount.put(mod,n+1);
+		}
+
+		for(Sentence s: doc.getSentences()){
+			for(String mod: s.getProcessTime().keySet()) {
+				long t = processTime.containsKey(mod) ? processTime.get(mod) : 0;
+				long n = processTimeCount.containsKey(mod) ? processTimeCount.get(mod) : 0;
+				processTime.put(mod, t + s.getProcessTime().get(mod));
+				processTimeCount.put(mod, n + 1);
+			}
+		}
+	}
+
+	private void printProcessTime(){
+		if(processTime != null){
+			System.out.println("\n");
+			for(String mod: processTime.keySet()){
+				double t = processTime.get(mod);
+				double n = processTimeCount.get(mod);
+
+				System.out.println(mod+":\t"+(t/n)+" ms");
+			}
+		}
+	}
 
 	/**
 	 * process report.
@@ -970,6 +999,9 @@ public class NobleMentionsTool implements ActionListener{
 		// do progress
 		totalTime += noble.getProcessTime();
 		progress(noble.getProcessTime()+" ms\n");
+
+		// add runtime
+		addProcessTime(doc);
 	}
 	
 	/**
