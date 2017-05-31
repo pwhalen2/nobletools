@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -104,7 +105,8 @@ public class OOntology extends OResource implements IOntology {
 	private String location;
 	private IRI locationIRI;
 	private List<String> languageFilter;
-
+	private Map<String,IRI> iriMap;
+	
 	/**
 	 * create new ow.
 	 *
@@ -122,6 +124,12 @@ public class OOntology extends OResource implements IOntology {
 	}
 
 
+	private Map<String,IRI> getIRIMap(){
+		if(iriMap == null)
+			iriMap = new HashMap<String, IRI>();
+		return iriMap;
+	}
+	
 	/**
 	 * Instantiates a new o ontology.
 	 *
@@ -709,7 +717,7 @@ public class OOntology extends OResource implements IOntology {
 	public void reload() throws IOntologyException {
 		dispose();
 		load();
-		
+		iriMap = null;
 	}
 	
 	/* (non-Javadoc)
@@ -881,11 +889,18 @@ public class OOntology extends OResource implements IOntology {
 		if(name.indexOf("://") > -1)
 			return IRI.create(name);
 	
+		// get saved key
+		if(getIRIMap().containsKey(name))
+			return getIRIMap().get(name);
+		
+		
 		//prefix given
 		int of = name.indexOf(":"); 
 		if( of > -1){
 			String p = prefixManager.getPrefix(name.substring(0,of+1));
-			return IRI.create(p+name.substring(of+1));
+			IRI iri =  IRI.create(p+name.substring(of+1));
+			getIRIMap().put(name,iri);
+			return iri;
 		}
 		// just name is given
 		Map<String,String> prefixes = prefixManager.getPrefixName2PrefixMap();
@@ -893,19 +908,25 @@ public class OOntology extends OResource implements IOntology {
 			String val = prefixes.get(p);
 			if(!p.equals(":") && lookupIRI(val)){
 				IRI iri = getIRI(val+name);
-				if(ontology.containsEntityInSignature(iri,true))
+				if(ontology.containsEntityInSignature(iri,true)){
+					getIRIMap().put(name,iri);
 					return iri; 
+				}
 			}
 		}
 		// do we have in one of imports?
 		for(OWLOntology o: ontology.getImports()){
 			IRI iri = getIRI(o.getOntologyID().getOntologyIRI()+"#"+name);
-			if(ontology.containsEntityInSignature(iri,true))
+			if(ontology.containsEntityInSignature(iri,true)){
+				getIRIMap().put(name,iri);
 				return iri; 
+			}
 		}
 		
 		// use default
-		return IRI.create(getNameSpace()+name);
+		IRI iri = IRI.create(getNameSpace()+name);
+		getIRIMap().put(name,iri);
+		return iri;
 	}
 	
 	/**
