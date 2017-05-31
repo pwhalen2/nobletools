@@ -170,22 +170,26 @@ public class NobleMentionsTool implements ActionListener{
 			JButton options = new JButton("Options");
 			options.setActionCommand("options");
 			options.addActionListener(this);
-			JButton add = new JButton("Import");
+			JButton add = new JButton("Add");
 			add.setActionCommand("import");
 			add.addActionListener(this);
+			JButton remove = new JButton("Remove");
+			remove.setActionCommand("remove");
+			remove.addActionListener(this);
 			JButton info = new JButton("Preview");
 			info.setActionCommand("preview");
 			info.addActionListener(this);
 			JScrollPane scroll = new JScrollPane(ontologyList);
-			scroll.setPreferredSize(new Dimension(100,130));
+			scroll.setPreferredSize(new Dimension(100,150));
 			
 			JButton eval = new JButton("Evaluate");
 			eval.setActionCommand("eval");
 			eval.addActionListener(this);
 			
-			panel.add(new JLabel("Input Schema"),c);c.gridx++;c.gridheight=4;
+			panel.add(new JLabel("Input Schema"),c);c.gridx++;c.gridheight=5;
 			panel.add(scroll,c);c.gridx++;c.gridheight=1;
 			panel.add(add,c);c.gridy++;
+			panel.add(remove,c);c.gridy++;
 			panel.add(info,c);c.gridy++;
 			panel.add(options,c);c.gridy++;
 			panel.add(eval,c);c.gridy++;
@@ -448,6 +452,8 @@ public class NobleMentionsTool implements ActionListener{
 			doOptions();
 		}else if("import".equals(cmd)){
 			doImport();
+		}else if("remove".equals(cmd)){
+			doRemove();
 		}else if("preview".equals(cmd)){
 			doPreview();
 		}else if("eval".equals(cmd)){
@@ -616,6 +622,23 @@ public class NobleMentionsTool implements ActionListener{
 			}
 		}
 	}
+	
+	private void doRemove(){
+		DomainOntology ont = ontologyList.getSelectedValue();
+		if(ont != null){
+			int r = JOptionPane.showConfirmDialog(frame,"<html>Are you sure you want to delete selected schema: <font color=red>"+ont.getName()+"<font>","Question",JOptionPane.YES_NO_OPTION);
+			if(JOptionPane.YES_OPTION == r){
+				if(ont.getOntologyLocation().exists())
+					ont.getOntologyLocation().delete();
+				if(ont.getTerminologyCacheLocation().exists())
+					FileTools.deleteDirectory(ont.getTerminologyCacheLocation());
+				refreshTemplateList();
+				
+			}
+			
+		}
+	}
+	
 	
 	/**
 	 * do export of highlighted template.
