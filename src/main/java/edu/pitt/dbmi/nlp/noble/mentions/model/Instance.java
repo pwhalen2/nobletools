@@ -315,7 +315,8 @@ public class Instance {
 	 * @return set of instances
 	 */
 	public Set<Instance> getModifierInstances(String prop){
-		return getModifierInstances().get(prop);
+		Set<Instance> list =  getModifierInstances().get(prop);
+		return list != null?list:Collections.<Instance>emptySet();
 	}
 	
 	

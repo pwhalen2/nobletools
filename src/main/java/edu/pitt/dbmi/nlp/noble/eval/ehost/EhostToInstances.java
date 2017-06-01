@@ -25,7 +25,7 @@ import edu.pitt.dbmi.nlp.noble.util.XMLUtils;
 public class EhostToInstances {
 
 	public static void main(String[] args) throws Exception {
-		File inputDir = new File("/home/tseytlin/Data/NobleMentions/Gold/MentionRiskFactors/eHOST/batch1/");
+		File inputDir = new File("/home/tseytlin/Data/NobleMentions/Gold/MentionRiskFactors/eHOST/all/");
 		File ontologyFile = new File("/home/tseytlin/Data/NobleMentions/Gold/MentionRiskFactors/heartDiseaseInDiabetics.owl");
 		File instanceFile = new File("/home/tseytlin/Data/NobleMentions/Gold/MentionRiskFactors/heartDiseaseInDiabeticsInstances.owl");
 		boolean adjudication = true;
