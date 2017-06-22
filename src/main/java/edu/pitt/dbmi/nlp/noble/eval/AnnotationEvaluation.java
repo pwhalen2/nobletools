@@ -1,46 +1,5 @@
 package edu.pitt.dbmi.nlp.noble.eval;
 
-import java.io.*;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.DefaultListModel;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.TitledBorder;
-import javax.swing.filechooser.FileFilter;
-
-import edu.pitt.dbmi.nlp.noble.coder.model.Spannable;
-import edu.pitt.dbmi.nlp.noble.eval.ehost.InstancesToEhost;
-import edu.pitt.dbmi.nlp.noble.mentions.model.DomainOntology;
-import edu.pitt.dbmi.nlp.noble.ontology.IClass;
-import edu.pitt.dbmi.nlp.noble.ontology.IInstance;
-import edu.pitt.dbmi.nlp.noble.ontology.IOntology;
-import edu.pitt.dbmi.nlp.noble.ontology.IOntologyException;
-import edu.pitt.dbmi.nlp.noble.ontology.IProperty;
-import edu.pitt.dbmi.nlp.noble.ontology.owl.OOntology;
-import edu.pitt.dbmi.nlp.noble.terminology.Annotation;
-import edu.pitt.dbmi.nlp.noble.tools.TextTools;
-import edu.pitt.dbmi.nlp.noble.util.FileTools;
-import edu.pitt.dbmi.nlp.noble.util.HTMLExporter;
-import edu.pitt.dbmi.nlp.noble.util.UITools;
-
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Frame;
@@ -52,6 +11,53 @@ import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
+import javax.swing.filechooser.FileFilter;
+
+import edu.pitt.dbmi.nlp.noble.eval.ehost.InstancesToEhost;
+import edu.pitt.dbmi.nlp.noble.mentions.model.DomainOntology;
+import edu.pitt.dbmi.nlp.noble.ontology.IClass;
+import edu.pitt.dbmi.nlp.noble.ontology.IInstance;
+import edu.pitt.dbmi.nlp.noble.ontology.IOntology;
+import edu.pitt.dbmi.nlp.noble.ontology.IOntologyException;
+import edu.pitt.dbmi.nlp.noble.ontology.IProperty;
+import edu.pitt.dbmi.nlp.noble.ontology.owl.OOntology;
+import edu.pitt.dbmi.nlp.noble.tools.TextTools;
+import edu.pitt.dbmi.nlp.noble.util.FileTools;
+import edu.pitt.dbmi.nlp.noble.util.HTMLExporter;
+import edu.pitt.dbmi.nlp.noble.util.UITools;
 
 public class AnnotationEvaluation implements ActionListener {
 	public static final String DISJOINT_SPANS = "\\s+"; // span seperate
@@ -79,7 +85,8 @@ public class AnnotationEvaluation implements ActionListener {
 
 	/**
 	 * output HTML files to a given parent directory
-	 * @param parentFile
+	 * @param parentFile - directory
+	 * @throws IOException - in case we mess up
 	 */
 	public void outputHTML(File parentFile) throws IOException {
 		HTMLExporter exporter = new HTMLExporter(parentFile);
@@ -88,8 +95,8 @@ public class AnnotationEvaluation implements ActionListener {
 
 	/**
 	 * output TSV to file
-	 * @param parentFile
-	 * @throws FileNotFoundException
+	 * @param parentFile - directory
+	 * @throws FileNotFoundException - in case we mess up
 	 */
 	public void outputTSV(File parentFile) throws FileNotFoundException {
 		PrintStream fos = new PrintStream(new File(parentFile,ANALYSIS_TSV));
@@ -111,10 +118,10 @@ public class AnnotationEvaluation implements ActionListener {
 
 	/**
 	 * load attribute weights
-	 * @param weights
-	 * @throws IOException 
-	 * @throws FileNotFoundException 
-	 * @throws NumberFormatException 
+	 * @param weights - weights file
+	 * @throws IOException  - in case we mess up
+	 * @throws FileNotFoundException  - in case we mess up
+	 * @throws NumberFormatException  - in case we mess up
 	 */
 	public void loadWeights(File weights) throws NumberFormatException, FileNotFoundException, IOException {
 		if(weights != null){
@@ -140,11 +147,11 @@ public class AnnotationEvaluation implements ActionListener {
 
 	
 	/**
-	 * evaluate phenotype of two BSV files
-	 * @param file1
-	 * @param file2
-	 * @throws IOException 
-	 * @throws IOntologyException 
+	 * evaluate phenotype of two .OWL instances files
+	 * @param file1 - gold instances file
+	 * @param file2 - system instances file
+	 * @throws IOException  - in case we mess up
+	 * @throws IOntologyException  - in case we mess up
 	 */
 	
 	public void evaluate(File file1, File file2) throws IOException, IOntologyException {
@@ -993,9 +1000,9 @@ public class AnnotationEvaluation implements ActionListener {
 
 	/**
 	 * compute weights matrix
-	 * @param gold
-	 * @return
-	 * @throws IOntologyException
+	 * @param gold - gold instances file
+	 * @return map of weights
+	 * @throws IOntologyException - in case we mess up
 	 */
 	public Map<String,Double> computeWeights(File gold) throws IOntologyException {
 		Map<String,Double> weights = new LinkedHashMap<String, Double>();
@@ -1059,6 +1066,7 @@ public class AnnotationEvaluation implements ActionListener {
 	 * @param inputDir - input text files
 	 * @param goldOntology - instantiated gold file
 	 * @param systemOntology - instantiated system file
+	 * @throws Exception  - in case we mess up
 	 */
 	public void outputAnnotationsAsHTML(File outputDir, File inputDir, File goldOntology, File systemOntology) throws Exception {
 		HTMLExporter exporter = new HTMLExporter(outputDir);

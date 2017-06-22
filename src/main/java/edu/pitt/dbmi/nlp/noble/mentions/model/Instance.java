@@ -226,9 +226,9 @@ public class Instance {
 	
 	/**
 	 * is property range satisfied for a given instance
-	 * @param prop
-	 * @param modifierInstance
-	 * @return
+	 * @param prop - property
+	 * @param modifierInstance instance
+	 * @return true or false
 	 */
 	protected boolean isPropertyRangeSatisfied(IProperty prop, Instance modifierInstance){
 		if(modifierInstance.getInstance() != null)
@@ -243,7 +243,7 @@ public class Instance {
 	
 	/**
 	 * create a string representation of instance span
-	 * @return
+	 * @return span as string
 	 */
 	public String getInstanceSpan() {
 		StringBuilder str = new StringBuilder();
@@ -396,7 +396,8 @@ public class Instance {
 	
 	/**
 	 * get the first modifier of a given type
-	 * @param type - type of modifier 
+	 * @param type - type of modifier
+	 * @return modifier for that type 
 	 */
 	public Modifier getModifier(String type){
 		for(Modifier m: getModifiers()){

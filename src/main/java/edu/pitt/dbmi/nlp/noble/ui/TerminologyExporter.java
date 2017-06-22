@@ -7,14 +7,11 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
@@ -24,7 +21,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -46,7 +42,6 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
-import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
@@ -68,7 +63,6 @@ import edu.pitt.dbmi.nlp.noble.ontology.owl.OOntology;
 import edu.pitt.dbmi.nlp.noble.terminology.Concept;
 import edu.pitt.dbmi.nlp.noble.terminology.Definition;
 import edu.pitt.dbmi.nlp.noble.terminology.SemanticType;
-import edu.pitt.dbmi.nlp.noble.terminology.Source;
 import edu.pitt.dbmi.nlp.noble.terminology.Terminology;
 import edu.pitt.dbmi.nlp.noble.terminology.TerminologyException;
 import edu.pitt.dbmi.nlp.noble.tools.TermFilter;
@@ -835,6 +829,7 @@ public class TerminologyExporter implements ActionListener {
 	 * @param semanticTypeFilter the semantic type filter
 	 * @param root the root
 	 * @param depth the depth
+	 * @param filterTerms true or false
 	 * @throws Exception the exception
 	 */
 	public void export(Terminology term, Terminology umls,List<Concept> rootFilter, List<SemanticType> semanticTypeFilter,IClass root,int depth,boolean filterTerms) throws Exception {

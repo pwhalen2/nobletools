@@ -18,8 +18,8 @@ public class Span implements  Spannable , Comparable<Spannable> {
 
     /**
      * get span from a string that has integers range defined
-     * @param string
-     * @return
+     * @param string - string representation of a span ex. 101:120
+     * @return Span object
      */
     public static Span getSpan(String string){
         List<Integer> nums = TextTools.parseIntegerValues(string);
@@ -30,8 +30,9 @@ public class Span implements  Spannable , Comparable<Spannable> {
     }
     /**
      * get span from a string that has integers range defined
-     * @param string
-     * @return
+     * @param start - start offset
+     * @param end - end offset
+     * @return Span object
      */
     public static Span getSpan(String start, String end){
         return new Span(Integer.parseInt(start),Integer.parseInt(end));
@@ -92,7 +93,7 @@ public class Span implements  Spannable , Comparable<Spannable> {
     /**
      * if two spans overlap, how much?
      * @param s - other span
-     * @return
+     * @return number of overlapping characters
      */
     public int getOverlapLength(Spannable s){
         if(overlaps(s)){

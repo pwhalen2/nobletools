@@ -1,20 +1,27 @@
 package edu.pitt.dbmi.nlp.noble.util;
 
+import static edu.pitt.dbmi.nlp.noble.terminology.impl.NobleCoderTerminology.TERM_SUFFIX;
+import static edu.pitt.dbmi.nlp.noble.terminology.impl.NobleCoderTerminology.getPersistenceDirectory;
+import static edu.pitt.dbmi.nlp.noble.terminology.impl.NobleCoderUtils.getPreferredName;
+import static edu.pitt.dbmi.nlp.noble.terminology.impl.NobleCoderUtils.getRarestWord;
+import static edu.pitt.dbmi.nlp.noble.terminology.impl.NobleCoderUtils.loadTemporaryTermFiles;
+import static edu.pitt.dbmi.nlp.noble.terminology.impl.NobleCoderUtils.removeTemporaryTermFiles;
+import static edu.pitt.dbmi.nlp.noble.terminology.impl.NobleCoderUtils.saveTemporaryTermFile;
+import static edu.pitt.dbmi.nlp.noble.terminology.impl.NobleCoderUtils.saveWordStats;
+import static edu.pitt.dbmi.nlp.noble.terminology.impl.NobleCoderUtils.saveWordTermsInStorage;
+import static edu.pitt.dbmi.nlp.noble.terminology.impl.NobleCoderUtils.singleton;
+
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,7 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
-import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -33,7 +39,6 @@ import edu.pitt.dbmi.nlp.noble.ontology.IClass;
 import edu.pitt.dbmi.nlp.noble.ontology.IInstance;
 import edu.pitt.dbmi.nlp.noble.ontology.IOntology;
 import edu.pitt.dbmi.nlp.noble.ontology.IOntologyException;
-import edu.pitt.dbmi.nlp.noble.ontology.IResourceIterator;
 import edu.pitt.dbmi.nlp.noble.ontology.OntologyUtils;
 import edu.pitt.dbmi.nlp.noble.ontology.owl.OOntology;
 import edu.pitt.dbmi.nlp.noble.terminology.Concept;
@@ -45,12 +50,9 @@ import edu.pitt.dbmi.nlp.noble.terminology.Term;
 import edu.pitt.dbmi.nlp.noble.terminology.Terminology;
 import edu.pitt.dbmi.nlp.noble.terminology.TerminologyException;
 import edu.pitt.dbmi.nlp.noble.terminology.impl.NobleCoderTerminology;
-import edu.pitt.dbmi.nlp.noble.terminology.impl.NobleCoderTerminology.WordStat;
 import edu.pitt.dbmi.nlp.noble.terminology.impl.NobleCoderUtils;
 import edu.pitt.dbmi.nlp.noble.tools.TermFilter;
 import edu.pitt.dbmi.nlp.noble.tools.TextTools;
-import static edu.pitt.dbmi.nlp.noble.terminology.impl.NobleCoderUtils.*;
-import static edu.pitt.dbmi.nlp.noble.terminology.impl.NobleCoderTerminology.*;
 
 /**
  * import an OBO file to a collection of concept objects.
@@ -408,7 +410,7 @@ public class ConceptImporter {
 	
 	/**
 	 * craate a concept object for a given class 
-	 * @param cls - class in the ontology
+	 * @param inst - instance in the ontology
 	 * @return concept object from this class
 	 */
 	public Concept createConcept(IInstance inst){
@@ -477,6 +479,7 @@ public class ConceptImporter {
 	 * @param term the term
 	 * @param root class
 	 * @param name the name
+	 * @param includeInstances - include instances as source of synonymy
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 * @throws TerminologyException the terminology exception
 	 * @throws IOntologyException the i ontology exception

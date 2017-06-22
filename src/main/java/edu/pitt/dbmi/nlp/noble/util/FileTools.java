@@ -1,6 +1,5 @@
 package edu.pitt.dbmi.nlp.noble.util;
 
-import java.awt.Desktop;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
@@ -9,7 +8,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
@@ -102,6 +100,7 @@ public class FileTools {
 	 * target directory. 
 	 * @param sourceDir - what you are copying
 	 * @param targetDir - where your directory will be placed
+	 * @throws IOException in case something goes wrong
 	 */
 	public static void copyDirectory(File sourceDir, File targetDir) throws IOException{
 		if(!targetDir.exists())
@@ -117,9 +116,9 @@ public class FileTools {
 	
 	/**
 	 * copy file on file system
-	 * @param source
-	 * @param target
-	 * @throws IOException 
+	 * @param source file
+	 * @param target file
+	 * @throws IOException in case something goes wrong
 	 */
 	public static void copyFile(File source, File target) throws IOException {
 		Files.copy(source.toPath(),target.toPath(),StandardCopyOption.REPLACE_EXISTING);

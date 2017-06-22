@@ -247,7 +247,6 @@ public class Text implements Spannable {
 	 * get a distance between two spannable objects in a same search string
 	 * in a number of words.
 	 *
-	 * @param search the search
 	 * @param a the a
 	 * @param b the b
 	 * @return 0 - if one span contains or intersects the other, or distance in words, -1 something went wrong

@@ -334,9 +334,9 @@ public class OntologyUtils {
 
 	/**
 	 * create ontology instance URI (URI of ontology file + Instances.owl
-	 * @param file - the file of the parent ontology
+	 * @param location - the file of the parent ontology
 	 * @return URI that the new instance ontology needs to be called
-	 * @throws IOntologyException
+	 * @throws IOntologyException - exception
 	 */
 	public static URI createOntologyInstanceURI(String location) throws IOntologyException{
 		String ontologyURI;

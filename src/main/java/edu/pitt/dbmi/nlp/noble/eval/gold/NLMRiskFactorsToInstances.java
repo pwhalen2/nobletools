@@ -6,7 +6,6 @@ import static edu.pitt.dbmi.nlp.noble.mentions.model.DomainOntology.HAS_MENTION_
 import static edu.pitt.dbmi.nlp.noble.mentions.model.DomainOntology.HAS_TITLE;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -22,8 +21,6 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.w3c.dom.Document;
-
 import edu.pitt.dbmi.nlp.noble.eval.AnnotationEvaluation.Span;
 import edu.pitt.dbmi.nlp.noble.ontology.IClass;
 import edu.pitt.dbmi.nlp.noble.ontology.IInstance;
@@ -33,10 +30,7 @@ import edu.pitt.dbmi.nlp.noble.ontology.IProperty;
 import edu.pitt.dbmi.nlp.noble.ontology.OntologyUtils;
 import edu.pitt.dbmi.nlp.noble.ontology.owl.OOntology;
 import edu.pitt.dbmi.nlp.noble.terminology.TerminologyException;
-import edu.pitt.dbmi.nlp.noble.tools.ConText;
-import edu.pitt.dbmi.nlp.noble.tools.TextTools;
 import edu.pitt.dbmi.nlp.noble.util.FileTools;
-import edu.pitt.dbmi.nlp.noble.util.XMLUtils;
 
 public class NLMRiskFactorsToInstances {
 	private static final String DEFAULT_DOCUMENT_SUFFIX = ".txt";
@@ -82,13 +76,12 @@ public class NLMRiskFactorsToInstances {
 	}
 	
 	/**
-	 * convert RiskFactors directory of XML gold annotations to instnaces in a target ontology
-	 * @param xmlDirectory - location of annotated XML documents
-	 * @param ontology - ontology to map to
-	 * @param instances - output instnace ontology
+	 * convert RiskFactors directory of BRAT gold annotations to instnaces in a target ontology
+	 * @param bratDirectory - location of annotated XML documents
+	 * @param outputFile - output file
 	 * @throws IOntologyException  - exception that may be thrown
-	 * @throws IOException 
-	 * @throws TerminologyException 
+	 * @throws IOException - exception 
+	 * @throws TerminologyException  - exception
 	 */
 	public void convert(String bratDirectory, String outputFile) throws IOntologyException, IOException, TerminologyException {
 	

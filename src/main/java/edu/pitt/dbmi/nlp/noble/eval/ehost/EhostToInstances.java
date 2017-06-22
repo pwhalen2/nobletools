@@ -4,9 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.net.URI;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
 
 import org.w3c.dom.Document;
@@ -19,7 +17,6 @@ import edu.pitt.dbmi.nlp.noble.ontology.IOntology;
 import edu.pitt.dbmi.nlp.noble.ontology.IProperty;
 import edu.pitt.dbmi.nlp.noble.ontology.OntologyUtils;
 import edu.pitt.dbmi.nlp.noble.ontology.owl.OOntology;
-import edu.pitt.dbmi.nlp.noble.tools.TextTools;
 import edu.pitt.dbmi.nlp.noble.util.XMLUtils;
 
 public class EhostToInstances {
@@ -43,6 +40,7 @@ public class EhostToInstances {
 	 * @param inputDir - eHOST directory
 	 * @param ontologyFile - parent ontology
 	 * @param instanceFile - instance ontolgoy
+	 * @throws Exception in case something goes wrong
 	 */
 	public void convert(File inputDir, File ontologyFile, File instanceFile) throws Exception {
 		convert(inputDir, ontologyFile, instanceFile,false);
@@ -53,6 +51,8 @@ public class EhostToInstances {
 	 * @param inputDir - eHOST directory
 	 * @param ontologyFile - parent ontology
 	 * @param instanceFile - instance ontolgoy
+	 * @param adjudication - is this adjuticated set or not
+	 * @throws Exception in case something goes wrong
 	 */
 	public void convert(File inputDir, File ontologyFile, File instanceFile, boolean adjudication) throws Exception {
 		File saved = new File(inputDir,adjudication?InstancesToEhost.ADJUDICATION_DIR:InstancesToEhost.SAVED_DIR);

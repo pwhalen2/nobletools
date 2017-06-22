@@ -1107,7 +1107,8 @@ public class HTMLExporter {
 	
 	/**
 	 * export analysis object to HTML
-	 * @param analysis
+	 * @param analysis object
+	 * @throws IOException in case something goes wrong
 	 */
 	public void export(Analysis analysis) throws IOException{
 		File out = new File(outputDirectory,AnnotationEvaluation.ANALYSIS_HTML);
@@ -1153,6 +1154,7 @@ public class HTMLExporter {
 	 * @param textFile - file that has original text
 	 * @param goldInst - gold composition instance
 	 * @param sysInst - system composition instance
+	 * @throws Exception in case something goes wrong
 	 */
 	public void export(File textFile, IInstance goldInst, IInstance sysInst) throws Exception{
 		String eval = AnnotationEvaluation.EVALUATION_HTML;

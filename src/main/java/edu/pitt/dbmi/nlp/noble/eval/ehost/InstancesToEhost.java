@@ -8,33 +8,32 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 
 import edu.pitt.dbmi.nlp.noble.coder.model.Span;
 import edu.pitt.dbmi.nlp.noble.mentions.model.DomainOntology;
-import edu.pitt.dbmi.nlp.noble.ontology.*;
+import edu.pitt.dbmi.nlp.noble.ontology.IClass;
+import edu.pitt.dbmi.nlp.noble.ontology.IInstance;
+import edu.pitt.dbmi.nlp.noble.ontology.ILogicExpression;
+import edu.pitt.dbmi.nlp.noble.ontology.IOntology;
+import edu.pitt.dbmi.nlp.noble.ontology.IProperty;
+import edu.pitt.dbmi.nlp.noble.ontology.IRestriction;
 import edu.pitt.dbmi.nlp.noble.ontology.owl.OOntology;
 import edu.pitt.dbmi.nlp.noble.tools.ConText;
-import edu.pitt.dbmi.nlp.noble.tools.ConTextHelper;
 import edu.pitt.dbmi.nlp.noble.tools.TextTools;
 import edu.pitt.dbmi.nlp.noble.util.ColorTools;
 import edu.pitt.dbmi.nlp.noble.util.FileTools;
@@ -107,8 +106,7 @@ public class InstancesToEhost {
 	/**
 	 * convert instances from ontology to eHOST
 	 * @param ontology - ontology instances
-	 * @param filter   - only convert classes mentioned in this filter
-	 * @throws IOException 
+	 * @throws IOException - exception 
 	 */
 	public void convert(IOntology ontology) throws IOException{
 		if(!outputDir.exists())
@@ -176,6 +174,7 @@ public class InstancesToEhost {
 	 * add additional annotations as a different annotator
 	 * @param ontology - ontology instances
 	 * @param annotator - author name
+	 * @throws IOException - exception
 	 */
 	public void addAnnotations(IOntology ontology, String annotator) throws IOException{
 		setAnnotator(annotator);

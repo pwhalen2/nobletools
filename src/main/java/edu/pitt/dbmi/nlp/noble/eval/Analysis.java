@@ -1,12 +1,5 @@
 package edu.pitt.dbmi.nlp.noble.eval;
 
-import edu.pitt.dbmi.nlp.noble.mentions.model.DomainOntology;
-import edu.pitt.dbmi.nlp.noble.ontology.IInstance;
-import edu.pitt.dbmi.nlp.noble.ontology.IProperty;
-import edu.pitt.dbmi.nlp.noble.ontology.IResource;
-import edu.pitt.dbmi.nlp.noble.tools.TextTools;
-import edu.pitt.dbmi.nlp.noble.util.HTMLExporter;
-
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -14,6 +7,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+
+import edu.pitt.dbmi.nlp.noble.ontology.IInstance;
+import edu.pitt.dbmi.nlp.noble.ontology.IProperty;
+import edu.pitt.dbmi.nlp.noble.tools.TextTools;
+import edu.pitt.dbmi.nlp.noble.util.HTMLExporter;
 
 /**
  * Created by tseytlin on 3/25/17.
@@ -238,8 +236,8 @@ public class Analysis {
 
     /**
      * get error information for each label
-     * @param label
-     * @return
+     * @param label - label for a given error HTML
+     * @return HTML description
      */
     public String getErrorsAsHTML(String label) {
         StringBuilder str = new StringBuilder();

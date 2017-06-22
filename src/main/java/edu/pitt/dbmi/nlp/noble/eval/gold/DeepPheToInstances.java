@@ -1,5 +1,10 @@
 package edu.pitt.dbmi.nlp.noble.eval.gold;
 
+import static edu.pitt.dbmi.nlp.noble.mentions.model.DomainOntology.ANNOTATION;
+import static edu.pitt.dbmi.nlp.noble.mentions.model.DomainOntology.COMPOSITION;
+import static edu.pitt.dbmi.nlp.noble.mentions.model.DomainOntology.HAS_MENTION_ANNOTATION;
+import static edu.pitt.dbmi.nlp.noble.mentions.model.DomainOntology.HAS_TITLE;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -8,19 +13,16 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
-import static edu.pitt.dbmi.nlp.noble.mentions.model.DomainOntology.*;
 
 import edu.pitt.dbmi.nlp.noble.mentions.model.DomainOntology;
 import edu.pitt.dbmi.nlp.noble.ontology.IClass;
@@ -36,8 +38,6 @@ import edu.pitt.dbmi.nlp.noble.terminology.Terminology;
 import edu.pitt.dbmi.nlp.noble.terminology.TerminologyException;
 import edu.pitt.dbmi.nlp.noble.terminology.impl.NobleCoderTerminology;
 import edu.pitt.dbmi.nlp.noble.tools.TextTools;
-import edu.pitt.dbmi.nlp.noble.ui.TerminologyBrowser;
-import edu.pitt.dbmi.nlp.noble.util.FileTools;
 import edu.pitt.dbmi.nlp.noble.util.XMLUtils;
 
 
@@ -116,11 +116,11 @@ public class DeepPheToInstances {
 	 * convert anafora directory into instantiated ontology
 	 * @param anaforaDirectory - anafora directory where the annotated files are
 	 * @param anaforaSuffix - anafora suffix for annotated files
-	 * @param ontology - ontology to map to
-	 * @param instances - instantiated ontology where we'll write the output
-	 * @throws IOntologyException 
-	 * @throws IOException 
-	 * @throws TerminologyException 
+	 * @param ontolgyLocation - ontology location
+	 * @param outputFile - output file
+	 * @throws IOntologyException  - in case of error
+	 * @throws IOException   - in case of error
+	 * @throws TerminologyException   - in case of error
 	 */
 	public void convert(String anaforaDirectory, String anaforaSuffix, String ontolgyLocation, String outputFile) throws IOntologyException, IOException, TerminologyException {
 		System.out.println("loading ontology .. "+ontolgyLocation);

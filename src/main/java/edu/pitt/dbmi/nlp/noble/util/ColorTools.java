@@ -31,7 +31,7 @@ public class ColorTools {
      * get a random chart friendly color.
      * each invokation returns a color and then
      * cycles back
-     * @return
+     * @return color object
      */
     public static Color getChartColor(){
     	if(colorIndex >= ChartColorList.size())

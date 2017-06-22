@@ -62,7 +62,7 @@ public class XMLUtils {
 	/**
 	 * create new DOM document
 	 * @return empty DOM object
-	 * @throws ParserConfigurationException
+	 * @throws ParserConfigurationException in case of error
 	 */
 	public static Document createDocument() throws ParserConfigurationException{
 		return DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument(); 
@@ -114,6 +114,7 @@ public class XMLUtils {
 	 * @param doc - document
 	 * @param name - element name
 	 * @param attributes - attribute map
+	 * @param content - string content
 	 * @return element object
 	 */
 	public static Element createElement(Document doc, String name, Map<String,String> attributes, String content){

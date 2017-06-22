@@ -19,12 +19,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import edu.pitt.dbmi.nlp.noble.coder.model.*;
+import edu.pitt.dbmi.nlp.noble.coder.model.Document;
+import edu.pitt.dbmi.nlp.noble.coder.model.Mention;
+import edu.pitt.dbmi.nlp.noble.coder.model.Modifier;
+import edu.pitt.dbmi.nlp.noble.coder.model.Sentence;
+import edu.pitt.dbmi.nlp.noble.coder.model.Spannable;
+import edu.pitt.dbmi.nlp.noble.coder.model.Text;
 import edu.pitt.dbmi.nlp.noble.coder.processor.DictionarySectionProcessor;
-import edu.pitt.dbmi.nlp.noble.ontology.ClassPath;
 import edu.pitt.dbmi.nlp.noble.ontology.IClass;
 import edu.pitt.dbmi.nlp.noble.ontology.IInstance;
 import edu.pitt.dbmi.nlp.noble.ontology.ILogicExpression;
@@ -246,7 +248,6 @@ public class DomainOntology {
 	
 	/**
 	 * get locations of terminology cache
-	 * @param ontologyLocation - location of ontology file
 	 * @return File directory location
 	 */
 	public File getTerminologyCacheLocation(){
@@ -1037,8 +1038,8 @@ public class DomainOntology {
 	
 	/**
 	 * get property for a given modifier 
-	 * @param m
-	 * @return
+	 * @param m - modifier
+	 * @return set of IProperty objects
 	 */
 	public Set<IProperty> getProperties(Modifier m){
 		IProperty prop = getProperty(m.getType());
@@ -1072,8 +1073,8 @@ public class DomainOntology {
 	
 	/**
 	 * get specific instances tied to a given numeric class
-	 * @param cls
-	 * @return
+	 * @param cls - class 
+	 * @return list of IInstance objects
 	 */
 	public List<IInstance> getSpecificInstances(IClass cls){
 		if(classInstanceMap == null){
@@ -1156,9 +1157,9 @@ public class DomainOntology {
 	
 	/**
 	 * get modifier from class and a more general mention
-	 * @param cls
-	 * @param mention
-	 * @return
+	 * @param cls - class
+	 * @param mention - mention
+	 * @return mention object
 	 */
 	public Mention getModifierFromClass(IClass cls, Mention mention){
 		// try to find an instance from class
@@ -1205,7 +1206,7 @@ public class DomainOntology {
 	/**
 	 * is property range satisfied with a given class?
 	 * @param prop- property in question
-	 * @param inst - instance in question
+	 * @param num - number in question
 	 * @return true or false
 	 */
 	public boolean isPropertyRangeSatisfied(IProperty prop, Number num){
@@ -1424,8 +1425,8 @@ public class DomainOntology {
 
 	/**
 	 * does this variable has a equivalent relation to another annotation
-	 * @param var
-	 * @return
+	 * @param var - annotation variable
+	 * @return true or false
 	 */
 	public boolean hasDefiningRelatedVariable(AnnotationVariable var){
 		IClass annotation = ontology.getClass(ANNOTATION);
@@ -1447,7 +1448,7 @@ public class DomainOntology {
 	 * find nearest mention of related variables by relationship
 	 * @param var - variable in question
 	 * @param variables - list of variables in the document
-	 * @return
+	 * @return relation to instance map
 	 */
 	public Map<String,Instance> getRelatedVariables(AnnotationVariable var, List<AnnotationVariable> variables) {
 		Map<String,Instance> map = new LinkedHashMap<String, Instance>();
@@ -1577,9 +1578,9 @@ public class DomainOntology {
 
 	/**
 	 * is the property the same as modifier type
-	 * @param prop
-	 * @param modifier
-	 * @return
+	 * @param prop - property
+	 * @param modifier - modifier
+	 * @return true or false
 	 */
 	public boolean isSameProperty(IProperty prop, Modifier modifier) {
 		System.out.println(prop.getName()+" "+modifier.getType()+" "+prop.getName().endsWith(modifier.getType()));

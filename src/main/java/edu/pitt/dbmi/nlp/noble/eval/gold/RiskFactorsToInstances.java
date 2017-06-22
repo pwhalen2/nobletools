@@ -18,7 +18,6 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 
 import org.w3c.dom.Document;
@@ -30,14 +29,9 @@ import edu.pitt.dbmi.nlp.noble.ontology.IInstance;
 import edu.pitt.dbmi.nlp.noble.ontology.IOntology;
 import edu.pitt.dbmi.nlp.noble.ontology.IOntologyException;
 import edu.pitt.dbmi.nlp.noble.ontology.IProperty;
-import edu.pitt.dbmi.nlp.noble.ontology.IRestriction;
 import edu.pitt.dbmi.nlp.noble.ontology.OntologyUtils;
 import edu.pitt.dbmi.nlp.noble.ontology.owl.OOntology;
-import edu.pitt.dbmi.nlp.noble.terminology.Concept;
-import edu.pitt.dbmi.nlp.noble.terminology.Terminology;
 import edu.pitt.dbmi.nlp.noble.terminology.TerminologyException;
-import edu.pitt.dbmi.nlp.noble.terminology.impl.NobleCoderTerminology;
-import edu.pitt.dbmi.nlp.noble.tools.TextTools;
 import edu.pitt.dbmi.nlp.noble.util.XMLUtils;
 
 public class RiskFactorsToInstances {
@@ -88,11 +82,10 @@ public class RiskFactorsToInstances {
 	/**
 	 * convert RiskFactors directory of XML gold annotations to instnaces in a target ontology
 	 * @param xmlDirectory - location of annotated XML documents
-	 * @param ontology - ontology to map to
-	 * @param instances - output instnace ontology
+	 * @param outputFile - output file
 	 * @throws IOntologyException  - exception that may be thrown
-	 * @throws IOException 
-	 * @throws TerminologyException 
+	 * @throws IOException - exception 
+	 * @throws TerminologyException - exception
 	 */
 	public void convert(String xmlDirectory, String outputFile) throws IOntologyException, IOException, TerminologyException {
 	

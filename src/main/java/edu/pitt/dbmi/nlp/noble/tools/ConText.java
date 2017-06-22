@@ -6,30 +6,19 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Stack;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import edu.pitt.dbmi.nlp.noble.coder.model.Mention;
 import edu.pitt.dbmi.nlp.noble.coder.model.Modifier;
 import edu.pitt.dbmi.nlp.noble.coder.model.Paragraph;
 import edu.pitt.dbmi.nlp.noble.coder.model.Processor;
-import edu.pitt.dbmi.nlp.noble.coder.model.Section;
 import edu.pitt.dbmi.nlp.noble.coder.model.Sentence;
 import edu.pitt.dbmi.nlp.noble.coder.model.Spannable;
-import edu.pitt.dbmi.nlp.noble.coder.model.Text;
-import edu.pitt.dbmi.nlp.noble.mentions.model.AnnotationVariable;
 import edu.pitt.dbmi.nlp.noble.ontology.IClass;
 import edu.pitt.dbmi.nlp.noble.ontology.IInstance;
 import edu.pitt.dbmi.nlp.noble.ontology.IOntology;
-import edu.pitt.dbmi.nlp.noble.ontology.IOntologyException;
-import edu.pitt.dbmi.nlp.noble.ontology.IProperty;
-import edu.pitt.dbmi.nlp.noble.ontology.IResource;
-import edu.pitt.dbmi.nlp.noble.ontology.IRestriction;
 import edu.pitt.dbmi.nlp.noble.ontology.owl.OOntology;
 import edu.pitt.dbmi.nlp.noble.terminology.Concept;
 import edu.pitt.dbmi.nlp.noble.terminology.Relation;
@@ -38,7 +27,6 @@ import edu.pitt.dbmi.nlp.noble.terminology.Terminology;
 import edu.pitt.dbmi.nlp.noble.terminology.TerminologyError;
 import edu.pitt.dbmi.nlp.noble.terminology.TerminologyException;
 import edu.pitt.dbmi.nlp.noble.terminology.impl.NobleCoderTerminology;
-import edu.pitt.dbmi.nlp.noble.util.PathHelper;
 
 /**
  * The Class ConText.
@@ -543,9 +531,9 @@ public class ConText implements Processor<Sentence> {
 	
 	/**
 	 * is a mention a type of some concept in ontology
-	 * @param m
-	 * @param type
-	 * @return
+	 * @param m - mention
+	 * @param type - type
+	 * @return true or false
 	 */
 	public static boolean isTypeOf(Mention m, String type){
 		for(SemanticType st: m.getConcept().getSemanticTypes())

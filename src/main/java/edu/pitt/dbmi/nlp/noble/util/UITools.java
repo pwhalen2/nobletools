@@ -18,9 +18,8 @@ public class UITools {
      * Display a lastFile in the system browser. If you want to display a lastFile, you
      * must include the absolute path name.
      *
-     * @param url
-     *            the lastFile's url (the url must start with either "http://" or
-     *            "lastFile://").
+     * @param url the lastFile's url (the url must start with either "http://" or  "lastFile://").
+     * @throws Exception - in case of error
      */
      public static void browseURLInSystemBrowser(String url) throws Exception{
     	 Desktop desktop = Desktop.getDesktop();

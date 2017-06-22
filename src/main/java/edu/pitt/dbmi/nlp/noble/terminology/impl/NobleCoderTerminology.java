@@ -591,7 +591,7 @@ public class NobleCoderTerminology extends AbstractTerminology implements Proces
 	 * initialize empty in-memory terminology that has to be
 	 * filled up manual using Terminology.addConcept()
 	 *
-	 * @param ont the ont
+	 * @param root class
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 * @throws TerminologyException the terminology exception
 	 * @throws IOntologyException the i ontology exception
