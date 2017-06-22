@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.PrintStream;
 import java.net.URL;
 import java.nio.file.CopyOption;
 import java.nio.file.Files;
@@ -134,14 +135,80 @@ public class NobleMentionsTool implements ActionListener{
 		NobleMentionsTool nc = new NobleMentionsTool();
 		if(args.length == 0){
 			nc.showDialog();
-		}else if(args.length == 3){
-			nc.process(new DomainOntology(args[0]),args[1],args[2]);
+			nc.printUsage(System.out);
+		}else if(args.length == 1 && "-docker".equals(args[0])){
+			File ontology = new File("/ontology");
+			File input = new File("/input");
+			File output = new File("/output");
+			File properties = null;
+			
+			//check if inputs exist
+			for(File a: Arrays.asList(ontology,input,output)){
+				if(!a.exists()){
+					System.err.println("Error: file or directory "+a+" doesn't exist");
+					System.exit(1);
+				}
+			}
+			
+			// find ontology
+			for(File f: ontology.listFiles()){
+				if(f.getName().endsWith(".owl") && !ConText.IMPORTED_ONTOLOGIES.contains(FileTools.stripExtension(f.getName()))){
+					ontology = f;
+					break;
+				}else if(f.getName().endsWith(".properties")){
+					properties = f;
+				}
+			}
+			if(!ontology.isFile()){
+				System.err.println("Error: could not find domain ontology in "+ontology.getAbsolutePath());
+				System.exit(1);
+			}
+			nc.process(ontology,input,output,properties);
+			
+		}else if(args.length >= 3){
+			//check if inputs exist
+			for(String a: args){
+				if(!new File(a).exists()){
+					System.err.println("Error: file or directory "+a+" doesn't exist");
+					System.exit(1);
+				}
+			}
+			// check for runtime properties
+			File props = null;
+			if(args.length > 3){
+				//nc.loadOptionsSettings(new File(args[3]));
+				props = new File(args[3]);
+			}
+			//nc.process(new DomainOntology(args[0]),args[1],args[2]);
+			nc.process(new File(args[0]),new File(args[1]),new File(args[2]),props);
 		}else{
-			System.err.println("Usage: java InformationExtractor [template] [input directory] [output directory]");
-			System.err.println("Note:  If you don't specify parameters, GUI will pop-up");
+			nc.printUsage(System.out);
 		}
 	}
 
+	/**
+	 * print usage statement.
+	 *
+	 * @param out the out
+	 */
+	private void printUsage(PrintStream out) {
+		out.println("Usage: java -jar NobleMentions-1.1.jar");
+		out.println("\tInvoke NobleMentions UI and run it interactively");
+		out.println("Usage: java -jar NobleMentions-1.1.jar <ontology file> <input directory> <output directory> [properties file]");
+		out.println("\tRun NobleMentions via command line with a given properties file.");
+		out.println("\t<ontology file> - domain ontology OWL file");
+		out.println("\t<input directory> - directory full of input text files that need to be processed");
+		out.println("\t<output directory> - directory where output will be saved");
+		out.println("\t<properties file> - key=value pair file that sets runtime options");
+		out.println("Usage: java -jar NobleMentions-1.1.jar -docker");
+		out.println("\tInvoke NobleMentions assuming that it is running within a docker container");
+		out.println("\t/ontology - domain ontology OWL file and its dependencies needs to be located here");
+		out.println("\t/input - directory full of input text files that need to be processed should be located here");
+		out.println("\t/output - directory where output will be saved");
+		out.println("\t/ontology - key=value pair file that sets runtime options will be located at the same location as ontology");
+		out.println("\n\n");
+	}
+	
 	
 	/**
 	 * create dialog for noble coder.
@@ -283,17 +350,26 @@ public class NobleMentionsTool implements ActionListener{
 	 * save UI settings
 	 */
 	private void saveOptionsSettings(){
+		if(ontologyList == null)
+			return;
 		DomainOntology ontology = ontologyList.getSelectedValue();
 		if(ontology != null){
-			Properties p = new Properties();
-			p.setProperty("annotation.relation.scope",annotationScope.getSelection().getActionCommand());
-			p.setProperty("process.header.anchors",""+processHeaderAnchor.isSelected());
-			p.setProperty("process.header.modifiers",""+processHeaderModifier.isSelected());
-			p.setProperty("normalize.anchors",""+normalizeAnchors.isSelected());
-			p.setProperty("score.anchors",""+scoreAnchors.isSelected());
-			p.setProperty("ignore.labels",""+ignoreLabels.isSelected());
+			Properties p = getOptionsSettings();
 			UITools.saveSettings(p,new File(ontology.getOntologyLocation().getParentFile(),ontology.getName()+".properties"));
 		}
+	}
+	
+	
+	private Properties getOptionsSettings(){
+		getOptionsPanel();
+		Properties p = new Properties();
+		p.setProperty("annotation.relation.scope",annotationScope.getSelection().getActionCommand());
+		p.setProperty("process.header.anchors",""+processHeaderAnchor.isSelected());
+		p.setProperty("process.header.modifiers",""+processHeaderModifier.isSelected());
+		p.setProperty("normalize.anchors",""+normalizeAnchors.isSelected());
+		p.setProperty("score.anchors",""+scoreAnchors.isSelected());
+		p.setProperty("ignore.labels",""+ignoreLabels.isSelected());
+		return p;
 	}
 	
 	
@@ -304,15 +380,25 @@ public class NobleMentionsTool implements ActionListener{
 		getOptionsPanel();
 		DomainOntology ontology = ontologyList.getSelectedValue();
 		if(ontology != null){
-			final Properties p = UITools.loadSettings(new File(ontology.getOntologyLocation().getParentFile(),ontology.getName()+".properties"));
-			sectionScope.setSelected("section".equals(p.getProperty("annotation.relation.scope")));
-			processHeaderAnchor.setSelected(Boolean.parseBoolean(p.getProperty("process.header.anchors")));
-			processHeaderModifier.setSelected(Boolean.parseBoolean(p.getProperty("process.header.modifiers")));
-			normalizeAnchors.setSelected(Boolean.parseBoolean(p.getProperty("normalize.anchors")));
-			scoreAnchors.setSelected(Boolean.parseBoolean(p.getProperty("score.anchors")));
-			ignoreLabels.setSelected(Boolean.parseBoolean(p.getProperty("ignore.labels")));
+			loadOptionsSettings(new File(ontology.getOntologyLocation().getParentFile(),ontology.getName()+".properties"));
 		}
 	}
+	
+	/**
+	 * save UI settings
+	 */
+	private void loadOptionsSettings(File file){
+		getOptionsPanel();
+		final Properties p = UITools.loadSettings(file);
+		sectionScope.setSelected("section".equals(p.getProperty("annotation.relation.scope")));
+		processHeaderAnchor.setSelected(Boolean.parseBoolean(p.getProperty("process.header.anchors")));
+		processHeaderModifier.setSelected(Boolean.parseBoolean(p.getProperty("process.header.modifiers")));
+		normalizeAnchors.setSelected(Boolean.parseBoolean(p.getProperty("normalize.anchors")));
+		scoreAnchors.setSelected(Boolean.parseBoolean(p.getProperty("score.anchors")));
+		ignoreLabels.setSelected(Boolean.parseBoolean(p.getProperty("ignore.labels")));
+		
+	}
+	
 	
 	private void loadOptions(NobleMentions nobleMentions) {
 		getOptionsPanel();
@@ -863,6 +949,25 @@ public class NobleMentionsTool implements ActionListener{
 	}
 	
 	
+	private void process(File ont, File in, File out,File props){
+		try{
+			// initialize ontology
+			progress("loading "+ont.getName()+" ontology .. ");
+			long t = System.currentTimeMillis();
+			DomainOntology ontology = new DomainOntology(ont.getAbsolutePath());
+			progress((System.currentTimeMillis()-t)+ " ms\n\n");
+			
+			// init properties
+			if(props != null){
+				loadOptionsSettings(props);
+			}
+			// process documents
+			process(ontology,in.getAbsolutePath(),out.getAbsolutePath());
+		}catch(Exception ex){
+			ex.printStackTrace();
+		}
+	}
+	
 	
 	/**
 	 * process  documents.
@@ -870,7 +975,7 @@ public class NobleMentionsTool implements ActionListener{
 	 * @param in the in
 	 * @param out the out
 	 */
-	public void process(DomainOntology ontology,String in, String out){	
+	public void process(DomainOntology ontology,String in, String out){
 		// preload terminologies
 		long t = System.currentTimeMillis();
 		progress("loading anchors .. ");
@@ -892,6 +997,15 @@ public class NobleMentionsTool implements ActionListener{
 		
 		// load options
 		loadOptions(noble);
+		
+		// print runtime properties
+		Properties p = getOptionsSettings();
+		progress("\nruntime options: \n");
+		for(Object key: new TreeSet(p.keySet())){
+			Object val = p.get(key);
+			progress("  "+key+" = "+val+"\n");
+		}
+		progress("\n");
 		
 		
 		// process lastFile
