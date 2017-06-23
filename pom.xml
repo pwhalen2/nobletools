@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>edu.pitt.dbmi.nlp</groupId>
@@ -72,7 +71,12 @@ http://nexihub.com/contact
 	<scm>
 		<url>https://github.com/dbmi-pitt/nobletools.git</url>
 	</scm>
-	
+	<!-- 
+	<modules>
+    		<module>plugin-uima</module>
+    		<module>plugin-gate</module>
+    </modules>
+	 -->
 	<dependencies>
 		<dependency>
 			<groupId>net.sourceforge.owlapi</groupId>
@@ -92,7 +96,11 @@ http://nexihub.com/contact
 	</dependencies>
 	<build>
 		<plugins>
-			<plugin>
+		  <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+          </plugin>
+           <plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<executions>
 			        <execution>
