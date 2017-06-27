@@ -1,86 +1,34 @@
 package edu.pitt.dbmi.nlp.noble.ui;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Desktop;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.Insets;
-import java.awt.Point;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.PrintStream;
-import java.net.URL;
-import java.nio.file.CopyOption;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
-import javax.swing.DefaultListModel;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JDialog;
-import javax.swing.JEditorPane;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
-import javax.swing.border.TitledBorder;
-import javax.swing.filechooser.FileFilter;
-import javax.swing.text.html.HTMLDocument;
-
 import edu.pitt.dbmi.nlp.noble.coder.model.Document;
 import edu.pitt.dbmi.nlp.noble.coder.model.Sentence;
 import edu.pitt.dbmi.nlp.noble.eval.AnnotationEvaluation;
 import edu.pitt.dbmi.nlp.noble.mentions.NobleMentions;
-import edu.pitt.dbmi.nlp.noble.mentions.model.AnnotationVariable;
 import edu.pitt.dbmi.nlp.noble.mentions.model.Composition;
 import edu.pitt.dbmi.nlp.noble.mentions.model.DomainOntology;
-import edu.pitt.dbmi.nlp.noble.mentions.model.Instance;
 import edu.pitt.dbmi.nlp.noble.ontology.DefaultRepository;
 import edu.pitt.dbmi.nlp.noble.ontology.IOntology;
 import edu.pitt.dbmi.nlp.noble.ontology.IOntologyException;
-import edu.pitt.dbmi.nlp.noble.ontology.IRepository;
-import edu.pitt.dbmi.nlp.noble.terminology.CompositTerminology;
-import edu.pitt.dbmi.nlp.noble.terminology.TerminologyError;
-import edu.pitt.dbmi.nlp.noble.terminology.TerminologyException;
 import edu.pitt.dbmi.nlp.noble.tools.ConText;
 import edu.pitt.dbmi.nlp.noble.tools.TextTools;
-import edu.pitt.dbmi.nlp.noble.util.CSVExporter;
-import edu.pitt.dbmi.nlp.noble.util.FileTools;
-import edu.pitt.dbmi.nlp.noble.util.HTMLExporter;
-import edu.pitt.dbmi.nlp.noble.util.StringUtils;
-import edu.pitt.dbmi.nlp.noble.util.UITools;
+import edu.pitt.dbmi.nlp.noble.util.*;
+
+import javax.swing.*;
+import javax.swing.border.*;
+import javax.swing.filechooser.FileFilter;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.PrintStream;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 
@@ -141,7 +89,7 @@ public class NobleMentionsTool implements ActionListener{
 			File input = new File("/input");
 			File output = new File("/output");
 			File properties = null;
-			
+
 			//check if inputs exist
 			for(File a: Arrays.asList(ontology,input,output)){
 				if(!a.exists()){
@@ -149,7 +97,7 @@ public class NobleMentionsTool implements ActionListener{
 					System.exit(1);
 				}
 			}
-			
+
 			// find ontology
 			for(File f: ontology.listFiles()){
 				if(f.getName().endsWith(".owl") && !ConText.IMPORTED_ONTOLOGIES.contains(FileTools.stripExtension(f.getName()))){
@@ -164,7 +112,7 @@ public class NobleMentionsTool implements ActionListener{
 				System.exit(1);
 			}
 			nc.process(ontology,input,output,properties);
-			
+
 		}else if(args.length >= 3){
 			//check if inputs exist
 			for(String a: args){
@@ -208,7 +156,7 @@ public class NobleMentionsTool implements ActionListener{
 		out.println("\t/ontology - key=value pair file that sets runtime options will be located at the same location as ontology");
 		out.println("\n\n");
 	}
-	
+
 	
 	/**
 	 * create dialog for noble coder.
@@ -358,17 +306,17 @@ public class NobleMentionsTool implements ActionListener{
 			UITools.saveSettings(p,new File(ontology.getOntologyLocation().getParentFile(),ontology.getName()+".properties"));
 		}
 	}
-	
-	
+
+
 	private Properties getOptionsSettings(){
 		getOptionsPanel();
-		Properties p = new Properties();
-		p.setProperty("annotation.relation.scope",annotationScope.getSelection().getActionCommand());
-		p.setProperty("process.header.anchors",""+processHeaderAnchor.isSelected());
-		p.setProperty("process.header.modifiers",""+processHeaderModifier.isSelected());
-		p.setProperty("normalize.anchors",""+normalizeAnchors.isSelected());
-		p.setProperty("score.anchors",""+scoreAnchors.isSelected());
-		p.setProperty("ignore.labels",""+ignoreLabels.isSelected());
+			Properties p = new Properties();
+			p.setProperty("annotation.relation.scope",annotationScope.getSelection().getActionCommand());
+			p.setProperty("process.header.anchors",""+processHeaderAnchor.isSelected());
+			p.setProperty("process.header.modifiers",""+processHeaderModifier.isSelected());
+			p.setProperty("normalize.anchors",""+normalizeAnchors.isSelected());
+			p.setProperty("score.anchors",""+scoreAnchors.isSelected());
+			p.setProperty("ignore.labels",""+ignoreLabels.isSelected());
 		return p;
 	}
 	
@@ -383,22 +331,21 @@ public class NobleMentionsTool implements ActionListener{
 			loadOptionsSettings(new File(ontology.getOntologyLocation().getParentFile(),ontology.getName()+".properties"));
 		}
 	}
-	
+
 	/**
 	 * save UI settings
 	 */
 	private void loadOptionsSettings(File file){
 		getOptionsPanel();
 		final Properties p = UITools.loadSettings(file);
-		sectionScope.setSelected("section".equals(p.getProperty("annotation.relation.scope")));
-		processHeaderAnchor.setSelected(Boolean.parseBoolean(p.getProperty("process.header.anchors")));
-		processHeaderModifier.setSelected(Boolean.parseBoolean(p.getProperty("process.header.modifiers")));
-		normalizeAnchors.setSelected(Boolean.parseBoolean(p.getProperty("normalize.anchors")));
-		scoreAnchors.setSelected(Boolean.parseBoolean(p.getProperty("score.anchors")));
-		ignoreLabels.setSelected(Boolean.parseBoolean(p.getProperty("ignore.labels")));
-		
-	}
-	
+			sectionScope.setSelected("section".equals(p.getProperty("annotation.relation.scope")));
+			processHeaderAnchor.setSelected(Boolean.parseBoolean(p.getProperty("process.header.anchors")));
+			processHeaderModifier.setSelected(Boolean.parseBoolean(p.getProperty("process.header.modifiers")));
+			normalizeAnchors.setSelected(Boolean.parseBoolean(p.getProperty("normalize.anchors")));
+			scoreAnchors.setSelected(Boolean.parseBoolean(p.getProperty("score.anchors")));
+			ignoreLabels.setSelected(Boolean.parseBoolean(p.getProperty("ignore.labels")));
+		}
+
 	
 	private void loadOptions(NobleMentions nobleMentions) {
 		getOptionsPanel();
@@ -956,7 +903,7 @@ public class NobleMentionsTool implements ActionListener{
 			long t = System.currentTimeMillis();
 			DomainOntology ontology = new DomainOntology(ont.getAbsolutePath());
 			progress((System.currentTimeMillis()-t)+ " ms\n\n");
-			
+
 			// init properties
 			if(props != null){
 				loadOptionsSettings(props);
@@ -967,15 +914,15 @@ public class NobleMentionsTool implements ActionListener{
 			ex.printStackTrace();
 		}
 	}
-	
-	
+
+
 	/**
 	 * process  documents.
 	 * @param ontology the templates to process
 	 * @param in the in
 	 * @param out the out
 	 */
-	public void process(DomainOntology ontology,String in, String out){
+	public void process(DomainOntology ontology,String in, String out){	
 		// preload terminologies
 		long t = System.currentTimeMillis();
 		progress("loading anchors .. ");
@@ -1006,8 +953,8 @@ public class NobleMentionsTool implements ActionListener{
 			progress("  "+key+" = "+val+"\n");
 		}
 		progress("\n");
-		
-		
+
+
 		// process lastFile
 		List<File> files = FileTools.getFilesInDirectory(new File(in),".txt");
 		if(progress != null){

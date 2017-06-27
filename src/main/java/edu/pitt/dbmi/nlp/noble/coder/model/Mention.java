@@ -229,10 +229,11 @@ public class Mention implements Spannable, Comparable<Mention> {
 					if(twords.contains(words.get(i)) && c.getTerminology() != null && c.getTerminology() instanceof NobleCoderTerminology){
 						int n = i+((((NobleCoderTerminology)c.getTerminology()).getMaximumWordGap()+1)*(twords.size()-1))+1;
 						if(n >= words.size())
-							n = words.size()-1;
+							n = words.size();
+
 						if(words.subList(i,n).containsAll(twords)){
 							int st = c.getSearchString().indexOf(words.get(i),offs);
-							int en = c.getSearchString().indexOf(words.get(n),offs);
+							int en = c.getSearchString().indexOf(words.get(n-1),offs)+words.get(n-1).length();
 							
 							List<Annotation> alist = new ArrayList<Annotation>();
 							for(Annotation a: annotations){
