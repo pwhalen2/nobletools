@@ -210,11 +210,28 @@ public class FileTools {
 			for(File f: in.listFiles()){
 				getFiles(f,list,filter);
 			}
-		}else if(in.isFile() && (filter == null  || in.getName().endsWith(filter))){
+		}else if(in.isFile() && includeFile(in,filter)){
 			list.add(in);
 		}
 		return list;
 	}
+
+	/**
+	 * filter out file based on extension and the fact that it doesn't start with .
+	 * @param file - file to consider
+	 * @param extension - an extension of the file that should be included
+	 * @return true or false
+	 */
+	public static boolean includeFile(File file, String extension){
+		if(file.getName().startsWith("."))
+			return  false;
+		// if extension not specified
+		if(extension == null)
+			return true;
+		// filter
+		return file.getName().endsWith(extension);
+	}
+
 
 	/**
 	 * strip filename extension if the file has it

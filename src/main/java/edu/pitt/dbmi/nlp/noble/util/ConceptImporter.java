@@ -1503,7 +1503,16 @@ public class ConceptImporter {
 				String regex = term.substring(1,term.length()-1);
 				try{
 					Pattern.compile(regex);
-					storage.getRegexMap().put("\\b("+regex+")\\b",c.getCode());
+
+					// insert concept concept into a set
+					Set<String> codeList = new HashSet<String>();
+					codeList.add(c.getCode());
+					// add concept codes that were already in a set
+					if (storage.getRegexMap().containsKey(regex)) {
+						codeList.addAll(storage.getRegexMap().get(regex));
+					}
+					storage.getRegexMap().put("\\b("+regex+")\\b",codeList);
+					//storage.getRegexMap().put("\\b("+regex+")\\b",c.getCode());
 				}catch(PatternSyntaxException ex){
 					pcs.firePropertyChange(LOADING_MESSAGE,null,"Warning: failed to add regex /"+regex+"/ as synonym, because of pattern error : "+ex.getMessage());
 				}

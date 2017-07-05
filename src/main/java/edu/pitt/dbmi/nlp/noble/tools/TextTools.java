@@ -357,6 +357,9 @@ public class TextTools {
 		// replace all non-word characters and possesives from query w/ single space
 		//String text = query.replaceAll("('s\\b|\\W+|\\s+)"," ");
 		List<String> list = new ArrayList<String>();
+		if(query == null)
+			return list;
+
 		// tokenize words by space and add non-empty ones
 		StringTokenizer t = new StringTokenizer(query," ,!?;:-–—~_\\/|\t\n\r<>^()[]\"");
 		while(t.hasMoreTokens()){

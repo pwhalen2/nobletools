@@ -308,7 +308,6 @@ public class NobleCoderTool implements ActionListener{
 		terminologies.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 				loadDefaults();
-				loadSettings();
 			}
 		});
 	
