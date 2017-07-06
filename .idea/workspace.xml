@@ -2,12 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a37f4458-0304-45b2-88b1-c0f9e019c671" name="Default" comment="Added useful hints on why AnnotationVariables fail in HTML view">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/kotlinc.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/compiler.xml" afterPath="$PROJECT_DIR$/.idea/compiler.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/coder/model/Mention.java" afterPath="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/coder/model/Mention.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/ui/NobleMentionsTool.java" afterPath="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/ui/NobleMentionsTool.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/util/HTMLExporter.java" afterPath="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/util/HTMLExporter.java" />
     </list>
     <list id="f191e77f-c034-4898-98d8-9b33493655f9" name="re-organization" comment="" />
     <list id="7862b3a0-d48e-4dc8-ac80-1d4226692b0a" name="Failed commit: re-organization" comment="re-organization" />
@@ -38,26 +34,153 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="NobleCoder.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/coder/NobleCoder.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="481">
-              <caret line="334" column="0" lean-forward="false" selection-start-line="334" selection-start-column="0" selection-end-line="334" selection-end-column="0" />
-              <folding>
-                <element signature="e#6184#6185#0" expanded="true" />
-                <element signature="e#6209#6210#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="NobleCoderTerminology.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/terminology/impl/NobleCoderTerminology.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="226">
-              <caret line="2485" column="0" lean-forward="false" selection-start-line="2485" selection-start-column="0" selection-end-line="2485" selection-end-column="0" />
+            <state relative-caret-position="3780">
+              <caret line="333" column="13" lean-forward="false" selection-start-line="327" selection-start-column="12" selection-end-line="333" selection-end-column="13" />
               <folding>
-                <element signature="e#66331#66339#0" expanded="true" />
+                <element signature="imports" expanded="false" />
+                <element signature="e#7019#7020#0" expanded="false" />
+                <element signature="e#7034#7035#0" expanded="false" />
+                <element signature="e#7363#7364#0" expanded="false" />
+                <element signature="e#7386#7387#0" expanded="false" />
+                <element signature="e#7519#7520#0" expanded="false" />
+                <element signature="e#7550#7551#0" expanded="false" />
+                <element signature="e#7669#7670#0" expanded="false" />
+                <element signature="e#7692#7693#0" expanded="false" />
+                <element signature="e#7822#7823#0" expanded="false" />
+                <element signature="e#7849#7850#0" expanded="false" />
+                <element signature="e#7968#7969#0" expanded="false" />
+                <element signature="e#7991#7992#0" expanded="false" />
+                <element signature="e#8113#8114#0" expanded="false" />
+                <element signature="e#8137#8138#0" expanded="false" />
+                <element signature="e#8269#8270#0" expanded="false" />
+                <element signature="e#8295#8296#0" expanded="false" />
+                <element signature="e#8415#8416#0" expanded="false" />
+                <element signature="e#8440#8441#0" expanded="false" />
+                <element signature="e#8554#8555#0" expanded="false" />
+                <element signature="e#8577#8578#0" expanded="false" />
+                <element signature="e#8691#8692#0" expanded="false" />
+                <element signature="e#8714#8715#0" expanded="false" />
+                <element signature="e#8837#8838#0" expanded="false" />
+                <element signature="e#8862#8863#0" expanded="false" />
+                <element signature="e#11382#11383#0" expanded="false" />
+                <element signature="e#11406#11407#0" expanded="false" />
+                <element signature="e#11519#11520#0" expanded="false" />
+                <element signature="e#11567#11568#0" expanded="false" />
+                <element signature="e#11985#11986#0" expanded="false" />
+                <element signature="e#12054#12055#0" expanded="false" />
+                <element signature="e#14802#14803#0" expanded="false" />
+                <element signature="e#14825#14826#0" expanded="false" />
+                <element signature="e#15012#15013#0" expanded="false" />
+                <element signature="e#15035#15036#0" expanded="false" />
+                <element signature="e#15332#15333#0" expanded="false" />
+                <element signature="e#15346#15347#0" expanded="false" />
+                <element signature="e#16050#16051#0" expanded="false" />
+                <element signature="e#16115#16116#0" expanded="false" />
+                <element signature="e#16275#16276#0" expanded="false" />
+                <element signature="e#16288#16289#0" expanded="false" />
+                <element signature="e#19430#19431#0" expanded="false" />
+                <element signature="e#19451#19452#0" expanded="false" />
+                <element signature="e#23456#23457#0" expanded="false" />
+                <element signature="e#23490#23491#0" expanded="false" />
+                <element signature="e#23628#23629#0" expanded="false" />
+                <element signature="e#23683#23684#0" expanded="false" />
+                <element signature="e#24247#24248#0" expanded="false" />
+                <element signature="e#24293#24294#0" expanded="false" />
+                <element signature="e#29620#29621#0" expanded="false" />
+                <element signature="e#29664#29665#0" expanded="false" />
+                <element signature="e#29723#29724#0" expanded="false" />
+                <element signature="e#29745#29746#0" expanded="false" />
+                <element signature="e#30120#30121#0" expanded="false" />
+                <element signature="e#30144#30145#0" expanded="false" />
+                <element signature="e#30306#30307#0" expanded="false" />
+                <element signature="e#30328#30329#0" expanded="false" />
+                <element signature="e#30459#30460#0" expanded="false" />
+                <element signature="e#30487#30488#0" expanded="false" />
+                <element signature="e#30641#30642#0" expanded="false" />
+                <element signature="e#30684#30685#0" expanded="false" />
+                <element signature="e#30858#30859#0" expanded="false" />
+                <element signature="e#30891#30892#0" expanded="false" />
+                <element signature="e#31001#31002#0" expanded="false" />
+                <element signature="e#31024#31025#0" expanded="false" />
+                <element signature="e#31235#31236#0" expanded="false" />
+                <element signature="e#31282#31283#0" expanded="false" />
+                <element signature="e#37784#37785#0" expanded="false" />
+                <element signature="e#37808#37809#0" expanded="false" />
+                <element signature="e#38155#38156#0" expanded="false" />
+                <element signature="e#38194#38195#0" expanded="false" />
+                <element signature="e#40058#40059#0" expanded="false" />
+                <element signature="e#40079#40080#0" expanded="false" />
+                <element signature="e#41330#41331#0" expanded="false" />
+                <element signature="e#41374#41375#0" expanded="false" />
+                <element signature="e#54578#54579#0" expanded="false" />
+                <element signature="e#54613#54614#0" expanded="false" />
+                <element signature="e#55088#55089#0" expanded="false" />
+                <element signature="e#55123#55124#0" expanded="false" />
+                <element signature="e#55249#55250#0" expanded="false" />
+                <element signature="e#55317#55318#0" expanded="false" />
+                <element signature="e#56367#56368#0" expanded="false" />
+                <element signature="e#56390#56391#0" expanded="false" />
+                <element signature="e#56571#56572#0" expanded="false" />
+                <element signature="e#56620#56621#0" expanded="false" />
+                <element signature="e#56758#56759#0" expanded="false" />
+                <element signature="e#56793#56794#0" expanded="false" />
+                <element signature="e#57167#57168#0" expanded="false" />
+                <element signature="e#57196#57197#0" expanded="false" />
+                <element signature="e#57319#57320#0" expanded="false" />
+                <element signature="e#57346#57347#0" expanded="false" />
+                <element signature="e#57466#57467#0" expanded="false" />
+                <element signature="e#57491#57492#0" expanded="false" />
+                <element signature="e#57625#57626#0" expanded="false" />
+                <element signature="e#57655#57656#0" expanded="false" />
+                <element signature="e#57792#57793#0" expanded="false" />
+                <element signature="e#57823#57824#0" expanded="false" />
+                <element signature="e#57966#57967#0" expanded="false" />
+                <element signature="e#57999#58000#0" expanded="false" />
+                <element signature="e#58099#58100#0" expanded="false" />
+                <element signature="e#58123#58124#0" expanded="false" />
+                <element signature="e#58254#58255#0" expanded="false" />
+                <element signature="e#58282#58283#0" expanded="false" />
+                <element signature="e#58446#58447#0" expanded="false" />
+                <element signature="e#58489#58490#0" expanded="false" />
+                <element signature="e#58620#58621#0" expanded="false" />
+                <element signature="e#58653#58654#0" expanded="false" />
+                <element signature="e#58780#58781#0" expanded="false" />
+                <element signature="e#58808#58809#0" expanded="false" />
+                <element signature="e#58960#58961#0" expanded="false" />
+                <element signature="e#59003#59004#0" expanded="false" />
+                <element signature="e#59135#59136#0" expanded="false" />
+                <element signature="e#59164#59165#0" expanded="false" />
+                <element signature="e#59323#59324#0" expanded="false" />
+                <element signature="e#59368#59369#0" expanded="false" />
+                <element signature="e#59497#59498#0" expanded="false" />
+                <element signature="e#59526#59527#0" expanded="false" />
+                <element signature="e#59683#59684#0" expanded="false" />
+                <element signature="e#59728#59729#0" expanded="false" />
+                <element signature="e#59845#59846#0" expanded="false" />
+                <element signature="e#59870#59871#0" expanded="false" />
+                <element signature="e#60007#60008#0" expanded="false" />
+                <element signature="e#60044#60045#0" expanded="false" />
+                <element signature="e#60161#60162#0" expanded="false" />
+                <element signature="e#60186#60187#0" expanded="false" />
+                <element signature="e#60323#60324#0" expanded="false" />
+                <element signature="e#60360#60361#0" expanded="false" />
+                <element signature="e#60486#60487#0" expanded="false" />
+                <element signature="e#60514#60515#0" expanded="false" />
+                <element signature="e#60666#60667#0" expanded="false" />
+                <element signature="e#60709#60710#0" expanded="false" />
+                <element signature="e#60826#60827#0" expanded="false" />
+                <element signature="e#60851#60852#0" expanded="false" />
+                <element signature="e#60988#60989#0" expanded="false" />
+                <element signature="e#61025#61026#0" expanded="false" />
+                <element signature="e#61178#61179#0" expanded="false" />
+                <element signature="e#61214#61215#0" expanded="false" />
+                <element signature="e#61400#61401#0" expanded="false" />
+                <element signature="e#61455#61456#0" expanded="false" />
+                <element signature="e#68822#68823#0" expanded="false" />
+                <element signature="e#68847#68848#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -66,74 +189,159 @@
       <file leaf-file-name="Mention.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/coder/model/Mention.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="545">
-              <caret line="248" column="56" lean-forward="true" selection-start-line="248" selection-start-column="56" selection-end-line="248" selection-end-column="56" />
-              <folding>
-                <element signature="e#4826#4835#0" expanded="true" />
-                <element signature="e#6389#6401#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="SentenceProcessor.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/coder/processor/SentenceProcessor.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1565">
-              <caret line="115" column="61" lean-forward="false" selection-start-line="115" selection-start-column="61" selection-end-line="115" selection-end-column="61" />
+            <state relative-caret-position="2790">
+              <caret line="216" column="0" lean-forward="false" selection-start-line="216" selection-start-column="0" selection-end-line="216" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ParagraphProcessor.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/coder/processor/ParagraphProcessor.java">
+      <file leaf-file-name="DictionarySectionProcessorTest.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/test/java/edu/pitt/dbmi/nlp/noble/coder/processor/DictionarySectionProcessorTest.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="60">
-              <caret line="8" column="13" lean-forward="false" selection-start-line="8" selection-start-column="13" selection-end-line="8" selection-end-column="13" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="DictionarySectionProcessor.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/coder/processor/DictionarySectionProcessor.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1950">
-              <caret line="154" column="33" lean-forward="false" selection-start-line="154" selection-start-column="33" selection-end-line="154" selection-end-column="33" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="NobleMentionsTool.java" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/ui/NobleMentionsTool.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="330">
-              <caret line="22" column="27" lean-forward="true" selection-start-line="22" selection-start-column="27" selection-end-line="22" selection-end-column="27" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="NobleCoderUtils.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/terminology/impl/NobleCoderUtils.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="191">
-              <caret line="495" column="0" lean-forward="false" selection-start-line="495" selection-start-column="0" selection-end-line="495" selection-end-column="0" />
+              <caret line="18" column="13" lean-forward="false" selection-start-line="18" selection-start-column="13" selection-end-line="18" selection-end-column="13" />
               <folding>
-                <element signature="e#13419#13431#0" expanded="true" />
+                <element signature="imports" expanded="false" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="NobleMentions.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/mentions/NobleMentions.java">
+      <file leaf-file-name="ParagraphProcessorTest.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/test/java/edu/pitt/dbmi/nlp/noble/coder/processor/ParagraphProcessorTest.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="652">
-              <caret line="137" column="17" lean-forward="true" selection-start-line="137" selection-start-column="17" selection-end-line="137" selection-end-column="17" />
+            <state relative-caret-position="600">
+              <caret line="48" column="0" lean-forward="false" selection-start-line="48" selection-start-column="0" selection-end-line="48" selection-end-column="0" />
+              <folding>
+                <element signature="imports" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="NobleMentionsTool.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/ui/NobleMentionsTool.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="14280">
+              <caret line="994" column="0" lean-forward="false" selection-start-line="994" selection-start-column="0" selection-end-line="994" selection-end-column="0" />
+              <folding>
+                <element signature="e#13487#13488#0" expanded="false" />
+                <element signature="e#13545#13546#0" expanded="false" />
+                <element signature="e#20475#20476#0" expanded="false" />
+                <element signature="e#20542#20543#0" expanded="false" />
+                <element signature="e#20579#20580#0" expanded="false" />
+                <element signature="e#20609#20610#0" expanded="false" />
+                <element signature="e#21998#21999#0" expanded="false" />
+                <element signature="e#22063#22064#0" expanded="false" />
+                <element signature="e#22099#22100#0" expanded="false" />
+                <element signature="e#22154#22155#0" expanded="false" />
+                <element signature="e#26451#26452#0" expanded="false" />
+                <element signature="e#26488#26489#0" expanded="false" />
+                <element signature="e#26523#26524#0" expanded="false" />
+                <element signature="e#26588#26589#0" expanded="false" />
+                <element signature="e#30594#30595#0" expanded="false" />
+                <element signature="e#30629#30630#0" expanded="false" />
+                <element signature="e#33391#33392#0" expanded="false" />
+                <element signature="e#33421#33422#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="TextTools.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/tools/TextTools.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="5220">
+              <caret line="381" column="8" lean-forward="false" selection-start-line="381" selection-start-column="8" selection-end-line="381" selection-end-column="8" />
               <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="NobleCoderTool.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/ui/NobleCoderTool.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="3269">
+              <caret line="297" column="32" lean-forward="false" selection-start-line="297" selection-start-column="32" selection-end-line="297" selection-end-column="32" />
+              <folding>
+                <element signature="e#13486#13582#0" expanded="true" />
+                <element signature="e#13581#13582#0" expanded="true" />
+                <element signature="e#20414#20534#0" expanded="true" />
+                <element signature="e#20533#20534#0" expanded="true" />
+                <element signature="e#21210#21338#0" expanded="true" />
+                <element signature="e#21337#21338#0" expanded="true" />
+                <element signature="e#31194#31560#0" expanded="true" />
+                <element signature="e#31559#31560#0" expanded="true" />
+                <element signature="e#32201#32563#0" expanded="true" />
+                <element signature="e#32562#32563#0" expanded="true" />
+                <element signature="e#33353#33452#0" expanded="true" />
+                <element signature="e#33451#33452#0" expanded="true" />
+                <element signature="e#34920#35060#0" expanded="true" />
+                <element signature="e#35059#35060#0" expanded="true" />
+                <element signature="e#35570#36002#0" expanded="true" />
+                <element signature="e#36001#36002#0" expanded="true" />
+                <element signature="e#36043#36175#0" expanded="true" />
+                <element signature="e#36174#36175#0" expanded="true" />
+                <element signature="e#36867#37031#0" expanded="true" />
+                <element signature="e#37030#37031#0" expanded="true" />
+                <element signature="e#43236#43508#0" expanded="true" />
+                <element signature="e#43507#43508#0" expanded="true" />
+                <element signature="e#43610#46707#0" expanded="true" />
+                <element signature="e#43939#43947#0" expanded="true" />
+                <element signature="e#46706#46707#0" expanded="true" />
+                <element signature="e#50392#50537#0" expanded="true" />
+                <element signature="e#50536#50537#0" expanded="true" />
+                <element signature="e#50640#51756#0" expanded="true" />
+                <element signature="e#50949#51381#0" expanded="true" />
+                <element signature="e#51065#51078#0" expanded="true" />
+                <element signature="e#51380#51381#0" expanded="true" />
+                <element signature="e#51755#51756#0" expanded="true" />
+                <element signature="e#56963#57080#0" expanded="true" />
+                <element signature="e#57079#57080#0" expanded="true" />
+                <element signature="e#58170#58250#0" expanded="true" />
+                <element signature="e#58249#58250#0" expanded="true" />
+                <element signature="e#60520#60593#0" expanded="true" />
+                <element signature="e#60592#60593#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="HTMLExporter.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/util/HTMLExporter.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="2105">
+              <caret line="900" column="114" lean-forward="false" selection-start-line="900" selection-start-column="114" selection-end-line="900" selection-end-column="114" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="FileTools.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/util/FileTools.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="2985">
+              <caret line="213" column="0" lean-forward="false" selection-start-line="213" selection-start-column="0" selection-end-line="213" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="AcronymDetector.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/tools/AcronymDetector.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="3270">
+              <caret line="241" column="0" lean-forward="false" selection-start-line="241" selection-start-column="0" selection-end-line="241" selection-end-column="0" />
+              <folding>
+                <element signature="imports" expanded="false" />
+                <element signature="e#1142#1143#0" expanded="false" />
+                <element signature="e#1185#1186#0" expanded="false" />
+                <element signature="e#1536#1537#0" expanded="false" />
+                <element signature="e#1561#1562#0" expanded="false" />
+                <element signature="e#7767#7768#0" expanded="false" />
+                <element signature="e#7785#7786#0" expanded="false" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -169,19 +377,15 @@
         <option value="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/eval/gold/Analysis.java" />
         <option value="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/eval/Analysis.java" />
         <option value="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/eval/AttributeWeights.java" />
-        <option value="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/util/FileTools.java" />
         <option value="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/eval/gold/NLMRiskFactorsToInstances.java" />
-        <option value="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/tools/TextTools.java" />
         <option value="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/eval/AnnotationEvaluation.java" />
         <option value="$PROJECT_DIR$/lib/owlapi-distribution-3.5.0.jar!/org/semanticweb/owlapi/reasoner/impl/DefaultNodeSet.class" />
-        <option value="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/terminology/impl/NobleCoderTerminology.java" />
         <option value="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/terminology/impl/NobleCoderUtils.java" />
         <option value="$PROJECT_DIR$/src/test/java/edu/pitt/dbmi/nlp/noble/terminology/NobleCoderTerminologyTest.java" />
         <option value="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/ontology/OntologyUtils.java" />
         <option value="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/ontology/owl/OOntology.java" />
         <option value="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/coder/model/Span.java" />
         <option value="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/mentions/model/DomainOntology.java" />
-        <option value="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/util/HTMLExporter.java" />
         <option value="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/coder/model/Sentence.java" />
         <option value="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/coder/processor/SentenceProcessor.java" />
         <option value="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/tools/ConText.java" />
@@ -193,6 +397,12 @@
         <option value="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/eval/gold/KnowtatorToInstances.java" />
         <option value="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/coder/model/Mention.java" />
         <option value="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/ui/NobleMentionsTool.java" />
+        <option value="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/util/ConceptImporter.java" />
+        <option value="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/tools/TextTools.java" />
+        <option value="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/util/FileTools.java" />
+        <option value="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/terminology/impl/NobleCoderTerminology.java" />
+        <option value="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/ui/NobleCoderTool.java" />
+        <option value="$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/util/HTMLExporter.java" />
       </list>
     </option>
   </component>
@@ -204,13 +414,24 @@
     </option>
   </component>
   <component name="MavenProjectNavigator">
-    <treeState />
+    <treeState>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$RootNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="NobleTools" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+      </PATH>
+    </treeState>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="68" />
+    <option name="x" value="66" />
     <option name="y" value="23" />
-    <option name="width" value="1842" />
-    <option name="height" value="1050" />
+    <option name="width" value="1614" />
+    <option name="height" value="1027" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -450,8 +671,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -477,40 +696,8 @@
               <option name="myItemId" value="src" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
-          </PATH>
-          <PATH>
             <PATH_ELEMENT>
-              <option name="myItemId" value="nobletools" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="nobletools" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="nobletools" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="nobletools" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
+              <option name="myItemId" value="test" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
@@ -536,161 +723,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="noble" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ui" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="nobletools" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="nobletools" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="noble" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="terminology" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="nobletools" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="nobletools" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="noble" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="terminology" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="impl" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="nobletools" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="nobletools" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="noble" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="mentions" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="nobletools" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="nobletools" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="noble" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="eval" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="nobletools" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="nobletools" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
+              <option name="myItemId" value="test" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
@@ -720,7 +753,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
+              <option name="myItemId" value="test" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
@@ -758,6 +791,54 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="resources" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="resources" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="nobletools" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="nobletools" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="resources" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="nobletools" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="nobletools" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
               <option name="myItemId" value="java" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
@@ -766,17 +847,41 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="coder" />
+              <option name="myItemId" value="util" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="nobletools" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="nobletools" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="model" />
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="noble" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
       </pane>
+      <pane id="PackagesPane" />
       <pane id="Scratches" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -1330,34 +1435,42 @@
       <option name="project" value="LOCAL" />
       <updated>1496287072455</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="Fixed an issue where two concepts could not share a regex.&#10;Added FileTools.getFiles() now ignores &quot;hidden&quot; files&#10;Fixed a UI loading bug in NobleCoder">
+      <created>1499283142468</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1499283142468</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="68" y="23" width="1842" height="1050" extended-state="0" />
+    <frame x="66" y="23" width="1614" height="1027" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Nl-Palette" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32672232" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3316062" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32846716" sideWeight="0.50511074" order="10" side_tool="true" content_ui="tabs" />
-      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32964224" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25678498" sideWeight="0.49488926" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32953313" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.27165776" sideWeight="0.49488926" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.18371607" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Properties" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.23277777" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2965812" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2519084" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.26632124" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.29944444" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24957842" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Theme Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.37787056" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3761658" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -1366,7 +1479,6 @@
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Coverage" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32905984" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="JProfiler" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.329927" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2671533" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
     <layout-to-restore>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -1423,12 +1535,13 @@
     <MESSAGE value="Integrated AttributeWeights into AnnotationEvaluation&#10;Added visualization option to AnnotationEvaluation&#10;Added useful Span object" />
     <MESSAGE value="Added KnowtatorToInstances converter" />
     <MESSAGE value="added an icon" />
-    <MESSAGE value="Added useful hints on why AnnotationVariables fail in HTML view" />
     <MESSAGE value="Fixed sentence parser that strips whitespace from beginning and end of sentences. This makes offset calculations between sentences and paragraphs work more smoothly." />
     <MESSAGE value="Only allow one modifier of a given type per variable (need to discuss), fixed an issue where a general number modifier is not added as modifier instance if it is not satisfiable." />
     <MESSAGE value="Added individual component time output to NobleMentionTool" />
     <MESSAGE value="Added table and tableprocessor classes" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added table and tableprocessor classes" />
+    <MESSAGE value="Added useful hints on why AnnotationVariables fail in HTML view" />
+    <MESSAGE value="Fixed an issue where two concepts could not share a regex.&#10;Added FileTools.getFiles() now ignores &quot;hidden&quot; files&#10;Fixed a UI loading bug in NobleCoder" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed an issue where two concepts could not share a regex.&#10;Added FileTools.getFiles() now ignores &quot;hidden&quot; files&#10;Fixed a UI loading bug in NobleCoder" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1443,7 +1556,7 @@
       <breakpoints-dialog>
         <breakpoints-dialog />
       </breakpoints-dialog>
-      <option name="time" value="143" />
+      <option name="time" value="146" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -1452,34 +1565,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/coder/model/Processor.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="183">
-          <caret line="19" column="13" lean-forward="false" selection-start-line="19" selection-start-column="13" selection-end-line="19" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/util/JDBMMap.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="143">
-          <caret line="20" column="13" lean-forward="false" selection-start-line="20" selection-start-column="13" selection-end-line="20" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/ontology/IClass.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="127">
-          <caret line="227" column="27" lean-forward="false" selection-start-line="227" selection-start-column="27" selection-end-line="227" selection-end-column="27" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/coder/model/Modifier.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="165">
-          <caret line="39" column="0" lean-forward="false" selection-start-line="39" selection-start-column="0" selection-end-line="39" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/eval/Analysis.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2925">
@@ -1495,24 +1580,10 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/eval/AttributeWeights.java" />
-    <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/util/FileTools.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2670">
-          <caret line="191" column="41" lean-forward="false" selection-start-line="191" selection-start-column="41" selection-end-line="191" selection-end-column="41" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/coder/model/Spannable.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1005">
           <caret line="67" column="21" lean-forward="false" selection-start-line="67" selection-start-column="21" selection-end-line="67" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/tools/TextTools.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="16650">
-          <caret line="1149" column="25" lean-forward="false" selection-start-line="1149" selection-start-column="25" selection-end-line="1149" selection-end-column="25" />
         </state>
       </provider>
     </entry>
@@ -1544,13 +1615,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_66.jdk/Contents/Home/src.zip!/java/lang/String.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="127">
-          <caret line="110" column="19" lean-forward="false" selection-start-line="110" selection-start-column="19" selection-end-line="110" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_66.jdk/Contents/Home/src.zip!/java/lang/String.java" />
     <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/eval/gold/RiskFactorsToInstances.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="105">
@@ -1581,13 +1646,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="211">
           <caret line="542" column="0" lean-forward="false" selection-start-line="542" selection-start-column="0" selection-end-line="553" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/util/HTMLExporter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="5145">
-          <caret line="393" column="37" lean-forward="false" selection-start-line="393" selection-start-column="37" selection-end-line="393" selection-end-column="37" />
         </state>
       </provider>
     </entry>
@@ -1644,7 +1702,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="212">
           <caret line="112" column="12" lean-forward="false" selection-start-line="112" selection-start-column="12" selection-end-line="112" selection-end-column="12" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1659,9 +1716,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="20295">
           <caret line="1429" column="19" lean-forward="false" selection-start-line="1429" selection-start-column="19" selection-end-line="1429" selection-end-column="19" />
-          <folding>
-            <element signature="imports" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1669,7 +1723,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-1872">
           <caret line="16" column="13" lean-forward="false" selection-start-line="16" selection-start-column="13" selection-end-line="16" selection-end-column="13" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1677,7 +1730,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="105">
           <caret line="12" column="13" lean-forward="false" selection-start-line="12" selection-start-column="13" selection-end-line="12" selection-end-column="13" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1685,7 +1737,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="270">
           <caret line="19" column="29" lean-forward="false" selection-start-line="19" selection-start-column="29" selection-end-line="19" selection-end-column="29" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1693,7 +1744,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="875">
           <caret line="111" column="16" lean-forward="false" selection-start-line="111" selection-start-column="16" selection-end-line="111" selection-end-column="16" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1701,9 +1751,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="840">
           <caret line="59" column="0" lean-forward="false" selection-start-line="59" selection-start-column="0" selection-end-line="59" selection-end-column="0" />
-          <folding>
-            <element signature="e#1086#1087#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1711,7 +1758,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="210">
           <caret line="14" column="45" lean-forward="false" selection-start-line="14" selection-start-column="31" selection-end-line="14" selection-end-column="45" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1719,15 +1765,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="45">
           <caret line="3" column="48" lean-forward="false" selection-start-line="3" selection-start-column="48" selection-end-line="3" selection-end-column="48" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/ui/NobleCoderTool.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="15">
-          <caret line="89" column="13" lean-forward="false" selection-start-line="89" selection-start-column="13" selection-end-line="89" selection-end-column="13" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1735,7 +1772,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="305">
           <caret line="191" column="16" lean-forward="false" selection-start-line="184" selection-start-column="12" selection-end-line="192" selection-end-column="13" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1743,7 +1779,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="100">
           <caret line="351" column="42" lean-forward="false" selection-start-line="351" selection-start-column="42" selection-end-line="351" selection-end-column="42" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1751,68 +1786,27 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="132">
           <caret line="38" column="50" lean-forward="false" selection-start-line="38" selection-start-column="31" selection-end-line="38" selection-end-column="50" />
-          <folding>
-            <element signature="e#14154#14163#0" expanded="true" />
-            <element signature="e#15521#15530#0" expanded="true" />
-            <element signature="e#19953#19962#0" expanded="true" />
-            <element signature="e#20641#20650#0" expanded="true" />
-            <element signature="e#21131#21140#0" expanded="true" />
-            <element signature="e#22468#22476#0" expanded="true" />
-            <element signature="e#23201#23209#0" expanded="true" />
-            <element signature="e#24191#24199#0" expanded="true" />
-            <element signature="e#24624#24632#0" expanded="true" />
-            <element signature="e#26840#26875#0" expanded="true" />
-            <element signature="e#28039#28049#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/terminology/impl/NobleCoderUtils.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="191">
+        <state relative-caret-position="6885">
           <caret line="495" column="0" lean-forward="false" selection-start-line="495" selection-start-column="0" selection-end-line="495" selection-end-column="0" />
           <folding>
-            <element signature="e#13419#13431#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/terminology/impl/NobleCoderTerminology.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="226">
-          <caret line="2485" column="0" lean-forward="false" selection-start-line="2485" selection-start-column="0" selection-end-line="2485" selection-end-column="0" />
-          <folding>
-            <element signature="e#66331#66339#0" expanded="true" />
+            <element signature="imports" expanded="false" />
+            <element signature="e#9388#9389#0" expanded="false" />
+            <element signature="e#9451#9452#0" expanded="false" />
+            <element signature="e#9641#9642#0" expanded="false" />
+            <element signature="e#9680#9681#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/coder/NobleCoder.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="481">
+        <state relative-caret-position="5010">
           <caret line="334" column="0" lean-forward="false" selection-start-line="334" selection-start-column="0" selection-end-line="334" selection-end-column="0" />
-          <folding>
-            <element signature="e#6184#6185#0" expanded="true" />
-            <element signature="e#6209#6210#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/coder/model/Mention.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="545">
-          <caret line="248" column="56" lean-forward="true" selection-start-line="248" selection-start-column="56" selection-end-line="248" selection-end-column="56" />
-          <folding>
-            <element signature="e#4826#4835#0" expanded="true" />
-            <element signature="e#6389#6401#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/coder/processor/SentenceProcessor.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1565">
-          <caret line="115" column="61" lean-forward="false" selection-start-line="115" selection-start-column="61" selection-end-line="115" selection-end-column="61" />
           <folding />
         </state>
       </provider>
@@ -1821,7 +1815,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="60">
           <caret line="8" column="13" lean-forward="false" selection-start-line="8" selection-start-column="13" selection-end-line="8" selection-end-column="13" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1829,22 +1822,320 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1950">
           <caret line="154" column="33" lean-forward="false" selection-start-line="154" selection-start-column="33" selection-end-line="154" selection-end-column="33" />
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/mentions/NobleMentions.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="652">
-          <caret line="137" column="17" lean-forward="true" selection-start-line="137" selection-start-column="17" selection-end-line="137" selection-end-column="17" />
+        <state relative-caret-position="1590">
+          <caret line="137" column="17" lean-forward="false" selection-start-line="137" selection-start-column="17" selection-end-line="137" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/coder/processor/SentenceProcessor.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1575">
+          <caret line="115" column="61" lean-forward="false" selection-start-line="115" selection-start-column="61" selection-end-line="115" selection-end-column="61" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/edu/pitt/dbmi/nlp/noble/coder/processor/DictionarySectionProcessorTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="18" column="13" lean-forward="false" selection-start-line="18" selection-start-column="13" selection-end-line="18" selection-end-column="13" />
+          <folding>
+            <element signature="imports" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/edu/pitt/dbmi/nlp/noble/coder/processor/ParagraphProcessorTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="600">
+          <caret line="48" column="0" lean-forward="false" selection-start-line="48" selection-start-column="0" selection-end-line="48" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/util/ConceptImporter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="420">
+          <caret line="1513" column="75" lean-forward="false" selection-start-line="1513" selection-start-column="75" selection-end-line="1513" selection-end-column="75" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/coder/model/Mention.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2790">
+          <caret line="216" column="0" lean-forward="false" selection-start-line="216" selection-start-column="0" selection-end-line="216" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/tools/TextTools.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="5220">
+          <caret line="381" column="8" lean-forward="false" selection-start-line="381" selection-start-column="8" selection-end-line="381" selection-end-column="8" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/util/FileTools.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2985">
+          <caret line="213" column="0" lean-forward="false" selection-start-line="213" selection-start-column="0" selection-end-line="213" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/ui/NobleMentionsTool.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="330">
-          <caret line="22" column="27" lean-forward="true" selection-start-line="22" selection-start-column="27" selection-end-line="22" selection-end-column="27" />
+        <state relative-caret-position="14280">
+          <caret line="994" column="0" lean-forward="false" selection-start-line="994" selection-start-column="0" selection-end-line="994" selection-end-column="0" />
+          <folding>
+            <element signature="e#13487#13488#0" expanded="false" />
+            <element signature="e#13545#13546#0" expanded="false" />
+            <element signature="e#20475#20476#0" expanded="false" />
+            <element signature="e#20542#20543#0" expanded="false" />
+            <element signature="e#20579#20580#0" expanded="false" />
+            <element signature="e#20609#20610#0" expanded="false" />
+            <element signature="e#21998#21999#0" expanded="false" />
+            <element signature="e#22063#22064#0" expanded="false" />
+            <element signature="e#22099#22100#0" expanded="false" />
+            <element signature="e#22154#22155#0" expanded="false" />
+            <element signature="e#26451#26452#0" expanded="false" />
+            <element signature="e#26488#26489#0" expanded="false" />
+            <element signature="e#26523#26524#0" expanded="false" />
+            <element signature="e#26588#26589#0" expanded="false" />
+            <element signature="e#30594#30595#0" expanded="false" />
+            <element signature="e#30629#30630#0" expanded="false" />
+            <element signature="e#33391#33392#0" expanded="false" />
+            <element signature="e#33421#33422#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/terminology/impl/NobleCoderTerminology.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3780">
+          <caret line="333" column="13" lean-forward="false" selection-start-line="327" selection-start-column="12" selection-end-line="333" selection-end-column="13" />
+          <folding>
+            <element signature="imports" expanded="false" />
+            <element signature="e#7019#7020#0" expanded="false" />
+            <element signature="e#7034#7035#0" expanded="false" />
+            <element signature="e#7363#7364#0" expanded="false" />
+            <element signature="e#7386#7387#0" expanded="false" />
+            <element signature="e#7519#7520#0" expanded="false" />
+            <element signature="e#7550#7551#0" expanded="false" />
+            <element signature="e#7669#7670#0" expanded="false" />
+            <element signature="e#7692#7693#0" expanded="false" />
+            <element signature="e#7822#7823#0" expanded="false" />
+            <element signature="e#7849#7850#0" expanded="false" />
+            <element signature="e#7968#7969#0" expanded="false" />
+            <element signature="e#7991#7992#0" expanded="false" />
+            <element signature="e#8113#8114#0" expanded="false" />
+            <element signature="e#8137#8138#0" expanded="false" />
+            <element signature="e#8269#8270#0" expanded="false" />
+            <element signature="e#8295#8296#0" expanded="false" />
+            <element signature="e#8415#8416#0" expanded="false" />
+            <element signature="e#8440#8441#0" expanded="false" />
+            <element signature="e#8554#8555#0" expanded="false" />
+            <element signature="e#8577#8578#0" expanded="false" />
+            <element signature="e#8691#8692#0" expanded="false" />
+            <element signature="e#8714#8715#0" expanded="false" />
+            <element signature="e#8837#8838#0" expanded="false" />
+            <element signature="e#8862#8863#0" expanded="false" />
+            <element signature="e#11382#11383#0" expanded="false" />
+            <element signature="e#11406#11407#0" expanded="false" />
+            <element signature="e#11519#11520#0" expanded="false" />
+            <element signature="e#11567#11568#0" expanded="false" />
+            <element signature="e#11985#11986#0" expanded="false" />
+            <element signature="e#12054#12055#0" expanded="false" />
+            <element signature="e#14802#14803#0" expanded="false" />
+            <element signature="e#14825#14826#0" expanded="false" />
+            <element signature="e#15012#15013#0" expanded="false" />
+            <element signature="e#15035#15036#0" expanded="false" />
+            <element signature="e#15332#15333#0" expanded="false" />
+            <element signature="e#15346#15347#0" expanded="false" />
+            <element signature="e#16050#16051#0" expanded="false" />
+            <element signature="e#16115#16116#0" expanded="false" />
+            <element signature="e#16275#16276#0" expanded="false" />
+            <element signature="e#16288#16289#0" expanded="false" />
+            <element signature="e#19430#19431#0" expanded="false" />
+            <element signature="e#19451#19452#0" expanded="false" />
+            <element signature="e#23456#23457#0" expanded="false" />
+            <element signature="e#23490#23491#0" expanded="false" />
+            <element signature="e#23628#23629#0" expanded="false" />
+            <element signature="e#23683#23684#0" expanded="false" />
+            <element signature="e#24247#24248#0" expanded="false" />
+            <element signature="e#24293#24294#0" expanded="false" />
+            <element signature="e#29620#29621#0" expanded="false" />
+            <element signature="e#29664#29665#0" expanded="false" />
+            <element signature="e#29723#29724#0" expanded="false" />
+            <element signature="e#29745#29746#0" expanded="false" />
+            <element signature="e#30120#30121#0" expanded="false" />
+            <element signature="e#30144#30145#0" expanded="false" />
+            <element signature="e#30306#30307#0" expanded="false" />
+            <element signature="e#30328#30329#0" expanded="false" />
+            <element signature="e#30459#30460#0" expanded="false" />
+            <element signature="e#30487#30488#0" expanded="false" />
+            <element signature="e#30641#30642#0" expanded="false" />
+            <element signature="e#30684#30685#0" expanded="false" />
+            <element signature="e#30858#30859#0" expanded="false" />
+            <element signature="e#30891#30892#0" expanded="false" />
+            <element signature="e#31001#31002#0" expanded="false" />
+            <element signature="e#31024#31025#0" expanded="false" />
+            <element signature="e#31235#31236#0" expanded="false" />
+            <element signature="e#31282#31283#0" expanded="false" />
+            <element signature="e#37784#37785#0" expanded="false" />
+            <element signature="e#37808#37809#0" expanded="false" />
+            <element signature="e#38155#38156#0" expanded="false" />
+            <element signature="e#38194#38195#0" expanded="false" />
+            <element signature="e#40058#40059#0" expanded="false" />
+            <element signature="e#40079#40080#0" expanded="false" />
+            <element signature="e#41330#41331#0" expanded="false" />
+            <element signature="e#41374#41375#0" expanded="false" />
+            <element signature="e#54578#54579#0" expanded="false" />
+            <element signature="e#54613#54614#0" expanded="false" />
+            <element signature="e#55088#55089#0" expanded="false" />
+            <element signature="e#55123#55124#0" expanded="false" />
+            <element signature="e#55249#55250#0" expanded="false" />
+            <element signature="e#55317#55318#0" expanded="false" />
+            <element signature="e#56367#56368#0" expanded="false" />
+            <element signature="e#56390#56391#0" expanded="false" />
+            <element signature="e#56571#56572#0" expanded="false" />
+            <element signature="e#56620#56621#0" expanded="false" />
+            <element signature="e#56758#56759#0" expanded="false" />
+            <element signature="e#56793#56794#0" expanded="false" />
+            <element signature="e#57167#57168#0" expanded="false" />
+            <element signature="e#57196#57197#0" expanded="false" />
+            <element signature="e#57319#57320#0" expanded="false" />
+            <element signature="e#57346#57347#0" expanded="false" />
+            <element signature="e#57466#57467#0" expanded="false" />
+            <element signature="e#57491#57492#0" expanded="false" />
+            <element signature="e#57625#57626#0" expanded="false" />
+            <element signature="e#57655#57656#0" expanded="false" />
+            <element signature="e#57792#57793#0" expanded="false" />
+            <element signature="e#57823#57824#0" expanded="false" />
+            <element signature="e#57966#57967#0" expanded="false" />
+            <element signature="e#57999#58000#0" expanded="false" />
+            <element signature="e#58099#58100#0" expanded="false" />
+            <element signature="e#58123#58124#0" expanded="false" />
+            <element signature="e#58254#58255#0" expanded="false" />
+            <element signature="e#58282#58283#0" expanded="false" />
+            <element signature="e#58446#58447#0" expanded="false" />
+            <element signature="e#58489#58490#0" expanded="false" />
+            <element signature="e#58620#58621#0" expanded="false" />
+            <element signature="e#58653#58654#0" expanded="false" />
+            <element signature="e#58780#58781#0" expanded="false" />
+            <element signature="e#58808#58809#0" expanded="false" />
+            <element signature="e#58960#58961#0" expanded="false" />
+            <element signature="e#59003#59004#0" expanded="false" />
+            <element signature="e#59135#59136#0" expanded="false" />
+            <element signature="e#59164#59165#0" expanded="false" />
+            <element signature="e#59323#59324#0" expanded="false" />
+            <element signature="e#59368#59369#0" expanded="false" />
+            <element signature="e#59497#59498#0" expanded="false" />
+            <element signature="e#59526#59527#0" expanded="false" />
+            <element signature="e#59683#59684#0" expanded="false" />
+            <element signature="e#59728#59729#0" expanded="false" />
+            <element signature="e#59845#59846#0" expanded="false" />
+            <element signature="e#59870#59871#0" expanded="false" />
+            <element signature="e#60007#60008#0" expanded="false" />
+            <element signature="e#60044#60045#0" expanded="false" />
+            <element signature="e#60161#60162#0" expanded="false" />
+            <element signature="e#60186#60187#0" expanded="false" />
+            <element signature="e#60323#60324#0" expanded="false" />
+            <element signature="e#60360#60361#0" expanded="false" />
+            <element signature="e#60486#60487#0" expanded="false" />
+            <element signature="e#60514#60515#0" expanded="false" />
+            <element signature="e#60666#60667#0" expanded="false" />
+            <element signature="e#60709#60710#0" expanded="false" />
+            <element signature="e#60826#60827#0" expanded="false" />
+            <element signature="e#60851#60852#0" expanded="false" />
+            <element signature="e#60988#60989#0" expanded="false" />
+            <element signature="e#61025#61026#0" expanded="false" />
+            <element signature="e#61178#61179#0" expanded="false" />
+            <element signature="e#61214#61215#0" expanded="false" />
+            <element signature="e#61400#61401#0" expanded="false" />
+            <element signature="e#61455#61456#0" expanded="false" />
+            <element signature="e#68822#68823#0" expanded="false" />
+            <element signature="e#68847#68848#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/tools/AcronymDetector.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3270">
+          <caret line="241" column="0" lean-forward="false" selection-start-line="241" selection-start-column="0" selection-end-line="241" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="false" />
+            <element signature="e#1142#1143#0" expanded="false" />
+            <element signature="e#1185#1186#0" expanded="false" />
+            <element signature="e#1536#1537#0" expanded="false" />
+            <element signature="e#1561#1562#0" expanded="false" />
+            <element signature="e#7767#7768#0" expanded="false" />
+            <element signature="e#7785#7786#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/ui/NobleCoderTool.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3269">
+          <caret line="297" column="32" lean-forward="false" selection-start-line="297" selection-start-column="32" selection-end-line="297" selection-end-column="32" />
+          <folding>
+            <element signature="e#13486#13582#0" expanded="true" />
+            <element signature="e#13581#13582#0" expanded="true" />
+            <element signature="e#20414#20534#0" expanded="true" />
+            <element signature="e#20533#20534#0" expanded="true" />
+            <element signature="e#21210#21338#0" expanded="true" />
+            <element signature="e#21337#21338#0" expanded="true" />
+            <element signature="e#31194#31560#0" expanded="true" />
+            <element signature="e#31559#31560#0" expanded="true" />
+            <element signature="e#32201#32563#0" expanded="true" />
+            <element signature="e#32562#32563#0" expanded="true" />
+            <element signature="e#33353#33452#0" expanded="true" />
+            <element signature="e#33451#33452#0" expanded="true" />
+            <element signature="e#34920#35060#0" expanded="true" />
+            <element signature="e#35059#35060#0" expanded="true" />
+            <element signature="e#35570#36002#0" expanded="true" />
+            <element signature="e#36001#36002#0" expanded="true" />
+            <element signature="e#36043#36175#0" expanded="true" />
+            <element signature="e#36174#36175#0" expanded="true" />
+            <element signature="e#36867#37031#0" expanded="true" />
+            <element signature="e#37030#37031#0" expanded="true" />
+            <element signature="e#43236#43508#0" expanded="true" />
+            <element signature="e#43507#43508#0" expanded="true" />
+            <element signature="e#43610#46707#0" expanded="true" />
+            <element signature="e#43939#43947#0" expanded="true" />
+            <element signature="e#46706#46707#0" expanded="true" />
+            <element signature="e#50392#50537#0" expanded="true" />
+            <element signature="e#50536#50537#0" expanded="true" />
+            <element signature="e#50640#51756#0" expanded="true" />
+            <element signature="e#50949#51381#0" expanded="true" />
+            <element signature="e#51065#51078#0" expanded="true" />
+            <element signature="e#51380#51381#0" expanded="true" />
+            <element signature="e#51755#51756#0" expanded="true" />
+            <element signature="e#56963#57080#0" expanded="true" />
+            <element signature="e#57079#57080#0" expanded="true" />
+            <element signature="e#58170#58250#0" expanded="true" />
+            <element signature="e#58249#58250#0" expanded="true" />
+            <element signature="e#60520#60593#0" expanded="true" />
+            <element signature="e#60592#60593#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/edu/pitt/dbmi/nlp/noble/util/HTMLExporter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2105">
+          <caret line="900" column="114" lean-forward="false" selection-start-line="900" selection-start-column="114" selection-end-line="900" selection-end-column="114" />
           <folding />
         </state>
       </provider>

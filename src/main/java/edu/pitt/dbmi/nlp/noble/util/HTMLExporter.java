@@ -626,13 +626,14 @@ public class HTMLExporter {
 	
 	/**
 	 * code annotation variable
-	 * @param variables
-	 * @return
+	 * @param variables - variable list
+	 * @param start - start offset
+	 * @return HTML string
 	 */
 	
-	private String codeVariables(List<AnnotationVariable> variables){
+	private String codeVariables(List<AnnotationVariable> variables, int start){
 		StringBuilder str = new StringBuilder();
-		str.append("<ol>");
+		str.append("<ol start=\""+start+"+\">");
 		for(AnnotationVariable var: variables){
 			str.append("<li>"+codeVariable(var)+"</li>");
 		}
@@ -890,14 +891,14 @@ public class HTMLExporter {
 		// build up results
 		StringBuilder result = new StringBuilder();
 		result.append("<p><b>Annotations</b><p>");
-		result.append(codeVariables(doc.getAnnotationVariables()));
+		result.append(codeVariables(doc.getAnnotationVariables(),1));
 		result.append("</p>");
 		
 		// create list of rejected variables
 		if(!doc.getRejectedAnnotationVariables().isEmpty()){
 			result.append("<p><b><a href=\"\" onclick=\"showHide('failedVariables'); return false\" >Rejected Annotations</a> ..</b>");
 			result.append("<div id=\"failedVariables\" style=\"visibility: hidden\">");
-			result.append(codeVariables(doc.getRejectedAnnotationVariables()));
+			result.append(codeVariables(doc.getRejectedAnnotationVariables(),doc.getAnnotationVariables().size()+1));
 			result.append("</div></p>");
 		}
 		
