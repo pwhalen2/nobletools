@@ -541,19 +541,32 @@ public class ConText implements Processor<Sentence> {
 				return true;
 		return false;
 	}
-	
+
+    /**
+     * Gets the word window index.
+     *
+     * @param modifier the modifier
+     * @param targetText the target text
+     * @param beforeModifier the before modifier
+     * @return the word window index
+     * @throws TerminologyException the terminology exception
+     */
+    private static int getWordWindowIndex(Mention modifier, Sentence targetText, boolean beforeModifier) throws TerminologyException {
+        return getWordWindowIndex(modifier,targetText,beforeModifier,getWindowSize(modifier.getConcept()));
+    }
+
 	/**
 	 * Gets the word window index.
 	 *
 	 * @param modifier the modifier
 	 * @param targetText the target text
 	 * @param beforeModifier the before modifier
+     * @param windowSize the window size of a given modifier
 	 * @return the word window index
-	 * @throws TerminologyException the terminology exception
 	 */
-	private int getWordWindowIndex(Mention modifier, Sentence targetText, boolean beforeModifier) throws TerminologyException {
+	private static int getWordWindowIndex(Mention modifier, Sentence targetText, boolean beforeModifier,int windowSize){
 		int offs;
-		int windowSize = getWindowSize(modifier.getConcept());
+		//int windowSize = getWindowSize(modifier.getConcept());
 		String txt = targetText.getText();
 		int offset = targetText.getOffset();
 		
@@ -561,7 +574,7 @@ public class ConText implements Processor<Sentence> {
 		if(beforeModifier){
 			offs = targetText.getLength();
 			for(int i = modifier.getEndPosition()-offset,j=0,k=i;i>=0 && i<txt.length();i = txt.indexOf(' ',i+1)){ //j++
-				// to avoid multiple consequtive spaces only increment word count if the delta is more then 1
+				// to avoid multiple consecutive spaces only increment word count if the delta is more then 1
 				if(i > k +1)
 					j++;
 				if(j >= windowSize){
@@ -574,7 +587,7 @@ public class ConText implements Processor<Sentence> {
 		}else{
 			offs = 0;
 			for(int i = modifier.getStartPosition()-offset,j=0,k=i;i>=0;i = txt.lastIndexOf(' ',i-1)){ //,j++
-				// to avoid multiple consequtive spaces only increment word count if the delta is more then 1
+				// to avoid multiple consecutive spaces only increment word count if the delta is more then 1
 				if(i < k -1)
 					j++;
 				if(j >= windowSize){
@@ -597,7 +610,7 @@ public class ConText implements Processor<Sentence> {
 	 * @return the terminators
 	 * @throws TerminologyException the terminology exception
 	 */
-	private List<Mention> getTerminators(Mention modifier,Sentence text) throws TerminologyException{
+	private static List<Mention> getTerminators(Mention modifier,Sentence text) throws TerminologyException{
 		List<Mention> list = new ArrayList<Mention>();
 		List<String> terminators = getTermination(modifier.getConcept());
 
@@ -760,7 +773,7 @@ public class ConText implements Processor<Sentence> {
 	 * @return the termination
 	 * @throws TerminologyException the terminology exception
 	 */
-	private List<String> getTermination(Concept c) throws TerminologyException {
+	private static List<String> getTermination(Concept c) throws TerminologyException {
 		List<String> list = new ArrayList<String>();
 		for(Concept p: c.getParentConcepts()){
 			for(Concept t: p.getRelatedConcepts(Relation.getRelation(HAS_TERMINATION))){
@@ -918,5 +931,77 @@ public class ConText implements Processor<Sentence> {
 		}
 		return modifierList;
 	}
-	
+
+
+    /**
+     * Gets the target mentions in range
+     *
+     * @param modifier the modifier
+     * @param targetText the target text
+     * @param actions the modifier actions
+     * @param windowSize the modifier window size
+     * @return the target mentions
+     * @throws TerminologyException the terminology exception
+     */
+    public static List<Mention> getTargetMentionsInRange(Mention modifier, Sentence targetText,List<String> actions, int windowSize){
+        List<Mention> list = new ArrayList<Mention>();
+
+        List<String> acts = actions; // getAction(modifier.getConcept());
+        List<Mention> terminators = Collections.EMPTY_LIST;
+        try{
+            terminators = getTerminators(modifier,modifier.getSentence());
+        }catch (TerminologyException ex){
+            throw new TerminologyError("Oops",ex);
+        }
+
+        boolean forward =  acts.contains(ACTION_FORWARD) || acts.contains(ACTION_BIDIRECTIONAL);
+        boolean backward = acts.contains(ACTION_BACKWARD) || acts.contains(ACTION_BIDIRECTIONAL);
+
+        // this is no good, but if we got no actions defined, can we assume some default?
+        if(forward == false && backward == false){
+            forward = backward = true;
+        }
+
+        // figure out termination offset
+        int start = getWordWindowIndex(modifier,targetText,false,windowSize);
+        int end   = getWordWindowIndex(modifier,targetText,true,windowSize);
+
+        //System.out.println(modifier+" st: "+start+"\tend: "+end+"\tsubs: "+targetText.getText().substring(start,end));
+
+        // figure out terminator offset
+        for(Mention m: terminators){
+            // if going forward, make sure that the terminator is after modifier
+            if(forward && modifier.before(m) && m.getStartPosition() < end){
+                end = m.getStartPosition();
+            }
+            // if looking backward, make sure that the terminator is before modifier
+            if(backward && modifier.after(m) && m.getStartPosition() > start)
+                start = m.getStartPosition();
+        }
+
+
+        // go over mentions in a sentence
+        for(Mention target: targetText.getMentions()){
+            boolean add = false;
+
+            // skip itself
+            if(target.equals(modifier))
+                continue;
+
+            // looking forward, if modifier is before target and target is before termination point
+            if(forward && (modifier.getStartPosition() <= target.getStartPosition() ||  modifier.getEndPosition() < target.getEndPosition()) && target.getStartPosition() <= end){
+                add = true;
+            }
+            // looking backward, if modifier is after target and target is after termination point
+            if(backward &&  modifier.getStartPosition() >= target.getStartPosition() && start <= target.getStartPosition()){
+                add = true;
+            }
+
+            if(add)
+                list.add(target);
+        }
+
+        return list;
+    }
+
 }

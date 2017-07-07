@@ -14,6 +14,7 @@ import edu.pitt.dbmi.nlp.noble.coder.model.Mention;
 import edu.pitt.dbmi.nlp.noble.coder.model.Modifier;
 import edu.pitt.dbmi.nlp.noble.ontology.*;
 import edu.pitt.dbmi.nlp.noble.terminology.Annotation;
+import edu.pitt.dbmi.nlp.noble.tools.ConText;
 import edu.pitt.dbmi.nlp.noble.tools.TextTools;
 
 /**
@@ -585,7 +586,7 @@ public class Instance {
 
 
 						// if instance valid, we found a more specific numeric class
-						if(expression.evaluate(inst)){
+						if(expression.evaluate(inst) && isModifierWithinWindowSize(parentCls,m)){
 							Mention specificM = domainOntology.getModifierFromClass(parentCls,m);
 							Modifier mod = Modifier.getModifier(hasNumValue.getName(),parentCls.getName(),specificM);
 							newVals.add(mod);
@@ -596,5 +597,34 @@ public class Instance {
 		}
 		getModifiers().addAll(newVals);
 	}
-	
+
+    /**
+     * check if the new upgraded numeric modifier is within the new window size
+     * @param cls - upgraded numeric class
+     * @param m - quantity modifier
+     * @return true or false
+     */
+    private boolean isModifierWithinWindowSize(IClass cls, Mention m){
+        // find a more specific named instance
+        int windowSize = -1;
+        List<String> actions = new ArrayList<String>();
+
+        // see if there is custom action and window size defined
+        for(IInstance i: cls.getDirectInstances()){
+           for(Object a: i.getPropertyValues(domainOntology.getProperty(ConText.PROP_WINDOW_SIZE))){
+               windowSize = Integer.parseInt(a.toString());
+           }
+            for(Object a: i.getPropertyValues(domainOntology.getProperty(ConText.HAS_SENTENCE_ACTION))){
+                actions.add(((IInstance)a).getName());
+            }
+       }
+       if(windowSize > -1 && !actions.isEmpty()){
+           List<Mention> targets = ConText.getTargetMentionsInRange(m,getMention().getSentence(),actions,windowSize);
+           return targets.contains(getMention());
+       }
+
+
+       return true;
+    }
+
 }
