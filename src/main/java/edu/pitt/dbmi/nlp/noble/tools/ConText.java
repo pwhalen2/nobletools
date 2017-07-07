@@ -577,7 +577,7 @@ public class ConText implements Processor<Sentence> {
 				// to avoid multiple consequtive spaces only increment word count if the delta is more then 1
 				if(i < k -1)
 					j++;
-				if(j > windowSize){
+				if(j >= windowSize){
 					offs = i;
 					break;
 				}

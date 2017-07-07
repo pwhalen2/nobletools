@@ -44,7 +44,16 @@ public class LogicExpression extends ArrayList implements ILogicExpression {
 		super(c);
 		this.type = type;
 	}
-	
+
+	/**
+	 * create a new logic expression from existing one
+	 * @param exp - logic expression
+	 */
+	public LogicExpression(ILogicExpression exp){
+		this(exp.getExpressionType(),exp);
+	}
+
+
 	/**
 	 * create logic expression of a type.
 	 *

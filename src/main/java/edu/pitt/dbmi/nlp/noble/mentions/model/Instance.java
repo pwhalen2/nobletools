@@ -529,7 +529,7 @@ public class Instance {
 	 */
 	protected void upgradeNumericModifiers(){
 		Set<Modifier> newVals = new HashSet<Modifier>();
-		
+
 		for(Modifier mm:  getModifiers()){
 			if(mm.hasMention()){
 				Mention m = mm.getMention();
@@ -542,7 +542,7 @@ public class Instance {
 					// now go over potential specific instances
 					for(IInstance inst: domainOntology.getSpecificInstances(modifierCls)){
 						
-						// don't bother looking into an instance if it doesn't satisfy the property of this instnace 
+						// don't bother looking into an instance if it doesn't satisfy the property of this instance
 						if(!isSatisfied(getConceptClass(), hasNumValue, inst.getDirectTypes()[0]))
 							continue;
 						
@@ -567,9 +567,25 @@ public class Instance {
 						
 						// now check the equivalence
 						IClass parentCls = inst.getDirectTypes()[0];
-						
+
+						// make a copy of equivalent restriction so we can test the units
+						LogicExpression expression = new LogicExpression(parentCls.getEquivalentRestrictions());
+
+						// add units to expression if not there and units are available
+						// units are unique in the sense that they are often omitted however you
+						// do want to validate it when it is in fact available
+						IProperty hasUnit = domainOntology.getProperty(DomainOntology.HAS_UNIT);
+						if(inst.getPropertyValues(hasUnit).length > 0){
+							for(IRestriction r: parentCls.getDirectNecessaryRestrictions().getRestrictions()){
+								if(r.getProperty().equals(hasUnit)) {
+									expression.add(r);
+								}
+							}
+						}
+
+
 						// if instance valid, we found a more specific numeric class
-						if(parentCls.getEquivalentRestrictions().evaluate(inst)){
+						if(expression.evaluate(inst)){
 							Mention specificM = domainOntology.getModifierFromClass(parentCls,m);
 							Modifier mod = Modifier.getModifier(hasNumValue.getName(),parentCls.getName(),specificM);
 							newVals.add(mod);
