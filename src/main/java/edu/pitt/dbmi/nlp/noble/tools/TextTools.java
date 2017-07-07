@@ -48,7 +48,7 @@ public class TextTools {
 	private static Map<String,String> stopWords,prepostionWords,commonWords;
 	private static Map<String,String> timePatterns;
 	private Sender sender;
-	public static final String NUMBER_PATTERN = "(\\d*\\.\\d+|\\d+)";
+	public static final String NUMBER_PATTERN = "(\\d*\\.\\d+|\\d{1,3}(?:,\\d{3})+|\\d+)";
 	
 	/**
 	 * The Class StringStats.
@@ -1145,11 +1145,13 @@ public class TextTools {
 		Pattern pt = Pattern.compile(NUMBER_PATTERN);
 		Matcher mt = pt.matcher(text);
 		while(mt.find()){
-			list.add(new Double(mt.group()));
+			String num = mt.group().replaceAll(",","");
+			list.add(new Double(num));
 		}
 		
 		// check if we can get numbers that are spelled out
 		if(list.isEmpty()){
+			// remove commas
 			int n = parseIntegerValue(text);
 			if(n != NO_VALUE){
 				list.add(new Double(n));
