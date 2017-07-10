@@ -941,7 +941,6 @@ public class ConText implements Processor<Sentence> {
      * @param actions the modifier actions
      * @param windowSize the modifier window size
      * @return the target mentions
-     * @throws TerminologyException the terminology exception
      */
     public static List<Mention> getTargetMentionsInRange(Mention modifier, Sentence targetText,List<String> actions, int windowSize){
         List<Mention> list = new ArrayList<Mention>();
