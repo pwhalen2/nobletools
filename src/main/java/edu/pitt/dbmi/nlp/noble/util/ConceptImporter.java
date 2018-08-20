@@ -13,27 +13,14 @@ import static edu.pitt.dbmi.nlp.noble.terminology.impl.NobleCoderUtils.singleton
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.net.URI;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Stack;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import java.util.stream.Collectors;
 
 import edu.pitt.dbmi.nlp.noble.ontology.IClass;
 import edu.pitt.dbmi.nlp.noble.ontology.IInstance;
@@ -67,8 +54,16 @@ public class ConceptImporter {
 	private PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 	private static ConceptImporter instance;
 	private boolean inMemory, compact, filterTerms;
-	
-	
+
+
+	private static final String MRCONSO = "MRCONSO.RRF";
+	private static final String MRDEF = "MRDEF.RRF";
+	private static final String MRSTY = "MRSTY.RRF";
+	private static final String MRSAB = "MRSAB.RRF";
+	private static final String MRREL = "MRREL.RRF";
+	private static final String MRHIER = "MRHIER.RRF";
+	private static final String MRFILES = "MRFILES.RRF";
+	private static final List<String> RRF_FILES = Arrays.asList(MRCONSO,MRDEF,MRSTY,MRSAB,MRHIER,MRREL,MRFILES);
 	
 	
 	/**
@@ -832,11 +827,11 @@ public class ConceptImporter {
 		
 		// handle memory nightmare (save when you reach 90%)
 		final NobleCoderTerminology t = terminology;
-		MemoryManager.setMemoryThreshold(new Runnable(){
+		/*MemoryManager.setMemoryThreshold(new Runnable(){
 			public void run() {
 				t.crash();
 			}
-		},0.95);
+		},0.95);*/
 		
 		// try to extract the name from the directory
 		int i=0,offset = 0;
@@ -974,10 +969,10 @@ public class ConceptImporter {
 		}
 		
 		// lets first build a map of concepts using existing concept map
-		Set<String> rootCUIs = new LinkedHashSet<String>();
+		//Set<String> rootCUIs = new LinkedHashSet<String>();
+		Map<String,String> aui2cui = new HashMap<>();
 		int rowcount = 0,step;
 		storage.useTempWordFolder = true;
-		String prefNameSource = null;
 		offset = 0;
 		RRFile = "MRCONSO.RRF";
 		if(!new File(dir,RRFile).exists())
@@ -1013,20 +1008,21 @@ public class ConceptImporter {
 					String code = fields[13].trim();
 					String pref = fields[6].trim();
 					String sup  = fields[16].trim();
-					
+
+					String aui  = fields[7].trim();
+
+
+					// add atom to cui mapping
+					aui2cui.put(aui,cui);
+
+					// display progress bar
+					if((i % step) == 0) {
+						pcs.firePropertyChange(LOADING_PROGRESS, null, i);
+					}
+
 					Source source = Source.getSource(src);
 					
-					// display progress bar
-					pcs.firePropertyChange(LOADING_PROGRESS,null,i);
-					if((i % step) == 0){
-						storage.commit(storage.getInfoMap());
-						storage.commit(storage.getTermMap());
-						storage.commit(storage.getRegexMap());
-						storage.commit(storage.getConceptMap());
-						/*if(i > 0 && i % 500000 == 0){
-							crash = true;
-						}*/
-					}
+
 					i++;
 					
 					// filter out by language
@@ -1034,8 +1030,8 @@ public class ConceptImporter {
 						continue;
 					
 					// add a root candidate
-					if("SRC".equals(src) && code.startsWith("V-"))
-						rootCUIs.add(cui);
+					//if("SRC".equals(src) && code.startsWith("V-"))
+					//	rootCUIs.add(cui);
 					
 					// filter out by source
 					if(!isIncluded(filterSources,src)){
@@ -1063,10 +1059,13 @@ public class ConceptImporter {
 							c = previousConcept;
 						}else{
 							c = new Concept(cui,text);
-							prefNameSource = null;
 						}
 					}
-					
+
+					// if term is preferred in some source
+					if("PT".equals(form) || "PN".equals(form))
+						c.setName(text);
+
 					// create a term
 					Term term = new Term(text);
 					term.setForm(form);
@@ -1080,18 +1079,7 @@ public class ConceptImporter {
 					c.addSource(source);
 					c.addTerm(term);
 					c.addCode(code, source);
-					
-					// set preferred name for the first time
-					/*if(term.isPreferred()){
-						// if prefered name source is not set OR
-						// we have filtering and the new source offset is less then old source offset (which means higher priority)
-						if(prefNameSource == null || (filterSources != null && filterSources.indexOf(src) < filterSources.indexOf(prefNameSource))){
-							c.setName(text);
-							prefNameSource = src;
-							
-						}
-					}
-					term = null;*/
+
 					
 					// now see if we pretty much got the entire concept and should put it in
 					if(previousConcept != null && !previousConcept.getCode().equals(cui)){
@@ -1247,8 +1235,108 @@ public class ConceptImporter {
 		}else{
 			pcs.firePropertyChange(LOADING_MESSAGE,null,"Skipping "+RRFile+" file ...");
 		}
-		
+
+
+
+
+		//process hierarchy
+		offset = 0;
+
+		RRFile = MRHIER;
+		Set<String> rootCUIs = new LinkedHashSet<>();
+
+		if(storage.getInfoMap().containsKey(RRFile)){
+			offset = Integer.parseInt(storage.getInfoMap().get(RRFile));
+		}
+		if(!new File(dir,RRFile).exists()){
+			pcs.firePropertyChange(LOADING_MESSAGE,null,"RRF file "+(new File(dir,RRFile).getAbsolutePath()+" does not exist, sipping .."));
+			offset = Integer.MAX_VALUE;
+		}
+		// if offset is smaller then total, read file
+		if(offset < rowCount.get(RRFile)){
+			i=0;
+			rowcount = rowCount.get(RRFile);
+			step = rowcount/1000;
+			pcs.firePropertyChange(LOADING_MESSAGE,null,"Loading "+RRFile+" file ...");
+			pcs.firePropertyChange(LOADING_TOTAL,null,rowcount);
+			r = new BufferedReader(new FileReader(new File(dir,RRFile)));
+
+
+			for(String line = r.readLine(); line != null; line = r.readLine()){
+				if(i < offset){
+					i++;
+					continue;
+				}
+				// parse each line ref: http://www.ncbi.nlm.nih.gov/books/NBK9685/table/ch03.T.definitions_file__mrdefrrf/?report=objectonly
+				if((i % step) == 0)
+					pcs.firePropertyChange(LOADING_PROGRESS,null,i);
+				i++;
+				String [] fields = line.split("\\|");
+				if(fields.length >= 7 ){
+					String cui = fields[0].trim();
+					// skip if cui is blank (I think it is a different context)
+					if(cui.length() == 0)
+						continue;
+
+					String aui = fields[1].trim();
+					String cxt = fields[2].trim();
+					String src = fields[4].trim();
+					String rel = fields[5].trim();
+					String ans = fields[6].trim();
+
+
+					// filter by known source if
+					if(!isIncluded(relationSources,src,true) && !"SRC".equals(src))
+						continue;
+
+					// get concept from map
+					Concept c1 = terminology.convertConcept(storage.getConceptMap().get(cui));
+
+					if(c1 != null){
+						String [] path = ans.split("\\.");
+						if(path.length > 0){
+
+							// add root
+							if(aui2cui.containsKey(path[0]))
+								rootCUIs.add(aui2cui.get(path[0]));
+							// add parent
+							String pcui = aui2cui.get(path[path.length-1]);
+							c1.getRelationMap().computeIfAbsent(Relation.BROADER.getName(),k->new HashSet<>()).add(pcui);
+
+							// add ancestors
+							c1.getRelationMap().computeIfAbsent(Relation.ANCESTORS.getName(),k->new HashSet<>()).addAll(
+											Arrays.stream(path).map(p->aui2cui.get(p)).
+											collect(Collectors.toList()));
+
+							//save content
+							storage.getConceptMap().put(cui,c1.getContent());
+
+							// set children
+							Concept c2 =  terminology.convertConcept(storage.getConceptMap().get(pcui));
+							if(c2 != null){
+								c2.getRelationMap().computeIfAbsent(Relation.NARROWER.getName(),k->new HashSet<>()).add(cui);
+								storage.getConceptMap().put(pcui,c2.getContent());
+							}
+						}
+					}
+				}
+
+				storage.getInfoMap().put(RRFile,""+i);
+			}
+			r.close();
+		}else{
+			pcs.firePropertyChange(LOADING_MESSAGE,null,"Skipping "+RRFile+" file ...");
+		}
+
+		// save roots
+		for(String key : rootCUIs){
+			if(storage.getConceptMap().containsKey(key)){
+				storage.getRootMap().put(key,key);
+			}
+		}
+
 		//process relationships?
+			/*
 		offset = 0;
 		RRFile = "MRREL.RRF";
 		if(storage.getInfoMap().containsKey(RRFile)){
@@ -1349,16 +1437,7 @@ public class ConceptImporter {
 				if(c != null && c.relationMap != null && c.relationMap.containsKey(Relation.NARROWER)){
 					storage.getRootMap().put(c.code,"");
 				}
-				/*//anything that doesn't have brader concepts AND is from SRC terminology
-				if(c.relationMap != null && c.relationMap.containsKey(Relation.NARROWER) && !c.relationMap.containsKey(Relation.BROADER)){
-					// is it a source?
-					boolean issource = false;
-					for(Source s: c.sources)
-						if(s.getName().equals("SRC"))
-							issource = true;
-					if(issource)
-						storage.getRootMap().put(c.code,"");
-				}*/
+
 				//if((i % step) == 0)
 				pcs.firePropertyChange(LOADING_PROGRESS,null,i);
 				i++;
@@ -1367,7 +1446,7 @@ public class ConceptImporter {
 		}else{
 			pcs.firePropertyChange(LOADING_MESSAGE,null,"Skipping Root Inference ...");
 		}
-		
+		*/
 		// generate blacklist
 		if(!compact){
 			pcs.firePropertyChange(LOADING_MESSAGE,null,"Creating a Blacklist of High Frequency Words ...");
@@ -1396,12 +1475,7 @@ public class ConceptImporter {
 		//compact(terminology); - no need to do compacting here as it is done in line
 		//}
 
-		// serialize boject if appropriate
-		/*if(inmemory){
-			File f = new File(location,NobleCoderTerminology.MEM_FILE);
-			pcs.firePropertyChange(LOADING_MESSAGE,null,"Saving Serialized Object to ... "+f.getAbsolutePath());
-			storage.saveObject(f);
-		}*/
+
 		pcs.firePropertyChange(LOADING_MESSAGE,null,"Total Load Time: "+(System.currentTimeMillis()-time)/60000.0+" minutes");
 	}
 	

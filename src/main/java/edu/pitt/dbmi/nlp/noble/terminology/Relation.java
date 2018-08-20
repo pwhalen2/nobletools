@@ -17,7 +17,7 @@ public class Relation  implements  Serializable{
 	public static Relation BROADER = new Relation("Broader");
 	public static Relation NARROWER = new Relation("Narrower");
 	public static Relation SIMILAR = new Relation("Similar");
-	
+	public static Relation ANCESTORS = new Relation("Ancestors");
 	
 	private String name,code;
 	private boolean inverse;
