@@ -32,7 +32,7 @@ import edu.pitt.dbmi.nlp.noble.terminology.impl.NobleCoderTerminology;
  * The Class ConText.
  */
 public class ConText implements Processor<Sentence> {
-	public static final String DEFAULT_MODIFIER_ONTOLOGY = "http://blulab.chpc.utah.edu/ontologies/v2/Modifier.owl";
+	public static final String DEFAULT_MODIFIER_ONTOLOGY = "http://github.com/pwhalen2/noble_ontologies/raw/main/Modifier.owl";
 	public static final List<String> CONTEXT_ROOTS =  Arrays.asList("Closure","Pseudo","LinguisticModifier");
 	public static final String HAS_TERMINATION = "hasTermination";
 	public static final String HAS_PSEUDO = "hasPseudo";

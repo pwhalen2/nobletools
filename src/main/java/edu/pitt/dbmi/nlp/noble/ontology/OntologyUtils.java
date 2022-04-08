@@ -28,7 +28,7 @@ import edu.pitt.dbmi.nlp.noble.terminology.SemanticType;
  */
 public class OntologyUtils {
 	public static final String DEFAULT_ONTOLOGY_BASE_URL = "http://ontologies.dbmi.pitt.edu/";
-	public static final String TERMINOLOGY_CORE = "http://blulab.chpc.utah.edu/ontologies/TermMapping.owl";
+	public static final String TERMINOLOGY_CORE = "http://github.com/Blulab-Utah/resource_ontologies/raw/master/TermMapping.owl";
 	
 	
 	public static final String CODE = "code";

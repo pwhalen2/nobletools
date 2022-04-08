@@ -29,7 +29,7 @@ import edu.pitt.dbmi.nlp.noble.util.ConceptImporter;
  *
  */
 public class DictionarySectionProcessor implements Processor<Document> {
-	private static final String DOCUMENT_SECTION_ONTOLOGY = "http://blulab.chpc.utah.edu/ontologies/v2/DocumentSection.owl";
+	private static final String DOCUMENT_SECTION_ONTOLOGY = "http://github.com/pwhalen2/noble_ontologies/raw/main/DocumentSection.owl";
 	private static final String DOCUMENT_SECTION = "DocumentSection";
 	private static final String HEADER_SEPERATOR_CHAR = ":";
 	private static final Pattern HEADER_SEPERATOR_PATTERN = Pattern.compile("\\s*"+HEADER_SEPERATOR_CHAR);
@@ -55,7 +55,7 @@ public class DictionarySectionProcessor implements Processor<Document> {
 				terminology = new NobleCoderTerminology(DOCUMENT_SECTION);
 			}
 		}catch(Exception ex){
-			throw new TerminologyError("Unable to load ConText ontology", ex);
+			throw new TerminologyError("Unable to load DocumentSection ontology", ex);
 		}
 	}
 	
