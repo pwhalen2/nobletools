@@ -2,7 +2,7 @@ package edu.pitt.dbmi.nlp.noble.ontology;
 
 import java.util.*;
 
-import org.omg.CORBA.OMGVMCID;
+// import org.omg.CORBA.OMGVMCID;
 
 import edu.pitt.dbmi.nlp.noble.ontology.owl.OFacetRestriction;
 

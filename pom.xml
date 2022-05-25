@@ -4,7 +4,7 @@
 
 	<groupId>edu.pitt.dbmi.nlp</groupId>
 	<artifactId>NobleTools</artifactId>
-	<version>1.1</version>
+	<version>1.2</version>
 	<packaging>jar</packaging>
 
 	<name>NobleTools</name>
@@ -77,6 +77,10 @@ http://nexihub.com/contact
     		<module>plugin-gate</module>
     </modules>
 	 -->
+	<properties>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>net.sourceforge.owlapi</groupId>
@@ -99,6 +103,12 @@ http://nexihub.com/contact
 		  <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<argLine>
+						--add-opens=java.base/jdk.internal.ref=ALL-UNNAMED 
+						--add-opens=java.base/sun.nio.ch=ALL-UNNAMED
+					</argLine>
+				</configuration>
           </plugin>
            <plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
@@ -159,7 +169,7 @@ http://nexihub.com/contact
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
-				<version>2.2.1</version>
+				<version>3.2.0</version>
 				<executions>
 					<execution>
 						<id>attach-sources</id>
